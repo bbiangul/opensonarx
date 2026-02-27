@@ -1,0 +1,61 @@
+---
+title: Seeding Content
+description: Populate your local index with content from sitemaps, URLs, and package registries.
+---
+
+## Sitemap
+
+Crawl all URLs from a sitemap.xml:
+
+```bash
+oi seed sitemap https://docs.rs/sitemap.xml --concurrency 8
+```
+
+Supports both `.xml` and `.xml.gz` sitemaps.
+
+## URL list
+
+Crawl URLs from a text file (one per line):
+
+```bash
+oi seed urls urls.txt --concurrency 4
+```
+
+## Spider crawl
+
+Follow links from a start URL:
+
+```bash
+oi seed crawl https://rust-lang.org --depth 3 --max-pages 1000 --concurrency 4
+```
+
+## Package registries
+
+### docs.rs (Rust crates)
+
+Seed documentation for the top N crates by downloads:
+
+```bash
+oi seed registry docs-rs --top 100 --concurrency 4
+```
+
+### MDN Web Docs
+
+Seed all English MDN documentation:
+
+```bash
+oi seed registry mdn --concurrency 4
+```
+
+## Index management
+
+```bash
+# Show index statistics
+oi index info
+
+# Export to portable archive
+oi index export --output my-index.tar.gz
+
+# Import from archive
+oi index import my-index.tar.gz
+```

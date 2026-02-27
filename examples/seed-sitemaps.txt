@@ -1,0 +1,158 @@
+# OpenSonarX Seed Sitemaps — Verified Technical Documentation Sources
+#
+# Usage: feed each URL to `oi seed sitemap`:
+#
+#   while IFS= read -r url; do
+#     [[ "$url" =~ ^#.*$ || -z "$url" ]] && continue
+#     oi seed sitemap "$url" -c 8
+#   done < examples/seed-sitemaps.txt
+#
+# 43 verified sitemaps, ~50k+ pages total
+# Last verified: 2026-02-24
+
+# ── Languages & Runtimes ─────────────────────────────────────────────────────
+
+# Python — all versions (3.x, 2.7, etc.)
+https://docs.python.org/sitemap.xml
+
+# Node.js — multilingual, /learn pages
+https://nodejs.org/sitemap.xml
+
+# Go — 133 child sitemaps covering all packages on pkg.go.dev
+https://pkg.go.dev/sitemap/index.xml
+
+# TypeScript — handbook, reference, release notes
+https://www.typescriptlang.org/sitemap-index.xml
+
+# Rust std lib — plain-text URL list (not XML, needs `oi seed urls`)
+# https://doc.rust-lang.org/sitemap.txt
+
+# C# / .NET / Azure / PowerShell — Microsoft Learn (massive, 1000+ child sitemaps)
+https://learn.microsoft.com/_sitemaps/sitemapindex.xml
+
+# Kotlin — 1100+ pages
+https://kotlinlang.org/sitemap.xml
+
+# PHP — official docs
+https://www.php.net/sitemap.xml
+
+# Ruby — all versions 1.8.6 through 3.4.1
+https://ruby-doc.org/sitemap.xml
+
+# ── Web Frameworks ───────────────────────────────────────────────────────────
+
+# Next.js — 1000+ pages
+https://nextjs.org/sitemap.xml
+
+# Vue.js — 117 pages
+https://vuejs.org/sitemap.xml
+
+# Angular — full reference
+https://angular.dev/sitemap.xml
+
+# Django — 12 language-specific child sitemaps
+https://docs.djangoproject.com/sitemap.xml
+
+# FastAPI — 183 pages
+https://fastapi.tiangolo.com/sitemap.xml
+
+# Flask
+https://flask.palletsprojects.com/sitemap.xml
+
+# Laravel — 17 pages
+https://laravel.com/sitemap.xml
+
+# Ruby on Rails
+https://rubyonrails.org/sitemap.xml
+
+# Spring — Spring Boot, Spring Framework, Spring Security, etc.
+https://spring.io/sitemap-index.xml
+
+# ── Databases ────────────────────────────────────────────────────────────────
+
+# PostgreSQL — hundreds of pages
+https://www.postgresql.org/sitemap.xml
+
+# Redis — 14 child sitemaps (commands, docs, blog, etc.)
+https://redis.io/sitemap.xml
+
+# MongoDB — 15 child sitemaps including docs
+https://www.mongodb.com/sitemap.xml
+
+# Elasticsearch — 200+ pages, multilingual
+https://www.elastic.co/sitemap.xml
+
+# ── Cloud & Infrastructure ───────────────────────────────────────────────────
+
+# AWS — hundreds of service-specific child sitemaps
+https://docs.aws.amazon.com/sitemap_index.xml
+
+# Google Cloud — 180 child sitemaps
+https://cloud.google.com/sitemap.xml
+
+# Docker — hundreds of pages
+https://docs.docker.com/sitemap.xml
+
+# Kubernetes — 16+ language-specific child sitemaps
+https://kubernetes.io/sitemap.xml
+
+# Cloudflare Developers
+https://developers.cloudflare.com/sitemap.xml
+
+# Vercel — 1000+ pages
+https://vercel.com/sitemap.xml
+
+# GitLab Docs — en-us and ja
+https://docs.gitlab.com/sitemap.xml
+
+# Supabase — main site + docs
+https://supabase.com/sitemap.xml
+
+# Firebase
+https://firebase.google.com/sitemap.xml
+
+# Nginx
+https://nginx.org/sitemap.xml
+
+# ── AI & Machine Learning ────────────────────────────────────────────────────
+
+# PyTorch — 13 child sitemaps
+https://pytorch.org/sitemap.xml
+
+# TensorFlow
+https://www.tensorflow.org/sitemap.xml
+
+# Hugging Face — docs, models, datasets, papers
+https://huggingface.co/sitemap.xml
+
+# LangChain — 1000+ pages
+https://docs.langchain.com/sitemap.xml
+
+# OpenAI Platform
+https://platform.openai.com/sitemap.xml
+
+# Anthropic / Claude Docs — multilingual
+https://platform.claude.com/sitemap.xml
+
+# ── Developer Tools ──────────────────────────────────────────────────────────
+
+# Git — multilingual
+https://git-scm.com/sitemap.xml
+
+# Webpack — 365 pages
+https://webpack.js.org/sitemap.xml
+
+# Vite — 61 pages
+https://vite.dev/sitemap.xml
+
+# ESLint — 547 pages
+https://eslint.org/sitemap.xml
+
+# gRPC — 163 pages
+https://grpc.io/sitemap.xml
+
+# Grafana — multi-language + developer docs
+https://grafana.com/sitemap.xml
+
+# Ansible
+https://docs.ansible.com/sitemap.xml

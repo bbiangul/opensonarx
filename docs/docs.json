@@ -1,0 +1,121 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "OpenSonarX",
+  "colors": {
+    "primary": "#0F172A",
+    "light": "#38BDF8",
+    "dark": "#0F172A",
+    "background": {
+      "dark": "#0B0F19"
+    }
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "guides/quickstart",
+              "guides/install"
+            ]
+          },
+          {
+            "group": "Search",
+            "pages": [
+              "guides/search",
+              "guides/blended-search",
+              "guides/feedback"
+            ]
+          },
+          {
+            "group": "Running a Node",
+            "pages": [
+              "guides/p2p-node",
+              "guides/sentinel",
+              "guides/seeding"
+            ]
+          },
+          {
+            "group": "Roadmap (Phase 3)",
+            "pages": [
+              "staking/overview",
+              "staking/domains",
+              "staking/entities",
+              "staking/disputes"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI Reference",
+        "groups": [
+          {
+            "group": "Commands",
+            "pages": [
+              "cli/search",
+              "cli/network",
+              "cli/sentinel",
+              "cli/staking",
+              "cli/wallet",
+              "cli/seed",
+              "cli/config"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Protocol",
+        "groups": [
+          {
+            "group": "Architecture",
+            "pages": [
+              "protocol/overview",
+              "protocol/wire-format",
+              "protocol/ranking"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/bbiangul/opensonarx",
+          "icon": "github"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/bbiangul/opensonarx"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Install CLI",
+      "href": "https://opensonarx.com/install.sh"
+    }
+  },
+  "contextual": {
+    "options": ["copy", "view", "chatgpt", "claude", "cursor"]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/opensonarx",
+      "github": "https://github.com/bbiangul/opensonarx"
+    }
+  }
+}

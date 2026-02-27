@@ -1,0 +1,98 @@
+---
+title: "oi stake / unstake / domain / dispute / jury (Phase 3)"
+description: "Planned: Staking and governance CLI commands."
+---
+
+<Warning>
+  **Phase 3 — Not yet implemented.** The staking and governance commands below are part of the roadmap. They exist in the CLI but require the Solana staking program to be deployed.
+</Warning>
+
+## oi stake
+
+Stake $TRUTH tokens on a domain.
+
+```bash
+oi stake <domain> --amount <amount>
+```
+
+## oi unstake
+
+Begin unstaking (7-day cooldown).
+
+```bash
+oi unstake <domain>
+```
+
+## oi domain
+
+### oi domain verify
+
+Verify DNS TXT record for a domain.
+
+```bash
+oi domain verify <domain>
+```
+
+### oi domain list
+
+List all staked domains.
+
+```bash
+oi domain list
+```
+
+### oi domain info
+
+Show domain info (stake, verification, reputation).
+
+```bash
+oi domain info <domain>
+```
+
+### oi domain curate
+
+Stake on someone else's domain.
+
+```bash
+oi domain curate <domain> --amount <amount>
+```
+
+## oi dispute
+
+### oi dispute open
+
+```bash
+oi dispute open <domain> --bond <amount> --reason "..."
+```
+
+### oi dispute list
+
+```bash
+oi dispute list
+```
+
+### oi dispute info
+
+```bash
+oi dispute info <dispute_id>
+```
+
+## oi jury
+
+### oi jury register
+
+```bash
+oi jury register
+```
+
+### oi jury vote
+
+```bash
+oi jury vote <dispute_id> --verdict <uphold|reject>
+```
+
+### oi jury status
+
+```bash
+oi jury status
+```

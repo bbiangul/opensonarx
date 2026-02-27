@@ -1,0 +1,52 @@
+---
+title: "Disputes (Phase 3)"
+description: "Planned: Challenge bad actors through the dispute and jury system."
+---
+
+<Warning>
+  **Phase 3 — Not yet implemented.** The dispute and jury system is part of the roadmap. The features described here are planned designs, not currently available.
+</Warning>
+
+## Planned: How disputes will work
+
+If a staked domain serves spam, misinformation, or low-quality content, anyone will be able to open a dispute. A jury of token holders will vote to uphold or reject the dispute. If upheld, the domain's stake is slashed.
+
+## Planned: Open a dispute
+
+```bash
+oi dispute open spam-domain.com \
+  --bond 10 \
+  --reason "SEO spam, no real content"
+```
+
+The bond is locked during the dispute. If the dispute is upheld, you get the bond back plus a share of the slashed stake. If rejected, you lose the bond.
+
+## Planned: Jury participation
+
+### Register as a juror
+
+```bash
+oi jury register
+```
+
+Eligibility will require a minimum $TRUTH balance.
+
+### Vote on a dispute
+
+```bash
+oi jury vote <dispute_id> --verdict uphold
+oi jury vote <dispute_id> --verdict reject
+```
+
+Voting will use commit-reveal: first commit a hashed vote, then reveal after the commit phase ends.
+
+## Planned outcomes
+
+| Verdict | Bond | Stake |
+|---------|------|-------|
+| **Upheld** | Returned to disputer + reward | Slashed |
+| **Rejected** | Lost (distributed to jurors) | Preserved |
+
+## What works today
+
+Today, bad content is handled through the **feedback system**. Negative feedback signals decay a domain's reputation score, reducing its ranking over time. The formal dispute and jury system will add on-chain enforcement in Phase 3.

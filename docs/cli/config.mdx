@@ -1,0 +1,69 @@
+---
+title: Configuration
+description: CLI config file and environment variables.
+---
+
+## Config file
+
+The CLI reads settings from `~/.opensonarx/config.toml`:
+
+```toml
+[network]
+bootstrap_peers = ["/ip4/1.2.3.4/tcp/4001/p2p/12D3KooW..."]
+
+[[search.engines]]
+name = "google"
+priority = 1
+api_key = "your-serper-key"
+
+[[search.engines]]
+name = "brave"
+priority = 5
+api_key = "your-brave-key"
+
+# Phase 3 (not yet active):
+# [wallet]
+# path = "/Users/you/.solana/id.json"
+```
+
+## Precedence
+
+**CLI flags > config file > defaults**
+
+## Authentication
+
+### Login with email (gateway mode)
+
+```bash
+oi login you@example.com
+```
+
+This sends a magic link to your email. Click it, then verify:
+
+```bash
+oi login --verify <token>
+```
+
+### Logout
+
+```bash
+oi logout
+```
+
+### Check status
+
+```bash
+oi status
+```
+
+Shows auth mode (web3/gateway/open), account info, and quota.
+
+## Other commands
+
+| Command | Description |
+|---------|-------------|
+| `oi verify <url>` | Trust-check a URL (reputation + risk) |
+| `oi leaderboard` | Most-queried domains/entities |
+| `oi docs` | Open gateway API docs |
+| `oi yield show` | View current yield/earnings |
+| `oi yield history` | View yield history |

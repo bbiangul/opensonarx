@@ -1,0 +1,31 @@
+services:
+  solana:
+    image: solanalabs/solana:v1.18
+    command: solana-test-validator --reset
+    ports:
+      - "8899:8899"
+      - "8900:8900"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8899/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  node:
+    build: .
+    restart: unless-stopped
+    command: ["network", "node", "--port", "4001", "--http-port", "8001"]
+    environment:
+      - RUST_LOG=${RUST_LOG:-oi=info}
+    ports:
+      - "4001:4001"       # P2P TCP (libp2p + noise)
+      - "4001:4001/udp"   # P2P QUIC transport
+      - "8001:8001"       # Node HTTP API
+    depends_on:
+      solana:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+          cpus: "2.0"

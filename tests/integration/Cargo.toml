@@ -1,0 +1,73 @@
+[package]
+name = "oi-integration-tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[test]]
+name = "integration"
+path = "main.rs"
+
+[[test]]
+name = "solana_e2e"
+path = "solana_e2e.rs"
+
+[[test]]
+name = "entity_staking_e2e"
+path = "entity_staking_e2e.rs"
+
+[[test]]
+name = "multi_node"
+path = "multi_node.rs"
+
+[[test]]
+name = "facts_e2e"
+path = "facts_e2e.rs"
+
+[[test]]
+name = "facts_multilingual"
+path = "facts_multilingual.rs"
+
+[[test]]
+name = "facts_e2e_pipeline"
+path = "facts_e2e_pipeline.rs"
+
+
+[[test]]
+name = "spider_search_e2e"
+path = "spider_search_e2e.rs"
+
+[[test]]
+name = "spider_mio_debug"
+path = "spider_mio_debug.rs"
+
+[[test]]
+name = "ts_search_debug"
+path = "ts_search_debug.rs"
+
+[[test]]
+name = "ts_extractor_debug"
+path = "ts_extractor_debug.rs"
+
+[dependencies]
+oi-types = { path = "../../crates/oi-types" }
+oi-index = { path = "../../crates/oi-index" }
+oi-crawl = { path = "../../crates/oi-crawl", features = ["facts"] }
+oi-embed = { path = "../../crates/oi-embed", features = ["onnx"] }
+oi-network = { path = "../../crates/oi-network" }
+oi-sdk = { path = "../../crates/oi-sdk" }
+oi-staking = { path = "../../crates/oi-staking" }
+
+# Solana E2E test deps
+opensonarx-staking = { path = "../../programs/opensonarx-staking" }
+solana-program-test = "2"
+solana-sdk = "2"
+solana-program = "2"
+spl-token = "6"
+borsh = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+
+oi-facts = { path = "../../crates/oi-facts" }
+ureq = "3"
+serde_json = "1"
+sha2 = { workspace = true }

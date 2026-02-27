@@ -1,0 +1,17 @@
+target/
+.git/
+.github/
+.anchor/
+.claude/
+.env
+models/
+*.onnx
+*.bin
+*.safetensors
+bench/datasets/
+test-ledger/
+node_modules/
+__pycache__/
+*.swp
+*.swo
+.DS_Store

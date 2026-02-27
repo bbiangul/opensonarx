@@ -1,0 +1,112 @@
+---
+title: Wire Protocol
+description: Protobuf message formats for the P2P protocol.
+---
+
+## Protocols
+
+| Protocol | Path | Description |
+|----------|------|-------------|
+| Query | `/opensonarx/query/1.0.0` | Search request/response |
+| Feedback | `/opensonarx/feedback/1.0.0` | Result feedback signals |
+| Gossip | `opensonarx/gossip/v1` | Heartbeats, shard announces, stake events, content announcements |
+| Replication | `/opensonarx/replicate/1.0.0` | Shard replication between nodes |
+
+## Query protocol
+
+### QueryRequest
+
+```protobuf
+message QueryRequest {
+  string request_id = 1;           // UUID
+  bytes query_embedding = 2;       // 384 x INT8 = 384 bytes
+  string query_text = 3;           // Raw query for BM25
+  Filters filters = 4;
+  uint32 limit = 5;                // Max results (default 5)
+  bytes signed_ticket = 6;         // State channel payment ticket
+  string sender_pubkey = 7;        // Solana wallet pubkey
+  uint64 nonce = 8;                // Replay protection
+}
+```
+
+### QueryResponse
+
+```protobuf
+message QueryResponse {
+  string request_id = 1;
+  ResponseMeta meta = 2;
+  repeated SearchResult results = 3;
+  ErrorInfo error = 4;
+}
+```
+
+### SearchResult
+
+Each result includes relevance scores, stake info, utility metrics, and freshness data.
+
+```protobuf
+message SearchResult {
+  string result_id = 1;
+  uint32 rank = 2;
+  string title = 3;
+  string url = 4;
+  string snippet = 5;
+  string content_md = 6;           // Full Markdown chunk
+  Scores scores = 7;
+  StakeInfo stake = 8;
+  UtilityInfo utility = 9;
+  FreshnessInfo freshness = 10;
+  string entity = 13;
+  string content_kind = 14;
+}
+```
+
+## Filters
+
+```protobuf
+message Filters {
+  uint32 min_stake_usd = 1;
+  string freshness = 2;           // "1h", "1d", "1w", "1m", "1y"
+  repeated string types = 3;      // "text", "image", "pdf"
+  float min_reputation = 4;
+  repeated string entities = 6;
+  repeated string content_kinds = 7;
+  string locale = 8;
+  string gl = 9;                  // Country/region code
+  string site = 10;               // Domain scope
+}
+```
+
+## Gossip messages
+
+The gossip topic carries heartbeats, shard announcements, stake events, and content announcements via a `oneof` payload.
+
+### ContentAnnouncement
+
+Broadcast when new content is crawled:
+
+```protobuf
+message ContentAnnouncement {
+  string sentinel_id = 1;
+  string url = 2;
+  string domain = 3;
+  string content_hash = 4;
+  uint64 crawled_at = 5;
+  uint32 chunk_count = 6;
+  string shard_id = 7;
+  bool is_update = 8;
+  string entity = 9;
+}
+```
+
+## Error codes
+
+| Code | Name | Retryable |
+|------|------|-----------|
+| E1001 | QUERY_TIMEOUT | Yes |
+| E1002 | SHARD_UNAVAILABLE | Yes |
+| E2001 | INVALID_QUERY | No |
+| E3001 | STAKE_INSUFFICIENT | No |
+| E6003 | QUOTA_EXCEEDED | No |
+
+See `crates/oi-types/src/error.rs` for the full list.

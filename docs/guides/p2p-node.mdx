@@ -1,0 +1,88 @@
+---
+title: P2P Node
+description: Run a libp2p node to join the decentralized search network.
+---
+
+## Start a node
+
+```bash
+oi network node --port 4001
+```
+
+By default, nodes start in **local discovery mode** (mDNS) and automatically find peers on the same LAN.
+
+## Join the network
+
+Bootstrap from a known peer:
+
+```bash
+oi network node --port 4001 \
+  --bootstrap /ip4/1.2.3.4/tcp/4001/p2p/12D3KooW...
+```
+
+## HTTP API
+
+Enable the node's HTTP API for CLI search and health checks:
+
+```bash
+oi network node --port 4001 --http-port 8001
+```
+
+### Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/health` | Node health + peer ID |
+| `POST` | `/search` | Search the P2P network |
+
+### Search via HTTP
+
+```bash
+curl -s -X POST http://localhost:8001/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "rust async", "limit": 5}' | jq
+```
+
+Or use the CLI shortcut:
+
+```bash
+oi search "rust async" --node http://localhost:8001
+```
+
+## Integrated sentinel
+
+Run a node with a built-in crawl daemon:
+
+```bash
+oi network node --port 4001 --http-port 8001 \
+  --sentinel --domains "rust-lang.org,tokio.rs"
+```
+
+## Shard assignment
+
+Specify which shards this node serves:
+
+```bash
+oi network node --port 4001 --shards "tech-prog-v1,science-v1"
+```
+
+Omit `--shards` for automatic topic-based assignment.
+
+## Network status
+
+```bash
+oi network status
+oi network peers
+```
+
+## Protocol details
+
+The P2P layer uses:
+
+| Protocol | Purpose |
+|----------|---------|
+| **Kademlia DHT** | Peer discovery and routing |
+| **Gossipsub** | Content announcements, peer heartbeats |
+| **Request-response** | `/opensonarx/query/1.0.0` — search queries |
+| **mDNS** | Local network peer discovery |
+| **Noise + Yamux** | Encrypted, multiplexed connections |

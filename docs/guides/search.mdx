@@ -1,0 +1,84 @@
+---
+title: Search
+description: How search works in OpenSonarX.
+---
+
+## Basic search
+
+```bash
+oi search "your query here"
+```
+
+Results come from three sources, merged via reciprocal rank fusion:
+
+1. **Local index** — your HNSW + BM25 hybrid index
+2. **External engines** — DuckDuckGo (free), Google via Serper, Brave Search
+3. **P2P network** — when using `--node` to query a running node
+
+## Search options
+
+```bash
+# Limit results
+oi search "rust async" -k 10
+
+# Filter by content type
+oi search "machine learning" --type pdf
+
+# Filter by freshness
+oi search "breaking news" --freshness 1d
+
+# Filter by entity
+oi search "linear algebra" --entity youtube.com/c/3blue1brown
+
+# Filter by content kind
+oi search "react tutorial" --content-kind video
+
+# Restrict to a domain
+oi search "installation guide" --site docs.rs
+
+# Locale and region
+oi search "noticias" --locale pt-BR --gl br
+```
+
+## Search via P2P node
+
+If you're running a node with `--http-port`, you can query it:
+
+```bash
+# Start a node
+oi network node --port 4001 --http-port 8001
+
+# Search through it
+oi search "rust async" --node http://localhost:8001
+```
+
+## Output formats
+
+```bash
+# Table (default)
+oi search "rust" -o table
+
+# JSON (for piping to jq)
+oi search "rust" -o json
+
+# NDJSON (for streaming)
+oi search "rust" -o ndjson
+```
+
+## How ranking works
+
+The ranking formula combines:
+
+```
+final_score = (semantic_score + bm25_score) / 2 * reputation_factor
+```
+
+| Factor | Effect |
+|--------|--------|
+| **Semantic score** | Cosine similarity between query and content embeddings (384-dim MiniLM) |
+| **BM25 score** | Keyword matching with TF-IDF weighting |
+| **Reputation factor** | Wilson score from feedback signals — good content gets boosted over time |
+
+<Note>
+  **Phase 3** will add stake-weighted ranking via $TRUTH token staking on Solana, giving publishers an additional way to signal content quality.
+</Note>

@@ -1,0 +1,122 @@
+---
+title: Quickstart
+seo:
+  title: OpenSonarX Quickstart — Search Engine for AI Agents in 5 Minutes
+  description: Get started with OpenSonarX in under 5 minutes. Free, open-source search that returns full content for LLMs. 8x cheaper than search API + page fetching.
+---
+
+## 1. Install
+
+```bash
+curl -fsSL https://opensonarx.com/install.sh | sh
+```
+
+Or build from source:
+
+```bash
+git clone https://github.com/bbiangul/opensonarx.git
+cd opensonarx
+cargo build --release --bin oi
+```
+
+## 2. Search
+
+Search works immediately — DuckDuckGo blended results are available out of the box, no API keys needed.
+
+```bash
+oi search "how to deploy a Next.js app to Vercel"
+```
+
+Output includes full content that an LLM can use directly — not just links and thin snippets.
+
+### Output Formats
+
+```bash
+# Table (default, human-readable)
+oi search "rust async"
+
+# JSON (for piping to jq or feeding to an LLM)
+oi search "rust async" -o json
+
+# NDJSON (for streaming)
+oi search "rust async" -o ndjson
+```
+
+## 3. Seed Your Index
+
+Grow your local index by crawling real content:
+
+```bash
+# Spider a site (follow links)
+oi seed crawl https://docs.rs --depth 3 --max-pages 500
+
+# Crawl a sitemap
+oi seed sitemap https://docs.rs/sitemap.xml
+
+# Top Rust crates from docs.rs
+oi seed registry docs-rs --top 100
+```
+
+Once seeded, searches return content from your local index — pre-crawled, chunked, and embedded. No page fetching needed.
+
+## 4. Run a P2P Node
+
+Join the decentralized network and expose an HTTP API:
+
+```bash
+oi network node --port 4001 --http-port 8001
+```
+
+Search through your running node:
+
+```bash
+oi search "rust async" --node http://localhost:8001
+
+# Or use curl directly
+curl -s -X POST http://localhost:8001/search \
+  -H "Content-Type: application/json" \
+  -d '{"query": "rust async", "limit": 5}'
+```
+
+## 5. Add Better Search Engines
+
+For higher-quality results, add paid engines in `~/.opensonarx/config.toml`:
+
+```toml
+[[search.engines]]
+name = "google"
+priority = 1
+api_key = "your-serper-key"
+
+[[search.engines]]
+name = "brave"
+priority = 5
+api_key = "your-brave-key"
+```
+
+DuckDuckGo remains as a free fallback at the lowest priority.
+
+## Token Savings
+
+With a populated index, OpenSonarX returns query-relevant content directly — **8x fewer tokens** than the traditional search + fetch approach:
+
+| Approach | Median Tokens | Cost/1M Queries |
+|----------|:------------:|:---------------:|
+| Search API + fetch 3 pages | 6,448 | $19,978 |
+| **OpenSonarX** | **835** | **$2,480** |
+
+This means your AI agents get better answers at a fraction of the cost.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Run a Sentinel" icon="radar" href="/guides/sentinel">
+    Continuously crawl domains and grow your index.
+  </Card>
+  <Card title="P2P Network" icon="network-wired" href="/guides/p2p-node">
+    Join the decentralized search network.
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli/search">
+    Full command reference for the `oi` CLI.
+  </Card>
+</CardGroup>

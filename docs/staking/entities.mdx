@@ -1,0 +1,40 @@
+---
+title: "Entity Staking (Phase 3)"
+description: "Planned: Stake on individual creators on UGC platforms."
+---
+
+<Warning>
+  **Phase 3 — Not yet implemented.** Entity staking is part of the roadmap. The features described here are planned designs, not currently available.
+</Warning>
+
+## What are entities?
+
+Entities represent specific creators or accounts on user-generated content (UGC) platforms. They're extracted automatically from URLs during crawling.
+
+| Platform | Entity format | Example |
+|----------|--------------|---------|
+| YouTube | `youtube.com/c/{channel}` or `youtube.com/@{handle}` | `youtube.com/c/3blue1brown` |
+| X (Twitter) | `x.com/{handle}` | `x.com/elonmusk` |
+| Reddit | `reddit.com/r/{subreddit}` | `reddit.com/r/rust` |
+
+## Why entity staking?
+
+On UGC platforms, domain-level staking would boost *all* content on the platform — millions of pages. Entity staking will let you target specific creators whose content you trust.
+
+## Normalization
+
+Entities are automatically normalized today:
+
+- `twitter.com/elonmusk` → `x.com/elonmusk`
+- `youtube.com/c/3Blue1Brown` → `youtube.com/c/3blue1brown`
+- Case-insensitive, alias-aware
+
+## Available today: Filtering by entity
+
+You can already filter search results by entity:
+
+```bash
+oi search "linear algebra" --entity youtube.com/c/3blue1brown
+```
+
+Entity staking (using $TRUTH tokens to boost entity content ranking) will be added in Phase 3.

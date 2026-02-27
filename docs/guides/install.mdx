@@ -1,0 +1,63 @@
+---
+title: Install the OpenSonarX CLI
+seo:
+  title: Install OpenSonarX — Free Search Engine CLI for AI Agents
+  description: Install the OpenSonarX CLI in one command. Free, open-source search engine that returns full content for AI agents and LLMs. Supports Linux and macOS.
+---
+
+## One-Line Install
+
+```bash
+curl -fsSL https://opensonarx.com/install.sh | sh
+```
+
+This detects your OS and architecture, downloads the latest release binary, and installs it to `~/.local/bin`.
+
+<Note>
+  Make sure `~/.local/bin` is in your `PATH`. The installer will tell you if it's not.
+</Note>
+
+### Supported Platforms
+
+| OS | Architecture | Binary |
+|----|-------------|--------|
+| Linux | x86_64 | `oi-linux-x86_64.tar.gz` |
+| Linux | aarch64 (ARM64) | `oi-linux-aarch64.tar.gz` |
+| macOS | Intel (x86_64) | `oi-darwin-x86_64.tar.gz` |
+| macOS | Apple Silicon (M1/M2/M3) | `oi-darwin-aarch64.tar.gz` |
+
+### Custom Install Directory
+
+```bash
+OI_INSTALL_DIR=/usr/local/bin curl -fsSL https://opensonarx.com/install.sh | sh
+```
+
+## Build from Source
+
+Requires [Rust](https://rustup.rs) 1.85+.
+
+```bash
+git clone https://github.com/bbiangul/opensonarx.git
+cd opensonarx
+cargo build --release --bin oi
+# Binary is at ./target/release/oi
+```
+
+## Verify Installation
+
+```bash
+oi --version
+# oi 0.1.0
+
+oi --help
+# OpenSonarX CLI -- decentralized search protocol
+# ...
+```
+
+## First Search
+
+Search works immediately after install — DuckDuckGo blended results are available out of the box with no API keys:
+
+```bash
+oi search "how to deploy a Next.js app to Vercel"
+```

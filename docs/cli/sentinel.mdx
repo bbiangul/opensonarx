@@ -1,0 +1,43 @@
+---
+title: oi sentinel
+description: Sentinel crawl daemon operations.
+---
+
+## oi sentinel start
+
+Start the Sentinel crawl daemon.
+
+```bash
+oi sentinel start [OPTIONS]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-c, --concurrency` | `4` | Number of concurrent crawl workers |
+| `-d, --domains` | — | Comma-separated domains to monitor |
+
+## oi sentinel status
+
+Show Sentinel status and crawl statistics.
+
+```bash
+oi sentinel status
+```
+
+## oi sentinel add-feed
+
+Subscribe to an RSS/Atom feed for monitoring.
+
+```bash
+oi sentinel add-feed <url>
+```
+
+## oi sentinel add-domain
+
+Add a domain to monitor.
+
+```bash
+oi sentinel add-domain <domain> [--stake <amount>]
+```
+
+The `--stake` flag is a priority hint — higher stake domains are crawled more frequently.

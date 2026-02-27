@@ -1,0 +1,61 @@
+---
+title: oi search
+description: Search the OpenSonarX network.
+---
+
+## Usage
+
+```bash
+oi search <query> [OPTIONS]
+```
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `query` | Search query text |
+
+## Options
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-k, --limit` | `5` | Maximum results to return |
+| `--min-stake` | — | Minimum stake in USD *(Phase 3)* |
+| `--freshness` | — | Freshness filter: `1h`, `1d`, `1w`, `1m`, `1y` |
+| `--type` | — | Content type filter: `text`, `image`, `pdf` |
+| `--shard` | — | Force specific shard(s) |
+| `--entity` | — | Filter by entity (e.g., `youtube.com/c/3blue1brown`) |
+| `--content-kind` | — | Filter by content kind: `video`, `post`, `comment` |
+| `--locale` | — | Locale hint for external engines (e.g., `en`, `pt-BR`) |
+| `--gl` | — | Country/region code (e.g., `us`, `br`) |
+| `--site` | — | Domain scope filter (e.g., `docs.rs`) |
+| `--node` | — | Query a running P2P node's HTTP API |
+
+## Global options
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-o, --output` | `table` | Output format: `table`, `json`, `ndjson` |
+| `-n, --network` | `mainnet` | Network: `mainnet`, `devnet`, `localnet` |
+| `--open` | auto | Open mode: disable staking/settlement *(Phase 3)* |
+| `-q, --quiet` | — | Suppress non-essential output |
+| `-v, --verbose` | — | Verbose logging |
+
+## Examples
+
+```bash
+# Basic search
+oi search "rust async programming"
+
+# JSON output for piping
+oi search "rust async" -o json | jq '.[] | {title, url, final_score}'
+
+# Search with filters
+oi search "machine learning" -k 10 --freshness 1w --type pdf
+
+# Search via P2P node
+oi search "rust async" --node http://localhost:8001
+
+# Entity-scoped search
+oi search "linear algebra" --entity youtube.com/c/3blue1brown --content-kind video
+```

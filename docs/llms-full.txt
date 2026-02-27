@@ -1,0 +1,151 @@
+# OpenSonarX — Complete Documentation for LLMs
+
+> Free, open-source search engine built for AI agents and LLMs. Returns full Markdown content with trust signals so AI agents don't have to fetch and parse web pages.
+
+## What is OpenSonarX?
+
+OpenSonarX is a search engine designed specifically for AI agents. Instead of returning links with thin snippets (like Google or Bing), it returns full, clean Markdown content that an LLM can use directly for RAG synthesis.
+
+The traditional AI agent web search flow is:
+1. Call search API → get links with ~250-token snippets
+2. Fetch 3 pages → parse HTML, strip boilerplate → ~6,500 tokens of noise
+3. Send to LLM → expensive ($20,000/month per 1M queries)
+
+OpenSonarX replaces this with:
+1. Call OpenSonarX → get full content, query-relevant, ~835 tokens
+2. Send to LLM → 8x cheaper ($2,480/month per 1M queries)
+
+## Install
+
+```bash
+curl -fsSL https://opensonarx.com/install.sh | sh
+```
+
+Or build from source (requires Rust 1.85+):
+```bash
+git clone https://github.com/bbiangul/opensonarx.git
+cd opensonarx
+cargo build --release --bin oi
+```
+
+## Usage
+
+### Search
+```bash
+oi search "how to deploy a Next.js app to Vercel"
+oi search "rust async programming" -k 10 -o json
+oi search "kubernetes pod scheduling" --node http://localhost:8001
+```
+
+### Search options
+- `-k, --limit N` — max results (default 5)
+- `--freshness 1h|1d|1w|1m|1y` — time filter
+- `--type text|image|pdf` — content type filter
+- `--entity youtube.com/c/3blue1brown` — entity filter
+- `--content-kind video|post|comment` — content kind filter
+- `--site docs.rs` — domain scope
+- `--locale en|pt-BR` — locale hint
+- `--gl us|br` — country/region
+- `--node URL` — query a running P2P node
+- `-o table|json|ndjson` — output format
+
+### Seed content
+```bash
+oi seed sitemap https://docs.rs/sitemap.xml
+oi seed crawl https://rust-lang.org --depth 3 --max-pages 1000
+oi seed registry docs-rs --top 100
+oi seed registry mdn
+oi seed urls urls.txt
+```
+
+### Run a P2P node
+```bash
+oi network node --port 4001 --http-port 8001
+oi network node --port 4001 --sentinel --domains "rust-lang.org,tokio.rs"
+```
+
+### Node HTTP API
+- `GET /health` — returns `{"status":"ok","peer_id":"..."}`
+- `POST /search` — accepts `{"query":"...","limit":5,"filters":{}}`, returns array of results
+
+### Sentinel crawler
+```bash
+oi sentinel start --concurrency 4 --domains "rust-lang.org,tokio.rs"
+oi sentinel add-domain docs.rs
+oi sentinel add-feed https://blog.rust-lang.org/feed.xml
+oi sentinel status
+```
+
+### Configuration
+Config file: `~/.opensonarx/config.toml`
+
+```toml
+[network]
+bootstrap_peers = ["/ip4/.../tcp/4001/p2p/12D3KooW..."]
+
+[[search.engines]]
+name = "google"
+priority = 1
+api_key = "your-serper-key"
+```
+
+## Architecture
+
+- `oi-types` — shared types, error codes, protobuf definitions
+- `oi-index` — HNSW + BM25 hybrid search engine
+- `oi-embed` — MiniLM embedding pipeline (384-dim, INT8 ONNX)
+- `oi-crawl` — content distiller (fetch, extract, chunk, quality gate)
+- `oi-network` — libp2p P2P layer (Kademlia DHT, gossipsub)
+- `oi-sdk` — SDK core (wires index + embedder + engines)
+- `oi-staking` — Solana Anchor program ($TRUTH token) [Phase 3 — not yet implemented]
+- `oi-cli` — CLI binary (`oi`)
+
+## Ranking (current)
+
+```
+final_score = (semantic_score + bm25_score) / 2 * reputation
+```
+
+- Semantic: cosine similarity (384-dim MiniLM embeddings)
+- BM25: TF-IDF keyword matching
+- Reputation: Wilson score from feedback signals
+
+## Ranking (Phase 3 — planned)
+
+```
+final_score = (semantic_score + bm25_score) / 2 * stake_boost * reputation
+```
+
+- Stake boost: log2(1 + stake_usd / 100) — not yet implemented
+
+## Benchmark Results
+
+50 queries across 5 categories (tutorials, concepts, devops, AI/ML, product docs):
+
+| Approach | Median Tokens | Cost/1M Queries (Sonnet) |
+|----------|:------------:|:------------------------:|
+| Search API snippets only | 251 | $753 |
+| Search API + fetch 3 pages | 6,448 | $19,978 |
+| OpenSonarX content_relevant | 835 | $2,480 |
+
+Quality: 68% of queries answerable from OpenSonarX content alone (no fetch needed).
+Latency: ~1s median (vs ~3.4s for search + 3 fetches).
+
+## Roadmap
+
+| Phase | Status | Description |
+|-------|--------|-------------|
+| Phase 1 | Done | Hybrid search engine (HNSW + BM25), content distiller, CLI |
+| Phase 2 | Done | P2P network (libp2p), blended search, sentinel crawler |
+| Phase 3 | Planned | $TRUTH token staking on Solana, dispute/jury system, stake-weighted ranking |
+
+## License
+
+MIT — free for commercial use.
+
+## Links
+
+- Website: https://opensonarx.com
+- Docs: https://docs.opensonarx.com
+- GitHub: https://github.com/bbiangul/opensonarx
+- Benchmark: https://github.com/bbiangul/opensonarx/blob/main/COMPARISON.md

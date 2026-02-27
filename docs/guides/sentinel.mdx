@@ -1,0 +1,62 @@
+---
+title: Sentinel
+description: Run a crawl daemon that continuously indexes content.
+---
+
+## What is the Sentinel?
+
+The Sentinel is a background crawl daemon that continuously monitors domains, fetches new content, and indexes it into your local search index.
+
+## Start crawling
+
+```bash
+oi sentinel start --concurrency 4 --domains "rust-lang.org,tokio.rs"
+```
+
+## Add sources on the fly
+
+```bash
+# Add a domain
+oi sentinel add-domain docs.rs
+
+# Subscribe to an RSS/Atom feed
+oi sentinel add-feed https://blog.rust-lang.org/feed.xml
+```
+
+## Check status
+
+```bash
+oi sentinel status
+```
+
+## Crawl pipeline
+
+Each URL goes through:
+
+1. **Frontier** — URL queue with BFS traversal
+2. **Fetcher** — HTTP client that respects `robots.txt`
+3. **Extractor** — HTML to Markdown content extraction
+4. **Chunker** — Splits text into ~512-token chunks
+5. **Quality gate** — Scores each chunk (spam/slop detection)
+6. **Embedder** — Generates 384-dim vectors via MiniLM
+7. **Indexer** — Inserts into the HNSW + BM25 hybrid index
+
+## Entity extraction
+
+For UGC platforms (YouTube, X, Reddit, etc.), the Sentinel automatically extracts **entity references** from URLs:
+
+| URL | Entity |
+|-----|--------|
+| `youtube.com/watch?v=abc` on channel `/c/3blue1brown` | `youtube.com/c/3blue1brown` |
+| `x.com/elonmusk/status/123` | `x.com/elonmusk` |
+| `reddit.com/r/rust/comments/...` | `reddit.com/r/rust` |
+
+Entities are tracked independently of domains, enabling granular search and filtering for individual creators.
+
+## Quick demo
+
+Crawl a domain for 30 seconds and search it:
+
+```bash
+bash scripts/run-node.sh rust-lang.org "rust programming"
+```

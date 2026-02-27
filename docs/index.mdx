@@ -1,0 +1,88 @@
+---
+title: OpenSonarX — Free Search Engine for AI Agents
+seo:
+  title: OpenSonarX — Free, Open-Source Search Engine for AI Agents and LLMs
+  description: OpenSonarX is a free, open-source search engine that returns full content for AI agents. 8x fewer tokens than search API + fetch. Save $17,500/month per 1M queries.
+---
+
+# OpenSonarX
+
+**Free, open-source search engine built for AI agents.** Returns full Markdown content with trust signals — so LLMs don't have to fetch and parse web pages themselves.
+
+## The Problem: AI Agents Waste Tokens on Web Search
+
+When an AI agent needs to answer a question from the web, it typically:
+
+1. Calls a search API → gets 10 links with thin snippets (~250 tokens)
+2. Fetches 3 pages → parses HTML, strips boilerplate (~6,500 tokens)
+3. Sends everything to the LLM → expensive, slow, full of noise
+
+Most of those tokens are navigation menus, cookie banners, and ads. **This costs ~$20,000/month per 1M queries** in input tokens alone.
+
+## The Solution: Pre-Crawled, Query-Relevant Content
+
+OpenSonarX pre-crawls the web, extracts clean content, and returns only the sentences relevant to your query — ready for RAG synthesis.
+
+| Approach | Median Tokens | Cost per 1M Queries (Sonnet) |
+|----------|:------------:|:----------------------------:|
+| Search API + fetch 3 pages | 6,448 | $19,978 |
+| **OpenSonarX** | **835** | **$2,480** |
+
+**8x fewer tokens. 8x lower cost. Same answer quality.**
+
+<Note>
+  Benchmarked across 50 queries spanning tutorials, concepts, devops, AI/ML, and product docs. 68% of queries are answerable from OpenSonarX content alone — no page fetching needed. [Full benchmark →](https://github.com/bbiangul/opensonarx/blob/main/COMPARISON.md)
+</Note>
+
+<CardGroup cols={2}>
+  <Card title="Install in 10 seconds" icon="terminal" href="/guides/install">
+    `curl -fsSL https://opensonarx.com/install.sh | sh`
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/guides/quickstart">
+    Run your first search in under 5 minutes.
+  </Card>
+  <Card title="Run a Node" icon="server" href="/guides/p2p-node">
+    Join the decentralized search network.
+  </Card>
+  <Card title="How Ranking Works" icon="chart-line" href="/protocol/ranking">
+    Hybrid search algorithm with reputation signals.
+  </Card>
+</CardGroup>
+
+## How It Works
+
+```
+Agent query → OpenSonarX
+                ├── HNSW vector search (384-dim MiniLM embeddings)
+                ├── BM25 keyword search (TF-IDF)
+                ├── Reputation-weighted ranking
+                └── Returns: clean Markdown + trust signals
+```
+
+1. **Sentinel nodes crawl** the web, extract content, chunk, embed, and index it
+2. **AI agents search** and get ranked results with full content — not just links
+3. **Feedback signals** from agents improve ranking over time — building a data moat
+
+## Why OpenSonarX vs Traditional Search APIs?
+
+| Feature | Traditional Search APIs | OpenSonarX |
+|---------|------------------------|------------|
+| **Output** | Links + thin snippets | Full Markdown content |
+| **Token cost** | ~6,500 tokens/query | ~835 tokens/query |
+| **Page fetching** | Agent must fetch and parse HTML | Pre-crawled and indexed |
+| **Trust signals** | None | Reputation score, feedback signals |
+| **Content quality** | Raw HTML with ads and nav | Clean, query-relevant text |
+| **Pricing** | Paid API + LLM token costs | Free and open source |
+| **Infrastructure** | Centralized, single provider | Decentralized P2P network |
+| **Latency** | ~3.4s (search + 3 fetches) | ~1s (single request) |
+
+## Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Search engine | HNSW (vector) + BM25 (keyword) hybrid index |
+| Embeddings | MiniLM (384-dim, INT8 ONNX) — auto-downloads on first run |
+| P2P network | libp2p (Kademlia DHT, gossipsub, request-response) |
+| Wire protocol | Protobuf via prost |
+| Crawling | Content distiller with quality gates (spam + AI slop detection) |
+| Staking *(Phase 3)* | Solana + Anchor ($TRUTH SPL token) |

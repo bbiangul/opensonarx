@@ -1,0 +1,48 @@
+---
+title: "Staking Overview (Phase 3)"
+description: "Planned: How $TRUTH token staking will drive search quality on Solana."
+---
+
+<Warning>
+  **Phase 3 — Not yet implemented.** Staking is part of the roadmap. The features described here are planned designs, not currently available.
+</Warning>
+
+## Why stake?
+
+Staking $TRUTH tokens on a domain will be a signal that you believe in the content quality. Staked domains will get a ranking boost in search results. Bad actors who stake on spam will be slashed through the dispute process.
+
+## Planned economics
+
+```
+final_score = relevance_score * stake_multiplier * reputation_decay
+```
+
+| Factor | Effect |
+|--------|--------|
+| **More stake** | Higher ranking boost (log-scaled) |
+| **Positive feedback** | Reputation grows, sustains the boost |
+| **Negative feedback** | Reputation decays, reduces the boost |
+| **Dispute (upheld)** | Stake slashed entirely |
+
+## Planned stake types
+
+| Type | Description | Example |
+|------|-------------|---------|
+| **Domain** | Stake on a publisher's domain | `rust-lang.org` |
+| **Entity** | Stake on a specific creator on a UGC platform | `youtube.com/c/3blue1brown` |
+| **Curation** | Stake on someone else's domain | `oi domain curate docs.rs --amount 50` |
+
+## UGC platform handling
+
+For user-generated content platforms (YouTube, X, Reddit), **domain-level stake will NOT pass through** to individual pages. You'll need to stake on the specific entity (channel, account, subreddit) for content to get a boost.
+
+This prevents a YouTube domain stake from boosting all 500M+ videos.
+
+## What works today
+
+Today, ranking is based on:
+- **Semantic similarity** (HNSW, 384-dim MiniLM embeddings)
+- **Keyword matching** (BM25, TF-IDF)
+- **Reputation** (Wilson score from feedback signals)
+
+Staking will add a fourth dimension to ranking when Phase 3 launches.

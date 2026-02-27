@@ -1,0 +1,46 @@
+---
+title: "Domain Staking (Phase 3)"
+description: "Planned: Stake $TRUTH on domains and verify DNS ownership."
+---
+
+<Warning>
+  **Phase 3 — Not yet implemented.** Domain staking is part of the roadmap. The commands described here are planned designs, not currently available.
+</Warning>
+
+## Planned: Stake on a domain
+
+```bash
+oi stake rust-lang.org --amount 100
+```
+
+## Planned: Verify DNS ownership
+
+Place a TXT record on your domain to prove ownership and get a reputation bonus:
+
+```bash
+oi domain verify rust-lang.org
+```
+
+The CLI will output the required TXT record value. Add it to your DNS, then re-run the command to complete verification.
+
+## Planned: Unstake
+
+Begin the 7-day cooldown period:
+
+```bash
+oi unstake rust-lang.org
+```
+
+After 7 days, the tokens are returned to your wallet.
+
+## Planned: Curate
+
+Stake on someone else's domain to boost its ranking:
+
+```bash
+oi domain curate docs.rs --amount 50
+```
+
+## Available today
+
+Domain management commands (`oi domain list`, `oi domain info`) are available now and show domain metadata. Staking functionality will be added in Phase 3.

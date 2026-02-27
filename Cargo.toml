@@ -1,0 +1,61 @@
+[workspace]
+members = [
+    "crates/oi-types",
+    "crates/oi-index",
+    "crates/oi-crawl",
+    "crates/oi-network",
+    "crates/oi-sdk",
+    "crates/oi-cli",
+    "crates/oi-staking",
+    "crates/oi-embed",
+
+    "crates/oi-facts",
+    "tests/integration",
+    "bench",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/bbiangul/opensonarx"
+
+[workspace.dependencies]
+oi-types = { path = "crates/oi-types" }
+oi-index = { path = "crates/oi-index" }
+oi-crawl = { path = "crates/oi-crawl" }
+oi-network = { path = "crates/oi-network" }
+oi-sdk = { path = "crates/oi-sdk", default-features = false }
+oi-staking = { path = "crates/oi-staking" }
+oi-embed = { path = "crates/oi-embed" }
+oi-facts = { path = "crates/oi-facts" }
+
+# Shared deps
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+prost = "0.13"
+prost-build = "0.13"
+sha2 = "0.10"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+ort = { version = "2.0.0-rc.11", features = ["half"] }
+half = "2"
+tokenizers = { version = "0.21", default-features = false, features = ["onig"] }
+ndarray = "0.16.1"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+ureq = "3"
+toml = "0.8"
+dirs = "6"
+axum = "0.8"
+uuid = { version = "1", features = ["v4"] }
+rand = "0.8"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+bincode = "1"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+flate2 = "1"
+tar = "0.4"
+scraper = "0.22"
+ego-tree = "0.10"

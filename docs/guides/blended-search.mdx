@@ -1,0 +1,48 @@
+---
+title: Blended Search
+description: Combine local index results with external search engines.
+---
+
+## How it works
+
+Blended search merges results from your local index with external search engines using **reciprocal rank fusion**. Local results are ranked by the hybrid search algorithm (semantic + keyword + reputation).
+
+DuckDuckGo is always available as a free HTML scraper — no API key needed. This means searches against topics not yet in your local index still return real web results out of the box.
+
+## Configure engines
+
+Add engines in `~/.opensonarx/config.toml`:
+
+```toml
+# Google results via Serper (priority 1 = highest)
+[[search.engines]]
+name = "google"
+priority = 1
+api_key = "your-serper-key"
+
+# Brave Search (priority 5)
+[[search.engines]]
+name = "brave"
+priority = 5
+api_key = "your-brave-key"
+
+# DuckDuckGo is always active at priority 10 (lowest, free fallback)
+```
+
+Lower priority number = higher ranking preference when fusing results.
+
+## Supported engines
+
+| Engine | API Key Required | Notes |
+|--------|-----------------|-------|
+| DuckDuckGo | No | Free HTML scraper, always available |
+| Google (Serper) | Yes | Highest quality results |
+| Brave Search | Yes | Privacy-focused alternative |
+
+## Default mode
+
+The CLI runs blended search by default — no configuration needed. DuckDuckGo provides web results out of the box, while your local index provides pre-crawled content.
+
+```bash
+oi search "rust async"
+```

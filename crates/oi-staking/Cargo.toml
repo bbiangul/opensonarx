@@ -1,0 +1,28 @@
+[package]
+name = "oi-staking"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Solana staking program for OpenSonarX"
+
+[features]
+solana = ["dep:solana-sdk", "dep:solana-client", "dep:borsh"]
+dns = ["dep:trust-dns-resolver", "dep:tokio"]
+
+[dependencies]
+oi-types = { workspace = true }
+serde = { workspace = true }
+sha2 = { workspace = true }
+ed25519-dalek = { workspace = true }
+rand = { workspace = true }
+tracing = { workspace = true }
+dirs = { workspace = true }
+
+# Optional Solana deps (behind `solana` feature)
+solana-sdk = { version = "2", optional = true }
+solana-client = { version = "2", optional = true }
+borsh = { version = "1", features = ["derive"], optional = true }
+
+# Optional DNS deps (behind `dns` feature)
+trust-dns-resolver = { version = "0.23", optional = true }
+tokio = { version = "1", features = ["rt"], optional = true }

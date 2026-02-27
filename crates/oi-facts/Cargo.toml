@@ -1,0 +1,22 @@
+[package]
+name = "oi-facts"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Fact extraction pipelines for OpenSonarX (mock, GLiNER ONNX)"
+
+[features]
+default = []
+onnx = ["dep:ort", "dep:tokenizers", "dep:ureq"]
+
+[dependencies]
+oi-types = { workspace = true }
+sha2 = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# ONNX-gated
+ort = { workspace = true, optional = true }
+tokenizers = { workspace = true, optional = true }
+ureq = { workspace = true, optional = true }

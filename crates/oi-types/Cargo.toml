@@ -1,0 +1,16 @@
+[package]
+name = "oi-types"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Shared types, traits, and error codes for OpenSonarX"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+prost = { workspace = true }
+thiserror = { workspace = true }
+sha2 = { workspace = true }
+
+[build-dependencies]
+prost-build = { workspace = true }

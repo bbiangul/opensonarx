@@ -1,0 +1,82 @@
+---
+title: oi seed
+description: Seed content into the local index.
+---
+
+## oi seed sitemap
+
+Crawl all URLs from a sitemap.xml.
+
+```bash
+oi seed sitemap <url> [-c <concurrency>]
+```
+
+Supports `.xml` and `.xml.gz` sitemaps.
+
+## oi seed urls
+
+Crawl URLs from a text file (one per line).
+
+```bash
+oi seed urls <file> [-c <concurrency>]
+```
+
+## oi seed crawl
+
+Spider a site by following links from a start URL.
+
+```bash
+oi seed crawl <url> [OPTIONS]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-d, --depth` | `3` | Maximum link-follow depth |
+| `-m, --max-pages` | `1000` | Maximum pages to crawl |
+| `-c, --concurrency` | `4` | Concurrent workers |
+
+## oi seed registry
+
+Seed from a package registry.
+
+### docs-rs
+
+Top N crates from crates.io, crawled via docs.rs.
+
+```bash
+oi seed registry docs-rs --top 100 [-c <concurrency>]
+```
+
+### mdn
+
+All English MDN Web Docs.
+
+```bash
+oi seed registry mdn [-c <concurrency>]
+```
+
+## oi index
+
+### oi index info
+
+Show index statistics (document count, shard info).
+
+```bash
+oi index info
+```
+
+### oi index export
+
+Export the index to a portable `.tar.gz` archive.
+
+```bash
+oi index export [-o <output>] [--shard <id>]
+```
+
+### oi index import
+
+Import an index from a `.tar.gz` archive.
+
+```bash
+oi index import <path> [--merge true]
+```

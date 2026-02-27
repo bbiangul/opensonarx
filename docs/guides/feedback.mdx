@@ -1,0 +1,36 @@
+---
+title: Feedback
+description: Submit feedback signals to improve search quality and earn rebates.
+---
+
+## How feedback works
+
+Every feedback signal you submit helps improve the search ranking algorithm. Positive signals boost a domain's reputation; negative signals decay it.
+
+```bash
+oi feedback <result_id> --useful
+oi feedback <result_id>          # not useful (default)
+```
+
+## With query context
+
+Providing the original query improves the data moat:
+
+```bash
+oi feedback r1 --useful \
+  --query "rust async programming" \
+  --result-url "https://tokio.rs/tutorial" \
+  --result-rank 2
+```
+
+## View statistics
+
+```bash
+oi feedback-stats
+```
+
+Shows aggregate metrics: total signals, positive/negative ratio, unique queries, and top helpful domains.
+
+## Impact on ranking
+
+Feedback signals directly affect the **reputation factor** in the ranking algorithm. Domains with consistently positive feedback rise in search results; domains with negative feedback decay. This creates a self-improving data moat over time.

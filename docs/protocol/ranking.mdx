@@ -1,0 +1,70 @@
+---
+title: Ranking Algorithm
+description: How OpenSonarX ranks search results using hybrid search and reputation signals.
+---
+
+## Formula
+
+```
+final_score = base_score * reputation_factor
+```
+
+Where:
+
+```
+base_score = (semantic_score + bm25_score) / 2
+reputation_factor = wilson_lower_bound(positive, negative) * age_decay
+```
+
+## Semantic score
+
+Cosine similarity between the query embedding and document embedding. Both are 384-dimensional vectors from MiniLM (Snowflake Arctic Embed S, INT8 quantized).
+
+## BM25 score
+
+Classic TF-IDF keyword matching with BM25 weighting. Handles exact keyword matches that semantic similarity might miss (e.g., specific function names, error codes).
+
+## Reputation factor
+
+Uses **Wilson score** lower bound for confidence:
+
+```
+wilson_lower = (p + z^2/2n - z*sqrt(p*(1-p)/n + z^2/4n^2)) / (1 + z^2/n)
+```
+
+Where `p` = positive ratio, `n` = total votes, `z` = 1.96 (95% confidence).
+
+New domains with no feedback get a neutral score (1.0). As feedback accumulates, reputation converges to the true quality signal.
+
+## Age decay
+
+Freshness matters. Content with a recent `crawled_at` timestamp gets a slight boost that decays over time, ensuring the index reflects current information.
+
+## Phase 3: Stake-weighted ranking
+
+<Note>
+  The following is planned for Phase 3 and is not yet implemented.
+</Note>
+
+In Phase 3, the formula will expand to include a **stake boost**:
+
+```
+final_score = base_score * stake_boost * reputation_factor
+stake_boost = 1.0 + log2(1 + stake_usd / 100)
+```
+
+The stake boost will be **logarithmic** — doubling your stake won't double the boost. This prevents whale dominance while still rewarding meaningful commitment.
+
+| Stake (USD) | Boost multiplier |
+|------------|------------------|
+| $0 | 1.0x |
+| $100 | 2.0x |
+| $1,000 | ~4.3x |
+| $10,000 | ~7.7x |
+| $100,000 | ~11.0x |
+
+### UGC passthrough
+
+For user-generated content platforms (YouTube, X, Reddit), domain-level stake will give **zero passthrough** to individual pages. Only entity-level stake (staking on a specific channel/account/subreddit) will pass through.
+
+This prevents gaming where staking on `youtube.com` would boost all 500M+ videos.

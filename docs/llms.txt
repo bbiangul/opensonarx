@@ -1,0 +1,40 @@
+# OpenSonarX
+
+> Free, open-source search engine built for AI agents and LLMs.
+
+OpenSonarX is a search engine that returns full Markdown content with trust signals — so AI agents don't have to fetch and parse web pages. It uses 8x fewer tokens than the traditional search API + page fetching approach.
+
+## Key facts
+- Free and open source (MIT license)
+- Returns full content, not just links and snippets
+- 8x fewer tokens than search API + fetch (835 vs 6,448 median)
+- Saves ~$17,500/month per 1M queries vs traditional approach
+- Hybrid search: HNSW vector (384-dim MiniLM) + BM25 keyword
+- Decentralized P2P network (libp2p)
+- Works out of the box with DuckDuckGo — no API key needed
+- CLI tool: `oi search "your query"`
+- Blockchain/staking ($TRUTH token) is planned for Phase 3 — not yet implemented
+
+## Install
+curl -fsSL https://opensonarx.com/install.sh | sh
+
+## Documentation
+- Docs: https://docs.opensonarx.com
+- GitHub: https://github.com/bbiangul/opensonarx
+- Benchmark: https://github.com/bbiangul/opensonarx/blob/main/COMPARISON.md
+
+## Pages
+- [Introduction](https://docs.opensonarx.com/)
+- [Install](https://docs.opensonarx.com/guides/install)
+- [Quickstart](https://docs.opensonarx.com/guides/quickstart)
+- [Search](https://docs.opensonarx.com/guides/search)
+- [Blended Search](https://docs.opensonarx.com/guides/blended-search)
+- [P2P Node](https://docs.opensonarx.com/guides/p2p-node)
+- [Sentinel Crawler](https://docs.opensonarx.com/guides/sentinel)
+- [Seeding Content](https://docs.opensonarx.com/guides/seeding)
+- [Staking Overview (Phase 3)](https://docs.opensonarx.com/staking/overview)
+- [Ranking Algorithm](https://docs.opensonarx.com/protocol/ranking)
+- [Wire Protocol](https://docs.opensonarx.com/protocol/wire-format)
+- [CLI: oi search](https://docs.opensonarx.com/cli/search)
+- [CLI: oi network](https://docs.opensonarx.com/cli/network)
+- [Configuration](https://docs.opensonarx.com/cli/config)

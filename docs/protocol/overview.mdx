@@ -1,0 +1,61 @@
+---
+title: Protocol Overview
+description: Architecture of the OpenSonarX decentralized search protocol.
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    AI Agents / LLMs                      │
+└────────────┬────────────────────────┬───────────────────┘
+             │ CLI / SDK              │ P2P
+             ▼                        ▼
+┌────────────────────┐    ┌───────────────────────┐
+│   Node HTTP API    │    │   libp2p Network      │
+│   /search          │    │   Kademlia + gossipsub│
+└────────┬───────────┘    └───────────┬───────────┘
+         │                            │
+    ┌────┴────────────────────────────┴───┐
+    │           Hybrid Search Engine       │
+    │   ┌──────────────────────────────┐   │
+    │   │  HNSW (384-dim vectors)      │   │
+    │   │  + BM25 (keyword index)      │   │
+    │   │  + Reputation ranking        │   │
+    │   └──────────────────────────────┘   │
+    └──────────────────────────────────────┘
+         │
+    ┌────┴─────┐
+    │ Sentinel │
+    │ Crawler  │
+    └──────────┘
+```
+
+## Core components
+
+| Component | Crate | Description |
+|-----------|-------|-------------|
+| **Search engine** | `oi-index` | HNSW vector index + BM25 keyword index, fused with reputation-weighted ranking |
+| **Embeddings** | `oi-embed` | MiniLM (384-dim, INT8 quantized ONNX) for text, CLIP (512-dim) for images |
+| **P2P layer** | `oi-network` | libp2p with Kademlia, gossipsub, request-response, mDNS |
+| **Crawler** | `oi-crawl` | Content distiller: fetch, extract, chunk, quality gate, embed, index |
+| **SDK** | `oi-sdk` | Wires all components together into a unified search client |
+| **CLI** | `oi-cli` | Command-line interface for all operations |
+| **Staking** *(Phase 3)* | `oi-staking` | Solana Anchor program for $TRUTH stake/unstake/dispute/governance |
+
+## Data flow
+
+1. **Ingest**: Sentinel crawls URLs, extracts Markdown, chunks text, generates embeddings, inserts into index
+2. **Query**: Agent sends query → embedding generated → HNSW + BM25 search → results enriched with reputation data → ranked and returned
+3. **Feedback**: Agent submits positive/negative signals → reputation updated → affects future ranking
+
+## Phase 3: Staking layer
+
+<Note>
+  The following is planned for Phase 3 and is not yet implemented.
+</Note>
+
+In Phase 3, the data flow will expand with two additional steps:
+
+4. **Stake**: Publishers stake $TRUTH on domains/entities via Solana program → staked content gets ranking boost
+5. **Dispute**: Bad content challenged → jury votes → stake slashed or preserved

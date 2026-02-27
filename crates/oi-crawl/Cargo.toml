@@ -1,0 +1,32 @@
+[package]
+name = "oi-crawl"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Content distiller and crawl pipeline for OpenSonarX"
+
+[features]
+default = []
+onnx = ["dep:oi-embed", "oi-embed/onnx"]
+facts = ["dep:oi-facts"]
+
+[dependencies]
+oi-types = { workspace = true }
+oi-embed = { workspace = true, optional = true }
+oi-facts = { workspace = true, optional = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+reqwest = { version = "0.12", features = ["rustls-tls"], default-features = false }
+rusqlite = { version = "0.32", features = ["bundled"] }
+quick-xml = "0.37"
+url = "2"
+async-trait = "0.1"
+scraper = { workspace = true }
+ego-tree = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+oi-embed = { workspace = true }

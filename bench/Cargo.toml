@@ -1,0 +1,43 @@
+[package]
+name = "oi-bench"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "oi-bench"
+path = "src/main.rs"
+
+[features]
+default = []
+onnx = ["oi-embed/onnx"]
+reranker = ["onnx", "oi-embed/reranker"]
+arctic-m = ["onnx", "oi-embed/arctic-m"]
+arctic-l = ["onnx", "oi-embed/arctic-l"]
+clip = ["onnx", "oi-embed/clip"]
+ollama = ["oi-embed/ollama"]
+facts-onnx = ["oi-facts/onnx"]
+
+[dependencies]
+oi-types = { path = "../crates/oi-types" }
+oi-index = { path = "../crates/oi-index" }
+oi-staking = { path = "../crates/oi-staking" }
+oi-embed = { path = "../crates/oi-embed" }
+oi-crawl = { path = "../crates/oi-crawl" }
+oi-facts = { path = "../crates/oi-facts" }
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+rand = "0.8"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+clap = { version = "4", features = ["derive"] }
+image = { workspace = true }
+zip = { workspace = true }
+ureq = { workspace = true }
+flate2 = { workspace = true }
+tar = { workspace = true }
+parquet = "55"
+arrow = { version = "55", features = ["json"] }

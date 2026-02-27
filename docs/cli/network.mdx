@@ -1,0 +1,54 @@
+---
+title: oi network
+description: P2P network operations.
+---
+
+## oi network node
+
+Run an OpenSonarX P2P node.
+
+```bash
+oi network node [OPTIONS]
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-p, --port` | `4001` | libp2p listen port |
+| `-b, --bootstrap` | — | Bootstrap peer multiaddr(s) |
+| `--http-port` | — | Enable HTTP API on this port |
+| `--sentinel` | — | Enable integrated crawl daemon |
+| `--domains` | — | Comma-separated domains to crawl (requires `--sentinel`) |
+| `--shards` | — | Comma-separated shard IDs |
+| `--concurrency` | `4` | Sentinel crawl concurrency |
+
+### Examples
+
+```bash
+# Local-only node with mDNS discovery
+oi network node --port 4001
+
+# Node with HTTP API
+oi network node --port 4001 --http-port 8001
+
+# Join a network
+oi network node --port 4001 --bootstrap /ip4/1.2.3.4/tcp/4001/p2p/12D3KooW...
+
+# Node with sentinel crawler
+oi network node --port 4001 --http-port 8001 --sentinel --domains "rust-lang.org,tokio.rs"
+```
+
+## oi network status
+
+Show network connection status.
+
+```bash
+oi network status
+```
+
+## oi network peers
+
+List connected peers.
+
+```bash
+oi network peers
+```
