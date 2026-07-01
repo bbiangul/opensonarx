@@ -271,6 +271,12 @@ pub enum SeedCommands {
         #[arg(short, long, default_value = "4")]
         concurrency: usize,
     },
+    /// Bootstrap a fresh index with a curated starter corpus (~80 high-value pages)
+    Starter {
+        /// Number of concurrent crawl workers
+        #[arg(short, long, default_value = "4")]
+        concurrency: usize,
+    },
 }
 
 #[derive(Subcommand)]

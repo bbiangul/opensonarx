@@ -81,6 +81,14 @@ pub async fn run_seed(config: &CliConfig, action: SeedCommands, verbose: bool) -
                 }
             }
         },
+        SeedCommands::Starter { concurrency } => {
+            let urls = starter_corpus_urls();
+            println!(
+                "Seeding starter corpus: {} curated pages (reference + dev docs)",
+                urls.len()
+            );
+            (urls, concurrency)
+        }
         SeedCommands::Crawl { .. } => unreachable!("handled above"),
     };
 
@@ -144,6 +152,17 @@ async fn fetch_sitemap_xml(url: &str) -> oi_types::Result<String> {
 }
 
 /// Read URLs from a text file (one per line, skip empty lines and `#` comments).
+/// Curated starter corpus bundled into the binary — high-value, crawl-friendly
+/// pages so a fresh install has useful local coverage before any manual seeding.
+pub fn starter_corpus_urls() -> Vec<String> {
+    include_str!("../data/starter_corpus.txt")
+        .lines()
+        .map(|l| l.trim())
+        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .map(|l| l.to_string())
+        .collect()
+}
+
 pub fn urls_from_file(path: &str) -> oi_types::Result<Vec<String>> {
     let content = std::fs::read_to_string(path)
         .map_err(|e| oi_types::Error::Internal(format!("cannot read {path}: {e}")))?;
