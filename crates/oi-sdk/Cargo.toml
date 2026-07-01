@@ -16,6 +16,7 @@ oi-index = { workspace = true }
 oi-staking = { workspace = true }
 oi-network = { workspace = true }
 oi-embed = { workspace = true }
+oi-crawl = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = { workspace = true }

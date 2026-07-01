@@ -68,6 +68,38 @@ impl ConfigFile {
         Self::config_dir().map(|d| d.join("config.toml"))
     }
 
+    /// Canonical local index directory: `~/.opensonarx/index`.
+    ///
+    /// Every component — `oi search`, `oi seed`, the sentinel daemon, the P2P
+    /// node, and `oi index import/export` — reads and writes this one path so
+    /// content ingested anywhere is immediately searchable everywhere. If the
+    /// canonical dir has no index yet but a pre-unification legacy dir
+    /// (`node_index`, `sentinel_index`) does, the legacy contents are migrated
+    /// (renamed) into place on first access.
+    pub fn index_dir() -> Option<PathBuf> {
+        let canonical = Self::config_dir()?.join("index");
+        let has_index = |p: &PathBuf| p.join("hnsw.bin").exists();
+        if !has_index(&canonical) {
+            for legacy_name in ["node_index", "sentinel_index"] {
+                let legacy = Self::config_dir()?.join(legacy_name);
+                if has_index(&legacy) {
+                    // Canonical may exist as an empty dir; clear it so rename succeeds.
+                    let _ = std::fs::remove_dir(&canonical);
+                    if std::fs::rename(&legacy, &canonical).is_ok() {
+                        eprintln!(
+                            "Migrated legacy index {} -> {}",
+                            legacy.display(),
+                            canonical.display()
+                        );
+                        break;
+                    }
+                }
+            }
+        }
+        let _ = std::fs::create_dir_all(&canonical);
+        Some(canonical)
+    }
+
     /// Load config from disk. Returns default if file doesn't exist.
     pub fn load() -> Self {
         let Some(path) = Self::config_path() else {

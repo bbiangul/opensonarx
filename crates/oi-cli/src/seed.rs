@@ -218,15 +218,14 @@ async fn crawl_and_ingest(
     concurrency: usize,
     verbose: bool,
 ) -> ExitCode {
-    // Set up local index path
-    let index_path = match dirs::home_dir() {
-        Some(h) => h.join(".opensonarx").join("index"),
+    // Set up local index path (canonical dir shared with search/sentinel/node)
+    let index_path = match crate::config_file::ConfigFile::index_dir() {
+        Some(p) => p,
         None => {
             eprintln!("Cannot determine home directory");
             return ExitCode::UserError;
         }
     };
-    let _ = std::fs::create_dir_all(&index_path);
 
     let sdk_config = SdkConfig {
         local_index_path: Some(index_path.to_str().unwrap_or_default().to_string()),
@@ -400,14 +399,13 @@ async fn run_spider_crawl(
 ) -> ExitCode {
     println!("Spidering {url} (depth={depth}, max_pages={max_pages}, concurrency={concurrency})");
 
-    let index_path = match dirs::home_dir() {
-        Some(h) => h.join(".opensonarx").join("index"),
+    let index_path = match crate::config_file::ConfigFile::index_dir() {
+        Some(p) => p,
         None => {
             eprintln!("Cannot determine home directory");
             return ExitCode::UserError;
         }
     };
-    let _ = std::fs::create_dir_all(&index_path);
 
     let sdk_config = SdkConfig {
         local_index_path: Some(index_path.to_str().unwrap_or_default().to_string()),

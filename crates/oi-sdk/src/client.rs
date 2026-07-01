@@ -20,6 +20,9 @@ pub struct OpenSonarXClient {
     leaderboard: Arc<dyn QueryLeaderboard>,
     topic_router: Option<Arc<TopicRouter>>,
     shard_filter: Vec<String>,
+    /// External URLs queued by crawl-on-query during `search_blended`.
+    /// Drained by `process_crawl_queue`.
+    crawl_queue: std::sync::Mutex<Vec<String>>,
 }
 
 impl OpenSonarXClient {
@@ -106,6 +109,7 @@ impl OpenSonarXClient {
             leaderboard,
             topic_router: None,
             shard_filter: Vec::new(),
+            crawl_queue: std::sync::Mutex::new(Vec::new()),
         }
     }
 
@@ -503,7 +507,105 @@ impl OpenSonarXClient {
         // in practice — but handles the case where external results have content).
         self.enrich_content_relevant(&mut merged, &query_embedding);
         self.record_leaderboard(&merged);
+
+        // Crawl-on-query: queue external results for background indexing so
+        // every query permanently grows local coverage. Drained by
+        // `process_crawl_queue` (callers decide when to pay the crawl cost).
+        if self.config.crawl_on_query {
+            let pending = self.urls_to_crawl(&merged, self.config.crawl_on_query_max_urls);
+            if !pending.is_empty()
+                && let Ok(mut queue) = self.crawl_queue.lock()
+            {
+                for url in pending {
+                    if !queue.contains(&url) {
+                        queue.push(url);
+                    }
+                }
+            }
+        }
+
         Ok((merged, sources_used))
+    }
+
+    /// Number of URLs waiting in the crawl-on-query queue.
+    pub fn pending_crawl_count(&self) -> usize {
+        self.crawl_queue.lock().map(|q| q.len()).unwrap_or(0)
+    }
+
+    /// Drain the crawl-on-query queue: fetch, distill, embed, and ingest each
+    /// queued URL (robots.txt-respecting), then persist the index. Returns the
+    /// number of URLs successfully indexed.
+    ///
+    /// Blocking — runs the crawl on a dedicated thread with its own tokio
+    /// runtime, so it is safe to call from both sync and async contexts.
+    pub fn process_crawl_queue(&self) -> usize {
+        let urls: Vec<String> = match self.crawl_queue.lock() {
+            Ok(mut q) => q.drain(..).collect(),
+            Err(_) => return 0,
+        };
+        if urls.is_empty() {
+            return 0;
+        }
+
+        let distiller = oi_crawl::Distiller::new().with_embedder(self.embedder_arc());
+        let outputs = std::thread::scope(|s| {
+            s.spawn(|| {
+                let rt = match tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build()
+                {
+                    Ok(rt) => rt,
+                    Err(_) => return Vec::new(),
+                };
+                rt.block_on(async {
+                    use oi_crawl::robots::{parse_robots_txt, RobotsChecker};
+                    use oi_types::traits::CrawlPipeline;
+
+                    let mut robots = RobotsChecker::new();
+                    let mut outputs = Vec::new();
+                    for url in &urls {
+                        if let Some(domain) = url
+                            .strip_prefix("https://")
+                            .or_else(|| url.strip_prefix("http://"))
+                            .and_then(|rest| rest.split('/').next())
+                        {
+                            if !robots.has_rules(domain) {
+                                let robots_url = format!("https://{domain}/robots.txt");
+                                if let Ok(res) = oi_crawl::fetcher::fetch_url(&robots_url).await {
+                                    robots.add_rules(domain, parse_robots_txt(&res.html));
+                                }
+                            }
+                            if !robots.is_allowed(url) {
+                                tracing::debug!("crawl-on-query: robots.txt blocked {url}");
+                                continue;
+                            }
+                        }
+                        match distiller.crawl(url).await {
+                            Ok(out) if !out.chunks.is_empty() => outputs.push(out),
+                            Ok(_) => tracing::debug!("crawl-on-query: no content at {url}"),
+                            Err(e) => tracing::debug!("crawl-on-query: crawl failed for {url}: {e}"),
+                        }
+                    }
+                    outputs
+                })
+            })
+            .join()
+            .unwrap_or_default()
+        });
+
+        let mut indexed = 0;
+        for out in &outputs {
+            match self.ingest(&out.chunks) {
+                Ok(()) => indexed += 1,
+                Err(e) => tracing::debug!("crawl-on-query: ingest failed: {e}"),
+            }
+        }
+        if indexed > 0
+            && let Err(e) = self.save_index()
+        {
+            tracing::warn!("crawl-on-query: index save failed: {e}");
+        }
+        indexed
     }
 
     /// Query external search engines only and return discovered URLs.
@@ -592,11 +694,15 @@ impl OpenSonarXClient {
 
 /// Merge local and external search results, deduplicating by URL.
 ///
-/// External results are re-scored by embedding their title+snippet through our
-/// pipeline and computing cosine similarity with the query. This puts them on
-/// the same semantic scale as local results (0.0–1.0). Staked local results
-/// keep their stake-boost multiplier, so staking amplifies relevance but
-/// doesn't guarantee top ranking for irrelevant content.
+/// Local hybrid scores are max-normalized per query (the best local hit is
+/// ~1.0 even when nothing in the index is relevant), while external snippets
+/// score as absolute cosine — the two are not comparable. So at blend time
+/// BOTH sides are re-scored on the same absolute scale: embed title+snippet
+/// (locals use a content prefix) and compute cosine with the query, then blend
+/// with the production semantic/BM25 weights. Locals keep their (normalized)
+/// BM25 term-match evidence; externals carry none. This stops an irrelevant
+/// but "locally best" result from outranking a genuinely relevant external
+/// one. Stake never moves the score (stake-neutral ranking).
 fn merge_results(
     local: Vec<SearchResultItem>,
     external: Vec<SearchResultItem>,
@@ -609,10 +715,9 @@ fn merge_results(
     use std::collections::{HashMap, HashSet};
 
     let mut seen_urls: HashSet<String> = HashSet::new();
+    let local_count = local.len();
     let mut merged: Vec<SearchResultItem> = Vec::new();
-    let has_local = !local.is_empty();
 
-    // Add all local results (already have proper scores from hybrid search)
     for r in local {
         seen_urls.insert(r.url.clone());
         merged.push(r);
@@ -623,55 +728,48 @@ fn merge_results(
         .into_iter()
         .filter(|r| seen_urls.insert(r.url.clone()))
         .collect();
+    merged.extend(external_filtered);
 
-    if !has_local {
-        // No local results — keep external results in their original engine ranking.
-        // Re-embedding snippets just to reorder DDG results wastes ~17ms of inference.
-        for r in external_filtered {
-            merged.push(r);
-        }
-    } else {
-        // Local results exist — re-score external snippets through our embedding
-        // pipeline so they compete on the same semantic scale as local results.
-        let texts: Vec<String> = external_filtered
-            .iter()
-            .map(|r| format!("{} {}", r.title, r.snippet))
-            .collect();
+    // One batch embed for every candidate's title+snippet — the shared
+    // absolute scale both sides are blended on.
+    let texts: Vec<String> = merged
+        .iter()
+        .map(|r| {
+            let body = if r.snippet.is_empty() {
+                r.content_md.chars().take(400).collect::<String>()
+            } else {
+                r.snippet.clone()
+            };
+            format!("{} {}", r.title, body)
+        })
+        .collect();
+    let text_refs: Vec<&str> = texts.iter().map(|s| s.as_str()).collect();
+    let embeddings = embedder.embed_text_batch(&text_refs).unwrap_or_default();
 
-        let text_refs: Vec<&str> = texts.iter().map(|s| s.as_str()).collect();
-        let embeddings = embedder.embed_text_batch(&text_refs).unwrap_or_default();
+    const SEMANTIC_W: f64 = 0.8;
+    const BM25_W: f64 = 0.2;
+    for (i, result) in merged.iter_mut().enumerate() {
+        let semantic_score = embeddings
+            .get(i)
+            .map(|emb| cosine_similarity(query_embedding, emb).max(0.0) as f64)
+            .unwrap_or(0.0);
+        let is_local = i < local_count;
+        // Locals carry their (query-normalized) BM25 term-match evidence into
+        // the blend; externals have no keyword evidence, so their BM25 term is 0.
+        let bm25 = if is_local { result.bm25_score.clamp(0.0, 1.0) } else { 0.0 };
+        result.semantic_score = semantic_score;
+        result.final_score = SEMANTIC_W * semantic_score + BM25_W * bm25;
 
-        for (i, r) in external_filtered.into_iter().enumerate() {
-            let mut result = r;
-
-            // Compute semantic score from snippet embedding
-            let semantic_score = embeddings
-                .get(i)
-                .map(|emb| cosine_similarity(query_embedding, emb).max(0.0) as f64)
-                .unwrap_or(0.0);
-
-            result.semantic_score = semantic_score;
-            result.final_score = semantic_score;
-
-            // Check if domain is staked — if so, apply stake boost (gated by relevance)
+        if !is_local {
+            // Stake never moves the score (stake-neutral ranking) — but a staked
+            // domain's skin-in-the-game is surfaced on the result as trust metadata.
             let domain = extract_domain(&result.url);
             if let Ok(Some(info)) = stake_registry.get_stake(&domain) {
-                let raw_boost = if info.amount_usd >= 1.0 {
-                    (1.0 + 0.1 * info.amount_usd.log2()).min(3.0)
-                } else {
-                    1.0
-                };
-                let reputation = info.reputation.clamp(0.0, 3.0);
-                let gate = oi_index::ranking::relevance_gate(semantic_score);
-                let gated_boost = 1.0 + (raw_boost * reputation - 1.0) * gate;
-                result.final_score = semantic_score * gated_boost;
                 result.stake_truth = info.amount_lamports;
                 result.stake_usd = info.amount_usd.round() as u64;
                 result.reputation = info.reputation;
                 result.source = "cached".to_string();
             }
-
-            merged.push(result);
         }
     }
 

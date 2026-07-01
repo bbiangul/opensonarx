@@ -18,11 +18,10 @@ pub enum ClientMode {
 /// Build a local SDK client from the global CLI config.
 /// This is the original `build_client()` — kept as-is, just renamed.
 fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
-    // Load the index that `oi seed` writes so seeded content is searchable;
-    // without this, local search silently returns external results only.
-    let seed_index_path = dirs::home_dir()
-        .map(|h| h.join(".opensonarx").join("index"))
-        .filter(|p| p.exists())
+    // Load the canonical local index (shared by seed, sentinel, and the node)
+    // so ingested content is searchable; without this, local search silently
+    // returns external results only.
+    let seed_index_path = crate::config_file::ConfigFile::index_dir()
         .map(|p| p.to_string_lossy().to_string());
     let sdk_config = SdkConfig {
         bootstrap_peers: config.bootstrap_peers.clone(),
@@ -31,7 +30,9 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
         network: config.network.clone(),
         brave_api_key: std::env::var("BRAVE_API_KEY").ok(),
         search_engines: config.search_engines.clone(),
-        crawl_on_query: false,
+        // Self-building index: external results surfaced by a query get crawled
+        // and ingested after results are shown (see crawl-on-query in oi-sdk).
+        crawl_on_query: true,
         crawl_on_query_max_urls: 3,
     };
     OpenSonarXClient::new(sdk_config)
@@ -191,6 +192,19 @@ pub fn search(
             }
             if is_anonymous {
                 eprintln!("(anonymous mode - 10 queries/day, run `oi login` for 100/day)");
+            }
+            // Crawl-on-query: index the external results this search surfaced so
+            // the local index grows with every query. Runs after results are
+            // printed so the user never waits on it for their answer.
+            if let ClientMode::Local(c) = &client {
+                let pending = c.pending_crawl_count();
+                if pending > 0 {
+                    eprintln!("(learning: indexing {pending} new sources from this search...)");
+                    let indexed = c.process_crawl_queue();
+                    if indexed > 0 {
+                        eprintln!("(learned: {indexed} pages added to the local index)");
+                    }
+                }
             }
             ExitCode::Success
         }
@@ -822,9 +836,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
 
                 // Create a hybrid index for this node
                 let dim = 384; // Standard MiniLM dimension
-                let index_path = dirs::home_dir()
-                    .map(|h| h.join(".opensonarx").join("node_index"))
-                    .expect("home dir");
+                let index_path = crate::config_file::ConfigFile::index_dir().expect("home dir");
                 let storage = oi_index::Storage::new(&index_path).ok();
                 let index = if let Some(ref s) = storage
                     && s.segment_exists("hnsw.bin")
@@ -1643,11 +1655,7 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
                 }
 
                 // Create local index for ingesting crawled content
-                let index_path = dirs::home_dir()
-                    .unwrap()
-                    .join(".opensonarx")
-                    .join("sentinel_index");
-                let _ = std::fs::create_dir_all(&index_path);
+                let index_path = crate::config_file::ConfigFile::index_dir().expect("home dir");
                 let sdk_config = SdkConfig {
                     local_index_path: Some(index_path.to_str().unwrap().to_string()),
                     ..Default::default()
@@ -1739,9 +1747,7 @@ pub fn seed(config: &CliConfig, action: SeedCommands, verbose: bool) -> ExitCode
 // ── Index import/export ─────────────────────────────────────────────────────
 
 pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
-    let index_path = dirs::home_dir()
-        .map(|h| h.join(".opensonarx").join("node_index"))
-        .expect("home dir");
+    let index_path = crate::config_file::ConfigFile::index_dir().expect("home dir");
 
     match action {
         IndexCommands::Export { output: output_path, shard } => {
@@ -1927,7 +1933,7 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
             let storage = match oi_index::Storage::new(&index_path) {
                 Ok(s) if s.segment_exists("hnsw.bin") => s,
                 _ => {
-                    output::print_err("No index found at ~/.opensonarx/node_index/", &config.format);
+                    output::print_err("No index found at ~/.opensonarx/index/", &config.format);
                     return ExitCode::UserError;
                 }
             };

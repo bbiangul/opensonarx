@@ -5162,6 +5162,7 @@ version = "0.1.0"
 dependencies = [
  "dirs",
  "ed25519-dalek 2.2.0",
+ "oi-crawl",
  "oi-embed",
  "oi-index",
  "oi-network",
