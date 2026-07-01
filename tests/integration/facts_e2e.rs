@@ -38,11 +38,9 @@ fn test_fact_extraction_trait_object() {
 fn test_facts_in_crawl_pipeline_flow() {
     // Simulate extracting facts from CrawlOutput-style chunks
     let ext = MockFactExtractor::new();
-    let chunks = vec![
-        "Tesla announced a new Gigafactory in Berlin, Germany.",
+    let chunks = ["Tesla announced a new Gigafactory in Berlin, Germany.",
         "The factory will produce 500,000 vehicles per year.",
-        "CEO Elon Musk attended the opening ceremony.",
-    ];
+        "CEO Elon Musk attended the opening ceremony."];
 
     let results: Vec<FactExtractionResult> = chunks
         .iter()

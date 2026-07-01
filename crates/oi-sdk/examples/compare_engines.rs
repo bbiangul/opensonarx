@@ -96,8 +96,8 @@ fn main() {
         let ms = start.elapsed().as_millis();
 
         println!(
-            "{:<4} {:<7} {:<7} {:<7} {:<55} {:<20} {}",
-            "#", "FINAL", "SEMANT", "BM25", "URL", "SOURCE", "STAKE"
+            "{:<4} {:<7} {:<7} {:<7} {:<55} {:<20} STAKE",
+            "#", "FINAL", "SEMANT", "BM25", "URL", "SOURCE"
         );
         println!("{}", "-".repeat(130));
 
@@ -108,7 +108,7 @@ fn main() {
                 "-".to_string()
             };
             let source_label = if r.source == "cached" {
-                format!("ext+staked")
+                "ext+staked".to_string()
             } else {
                 r.source.clone()
             };

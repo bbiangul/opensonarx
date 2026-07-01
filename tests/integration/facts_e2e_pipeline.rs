@@ -445,7 +445,8 @@ async fn test_facts_e2e_pipeline() {
     println!("{}", "─".repeat(20 + langs.len() * 10));
 
     // Rows
-    let stages: &[(&str, fn(&CrawlTrace) -> f64)] = &[
+    type StageGetter = fn(&CrawlTrace) -> f64;
+    let stages: &[(&str, StageGetter)] = &[
         ("Fetch", |t| t.fetch_ms),
         ("HTML → Markdown", |t| t.html_to_md_ms),
         ("Quality gate", |t| t.quality_ms),

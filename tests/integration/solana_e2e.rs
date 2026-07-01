@@ -1472,17 +1472,20 @@ fn test_instruction_serialize_roundtrip() {
 
 #[test]
 fn test_max_sizes_reasonable() {
-    // All MAX_SIZE values should be > 0 and < 1024 (reasonable for Solana accounts)
-    assert!(StakeAccount::MAX_SIZE > 0 && StakeAccount::MAX_SIZE < 1024);
-    assert!(ProtocolConfig::MAX_SIZE > 0 && ProtocolConfig::MAX_SIZE < 1024);
-    assert!(StakeAccountV2::MAX_SIZE > 0 && StakeAccountV2::MAX_SIZE < 1024);
-    assert!(DomainRecord::MAX_SIZE > 0 && DomainRecord::MAX_SIZE < 1024);
-    assert!(DisputeAccount::MAX_SIZE > 0 && DisputeAccount::MAX_SIZE < 1024);
-    assert!(JuryVote::MAX_SIZE > 0 && JuryVote::MAX_SIZE < 1024);
-    assert!(GovernanceProposal::MAX_SIZE > 0 && GovernanceProposal::MAX_SIZE < 1024);
-    assert!(GovernanceVote::MAX_SIZE > 0 && GovernanceVote::MAX_SIZE < 1024);
-    assert!(StateChannelAccount::MAX_SIZE > 0 && StateChannelAccount::MAX_SIZE < 1024);
-    assert!(GovernanceLockAccount::MAX_SIZE > 0 && GovernanceLockAccount::MAX_SIZE < 1024);
+    // All MAX_SIZE values should be > 0 and < 1024 (reasonable for Solana accounts).
+    // Checked at compile time via const blocks.
+    const {
+        assert!(StakeAccount::MAX_SIZE > 0 && StakeAccount::MAX_SIZE < 1024);
+        assert!(ProtocolConfig::MAX_SIZE > 0 && ProtocolConfig::MAX_SIZE < 1024);
+        assert!(StakeAccountV2::MAX_SIZE > 0 && StakeAccountV2::MAX_SIZE < 1024);
+        assert!(DomainRecord::MAX_SIZE > 0 && DomainRecord::MAX_SIZE < 1024);
+        assert!(DisputeAccount::MAX_SIZE > 0 && DisputeAccount::MAX_SIZE < 1024);
+        assert!(JuryVote::MAX_SIZE > 0 && JuryVote::MAX_SIZE < 1024);
+        assert!(GovernanceProposal::MAX_SIZE > 0 && GovernanceProposal::MAX_SIZE < 1024);
+        assert!(GovernanceVote::MAX_SIZE > 0 && GovernanceVote::MAX_SIZE < 1024);
+        assert!(StateChannelAccount::MAX_SIZE > 0 && StateChannelAccount::MAX_SIZE < 1024);
+        assert!(GovernanceLockAccount::MAX_SIZE > 0 && GovernanceLockAccount::MAX_SIZE < 1024);
+    }
 }
 
 // ══════════════════════════════════════════════
@@ -1490,6 +1493,7 @@ fn test_max_sizes_reasonable() {
 // ══════════════════════════════════════════════
 
 /// Helper: stake V2 on a domain and return (stake_pda, domain_pda).
+#[allow(clippy::too_many_arguments)]
 async fn stake_v2_helper(
     banks: &mut solana_program_test::BanksClient,
     payer: &Keypair,
@@ -2113,6 +2117,7 @@ async fn test_stake_on_blacklisted_domain_fails() {
 // ══════════════════════════════════════════════
 
 /// Helper: set up a domain and open a dispute, returns dispute_pda, nonce, domain_pda.
+#[allow(clippy::too_many_arguments)]
 async fn setup_dispute(
     banks: &mut solana_program_test::BanksClient,
     payer: &Keypair,
@@ -6039,7 +6044,7 @@ async fn test_emission_decay_curve() {
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     assert_eq!(config.epoch_max_emission, expected_emissions[0]);
 
-    for i in 1..expected_emissions.len() {
+    for (i, &expected_emission) in expected_emissions.iter().enumerate().skip(1) {
         ctx.warp_to_slot(100 * i as u64).unwrap();
 
         let mut ix_data = Vec::new();
@@ -6059,8 +6064,8 @@ async fn test_emission_decay_curve() {
         let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
         let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         assert_eq!(config.current_epoch, i as u64);
-        assert_eq!(config.epoch_max_emission, expected_emissions[i],
-            "epoch {} emission should be {}", i, expected_emissions[i]);
+        assert_eq!(config.epoch_max_emission, expected_emission,
+            "epoch {i} emission should be {expected_emission}");
     }
 }
 

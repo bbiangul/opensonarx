@@ -22,8 +22,8 @@ fn make_embedding(cluster: usize, doc_idx: usize, dim: usize) -> Vec<f32> {
     v[base_idx] = 1.0;
 
     // Small perturbation
-    for d in 0..dim {
-        v[d] += (next(&mut seed) as f32 - 0.5) * 0.1;
+    for x in v.iter_mut() {
+        *x += (next(&mut seed) as f32 - 0.5) * 0.1;
     }
 
     // Normalize

@@ -137,16 +137,14 @@ mod tests {
 
     #[test]
     fn test_print_list_table() {
-        let items = vec![
-            TestItem {
+        let items = [TestItem {
                 name: "alpha".to_string(),
                 value: 10,
             },
             TestItem {
                 name: "beta".to_string(),
                 value: 200,
-            },
-        ];
+            }];
 
         // Verify the row function works correctly
         let row_fn = |item: &TestItem| vec![item.name.clone(), item.value.to_string()];

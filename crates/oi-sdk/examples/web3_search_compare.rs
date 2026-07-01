@@ -1,10 +1,10 @@
-/// Web3 Search Comparison: Serper (Google) vs OpenSonarX Blended
-///
-/// Runs search directly through the SDK (web3 layer, no gateway),
-/// compares raw Serper results against blended local+external results.
-///
-/// Usage:
-///   SERPER_API_KEY=<key> cargo run -p oi-sdk --release --example web3_search_compare
+//! Web3 Search Comparison: Serper (Google) vs OpenSonarX Blended
+//!
+//! Runs search directly through the SDK (web3 layer, no gateway),
+//! compares raw Serper results against blended local+external results.
+//!
+//! Usage:
+//!   SERPER_API_KEY=<key> cargo run -p oi-sdk --release --example web3_search_compare
 
 use oi_sdk::engines::serper::Serper;
 use oi_sdk::{OpenSonarXClient, SdkConfig};
@@ -37,13 +37,11 @@ fn main() {
     // ── Step 2: Seed local content (simulates staked corpus) ──
     let embedder = client.embedder_arc();
 
-    let content_data = vec![
-        ("oi1", "OpenSonarX is a decentralized search protocol where publishers stake TRUTH tokens to vouch for content quality. The hybrid HNSW plus BM25 engine combines vector similarity with keyword matching for accurate retrieval. AI agents can use the API to search and receive full content with trust signals for RAG synthesis. The protocol uses Wilson score reputation and stake-weighted ranking to surface trustworthy results.", "https://opensonarx.com/docs/overview", "OpenSonarX: Trust-Based Search for AI Agents", "opensonarx.com"),
+    let content_data = [("oi1", "OpenSonarX is a decentralized search protocol where publishers stake TRUTH tokens to vouch for content quality. The hybrid HNSW plus BM25 engine combines vector similarity with keyword matching for accurate retrieval. AI agents can use the API to search and receive full content with trust signals for RAG synthesis. The protocol uses Wilson score reputation and stake-weighted ranking to surface trustworthy results.", "https://opensonarx.com/docs/overview", "OpenSonarX: Trust-Based Search for AI Agents", "opensonarx.com"),
         ("brave1", "Brave Search is a privacy-focused search engine that uses its own independent index built from scratch. It does not track users or profile their searches. The Brave Search API provides programmatic access to web search results with snippet extraction, relevance ranking, and trust scoring for AI agent integration.", "https://brave.com/search", "Brave Search - Privacy-First Web Search", "brave.com"),
         ("wiki1", "A web search engine is an information retrieval system designed to help find information stored on the World Wide Web. Search engines provide results based on relevance algorithms that consider keyword matching, link analysis, and content quality signals to rank documents for the user query.", "https://en.wikipedia.org/wiki/Search_engine", "Search engine - Wikipedia", "en.wikipedia.org"),
         ("blog1", "Building AI-powered search engines requires understanding embeddings, vector databases, and retrieval augmented generation. Modern search goes beyond keywords using semantic understanding to match user intent with relevant documents. Trust and provenance are becoming critical signals for AI agents consuming search results.", "https://techblog.example.com/ai-search-2025", "The Future of AI Search in 2025", "techblog.example.com"),
-        ("spam1", "BEST SEARCH ENGINE EVER click here for amazing deals and free search results buy now limited time offer search engine optimization guaranteed top ranking first page results SEO tricks and hacks for maximum visibility", "https://spammy-seo.biz/search", "Best Search Engine FREE!!!", "spammy-seo.biz"),
-    ];
+        ("spam1", "BEST SEARCH ENGINE EVER click here for amazing deals and free search results buy now limited time offer search engine optimization guaranteed top ranking first page results SEO tricks and hacks for maximum visibility", "https://spammy-seo.biz/search", "Best Search Engine FREE!!!", "spammy-seo.biz")];
 
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)

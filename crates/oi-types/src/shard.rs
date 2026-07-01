@@ -354,7 +354,7 @@ mod tests {
 
     #[test]
     fn test_compute_sub_shard_distributes_evenly() {
-        let mut counts = vec![0usize; 10];
+        let mut counts = [0usize; 10];
         for i in 0..1000 {
             let hash = format!("content-hash-{i}");
             let id = compute_sub_shard_id("topic-general", &hash, 10);
