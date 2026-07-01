@@ -148,7 +148,7 @@ fn call_gemini(api_key: &str, prompt: &str, model: &str) -> Result<(String, Toke
             }
         }
     }
-    let body = body.ok_or_else(|| last_err)?;
+    let body = body.ok_or(last_err)?;
 
     let json: serde_json::Value =
         serde_json::from_slice(&body).map_err(|e| format!("Gemini JSON parse error: {e}"))?;

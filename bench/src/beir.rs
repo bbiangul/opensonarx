@@ -296,9 +296,27 @@ fn build_chunks(corpus: &[BeirDoc], embeddings: Vec<Vec<f32>>) -> Vec<ContentChu
 
 // ── Public entry points ──
 
-pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, semantic_weight: Option<f64>) {
+pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, semantic_weight: Option<f64>, rerank: bool) {
     let embedder = crate::get_embedder(pipeline_name);
     let dim = embedder.dimension();
+
+    #[cfg(feature = "reranker")]
+    let reranker: Option<std::sync::Arc<dyn oi_types::Reranker>> = if rerank {
+        tracing::info!("Loading cross-encoder reranker...");
+        Some(std::sync::Arc::new(
+            oi_embed::OnnxReranker::new().expect("Failed to load reranker"),
+        ))
+    } else {
+        None
+    };
+    #[cfg(not(feature = "reranker"))]
+    let reranker: Option<std::sync::Arc<dyn oi_types::Reranker>> = {
+        if rerank {
+            eprintln!("Reranker requires --features reranker");
+            std::process::exit(1);
+        }
+        None
+    };
 
     // 1. Download/extract
     let dir = match ensure_dataset(dataset_name) {
@@ -326,12 +344,15 @@ pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, se
     let query_map: HashMap<&str, &str> = queries.iter().map(|q| (q.id.as_str(), q.text.as_str())).collect();
     let eval_query_ids: Vec<&str> = qrels.keys().map(|s| s.as_str()).collect();
 
-    let sw = semantic_weight.unwrap_or(1.0);
+    // Default to the production HybridConfig weight so an unflagged run
+    // measures the shipped configuration, not vector-only.
+    let sw = semantic_weight.unwrap_or_else(|| HybridConfig::default().semantic_weight);
 
     println!("\n=== BEIR Evaluation: {} ===", dataset_name);
     println!(
-        "Pipeline: {} ({}-dim) | Weights: semantic={:.2} bm25={:.2}",
-        embedder.name(), dim, sw, 1.0 - sw
+        "Pipeline: {} ({}-dim) | Weights: semantic={:.2} bm25={:.2} | Rerank: {}",
+        embedder.name(), dim, sw, 1.0 - sw,
+        if reranker.is_some() { "yes" } else { "no" }
     );
     println!(
         "Corpus: {} docs | Queries: {} (with qrels)\n",
@@ -359,7 +380,10 @@ pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, se
         skip_dedup: true,
         ..Default::default()
     };
-    let index = HybridIndex::with_config(dim, config);
+    let mut index = HybridIndex::with_config(dim, config);
+    if let Some(ref rr) = reranker {
+        index = index.with_reranker(rr.clone());
+    }
     let chunks = build_chunks(&corpus, embeddings);
 
     index.ingest(&chunks).unwrap_or_else(|e| {

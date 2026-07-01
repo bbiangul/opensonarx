@@ -521,7 +521,7 @@ pub fn run_msmarco(
         );
     }
 
-    let sw = semantic_weight.unwrap_or(1.0);
+    let sw = semantic_weight.unwrap_or_else(|| HybridConfig::default().semantic_weight);
 
     let corpus_pids: Vec<String> = corpus.iter().map(|(pid, _)| pid.clone()).collect();
     let pid_set: std::collections::HashSet<&str> =

@@ -102,6 +102,10 @@ enum Command {
         /// Semantic weight (0.0-1.0). BM25 weight = 1 - semantic_weight.
         #[arg(short = 'w', long)]
         semantic_weight: Option<f64>,
+
+        /// Enable cross-encoder reranking (requires --features reranker)
+        #[arg(long)]
+        rerank: bool,
     },
     /// Sweep semantic/BM25 weights on a BEIR dataset (embed once, evaluate many)
     BeirSweep {
@@ -797,8 +801,9 @@ async fn main() {
             pipeline,
             output,
             semantic_weight,
+            rerank,
         } => {
-            beir::run_beir(&dataset, &pipeline, &output, semantic_weight);
+            beir::run_beir(&dataset, &pipeline, &output, semantic_weight, rerank);
         }
         Command::BeirSweep { dataset, pipeline } => {
             beir::sweep_beir(&dataset, &pipeline);

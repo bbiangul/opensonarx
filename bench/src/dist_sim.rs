@@ -23,7 +23,7 @@ pub fn run_dist_sim(
 ) {
     let embedder = crate::get_embedder(pipeline_name);
     let dim = embedder.dimension();
-    let sw = semantic_weight.unwrap_or(1.0);
+    let sw = semantic_weight.unwrap_or_else(|| HybridConfig::default().semantic_weight);
 
     // 1. Download/extract MS MARCO data
     let dir = match msmarco::ensure_msmarco() {
@@ -401,7 +401,7 @@ mod tests {
     #[test]
     fn test_assign_zipf_distribution() {
         let assignments = assign_zipf(1000, 4);
-        let mut counts = vec![0usize; 4];
+        let mut counts = [0usize; 4];
         for &node in &assignments {
             counts[node] += 1;
         }

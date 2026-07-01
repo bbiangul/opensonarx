@@ -388,7 +388,7 @@ pub fn run_sealqa(
         std::process::exit(1);
     });
 
-    let sw = semantic_weight.unwrap_or(1.0);
+    let sw = semantic_weight.unwrap_or_else(|| HybridConfig::default().semantic_weight);
 
     println!("\n=== SealQA Evaluation (LongSeal) ===");
     println!(

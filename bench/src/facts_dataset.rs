@@ -4,6 +4,9 @@ use crate::facts_metrics::{EntitySpan, RelationSpan};
 pub struct FactsBenchmarkSample {
     pub id: String,
     pub language: String,
+    /// Content category annotation (wiki/news/sports/tech/company); not yet
+    /// aggregated in metrics but kept as ground-truth for future breakdowns.
+    #[allow(dead_code)]
     pub category: String,
     pub text: String,
     pub expected_entities: Vec<ExpectedEntity>,

@@ -186,6 +186,12 @@ fn print_json(pipeline_name: &str, result: &FactsBenchmarkResult) {
                 "rel_f1": rel.f1,
             }))
         }).collect::<serde_json::Map<String, serde_json::Value>>(),
+        "per_entity_type": result.per_entity_type.iter().map(|(ty, ner)| {
+            (ty.clone(), serde_json::json!({
+                "exact_f1": ner.exact_f1,
+                "partial_f1": ner.partial_f1,
+            }))
+        }).collect::<serde_json::Map<String, serde_json::Value>>(),
         "avg_extraction_time_ms": result.avg_extraction_time_ms,
     });
     println!("{}", serde_json::to_string_pretty(&output).unwrap());
@@ -228,6 +234,19 @@ fn print_table(pipeline_name: &str, result: &FactsBenchmarkResult) {
         println!(
             "  {:<6} {:>10.3} {:>10.3} {:>10.3}",
             lang, ner.exact_f1, ner.partial_f1, rel.f1
+        );
+    }
+
+    println!("\nPer Entity Type:");
+    println!("  {:<12} {:>10} {:>10}", "Type", "NER-F1(E)", "NER-F1(P)");
+    println!("  {}", "-".repeat(34));
+    let mut types: Vec<_> = result.per_entity_type.keys().collect();
+    types.sort();
+    for ty in types {
+        let ner = &result.per_entity_type[ty];
+        println!(
+            "  {:<12} {:>10.3} {:>10.3}",
+            ty, ner.exact_f1, ner.partial_f1
         );
     }
 
