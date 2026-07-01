@@ -18,10 +18,16 @@ pub enum ClientMode {
 /// Build a local SDK client from the global CLI config.
 /// This is the original `build_client()` — kept as-is, just renamed.
 fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
+    // Load the index that `oi seed` writes so seeded content is searchable;
+    // without this, local search silently returns external results only.
+    let seed_index_path = dirs::home_dir()
+        .map(|h| h.join(".opensonarx").join("index"))
+        .filter(|p| p.exists())
+        .map(|p| p.to_string_lossy().to_string());
     let sdk_config = SdkConfig {
         bootstrap_peers: config.bootstrap_peers.clone(),
         wallet_path: config.wallet_path.clone(),
-        local_index_path: None,
+        local_index_path: seed_index_path,
         network: config.network.clone(),
         brave_api_key: std::env::var("BRAVE_API_KEY").ok(),
         search_engines: config.search_engines.clone(),
