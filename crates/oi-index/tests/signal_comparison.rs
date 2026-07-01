@@ -8,8 +8,6 @@ fn base_params() -> RankingParams {
     RankingParams {
         semantic_weight: 1.0,
         bm25_weight: 0.0,
-        domain_stake_usd: 100.0,
-        reputation: 1.0,
         ..Default::default()
     }
 }
@@ -21,7 +19,7 @@ fn compare_quality_signals() {
 
     eprintln!("\n{}", "=".repeat(80));
     eprintln!("  SIGNAL COMPARISON: Quality, Freshness, DNS on equally relevant content");
-    eprintln!("  Semantic={sem}, BM25={bm25}, Stake=$100 (publisher domain, 30% passthrough)");
+    eprintln!("  Semantic={sem}, BM25={bm25} (stake/reputation are not rank signals)");
     eprintln!("{}", "=".repeat(80));
 
     // ── 1. Quality signal comparison ──
@@ -167,7 +165,7 @@ fn compare_quality_signals() {
 #[test]
 fn compare_signal_vs_stake_dominance() {
     eprintln!("\n{}", "=".repeat(80));
-    eprintln!("  SIGNAL vs STAKE: Can quality signals override stake advantage?");
+    eprintln!("  SIGNAL vs STAKE: stake is decoupled from rank — quality/freshness decide");
     eprintln!("{}", "=".repeat(80));
 
     let sem = 0.85;
@@ -221,24 +219,16 @@ fn compare_signal_vs_stake_dominance() {
     eprintln!("  {:<50} {:>8.4}", "High stake ($10K) + good quality + fresh", s3);
     eprintln!();
 
-    // High stake still wins even with bad quality (stake is the stronger signal)
-    // but the gap narrows significantly
-    eprintln!("  Key insight: stake boost is {:.2}x ($10K vs $10)",
-        // log2 passthrough math
-        {
-            let eff_10k: f64 = 10_000.0 * 0.3;
-            let boost_10k = 1.0 + 0.1 * eff_10k.log2();
-            let eff_10: f64 = 10.0 * 0.3;
-            let boost_10 = 1.0 + 0.1 * eff_10.log2();
-            boost_10k / boost_10
-        }
-    );
-    eprintln!("  Quality signals narrow the gap: bad quality is {:.0}% of good ({:.4} vs {:.4})",
-        s2 / s3 * 100.0, s2, s3);
+    eprintln!("  Key insight: stake does NOT enter the ranking score.");
+    eprintln!("  The lower-staked ($10) but higher-quality, fresher result wins:");
+    eprintln!("    s1 (low stake, excellent, fresh) = {s1:.4}");
+    eprintln!("    s3 (high stake, good)            = {s3:.4}");
+    eprintln!("    s2 (high stake, poor)            = {s2:.4}");
 
     eprintln!("\n{}", "=".repeat(80));
 
-    // High stake + good quality should always be the winner
-    assert!(s3 > s2, "high stake + good quality should beat high stake + bad quality");
-    assert!(s3 > s1, "high stake + good quality should beat low stake + good quality");
+    // Stake is decoupled from rank: quality + freshness decide the order.
+    assert!(s1 > s3, "excellent quality + freshest must beat high-stake merely-good (stake is not a rank signal)");
+    assert!(s3 > s2, "good quality must beat poor quality + spam");
+    assert!(s1 > s2, "excellent quality must beat poor quality");
 }

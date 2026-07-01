@@ -8,7 +8,7 @@ const SECONDS_PER_YEAR: u64 = 365 * 24 * 3600;
 
 /// Off-chain economics engine for the $TRUTH token.
 ///
-/// Implements halving emissions, fee burns, revenue sharing, and yield
+/// Implements decaying emissions, fee burns, revenue sharing, and yield
 /// calculations used by validators and the CLI to preview economics
 /// without hitting the chain.
 pub struct TruthEconomics;
@@ -23,17 +23,20 @@ impl TruthEconomics {
     /// * `dispute_bond` — the bond the reporter posted to open the dispute.
     /// * `votes_guilty` — total voting weight that voted guilty.
     /// * `votes_innocent` — total voting weight that voted innocent.
-    /// * `_slash_pct` — percentage of domain stake slashed (0–100). Slashing
-    ///   is applied lazily on-chain at withdraw time; slashed tokens remain in
-    ///   the vault and are NOT paid to the reporter.
+    /// * `_slash_pct` — percentage of domain stake slashed (0–100). Slashing is
+    ///   applied lazily on-chain at withdraw time (see stake.rs): of the slashed
+    ///   amount, 50% is burned and 50% is retained in the vault as protocol
+    ///   revenue. None of it is paid to the reporter. This function only computes
+    ///   the bond payout, not the slash distribution.
     /// * `_domain_stake` — the domain's total stake (unused in payout calc).
     ///
-    /// Returns `(reporter_payout, protocol_payout)`.
+    /// Returns `(reporter_payout, protocol_payout)` — the bond settlement only.
     ///
     /// If guilty:
-    ///   - reporter receives their bond back.
-    ///   - domain is blacklisted; stakers lose `slash_pct`% on withdraw (lazy).
-    ///   - protocol receives nothing extra.
+    ///   - reporter receives their full bond back.
+    ///   - domain is blacklisted; stakers lose `slash_pct`% on withdraw (lazy),
+    ///     of which 50% is burned and 50% retained as protocol revenue.
+    ///   - protocol receives nothing extra from the bond.
     ///
     /// If innocent (or tied):
     ///   - reporter's bond is forfeited to the protocol.
@@ -81,45 +84,55 @@ impl Default for TruthEconomics {
 impl EconomicsEngine for TruthEconomics {
     /// Compute token emission for a given epoch.
     ///
-    /// Year 0 (epoch 0) emits `BASE_EMISSION` (10M tokens).
-    /// Each subsequent epoch halves the emission.
-    /// At epoch >= 64 the emission is 0 (prevents shift overflow on u64).
+    /// Mirrors on-chain `AdvanceEpoch` (programs/.../processor/reward.rs):
+    /// epoch 0 emits `BASE_EMISSION` (10M tokens), and each subsequent epoch
+    /// applies a 1.5% geometric decay as iterated integer `* 985 / 1000`, so
+    /// off-chain previews match on-chain rounding exactly. The schedule spans
+    /// ~3 years with 7-day epochs and converges to 0.
     ///
     /// Design note (Issue #17): Bootstrapping inflation is expected —
     /// early epochs emit more to incentivize initial network growth.
     fn compute_emission(&self, epoch: u64, _total_staked: u64) -> u64 {
-        if epoch >= 64 {
-            return 0;
+        let mut emission = BASE_EMISSION;
+        for _ in 0..epoch {
+            emission = emission * 985 / 1000;
+            if emission == 0 {
+                break;
+            }
         }
-        BASE_EMISSION >> epoch
+        emission
     }
 
     /// Compute total burn from query fees.
     ///
-    /// - `burn_pct`% of query fees are burned on-chain during channel settlement.
-    /// - Dispute slashes remain in the vault (not burned); they are passed
-    ///   through for accounting but do not contribute to on-chain burns.
+    /// - `burn_pct`% of query fees are burned on-chain during channel settlement
+    ///   (default 10).
+    /// - Dispute slashes remain in the vault (not burned at settlement); they are
+    ///   passed through for accounting but do not contribute to on-chain query burns.
     fn compute_burn(&self, query_fees: u64, _dispute_slashes: u64, burn_pct: u8) -> u64 {
         (query_fees as u128 * burn_pct as u128 / 100) as u64
     }
 
-    /// Split query revenue into (publisher_share, curator_share, sentinel_share, burned).
+    /// Split channel revenue into (publisher, curator, sentinel, burned).
     ///
-    /// Burn is `burn_pct`% (default 45). The remainder is split:
-    /// - Publisher: 35% of total
-    /// - Curator:   10% of total
-    /// - Sentinel:  10% of total
-    /// - Burned:    burn_pct% of total
+    /// Mirrors on-chain `SettleChannel` (processor/channel.rs):
+    /// - Burned:    `burn_pct`% of revenue (default 10)
+    /// - Sentinel:  `sentinel_fee_pct`% of revenue (default 5)
+    /// - Publisher: the remainder, paid to the payee (default 85%)
+    /// - Curator:   always 0 — curators earn via emissions, not channel passthrough
     ///
-    /// When burn_pct changes, the payee portion adjusts accordingly.
-    fn compute_revenue_shares(&self, query_revenue: u64, burn_pct: u8) -> (u64, u64, u64, u64) {
+    /// Integer-division remainder accrues to the publisher to avoid token loss,
+    /// matching the on-chain `payee_amount = actual_spent - burn - sentinel_fee`.
+    fn compute_revenue_shares(
+        &self,
+        query_revenue: u64,
+        burn_pct: u8,
+        sentinel_fee_pct: u8,
+    ) -> (u64, u64, u64, u64) {
         let burned = (query_revenue as u128 * burn_pct as u128 / 100) as u64;
-        let remainder = query_revenue - burned;
-        // Split non-burn portion: ~63.6% publisher, ~18.2% curator, ~18.2% sentinel
-        // of the remainder (which at 45% burn means 35/10/10 of total)
-        let publisher = remainder * 35 / 55;
-        let curator = remainder * 10 / 55;
-        let sentinel = remainder - publisher - curator;
+        let sentinel = (query_revenue as u128 * sentinel_fee_pct as u128 / 100) as u64;
+        let publisher = query_revenue - burned - sentinel;
+        let curator = 0;
         (publisher, curator, sentinel, burned)
     }
 
@@ -158,38 +171,34 @@ mod tests {
     }
 
     #[test]
-    fn test_emission_halving() {
+    fn test_emission_decay() {
         let e = engine();
+        // 1.5% geometric decay via iterated integer `* 985 / 1000`, matching
+        // on-chain AdvanceEpoch exactly.
         assert_eq!(e.compute_emission(0, 0), 10_000_000);
-        assert_eq!(e.compute_emission(1, 0), 5_000_000);
-        assert_eq!(e.compute_emission(2, 0), 2_500_000);
-        assert_eq!(e.compute_emission(3, 0), 1_250_000);
+        assert_eq!(e.compute_emission(1, 0), 9_850_000);
+        assert_eq!(e.compute_emission(2, 0), 9_702_250);
+        assert_eq!(e.compute_emission(3, 0), 9_556_716);
 
-        // Epoch 63 should still produce a non-zero value (10M >> 63 = 0 actually,
-        // but let's verify the boundary precisely).
-        // 10_000_000 in binary has ~24 bits, so shifting right by 23 gives 1.
-        // At epoch 23: 10_000_000 >> 23 = 1
-        assert_eq!(e.compute_emission(23, 0), 1);
-        // At epoch 24 and beyond (but < 64) the integer division floors to 0.
-        assert_eq!(e.compute_emission(24, 0), 0);
+        // ~Year 1 (epoch 52) stays healthy, near the documented ~4.557M.
+        assert!((4_400_000..=4_600_000).contains(&e.compute_emission(52, 0)));
 
-        // Epoch 63: still goes through the shift path, just gives 0.
-        assert_eq!(e.compute_emission(63, 0), 0);
+        // Monotonically decreasing.
+        assert!(e.compute_emission(10, 0) < e.compute_emission(9, 0));
 
-        // Epoch 64: explicitly guarded to return 0 (no overflow).
-        assert_eq!(e.compute_emission(64, 0), 0);
-        assert_eq!(e.compute_emission(100, 0), 0);
+        // Converges to zero for large epochs (no overflow, no panic).
+        assert_eq!(e.compute_emission(2000, 0), 0);
     }
 
     #[test]
     fn test_burn_computation() {
         let e = engine();
-        // 45% of 1000 query fees = 450. Dispute slashes are NOT burned (lazy on-chain).
-        assert_eq!(e.compute_burn(1000, 200, 45), 450);
+        // Default 10% of 1000 query fees = 100. Dispute slashes are NOT burned (lazy on-chain).
+        assert_eq!(e.compute_burn(1000, 200, 10), 100);
         // Edge: zero inputs
-        assert_eq!(e.compute_burn(0, 0, 45), 0);
-        // Odd query fee: 999 * 45 / 100 = 449 (integer division). Slashes ignored.
-        assert_eq!(e.compute_burn(999, 1, 45), 449);
+        assert_eq!(e.compute_burn(0, 0, 10), 0);
+        // Odd query fee: 999 * 10 / 100 = 99 (integer division). Slashes ignored.
+        assert_eq!(e.compute_burn(999, 1, 10), 99);
         // Custom burn_pct
         assert_eq!(e.compute_burn(1000, 0, 30), 300);
     }
@@ -197,23 +206,25 @@ mod tests {
     #[test]
     fn test_revenue_shares() {
         let e = engine();
-        let (pub_share, cur_share, sentinel_share, burned) = e.compute_revenue_shares(1000, 45);
-        assert_eq!(burned, 450);
-        // Remainder 550 split: publisher 350, curator 100, sentinel 100
-        assert_eq!(pub_share, 350);
-        assert_eq!(cur_share, 100);
-        assert_eq!(sentinel_share, 100);
+        // Default chain split: 10% burn, 5% sentinel, 85% payee, 0 curator.
+        let (pub_share, cur_share, sentinel_share, burned) = e.compute_revenue_shares(1000, 10, 5);
+        assert_eq!(burned, 100);
+        assert_eq!(sentinel_share, 50);
+        assert_eq!(pub_share, 850);
+        assert_eq!(cur_share, 0);
+        // Shares always reconstruct the full revenue (no token loss).
+        assert_eq!(pub_share + cur_share + sentinel_share + burned, 1000);
 
         // Zero revenue
-        let (p, c, s, b) = e.compute_revenue_shares(0, 45);
+        let (p, c, s, b) = e.compute_revenue_shares(0, 10, 5);
         assert_eq!((p, c, s, b), (0, 0, 0, 0));
 
         // Large revenue
-        let (p, c, s, b) = e.compute_revenue_shares(1_000_000, 45);
-        assert_eq!(b, 450_000);
-        assert_eq!(p, 350_000);
-        assert_eq!(c, 100_000);
-        assert_eq!(s, 100_000);
+        let (p, c, s, b) = e.compute_revenue_shares(1_000_000, 10, 5);
+        assert_eq!(b, 100_000);
+        assert_eq!(s, 50_000);
+        assert_eq!(p, 850_000);
+        assert_eq!(c, 0);
     }
 
     #[test]

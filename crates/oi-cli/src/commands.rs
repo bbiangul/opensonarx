@@ -107,8 +107,19 @@ pub fn search(
     locale: Option<String>,
     gl: Option<String>,
     site: Option<String>,
+    min_trust: Option<String>,
     node: Option<String>,
 ) -> ExitCode {
+    if let Some(ref t) = min_trust
+        && !["unverified", "neutral", "trusted", "highly_trusted"].contains(&t.as_str())
+    {
+        output::print_err(
+            &format!("Invalid --min-trust '{t}'. Valid: unverified, neutral, trusted, highly_trusted"),
+            &config.format,
+        );
+        return ExitCode::UserError;
+    }
+
     let filters = oi_types::QueryFilters {
         min_stake_usd: min_stake,
         freshness,
@@ -119,6 +130,7 @@ pub fn search(
         locale,
         gl,
         site,
+        min_trust,
         ..Default::default()
     };
 

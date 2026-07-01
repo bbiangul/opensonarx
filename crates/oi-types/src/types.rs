@@ -106,6 +106,11 @@ pub struct QueryFilters {
     pub freshness: Option<String>,
     pub types: Vec<String>,
     pub min_reputation: Option<f32>,
+    /// Minimum trust verdict to include, e.g. "neutral", "trusted", "highly_trusted".
+    /// Results whose `compute_verdict` rank is below this are dropped. Stake/reputation
+    /// inform this label but never the ranking score (capital must not buy rank).
+    #[serde(default)]
+    pub min_trust: Option<String>,
     pub shards: Vec<String>,
     /// Filter by entity refs (e.g., "youtube.com/c/3blue1brown")
     pub entities: Vec<String>,
@@ -130,6 +135,7 @@ impl QueryFilters {
             freshness: if f.freshness.is_empty() { None } else { Some(f.freshness.clone()) },
             types: f.types.clone(),
             min_reputation: if f.min_reputation > 0.0 { Some(f.min_reputation) } else { None },
+            min_trust: if f.min_trust.is_empty() { None } else { Some(f.min_trust.clone()) },
             shards: f.shards.clone(),
             entities: f.entities.clone(),
             content_kinds: f.content_kinds.clone(),
@@ -152,6 +158,7 @@ impl QueryFilters {
             locale: self.locale.clone().unwrap_or_default(),
             gl: self.gl.clone().unwrap_or_default(),
             site: self.site.clone().unwrap_or_default(),
+            min_trust: self.min_trust.clone().unwrap_or_default(),
         }
     }
 }

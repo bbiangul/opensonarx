@@ -107,12 +107,21 @@ pub trait EconomicsEngine: Send + Sync {
     fn compute_emission(&self, epoch: u64, total_staked: u64) -> u64;
 
     /// Compute burn amount from query fees and dispute slashes.
-    /// `burn_pct` — governable burn percentage (0-100, default 45).
+    /// `burn_pct` — governable burn percentage (0-100, default 10).
+    /// Dispute slashes are not burned at settlement (handled lazily on-chain).
     fn compute_burn(&self, query_fees: u64, dispute_slashes: u64, burn_pct: u8) -> u64;
 
-    /// Compute revenue shares: (publisher, curator, sentinel, burned).
-    /// `burn_pct` — governable burn percentage (0-100, default 45).
-    fn compute_revenue_shares(&self, query_revenue: u64, burn_pct: u8) -> (u64, u64, u64, u64);
+    /// Compute channel settlement shares: (publisher, curator, sentinel, burned).
+    /// Mirrors on-chain SettleChannel: `burn_pct`% burned, `sentinel_fee_pct`%
+    /// to sentinels, remainder to the payee (publisher). Curators earn via
+    /// emissions, not channel passthrough, so the curator share is always 0.
+    /// `burn_pct` default 10, `sentinel_fee_pct` default 5.
+    fn compute_revenue_shares(
+        &self,
+        query_revenue: u64,
+        burn_pct: u8,
+        sentinel_fee_pct: u8,
+    ) -> (u64, u64, u64, u64);
 
     /// Compute emission split: (staker_portion, sentinel_portion).
     /// `staker_pct` — governable staker emission share (0-100, default 70).

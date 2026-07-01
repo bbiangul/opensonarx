@@ -191,6 +191,7 @@ mod tests {
                 locale: String::new(),
                 gl: String::new(),
                 site: String::new(),
+                min_trust: String::new(),
             }),
             limit: 5,
             signed_ticket: vec![],

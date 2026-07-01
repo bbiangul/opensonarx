@@ -145,6 +145,10 @@ pub struct GatewaySearchRequest {
     /// Domain scope filter (e.g., "nytimes.com")
     #[serde(default)]
     pub site: Option<String>,
+    /// Minimum trust verdict to include (e.g. "trusted", "highly_trusted").
+    /// Stake/reputation inform this label but never the ranking score.
+    #[serde(default)]
+    pub min_trust: Option<String>,
     /// Optional field selection. Only these fields included in results.
     /// Always-included: result_id, rank, url. Default (None): all fields.
     #[serde(default)]
@@ -391,6 +395,7 @@ mod tests {
             locale: None,
             gl: None,
             site: None,
+            min_trust: Some("trusted".into()),
             fields: None,
             wait_for_content: None,
         };
@@ -398,6 +403,7 @@ mod tests {
         let decoded: GatewaySearchRequest = serde_json::from_str(&json).unwrap();
         assert_eq!(decoded.query, "rust async");
         assert_eq!(decoded.top_k, 10);
+        assert_eq!(decoded.min_trust.as_deref(), Some("trusted"));
     }
 
     #[test]

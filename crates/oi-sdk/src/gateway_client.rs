@@ -74,6 +74,7 @@ impl GatewayClient {
             locale: filters.locale.clone(),
             gl: filters.gl.clone(),
             site: filters.site.clone(),
+            min_trust: filters.min_trust.clone(),
             fields: None,
             wait_for_content: None,
         };

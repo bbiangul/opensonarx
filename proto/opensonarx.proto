@@ -29,6 +29,7 @@ message Filters {
   string locale = 8;               // Locale hint: "en", "pt-BR"
   string gl = 9;                   // Country/region code: "us", "br"
   string site = 10;                // Domain scope: "nytimes.com"
+  string min_trust = 11;           // Min trust verdict: "trusted", "highly_trusted" (filter, not rank)
 }
 
 message QueryResponse {

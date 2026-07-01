@@ -96,6 +96,10 @@ pub enum Commands {
         /// Domain scope filter (e.g., nytimes.com)
         #[arg(long)]
         site: Option<String>,
+        /// Minimum trust verdict: unverified, neutral, trusted, highly_trusted
+        /// (filters by skin-in-the-game; never affects ranking order)
+        #[arg(long = "min-trust")]
+        min_trust: Option<String>,
         /// Query a running P2P node's HTTP API (e.g., http://localhost:8001)
         #[arg(long)]
         node: Option<String>,
@@ -516,8 +520,9 @@ fn main() {
             locale,
             gl,
             site,
+            min_trust,
             node,
-        } => commands::search(&config, &query, limit, min_stake, freshness, types, shard, entity, content_kind, locale, gl, site, node),
+        } => commands::search(&config, &query, limit, min_stake, freshness, types, shard, entity, content_kind, locale, gl, site, min_trust, node),
         Commands::Feedback { result_id, useful, query, result_url, result_rank } => {
             commands::feedback(&config, &result_id, useful, query.as_deref(), result_url.as_deref(), result_rank)
         }
