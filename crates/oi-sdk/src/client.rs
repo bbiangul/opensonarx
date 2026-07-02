@@ -462,6 +462,43 @@ impl OpenSonarXClient {
             return Ok((local_results, sources_used));
         }
 
+        // Local-coverage fast path: when the index already answers the query
+        // well, skip the ~1s external engine round-trip entirely. Coverage is
+        // judged on the same absolute blend score the merge would compute, so
+        // this changes latency, not ranking. Threshold: a full top_k where even
+        // the weakest hit is solidly on-topic (absolute cosine blend >= 0.60).
+        if local_results.len() >= top_k {
+            let mut local_results = local_results;
+            let n = local_results.len();
+            apply_blend_scores(&mut local_results, n, &query_embedding, self.embedder.as_ref());
+            local_results.sort_by(|a, b| b.final_score.total_cmp(&a.final_score));
+            for (i, r) in local_results.iter_mut().enumerate() {
+                r.rank = (i + 1) as u32;
+            }
+            if local_results.last().is_some_and(|r| r.final_score >= LOCAL_COVERAGE_THRESHOLD) {
+                self.enrich_content_relevant(&mut local_results, &query_embedding);
+                self.record_leaderboard(&local_results);
+                return Ok((local_results, sources_used));
+            }
+            // Weak coverage — fall through to the external blend. Blend scores
+            // are recomputed in merge (the embedder cache makes that free).
+            return self.blend_with_external(query, top_k, filters, local_results, query_embedding, sources_used);
+        }
+
+        self.blend_with_external(query, top_k, filters, local_results, query_embedding, sources_used)
+    }
+
+    /// External-engine half of `search_blended`: fetch, merge, crawl-queue.
+    fn blend_with_external(
+        &self,
+        query: &str,
+        top_k: usize,
+        filters: &QueryFilters,
+        local_results: Vec<SearchResultItem>,
+        query_embedding: Vec<f32>,
+        mut sources_used: Vec<String>,
+    ) -> Result<(Vec<SearchResultItem>, Vec<String>)> {
+
         let params = SearchParams {
             locale: filters.locale.clone(),
             gl: filters.gl.clone(),
@@ -732,44 +769,17 @@ fn merge_results(
 
     // One batch embed for every candidate's title+snippet — the shared
     // absolute scale both sides are blended on.
-    let texts: Vec<String> = merged
-        .iter()
-        .map(|r| {
-            let body = if r.snippet.is_empty() {
-                r.content_md.chars().take(400).collect::<String>()
-            } else {
-                r.snippet.clone()
-            };
-            format!("{} {}", r.title, body)
-        })
-        .collect();
-    let text_refs: Vec<&str> = texts.iter().map(|s| s.as_str()).collect();
-    let embeddings = embedder.embed_text_batch(&text_refs).unwrap_or_default();
+    apply_blend_scores(&mut merged, local_count, query_embedding, embedder);
 
-    const SEMANTIC_W: f64 = 0.8;
-    const BM25_W: f64 = 0.2;
-    for (i, result) in merged.iter_mut().enumerate() {
-        let semantic_score = embeddings
-            .get(i)
-            .map(|emb| cosine_similarity(query_embedding, emb).max(0.0) as f64)
-            .unwrap_or(0.0);
-        let is_local = i < local_count;
-        // Locals carry their (query-normalized) BM25 term-match evidence into
-        // the blend; externals have no keyword evidence, so their BM25 term is 0.
-        let bm25 = if is_local { result.bm25_score.clamp(0.0, 1.0) } else { 0.0 };
-        result.semantic_score = semantic_score;
-        result.final_score = SEMANTIC_W * semantic_score + BM25_W * bm25;
-
-        if !is_local {
-            // Stake never moves the score (stake-neutral ranking) — but a staked
-            // domain's skin-in-the-game is surfaced on the result as trust metadata.
-            let domain = extract_domain(&result.url);
-            if let Ok(Some(info)) = stake_registry.get_stake(&domain) {
-                result.stake_truth = info.amount_lamports;
-                result.stake_usd = info.amount_usd.round() as u64;
-                result.reputation = info.reputation;
-                result.source = "cached".to_string();
-            }
+    for result in merged.iter_mut().skip(local_count) {
+        // Stake never moves the score (stake-neutral ranking) — but a staked
+        // domain's skin-in-the-game is surfaced on the result as trust metadata.
+        let domain = extract_domain(&result.url);
+        if let Ok(Some(info)) = stake_registry.get_stake(&domain) {
+            result.stake_truth = info.amount_lamports;
+            result.stake_usd = info.amount_usd.round() as u64;
+            result.reputation = info.reputation;
+            result.source = "cached".to_string();
         }
     }
 
@@ -794,6 +804,51 @@ fn merge_results(
     }
 
     merged
+}
+
+/// Minimum absolute blend score for the weakest of a full local top_k before
+/// the external engine round-trip is skipped (local-coverage fast path).
+const LOCAL_COVERAGE_THRESHOLD: f64 = 0.60;
+
+/// Re-score results on the shared absolute scale: cosine of the query against
+/// an embedded title+snippet (locals use a content prefix), blended 0.8/0.2
+/// with the result's (query-normalized) BM25 evidence. The first `local_count`
+/// items are treated as local (BM25 term counts); the rest as external (no
+/// keyword evidence, BM25 term = 0).
+fn apply_blend_scores(
+    results: &mut [SearchResultItem],
+    local_count: usize,
+    query_embedding: &[f32],
+    embedder: &dyn EmbeddingPipeline,
+) {
+    if results.is_empty() {
+        return;
+    }
+    let texts: Vec<String> = results
+        .iter()
+        .map(|r| {
+            let body = if r.snippet.is_empty() {
+                r.content_md.chars().take(400).collect::<String>()
+            } else {
+                r.snippet.clone()
+            };
+            format!("{} {}", r.title, body)
+        })
+        .collect();
+    let text_refs: Vec<&str> = texts.iter().map(|s| s.as_str()).collect();
+    let embeddings = embedder.embed_text_batch(&text_refs).unwrap_or_default();
+
+    const SEMANTIC_W: f64 = 0.8;
+    const BM25_W: f64 = 0.2;
+    for (i, result) in results.iter_mut().enumerate() {
+        let semantic_score = embeddings
+            .get(i)
+            .map(|emb| cosine_similarity(query_embedding, emb).max(0.0) as f64)
+            .unwrap_or(0.0);
+        let bm25 = if i < local_count { result.bm25_score.clamp(0.0, 1.0) } else { 0.0 };
+        result.semantic_score = semantic_score;
+        result.final_score = SEMANTIC_W * semantic_score + BM25_W * bm25;
+    }
 }
 
 /// Cosine similarity between two vectors.

@@ -6,7 +6,9 @@ license.workspace = true
 description = "CLI binary for OpenSonarX protocol"
 
 [features]
-default = []
+# onnx is default: without it the CLI silently falls back to the mock
+# embedder and search results are semantically random.
+default = ["onnx"]
 onnx = ["oi-sdk/onnx"]
 clip = ["oi-sdk/clip"]
 
