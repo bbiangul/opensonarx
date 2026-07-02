@@ -2001,6 +2001,23 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
                 }
             }
 
+            // Health audit: cross-store consistency + content quality
+            let a = idx.audit();
+            println!("  Health:");
+            println!("    hnsw/bm25/meta: {}/{}/{}{}",
+                a.hnsw_count, a.bm25_count, a.meta_count,
+                if a.hnsw_count == a.bm25_count && a.bm25_count == a.meta_count
+                    && a.meta_without_bm25 == 0 { " (consistent)" } else { " (INCONSISTENT!)" });
+            println!("    avg quality:    {:.3}", a.avg_quality);
+            println!("    missing title/url: {}/{}", a.missing_title, a.missing_url);
+            println!("    orphan dedup hashes: {}", a.orphan_hashes);
+            let mut domains: Vec<_> = a.per_domain.into_iter().collect();
+            domains.sort_by(|x, y| y.1.cmp(&x.1));
+            println!("  Top domains:");
+            for (d, c) in domains.into_iter().take(8) {
+                println!("    {c:>5}  {d}");
+            }
+
             ExitCode::Success
         }
     }

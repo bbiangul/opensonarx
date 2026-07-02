@@ -121,7 +121,10 @@ impl Default for HybridConfig {
             pool_multiplier: 15,
             fusion: FusionMethod::Rrf,
             skip_dedup: false,
-            max_chunks_per_url: 0,
+            // Benchmark-proven (agent-cost eval): uncapped pages flood the
+            // index — Rust API docs alone reached 31% of a dogfood corpus and
+            // removing the cap dropped retrieval accuracy 82% → 68%.
+            max_chunks_per_url: 8,
         }
     }
 }
@@ -132,6 +135,31 @@ impl Default for HybridConfig {
 const MAX_PER_DOMAIN: usize = 5;
 
 /// Hybrid search index combining HNSW (vector) and BM25 (keyword) search.
+/// Result of `HybridIndex::audit` — cross-store consistency and content
+/// quality aggregates for operational health checks.
+#[derive(Debug, Default)]
+pub struct IndexAudit {
+    pub hnsw_count: usize,
+    pub bm25_count: usize,
+    pub meta_count: usize,
+    pub content_hash_count: usize,
+    /// Metadata rows whose chunk text is missing from BM25 (should be 0).
+    pub meta_without_bm25: usize,
+    pub per_domain: HashMap<String, usize>,
+    pub chunk_lengths: Vec<usize>,
+    pub missing_title: usize,
+    pub missing_url: usize,
+    pub avg_quality: f64,
+    /// Metadata rows with an empty content_hash (excluded from exact dedup).
+    pub empty_content_hash: usize,
+    /// Distinct content hashes among live metadata rows.
+    pub distinct_live_hashes: usize,
+    /// Hashes in the dedup set that belong to no live chunk (history of
+    /// rejected/re-crawled content; monotonic growth is expected but large
+    /// counts indicate wasted rejections).
+    pub orphan_hashes: usize,
+}
+
 pub struct HybridIndex {
     hnsw: RwLock<HnswIndex>,
     bm25: RwLock<Bm25Index>,
@@ -304,6 +332,61 @@ impl HybridIndex {
     /// token changed.
     pub fn correct_query(&self, query: &str) -> Option<String> {
         self.bm25.read().ok().and_then(|b| b.correct_query(query))
+    }
+
+    /// Index health audit: cross-store consistency (every chunk must exist in
+    /// HNSW, BM25, and metadata), content-quality aggregates, and per-domain
+    /// distribution. Cheap enough to run on demand (`oi index info`).
+    pub fn audit(&self) -> IndexAudit {
+        let hnsw_count = self.hnsw.read().map(|h| h.len()).unwrap_or(0);
+        let bm25 = self.bm25.read().ok();
+        let metadata = self.metadata.read().ok();
+        let content_hash_count = self.content_hashes.read().map(|h| h.len()).unwrap_or(0);
+
+        let mut audit = IndexAudit {
+            hnsw_count,
+            bm25_count: bm25.as_ref().map(|b| b.len()).unwrap_or(0),
+            meta_count: metadata.as_ref().map(|m| m.len()).unwrap_or(0),
+            content_hash_count,
+            ..IndexAudit::default()
+        };
+
+        if let (Some(bm25), Some(metadata)) = (bm25, metadata) {
+            let mut q_sum = 0.0;
+            let mut q_n = 0usize;
+            let mut live_hashes: HashSet<&str> = HashSet::new();
+            for (chunk_id, meta) in metadata.iter() {
+                *audit.per_domain.entry(meta.domain.clone()).or_default() += 1;
+                if meta.title.trim().is_empty() {
+                    audit.missing_title += 1;
+                }
+                if meta.url.trim().is_empty() {
+                    audit.missing_url += 1;
+                }
+                if meta.content_hash.is_empty() {
+                    audit.empty_content_hash += 1;
+                } else {
+                    live_hashes.insert(meta.content_hash.as_str());
+                }
+                if let Some(q) = meta.quality_score {
+                    q_sum += q;
+                    q_n += 1;
+                }
+                match bm25.get_doc_content(chunk_id) {
+                    Some(text) => audit.chunk_lengths.push(text.len()),
+                    None => audit.meta_without_bm25 += 1,
+                }
+            }
+            audit.distinct_live_hashes = live_hashes.len();
+            if let Ok(all_hashes) = self.content_hashes.read() {
+                audit.orphan_hashes = all_hashes
+                    .iter()
+                    .filter(|h| !live_hashes.contains(h.as_str()))
+                    .count();
+            }
+            audit.avg_quality = if q_n > 0 { q_sum / q_n as f64 } else { 0.0 };
+        }
+        audit
     }
 
     /// Execute a query and return results with per-component timing breakdown.
@@ -1113,6 +1196,57 @@ impl SearchIndex for HybridIndex {
         let mut content_hashes = write_lock(&self.content_hashes)?;
         let mut simhashes = write_lock(&self.simhashes)?;
 
+        // URL-level replacement: a re-crawled page whose content changed must
+        // REPLACE its old chunks, not stack next to them. Without this, any
+        // drift (page edited, extractor updated) duplicates the page on every
+        // re-ingest — observed doubling the corpus (545 → 1012 docs) on one
+        // re-seed. A URL is "changed" when at least one incoming chunk's
+        // content hash is unseen; its stale chunks (and their dedup hashes)
+        // are removed before normal ingestion. Unchanged URLs fall through to
+        // exact-hash dedup as before.
+        let mut replaced_urls: HashSet<String> = HashSet::new();
+        if !self.config.skip_dedup {
+            let mut changed_urls: HashSet<&str> = HashSet::new();
+            for chunk in chunks {
+                if let Some(meta) = &chunk.meta
+                    && !meta.url.is_empty()
+                    && !meta.content_hash.is_empty()
+                    && !content_hashes.contains(&meta.content_hash)
+                {
+                    changed_urls.insert(meta.url.as_str());
+                }
+            }
+            if !changed_urls.is_empty() {
+                let stale: Vec<String> = meta_store
+                    .iter()
+                    .filter(|(_, m)| changed_urls.contains(m.url.as_str()))
+                    .map(|(id, _)| id.clone())
+                    .collect();
+                for chunk_id in &stale {
+                    if let Some(meta) = meta_store.get(chunk_id) {
+                        if !meta.content_hash.is_empty() {
+                            content_hashes.remove(&meta.content_hash);
+                        }
+                        // Replaced URLs count as same-page below: their OLD
+                        // SimHash fingerprints are still in the LSH index, and
+                        // the replacement chunks must not be rejected as
+                        // near-duplicates of their own predecessors.
+                        replaced_urls.insert(meta.url.clone());
+                    }
+                    hnsw.mark_deleted(chunk_id);
+                    bm25.mark_deleted(chunk_id);
+                    meta_store.remove(chunk_id);
+                }
+                if !stale.is_empty() {
+                    tracing::debug!(
+                        replaced = stale.len(),
+                        urls = changed_urls.len(),
+                        "ingest: replacing stale chunks for re-crawled URLs"
+                    );
+                }
+            }
+        }
+
         // Collect URLs already in the index so we can skip SimHash for same-page chunks.
         // SimHash dedup targets cross-source spam — overlapping chunks from the same
         // page are expected to be similar due to the sliding window.
@@ -1121,7 +1255,7 @@ impl SearchIndex for HybridIndex {
         } else {
             meta_store.values().map(|m| m.url.clone()).collect()
         };
-        let mut batch_urls: HashSet<String> = HashSet::new();
+        let mut batch_urls: HashSet<String> = replaced_urls;
         let mut url_ingest_counts: HashMap<String, usize> = HashMap::new();
         let mut inserted: u64 = 0;
 
@@ -1154,9 +1288,20 @@ impl SearchIndex for HybridIndex {
                 // Near-duplicate rejection via SimHash (band-based LSH — O(1) avg lookup)
                 // Skip for same-URL chunks: overlapping windows from the same page are
                 // inherently similar. SimHash dedup targets cross-source Sybil spam.
+                //
+                // Each URL faces at most ONE cross-source check (its first
+                // chunk); siblings are exempt regardless of that check's
+                // outcome. The exemption must not depend on acceptance: when
+                // the first chunk was falsely flagged against another page's
+                // template text, gating on acceptance made every subsequent
+                // chunk re-face the check and mass-reject the page (observed:
+                // 19 of 29 chunks dropped across six unrelated pages).
                 let chunk_url = chunk.meta.as_ref().map(|m| m.url.as_str()).unwrap_or("");
                 let is_same_page = !chunk_url.is_empty()
                     && (batch_urls.contains(chunk_url) || existing_urls.contains(chunk_url));
+                if !chunk_url.is_empty() {
+                    batch_urls.insert(chunk_url.to_string());
+                }
 
                 let sh = simhash::simhash(&chunk.content);
                 if !is_same_page && simhashes.is_near_duplicate(sh, simhash::DEFAULT_THRESHOLD) {
@@ -1167,10 +1312,6 @@ impl SearchIndex for HybridIndex {
                     continue;
                 }
                 simhashes.insert(sh);
-
-                if !chunk_url.is_empty() {
-                    batch_urls.insert(chunk_url.to_string());
-                }
             }
 
             if let Some(embedding) = &chunk.embedding {
@@ -1339,6 +1480,76 @@ mod tests {
 
         assert!(!results.is_empty());
         assert!(results.len() <= 2);
+    }
+
+    #[test]
+    fn test_recrawl_replaces_changed_url() {
+        // A re-crawled page whose content changed must REPLACE its old
+        // chunks, not stack next to them (regression: one re-seed doubled
+        // the corpus 545 → 1012 docs).
+        let index = HybridIndex::new(4);
+        let url = "https://example.com/page";
+        index
+            .ingest(&[
+                make_chunk_with_meta("v1a", "old content alpha version", vec![1.0, 0.0, 0.0, 0.0], url, "Page"),
+                make_chunk_with_meta("v1b", "old content beta version", vec![0.9, 0.1, 0.0, 0.0], url, "Page"),
+            ])
+            .unwrap();
+        assert_eq!(index.doc_count(), 2);
+
+        // Re-crawl: content drifted → new hashes, same URL.
+        index
+            .ingest(&[
+                make_chunk_with_meta("v2a", "new content alpha revised", vec![1.0, 0.0, 0.0, 0.0], url, "Page"),
+                make_chunk_with_meta("v2b", "new content beta revised", vec![0.9, 0.1, 0.0, 0.0], url, "Page"),
+            ])
+            .unwrap();
+        assert_eq!(index.doc_count(), 2, "changed URL must replace, not stack");
+
+        let results = index
+            .query(&[1.0, 0.0, 0.0, 0.0], "content alpha", &QueryFilters::default(), 4)
+            .unwrap();
+        assert!(!results.is_empty());
+        for r in &results {
+            assert!(
+                !r.content_md.contains("old content"),
+                "stale chunks must be gone, got: {}",
+                r.content_md
+            );
+        }
+    }
+
+    #[test]
+    fn test_recrawl_unchanged_url_is_noop() {
+        let index = HybridIndex::new(4);
+        let url = "https://example.com/stable";
+        let batch = vec![
+            make_chunk_with_meta("s1", "stable content one", vec![1.0, 0.0, 0.0, 0.0], url, "Stable"),
+            make_chunk_with_meta("s2", "stable content two", vec![0.0, 1.0, 0.0, 0.0], url, "Stable"),
+        ];
+        index.ingest(&batch).unwrap();
+        index.ingest(&batch).unwrap();
+        assert_eq!(index.doc_count(), 2, "unchanged re-crawl must dedup to a no-op");
+    }
+
+    #[test]
+    fn test_default_chunk_cap_applies() {
+        // Default config caps chunks per URL at 8 (benchmark-proven) so huge
+        // pages can't flood the index.
+        let index = HybridIndex::new(4);
+        let chunks: Vec<ContentChunk> = (0..12)
+            .map(|i| {
+                make_chunk_with_meta(
+                    &format!("cap{i}"),
+                    &format!("distinct chunk text number {i} with unique words w{i}x w{i}y"),
+                    vec![1.0 - i as f32 * 0.05, i as f32 * 0.05, 0.0, 0.0],
+                    "https://example.com/huge-page",
+                    "Huge Page",
+                )
+            })
+            .collect();
+        index.ingest(&chunks).unwrap();
+        assert_eq!(index.doc_count(), 8);
     }
 
     #[test]
