@@ -194,6 +194,31 @@ in ~0.3s via relevant MS MARCO passages, with cross-store consistency
 
 ---
 
+## MS MARCO Regression Stamp (2026-07-02, 500k passages)
+
+`oi-bench marco --limit 500000` (Arctic-S, cached embeddings, sw=0.80,
+skip_dedup, `max_per_domain: 0`):
+
+| Metric | 2026-07-02 | 2026-02 baseline |
+|--------|-----------|------------------|
+| MRR@10 | **0.3060** | 0.2913 |
+| Recall@10 | 0.6404 | — |
+| Recall@100 | 0.9110 | — |
+| Recall@1000 | 0.9726 | — |
+
+**+5% MRR over the February 500k baseline** — the scoring-architecture and
+default-weight fixes carried through to MS MARCO. Eval covers dev-small
+queries whose qrels fall inside the 500k prefix; compare future runs
+like-for-like.
+
+**Benchmark-harness artifact found**: the first rerun scored 0.2645 with
+Recall@1000 == Recall@10 — the SERP domain-diversity cap (5 results/domain)
+saw the whole corpus as one domain (`msmarco`) and truncated every query to
+~top-10. The cap is now `HybridConfig::max_per_domain` (0 = off), which
+single-domain benchmark corpora must set.
+
+---
+
 ## Notes
 
 - All benchmarks run on CPU (Apple M-series, 48GB RAM)

@@ -564,6 +564,9 @@ pub fn run_msmarco(
         semantic_weight: sw,
         bm25_weight: 1.0 - sw,
         skip_dedup: true,
+        // Single-domain benchmark corpus: the SERP diversity cap would
+        // truncate every query to ~top-10 (Recall@1000 == Recall@10).
+        max_per_domain: 0,
         ..Default::default()
     };
     let index = HybridIndex::with_config(dim, config);

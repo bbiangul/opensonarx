@@ -116,6 +116,17 @@ pub struct HybridConfig {
     /// and re-embed on mismatch (`oi index reembed`).
     #[serde(default)]
     pub embedder_name: String,
+    /// Max results from a single domain in query output (SERP diversity;
+    /// document-level scoring already ensures per-page diversity). 0 = off —
+    /// required for single-domain benchmark corpora, where the cap otherwise
+    /// silently truncates every query to ~top-10 (observed on MS MARCO:
+    /// Recall@1000 collapsed to Recall@10).
+    #[serde(default = "default_max_per_domain")]
+    pub max_per_domain: usize,
+}
+
+fn default_max_per_domain() -> usize {
+    5
 }
 
 impl Default for HybridConfig {
@@ -142,14 +153,10 @@ impl Default for HybridConfig {
             // real copies/mirror spam still land at 0-3.
             simhash_threshold: 3,
             embedder_name: String::new(),
+            max_per_domain: default_max_per_domain(),
         }
     }
 }
-
-/// Maximum results from a single domain in query output.
-/// Document-level scoring (best-chunk-per-URL) ensures per-page diversity,
-/// so this cap only needs to limit domain monopolisation of result slots.
-const MAX_PER_DOMAIN: usize = 5;
 
 /// Hybrid search index combining HNSW (vector) and BM25 (keyword) search.
 /// Result of `HybridIndex::audit` — cross-store consistency and content
@@ -959,7 +966,7 @@ impl HybridIndex {
 
         // Document-level dedup: keep only best chunk per URL.
         candidates = dedup_best_per_url(candidates, meta_store);
-        {
+        if self.config.max_per_domain > 0 {
             // Apply domain-level cap
             let mut domain_counts: HashMap<String, usize> = HashMap::new();
             candidates.retain(|c| {
@@ -967,7 +974,7 @@ impl HybridIndex {
                 if !domain.is_empty() {
                     let dc = domain_counts.entry(domain.to_string()).or_insert(0);
                     *dc += 1;
-                    if *dc > MAX_PER_DOMAIN {
+                    if *dc > self.config.max_per_domain {
                         return false;
                     }
                 }
@@ -2308,9 +2315,9 @@ mod tests {
 
         for (domain, count) in &domain_counts {
             assert!(
-                *count <= super::MAX_PER_DOMAIN,
+                *count <= super::default_max_per_domain(),
                 "domain {domain} has {count} results, max is {}",
-                super::MAX_PER_DOMAIN
+                super::default_max_per_domain()
             );
         }
 
