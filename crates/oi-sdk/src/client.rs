@@ -475,7 +475,13 @@ impl OpenSonarXClient {
             for (i, r) in local_results.iter_mut().enumerate() {
                 r.rank = (i + 1) as u32;
             }
-            if local_results.last().is_some_and(|r| r.final_score >= LOCAL_COVERAGE_THRESHOLD) {
+            let strong_coverage = local_results
+                .first()
+                .is_some_and(|r| r.final_score >= LOCAL_COVERAGE_TOP1)
+                && local_results
+                    .last()
+                    .is_some_and(|r| r.final_score >= LOCAL_COVERAGE_KTH);
+            if strong_coverage {
                 self.enrich_content_relevant(&mut local_results, &query_embedding);
                 self.record_leaderboard(&local_results);
                 return Ok((local_results, sources_used));
@@ -598,9 +604,20 @@ impl OpenSonarXClient {
                     use oi_crawl::robots::{parse_robots_txt, RobotsChecker};
                     use oi_types::traits::CrawlPipeline;
 
+                    // Hard bounds: a slow page must never hold a search
+                    // process hostage (observed: one un-timed-out crawl took
+                    // 130s). Per-URL and whole-queue deadlines.
+                    const PER_URL_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(15);
+                    const QUEUE_DEADLINE: std::time::Duration = std::time::Duration::from_secs(45);
+                    let started = std::time::Instant::now();
+
                     let mut robots = RobotsChecker::new();
                     let mut outputs = Vec::new();
                     for url in &urls {
+                        if started.elapsed() > QUEUE_DEADLINE {
+                            tracing::debug!("crawl-on-query: queue deadline reached, deferring rest");
+                            break;
+                        }
                         if let Some(domain) = url
                             .strip_prefix("https://")
                             .or_else(|| url.strip_prefix("http://"))
@@ -608,7 +625,12 @@ impl OpenSonarXClient {
                         {
                             if !robots.has_rules(domain) {
                                 let robots_url = format!("https://{domain}/robots.txt");
-                                if let Ok(res) = oi_crawl::fetcher::fetch_url(&robots_url).await {
+                                if let Ok(Ok(res)) = tokio::time::timeout(
+                                    PER_URL_TIMEOUT,
+                                    oi_crawl::fetcher::fetch_url(&robots_url),
+                                )
+                                .await
+                                {
                                     robots.add_rules(domain, parse_robots_txt(&res.html));
                                 }
                             }
@@ -617,10 +639,11 @@ impl OpenSonarXClient {
                                 continue;
                             }
                         }
-                        match distiller.crawl(url).await {
-                            Ok(out) if !out.chunks.is_empty() => outputs.push(out),
-                            Ok(_) => tracing::debug!("crawl-on-query: no content at {url}"),
-                            Err(e) => tracing::debug!("crawl-on-query: crawl failed for {url}: {e}"),
+                        match tokio::time::timeout(PER_URL_TIMEOUT, distiller.crawl(url)).await {
+                            Ok(Ok(out)) if !out.chunks.is_empty() => outputs.push(out),
+                            Ok(Ok(_)) => tracing::debug!("crawl-on-query: no content at {url}"),
+                            Ok(Err(e)) => tracing::debug!("crawl-on-query: crawl failed for {url}: {e}"),
+                            Err(_) => tracing::debug!("crawl-on-query: timed out crawling {url}"),
                         }
                     }
                     outputs
@@ -806,9 +829,13 @@ fn merge_results(
     merged
 }
 
-/// Minimum absolute blend score for the weakest of a full local top_k before
-/// the external engine round-trip is skipped (local-coverage fast path).
-const LOCAL_COVERAGE_THRESHOLD: f64 = 0.60;
+/// Local-coverage fast path thresholds: the external engine round-trip is
+/// skipped only when the best local hit is strongly on-topic (top-1) AND the
+/// whole top_k is solid (k-th). A high top-1 bar prevents a page of merely
+/// same-domain results (e.g. Rust std docs for "rust borrow checker") from
+/// suppressing the external answer.
+const LOCAL_COVERAGE_TOP1: f64 = 0.70;
+const LOCAL_COVERAGE_KTH: f64 = 0.58;
 
 /// Re-score results on the shared absolute scale: cosine of the query against
 /// an embedded title+snippet (locals use a content prefix), blended 0.8/0.2
@@ -838,8 +865,12 @@ fn apply_blend_scores(
     let text_refs: Vec<&str> = texts.iter().map(|s| s.as_str()).collect();
     let embeddings = embedder.embed_text_batch(&text_refs).unwrap_or_default();
 
-    const SEMANTIC_W: f64 = 0.8;
-    const BM25_W: f64 = 0.2;
+    // 0.9/0.1 rather than the index's 0.8/0.2: local BM25 here is normalized
+    // against local candidates only, so at 0.2 a strong same-domain keyword
+    // match (Rust `String` docs for "reverse a string in python") outranks a
+    // better external answer that carries no keyword evidence at all.
+    const SEMANTIC_W: f64 = 0.9;
+    const BM25_W: f64 = 0.1;
     for (i, result) in results.iter_mut().enumerate() {
         let semantic_score = embeddings
             .get(i)
