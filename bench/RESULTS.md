@@ -130,6 +130,28 @@ this reason — the engine was never regressed.
 
 ---
 
+## Dogfood Battery (2026-07-01)
+
+15 real-user queries (factual, dev docs, typos, Portuguese, current events,
+long-tail) against the blended CLI, judged vs mainstream web search, three
+fix-and-rerun rounds. Round 1 exposed the mock-embedder default bug; round 2
+exposed fast-path false positives, a local-BM25 blend bias, and an unbounded
+crawl (130s); round 3 after fixes:
+
+- **Quality: 14/15 at parity** with mainstream search. Only miss: a
+  double-typo cross-language query ("javascrpt promisses async") — needs
+  query spell-correction (known gap; correctly-spelled variant is perfect).
+- **Latency (CLI, cold process)**: 1.0–1.6s fast-path (local coverage,
+  no external round-trip); 3–7s blended (model load ~1.3s + engine HTTP).
+- **Latency (resident node, warm)**: **3–6ms** per query over the HTTP API
+  (`oi network node --http-port`), ~100x faster than mainstream search —
+  local-only, no external blend on this path yet.
+- **Self-building verified**: pages learned by crawl-on-query in one round
+  served as local #1 results in the next (learningtypescript.org, ESPN
+  results page).
+
+---
+
 ## Notes
 
 - All benchmarks run on CPU (Apple M-series, 48GB RAM)
