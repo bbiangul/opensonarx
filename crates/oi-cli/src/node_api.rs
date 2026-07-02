@@ -90,9 +90,12 @@ async fn search_handler(
         });
     }
 
-    // P2P fan-out: ask network peers too and append anything new (dedup by
-    // URL, blended results first). With zero peers this is just a fast local
-    // re-query whose results all dedup away.
+    // P2P fan-out: ask network peers, re-score their answers on the same
+    // absolute blend scale, and merge by score. (Peer scores arrive
+    // query-relative-normalized from their index — incomparable as-is; and
+    // appending after the blend already filled `limit` used to guarantee
+    // every P2P result was truncated away.) With zero peers this is just a
+    // fast local re-query whose results all dedup away.
     if let Ok(query_embedding) = state.client.embedder_arc().embed_query(&req.query) {
         let proto_request = proto::QueryRequest {
             request_id: uuid::Uuid::new_v4().to_string(),
@@ -100,7 +103,7 @@ async fn search_handler(
                 .iter()
                 .flat_map(|f| f.to_le_bytes())
                 .collect(),
-            query_text: req.query,
+            query_text: req.query.clone(),
             filters: Some(req.filters.to_proto()),
             limit: req.limit,
             signed_ticket: vec![],
@@ -110,14 +113,26 @@ async fn search_handler(
         if let Ok(response) = state.handle.query(proto_request).await {
             let seen: std::collections::HashSet<String> =
                 items.iter().map(|r| r.url.clone()).collect();
-            for item in proto_results_to_items(&response.results) {
-                if !seen.contains(&item.url) {
-                    items.push(item);
+            let mut p2p_items: Vec<SearchResultItem> = proto_results_to_items(&response.results)
+                .into_iter()
+                .filter(|item| !seen.contains(&item.url))
+                .collect();
+            if !p2p_items.is_empty() {
+                let client = state.client.clone();
+                let query = req.query.clone();
+                p2p_items = tokio::task::spawn_blocking(move || {
+                    let mut p2p_items = p2p_items;
+                    client.rescore_extra(&query, &mut p2p_items);
+                    p2p_items
+                })
+                .await
+                .unwrap_or_default();
+                items.extend(p2p_items);
+                items.sort_by(|a, b| b.final_score.total_cmp(&a.final_score));
+                items.truncate(limit);
+                for (i, r) in items.iter_mut().enumerate() {
+                    r.rank = (i + 1) as u32;
                 }
-            }
-            items.truncate(limit);
-            for (i, r) in items.iter_mut().enumerate() {
-                r.rank = (i + 1) as u32;
             }
         }
     }

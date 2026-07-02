@@ -42,6 +42,11 @@ enum EventAction {
         max_chunks: u32,
     },
     AddKademliaPeers(Vec<(libp2p::PeerId, libp2p::Multiaddr)>),
+    /// A peer joined the gossip topic — (re-)announce our shards so its
+    /// routing table learns about us. The startup-only announcement raced
+    /// mesh formation (published before any peer subscribed), leaving plain
+    /// nodes permanently absent from every routing table.
+    AnnounceShards,
 }
 
 /// Returns the gossipsub topic used for OpenSonarX gossip messages.
@@ -332,17 +337,42 @@ pub async fn run_event_loop(
                                 "Replicated {} chunks from {peer} (latest_seq={max_seq})",
                                 chunk_count
                             );
-                            // Record replication received (tit-for-tat) + update watermark
+                            // Record replication received (tit-for-tat) + update watermark.
+                            // Untagged batches (sender ingested outside the topic
+                            // router) count toward our own primary shard.
+                            let shard_of_batch = chunks.first()
+                                .and_then(|c| c.meta.as_ref())
+                                .and_then(|m| m.shard_id.clone());
+                            let shard_of_batch = match shard_of_batch {
+                                Some(s) => Some(s),
+                                None => shard_ids.read().await.first().cloned(),
+                            };
                             let mut rt = routing_table.write().await;
                             if let Some(nid) = rt.node_id_for_peer(&peer) {
                                 rt.record_replication_received(&nid, chunk_count);
-                                // Determine shard_id from first chunk's metadata
-                                if let Some(shard_id) = chunks.first()
-                                    .and_then(|c| c.meta.as_ref())
-                                    .and_then(|m| m.shard_id.as_deref())
+                                if let Some(ref shard_id) = shard_of_batch
                                     && max_seq > 0
                                 {
                                     rt.set_watermark(&nid, shard_id, max_seq);
+                                }
+                            }
+                            drop(rt);
+
+                            // Continuation: the peer holds more beyond this
+                            // batch — keep pulling from the new watermark until
+                            // caught up (one batch per response, no flooding).
+                            if chunk_count > 0 && latest_seq > max_seq {
+                                if let Some(shard_id) = shard_of_batch {
+                                    info!(
+                                        "Replication catch-up continues: {} of latest_seq {latest_seq} synced",
+                                        max_seq
+                                    );
+                                    let req = ReplicationReq {
+                                        shard_id,
+                                        from_seq: max_seq,
+                                        max_chunks: 1000,
+                                    };
+                                    let _ = swarm.behaviour_mut().replication.send_request(&peer, req);
                                 }
                             }
                         }
@@ -380,6 +410,24 @@ pub async fn run_event_loop(
             EventAction::AddKademliaPeers(peers) => {
                 for (peer_id, addr) in peers {
                     swarm.behaviour_mut().kademlia.add_address(&peer_id, addr);
+                }
+            }
+            EventAction::AnnounceShards => {
+                let shard_snapshot = shard_ids.read().await.clone();
+                if !shard_snapshot.is_empty() {
+                    let vector_count = index
+                        .as_ref()
+                        .map(|idx| idx.doc_count() as u64)
+                        .unwrap_or(0);
+                    let data =
+                        gossip::encode_shard_announce(&node_id, &shard_snapshot, vector_count, 0);
+                    match swarm.behaviour_mut().gossipsub.publish(get_gossip_topic(), data) {
+                        Ok(_) => info!(
+                            "Announced shards to newly subscribed peer: {:?}",
+                            shard_snapshot
+                        ),
+                        Err(e) => debug!("Shard announcement on subscribe failed: {e}"),
+                    }
                 }
             }
         }
@@ -1000,10 +1048,39 @@ async fn handle_behaviour_event(
                         let mut rt = routing_table.write().await;
                         rt.update_peer_with_id(
                             &sa.node_id,
-                            sa.shard_ids,
+                            sa.shard_ids.clone(),
                             sa.vector_count,
                             Some(propagation_source),
                         );
+                        drop(rt);
+
+                        // Catch-up sync: a peer serving one of OUR shards with
+                        // substantially more content means we're behind (e.g.
+                        // we just joined). Pull incrementally from our
+                        // watermark. Without this, same-shard peers never
+                        // exchange backlog — queries don't fan out to them
+                        // (replicas are assumed in sync) and the
+                        // content-announcement path only covers NEW crawls.
+                        if let Some(idx) = &index {
+                            let our_docs = idx.doc_count() as u64;
+                            if sa.vector_count > our_docs.saturating_mul(2).max(100) {
+                                if let Some(shard_id) = sa
+                                    .shard_ids
+                                    .iter()
+                                    .find(|sid| shard_ids.contains(*sid))
+                                {
+                                    info!(
+                                        "Peer {} has {} vectors vs our {} in shard {shard_id} — catch-up replication",
+                                        sa.node_id, sa.vector_count, our_docs
+                                    );
+                                    return EventAction::SendReplicationRequest {
+                                        peer: propagation_source,
+                                        shard_id: shard_id.clone(),
+                                        max_chunks: 1000,
+                                    };
+                                }
+                            }
+                        }
                     }
                     Some(gossip_message::Payload::StakeEvent(se)) => {
                         info!(
@@ -1045,7 +1122,7 @@ async fn handle_behaviour_event(
         }
         OpenSonarXBehaviourEvent::Gossipsub(gossipsub::Event::Subscribed { peer_id, topic }) => {
             debug!("Peer {peer_id} subscribed to {topic}");
-            EventAction::None
+            EventAction::AnnounceShards
         }
         OpenSonarXBehaviourEvent::Gossipsub(gossipsub::Event::Unsubscribed { peer_id, topic }) => {
             debug!("Peer {peer_id} unsubscribed from {topic}");
@@ -1199,7 +1276,15 @@ async fn handle_behaviour_event(
                     request.shard_id, request.max_chunks
                 );
                 if let Some(idx) = index {
-                    let shard_filter = if request.shard_id.is_empty() {
+                    // If the requested shard is one WE announce, serve our whole
+                    // index: chunks ingested outside the topic router carry no
+                    // shard tag (shard_id None), but from the network's view
+                    // they ARE this node's announced shard — a strict tag
+                    // filter returned 0 chunks and silently broke catch-up
+                    // replication between same-shard peers.
+                    let shard_filter = if request.shard_id.is_empty()
+                        || shard_ids.contains(&request.shard_id)
+                    {
                         None
                     } else {
                         Some(request.shard_id.as_str())

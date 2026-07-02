@@ -250,8 +250,16 @@ impl HybridIndex {
         let hnsw = read_lock(&self.hnsw)?;
         let chunk_seqs = read_lock(&self.chunk_seqs)?;
 
+        // Ascending-seq order is REQUIRED for watermark-based incremental
+        // replication: iterating the HashMap unordered handed out near-max
+        // seqs in the first batch, the receiver's watermark jumped to the
+        // end, and catch-up silently skipped almost the whole index.
+        let mut ordered: Vec<(&String, u64)> =
+            chunk_seqs.iter().map(|(id, &seq)| (id, seq)).collect();
+        ordered.sort_unstable_by_key(|&(_, seq)| seq);
+
         let mut chunks = Vec::new();
-        for (chunk_id, &seq) in chunk_seqs.iter() {
+        for (chunk_id, seq) in ordered {
             if seq <= from_seq {
                 continue;
             }

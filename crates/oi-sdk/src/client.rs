@@ -677,6 +677,17 @@ impl OpenSonarXClient {
         self.index.correct_query(query)
     }
 
+    /// Re-score externally-sourced results (e.g. P2P peer answers) on the
+    /// same absolute title+snippet scale `search_blended` uses, so they can
+    /// be merged fairly with blended results. Treats all items as carrying
+    /// no local BM25 evidence.
+    pub fn rescore_extra(&self, query: &str, items: &mut [SearchResultItem]) {
+        let Ok(query_embedding) = self.embedder.embed_query(query) else {
+            return;
+        };
+        apply_blend_scores(items, 0, &query_embedding, self.embedder.as_ref());
+    }
+
     /// Number of URLs waiting in the crawl-on-query queue.
     pub fn pending_crawl_count(&self) -> usize {
         self.crawl_queue.lock().map(|q| q.len()).unwrap_or(0)
