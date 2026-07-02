@@ -398,8 +398,14 @@ pub enum SentinelCommands {
         #[arg(short, long, default_value = "4")]
         concurrency: usize,
         /// Comma-separated domains to monitor
-        #[arg(short, long)]
+        #[arg(short, long, value_delimiter = ',')]
         domains: Option<Vec<String>>,
+        /// RSS/Atom feed URLs to monitor (comma-separated)
+        #[arg(short, long, value_delimiter = ',')]
+        feeds: Option<Vec<String>>,
+        /// Feed poll interval in seconds (default 300)
+        #[arg(long, default_value = "300")]
+        poll_secs: u64,
     },
     /// Show Sentinel status and crawl stats
     Status,

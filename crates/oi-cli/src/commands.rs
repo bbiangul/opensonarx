@@ -1218,14 +1218,52 @@ async fn run_integrated_sentinel(
 pub fn wallet(config: &CliConfig, action: WalletCommands) -> ExitCode {
     match action {
         WalletCommands::Create => {
-            let w = oi_sdk::Wallet::new();
+            // Persist the keypair seed and register it in config — a wallet
+            // that only lives in process memory is unusable for staking.
+            let Some(dir) = crate::config_file::ConfigFile::config_dir() else {
+                output::print_err("Cannot determine home directory", &config.format);
+                return ExitCode::UserError;
+            };
+            let key_path = dir.join("wallet.key");
+            if key_path.exists() {
+                output::print_err(
+                    &format!(
+                        "Wallet already exists at {}. Remove it first to create a new one.",
+                        key_path.display()
+                    ),
+                    &config.format,
+                );
+                return ExitCode::UserError;
+            }
+            let _ = std::fs::create_dir_all(&dir);
+            let seed: [u8; 32] = rand::random();
+            let seed_hex: String = seed.iter().map(|b| format!("{b:02x}")).collect();
+            if let Err(e) = std::fs::write(&key_path, seed_hex) {
+                output::print_err(&format!("Failed to write wallet key: {e}"), &config.format);
+                return ExitCode::UserError;
+            }
+            let w = match oi_sdk::Wallet::from_path(key_path.to_str().unwrap_or_default()) {
+                Ok(w) => w,
+                Err(e) => {
+                    output::print_err(&format!("Failed to load new wallet: {e}"), &config.format);
+                    return ExitCode::UserError;
+                }
+            };
+            let mut file_config = crate::config_file::ConfigFile::load();
+            file_config.wallet.path = Some(key_path.to_string_lossy().to_string());
+            if let Err(e) = file_config.save() {
+                output::print_err(&format!("Failed to update config: {e}"), &config.format);
+                return ExitCode::UserError;
+            }
             let info = serde_json::json!({
                 "action": "wallet_created",
                 "address": w.address(),
+                "keypair_path": key_path.to_string_lossy(),
             });
             output::print_item(&info, &config.format, |item| {
                 println!("Wallet created successfully.");
                 println!("  Address: {}", item["address"]);
+                println!("  Keypair: {} (registered in config.toml)", item["keypair_path"]);
             });
             ExitCode::Success
         }
@@ -1458,13 +1496,23 @@ pub fn verify(config: &CliConfig, url: &str) -> ExitCode {
 
             match c.get_stake(domain) {
                 Ok(Some(info)) => {
+                    // Same verdict rule as search results — a hardcoded
+                    // "trusted" here contradicted the "neutral" shown in
+                    // search for the same domain.
+                    let verdict = oi_index::ranking::compute_verdict(
+                        info.amount_usd,
+                        info.reputation,
+                        0, // reputation votes: no feedback provider in local mode
+                        info.disputed,
+                        info.dns_verified,
+                    );
                     let result = oi_types::TrustCheckResult {
                         url: url.to_string(),
                         domain: domain.to_string(),
                         is_staked: true,
                         stake_info: Some(info.clone()),
                         trust_score: info.reputation,
-                        verdict: "trusted".to_string(),
+                        verdict: verdict.to_string(),
                     };
                     output::print_item(&result, &config.format, |r| {
                         println!("URL:     {}", r.url);
@@ -1641,6 +1689,8 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
         SentinelCommands::Start {
             concurrency,
             domains,
+            feeds,
+            poll_secs,
         } => {
             if concurrency == 0 {
                 output::print_err("Concurrency must be at least 1", &config.format);
@@ -1654,6 +1704,7 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
 
                 let daemon_config = DaemonConfig {
                     concurrency,
+                    feed_poll_interval: std::time::Duration::from_secs(poll_secs.max(30)),
                     ..Default::default()
                 };
 
@@ -1671,6 +1722,30 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
                             hub_urls: Vec::new(),
                         })
                         .collect();
+                    daemon.add_domains(monitored).await;
+                }
+
+                // Direct feed subscriptions: one monitored entry per feed,
+                // domain derived from the feed URL. No hub URLs — the feed
+                // itself is the discovery surface.
+                if let Some(feeds) = feeds {
+                    let monitored: Vec<MonitoredDomain> = feeds
+                        .iter()
+                        .map(|f| MonitoredDomain {
+                            domain: f
+                                .strip_prefix("https://")
+                                .or_else(|| f.strip_prefix("http://"))
+                                .and_then(|rest| rest.split('/').next())
+                                .unwrap_or(f)
+                                .to_string(),
+                            stake_amount: 0,
+                            feed_urls: vec![f.clone()],
+                            hub_urls: vec![f.clone()],
+                        })
+                        .collect();
+                    for m in &monitored {
+                        println!("  Feed:      {} ({})", m.feed_urls[0], m.domain);
+                    }
                     daemon.add_domains(monitored).await;
                 }
 
@@ -1709,9 +1784,16 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
                             }
                         }
 
-                        // Ingest into local index
+                        // Ingest into local index and persist immediately —
+                        // sentinel content must survive the process (and be
+                        // visible to searches in other processes).
                         match client_for_events.ingest(&chunks) {
-                            Ok(()) => println!("[INDEXED] {} ({}) — {} chunks", url, domain, chunk_count),
+                            Ok(()) => {
+                                println!("[INDEXED] {} ({}) — {} chunks", url, domain, chunk_count);
+                                if let Err(e) = client_for_events.save_index() {
+                                    println!("[ERROR] Failed to save index: {e}");
+                                }
+                            }
                             Err(e) => println!("[ERROR] Failed to ingest {}: {}", url, e),
                         }
                     }
@@ -1727,6 +1809,10 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
                 let _ = daemon_handle.await;
 
                 let stats = daemon.stats().await;
+                match client.save_index() {
+                    Ok(_) => println!("Index saved."),
+                    Err(e) => println!("[ERROR] Final index save failed: {e}"),
+                }
                 println!("Final stats:");
                 println!("  URLs crawled:   {}", stats.urls_crawled);
                 println!("  URLs indexed:   {}", stats.urls_indexed);

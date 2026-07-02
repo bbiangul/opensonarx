@@ -34,4 +34,5 @@ tar = { workspace = true }
 flate2 = { workspace = true }
 axum = { workspace = true }
 uuid = { workspace = true }
+rand = { workspace = true }
 ureq = { workspace = true }

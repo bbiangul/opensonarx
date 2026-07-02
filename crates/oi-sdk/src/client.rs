@@ -62,6 +62,7 @@ impl OpenSonarXClient {
         let embedder: Arc<dyn EmbeddingPipeline> = Arc::new(oi_embed::CachedEmbedder::new(embedder, 10_000));
         let dim = embedder.dimension();
         let stake_registry = Arc::new(InMemoryStakeRegistry::new());
+        Self::load_stakes(&stake_registry);
 
         let storage = config.local_index_path.as_ref().and_then(|path| {
             Storage::new(path).ok()
@@ -123,6 +124,7 @@ impl OpenSonarXClient {
         let embedder: Arc<dyn EmbeddingPipeline> =
             Arc::new(oi_embed::CachedEmbedder::new(Self::default_embedder(), 10_000));
         let stake_registry = Arc::new(InMemoryStakeRegistry::new());
+        Self::load_stakes(&stake_registry);
         let wallet = config
             .wallet_path
             .as_ref()
@@ -372,10 +374,54 @@ impl OpenSonarXClient {
             disputed: false,
         };
         self.stake_registry.add_stake(info)?;
+        self.save_stakes();
 
         // Return a stub tx hash
         let tx_hash = format!("stub_tx_{domain}_{amount}");
         Ok(tx_hash)
+    }
+
+    /// Path of the local stake mirror: `~/.opensonarx/stakes.json`.
+    ///
+    /// In open/local mode this file IS the stake state; in web3 mode it acts
+    /// as an off-chain mirror the same way `economics.rs` mirrors the
+    /// on-chain program (the chain remains the source of truth).
+    fn stakes_path() -> Option<std::path::PathBuf> {
+        dirs::home_dir().map(|h| h.join(".opensonarx").join("stakes.json"))
+    }
+
+    /// Persist the stake registry so stakes survive across processes —
+    /// without this, trust verdicts silently reset on every CLI invocation.
+    fn save_stakes(&self) {
+        use oi_types::traits::StakeRegistry;
+        let Some(path) = Self::stakes_path() else { return };
+        let Ok(stakes) = self.stake_registry.list_active_stakes() else { return };
+        if let Some(parent) = path.parent() {
+            let _ = std::fs::create_dir_all(parent);
+        }
+        match serde_json::to_vec_pretty(&stakes) {
+            Ok(bytes) => {
+                if let Err(e) = std::fs::write(&path, bytes) {
+                    tracing::warn!("failed to persist stakes: {e}");
+                }
+            }
+            Err(e) => tracing::warn!("failed to serialize stakes: {e}"),
+        }
+    }
+
+    /// Load persisted stakes into the registry (called at client build).
+    fn load_stakes(registry: &InMemoryStakeRegistry) {
+        
+        let Some(path) = Self::stakes_path() else { return };
+        let Ok(bytes) = std::fs::read(&path) else { return };
+        match serde_json::from_slice::<Vec<StakeInfo>>(&bytes) {
+            Ok(stakes) => {
+                for info in stakes {
+                    let _ = registry.add_stake(info);
+                }
+            }
+            Err(e) => tracing::warn!("failed to parse stakes.json: {e}"),
+        }
     }
 
     /// Initiate unstaking for a domain (7-day cooldown).
@@ -384,6 +430,7 @@ impl OpenSonarXClient {
     pub fn unstake(&self, domain: &str) -> Result<String> {
         // Remove from registry (simplified -- production would set cooldown)
         self.stake_registry.remove_stake(domain)?;
+        self.save_stakes();
         let tx_hash = format!("stub_unstake_{domain}");
         Ok(tx_hash)
     }
@@ -494,9 +541,18 @@ impl OpenSonarXClient {
             sources_used.push("local".to_string());
         }
 
-        // If no external engines configured, return local only (backward compat)
-        if self.search_engines.is_empty() {
+        // A min_trust floor means "vetted results only": external engine
+        // results are unvetted by definition (verdict "external"), so the
+        // blend is local-only — the index has already enforced the floor.
+        // Also the no-engines backward-compat path.
+        if self.search_engines.is_empty() || filters.min_trust.is_some() {
             let mut local_results = local_results;
+            let n = local_results.len();
+            apply_blend_scores(&mut local_results, n, &query_embedding, self.embedder.as_ref());
+            local_results.sort_by(|a, b| b.final_score.total_cmp(&a.final_score));
+            for (i, r) in local_results.iter_mut().enumerate() {
+                r.rank = (i + 1) as u32;
+            }
             self.enrich_content_relevant(&mut local_results, &query_embedding);
             self.record_leaderboard(&local_results);
             return Ok((local_results, sources_used));
