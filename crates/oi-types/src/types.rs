@@ -99,8 +99,12 @@ pub struct LeaderboardEntry {
     pub content_kind: Option<String>,
 }
 
-/// Query filters matching proto Filters message
+/// Query filters matching proto Filters message.
+/// Container-level `serde(default)`: every field is optional on the wire, so
+/// API callers can send `{"query": "...", "filters": {}}` — or omit filters
+/// entirely — without enumerating unused fields.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct QueryFilters {
     pub min_stake_usd: Option<u32>,
     pub freshness: Option<String>,

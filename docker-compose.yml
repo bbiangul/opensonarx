@@ -1,5 +1,47 @@
 services:
+  # One-shot bootstrap: seeds the curated starter corpus into the shared
+  # index volume if it's empty. Idempotent — re-runs dedup to a no-op.
+  seed:
+    build: .
+    command: ["seed", "starter", "-c", "6"]
+    environment:
+      - RUST_LOG=${RUST_LOG:-oi=info}
+    volumes:
+      - oi-data:/home/oi/.opensonarx
+      - oi-models:/home/oi/.cache
+    restart: "no"
+
+  # Resident node: P2P + warm HTTP search API (~1ms covered queries).
+  # Runs in open mode (no wallet / no API key required). Set
+  # SERPER_API_KEY for Google-quality external results.
+  node:
+    build: .
+    restart: unless-stopped
+    command: ["network", "node", "--port", "4001", "--http-port", "8001"]
+    environment:
+      - RUST_LOG=${RUST_LOG:-oi=info}
+      - SERPER_API_KEY=${SERPER_API_KEY:-}
+      - BRAVE_API_KEY=${BRAVE_API_KEY:-}
+    volumes:
+      - oi-data:/home/oi/.opensonarx
+      - oi-models:/home/oi/.cache
+    ports:
+      - "4001:4001"       # P2P TCP (libp2p + noise)
+      - "4001:4001/udp"   # P2P QUIC transport
+      - "8001:8001"       # Node HTTP API
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+          cpus: "2.0"
+
+  # Optional: local Solana validator for web3-mode staking development.
+  # Not needed for search. Start with: docker compose --profile web3 up
   solana:
+    profiles: ["web3"]
     image: solanalabs/solana:v1.18
     command: solana-test-validator --reset
     ports:
@@ -11,21 +53,6 @@ services:
       timeout: 5s
       retries: 10
 
-  node:
-    build: .
-    restart: unless-stopped
-    command: ["network", "node", "--port", "4001", "--http-port", "8001"]
-    environment:
-      - RUST_LOG=${RUST_LOG:-oi=info}
-    ports:
-      - "4001:4001"       # P2P TCP (libp2p + noise)
-      - "4001:4001/udp"   # P2P QUIC transport
-      - "8001:8001"       # Node HTTP API
-    depends_on:
-      solana:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 4g
-          cpus: "2.0"
+volumes:
+  oi-data:
+  oi-models:
