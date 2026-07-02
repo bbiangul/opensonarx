@@ -107,6 +107,9 @@ pub struct HybridConfig {
     /// Maximum chunks to ingest per URL. Prevents large pages from dominating
     /// the vector index with disproportionate "surface area". 0 = no limit.
     pub max_chunks_per_url: usize,
+    /// SimHash Hamming-distance threshold for cross-source near-duplicate
+    /// rejection at ingest. See `Default` for calibration notes.
+    pub simhash_threshold: u32,
 }
 
 impl Default for HybridConfig {
@@ -125,6 +128,13 @@ impl Default for HybridConfig {
             // index — Rust API docs alone reached 31% of a dogfood corpus and
             // removing the cap dropped retrieval accuracy 82% → 68%.
             max_chunks_per_url: 8,
+            // Scale-calibrated: at threshold 8 (the old simhash::DEFAULT),
+            // ingesting 100k distinct MS MARCO passages rejected 96% of them
+            // as false-positive "near-duplicates" — with 100k 64-bit
+            // fingerprints, unrelated short texts routinely land within 8
+            // bits. 3 is the standard 64-bit SimHash threshold (Charikar);
+            // real copies/mirror spam still land at 0-3.
+            simhash_threshold: 3,
         }
     }
 }
@@ -553,9 +563,20 @@ impl HybridIndex {
             }
         };
 
+        // Config is tunables only (no data): when the struct gained fields and
+        // an older config.bin can't deserialize (bincode is not
+        // self-describing), fall back to defaults instead of bricking the
+        // index. The next save rewrites the current format.
         let config_bytes = storage.read_segment("config.bin")?;
-        let config: HybridConfig = bincode::deserialize(&config_bytes)
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+        let config: HybridConfig = match bincode::deserialize(&config_bytes) {
+            Ok(c) => c,
+            Err(e) => {
+                tracing::warn!(
+                    "config.bin format changed, using default config (tunables reset): {e}"
+                );
+                HybridConfig::default()
+            }
+        };
 
         // Load content_hashes — fall back to rebuilding from metadata
         let content_hashes: HashSet<String> = if storage.segment_exists("content_hashes.bin") {
@@ -1304,7 +1325,7 @@ impl SearchIndex for HybridIndex {
                 }
 
                 let sh = simhash::simhash(&chunk.content);
-                if !is_same_page && simhashes.is_near_duplicate(sh, simhash::DEFAULT_THRESHOLD) {
+                if !is_same_page && simhashes.is_near_duplicate(sh, self.config.simhash_threshold) {
                     tracing::debug!(
                         chunk_id = %chunk.chunk_id,
                         "skipping near-duplicate (SimHash)"
@@ -2116,10 +2137,13 @@ mod tests {
             }),
         };
 
-        // Same content slightly rephrased — different content_hash but near-duplicate
+        // Near-verbatim mirror (one appended word) — different content_hash
+        // but within the default Hamming threshold (3). Paraphrase-level
+        // copies (a swapped word, distance ~4-8) are consciously allowed by
+        // the scale-calibrated default; see test_paraphrase_rejected_at_loose_threshold.
         let chunk2 = ContentChunk {
             chunk_id: "c2".to_string(),
-            content: "Rust is a systems programming language focused on safety and speed for concurrent applications".to_string(),
+            content: "Rust is a systems programming language focused on safety and performance for concurrent applications.".to_string(),
             embedding: Some(vec![0.99, 0.01, 0.0, 0.0]),
             seq: 1,
             meta: Some(ChunkMeta {
@@ -2133,6 +2157,36 @@ mod tests {
 
         index.ingest(&[chunk1, chunk2]).unwrap();
         assert_eq!(index.doc_count(), 1, "near-duplicate should be rejected");
+    }
+
+    #[test]
+    fn test_paraphrase_rejected_at_loose_threshold() {
+        // Word-swap paraphrases (Hamming ~4-8) are caught only when the
+        // operator opts into a looser threshold; the scale-calibrated default
+        // (3) lets them through — at 100k docs a threshold of 8 rejected 96%
+        // of distinct passages as false positives.
+        let config = HybridConfig { simhash_threshold: 8, ..HybridConfig::default() };
+        let index = HybridIndex::with_config(4, config);
+        let mk = |id: &str, content: &str, hash: &str, url: &str| ContentChunk {
+            chunk_id: id.to_string(),
+            content: content.to_string(),
+            embedding: Some(vec![1.0, 0.0, 0.0, 0.0]),
+            seq: 0,
+            meta: Some(ChunkMeta {
+                url: url.to_string(),
+                title: "t".to_string(),
+                domain: "d".to_string(),
+                content_hash: hash.to_string(),
+                ..Default::default()
+            }),
+        };
+        index
+            .ingest(&[
+                mk("p1", "Rust is a systems programming language focused on safety and performance for concurrent applications", "h1", "https://a.com/x"),
+                mk("p2", "Rust is a systems programming language focused on safety and speed for concurrent applications", "h2", "https://b.com/x"),
+            ])
+            .unwrap();
+        assert_eq!(index.doc_count(), 1, "paraphrase should be rejected at threshold 8");
     }
 
     #[test]

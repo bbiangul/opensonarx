@@ -152,6 +152,48 @@ crawl (130s); round 3 after fixes:
 
 ---
 
+## Scale Test — 100k MS MARCO passages over the dogfood corpus (2026-07-02)
+
+`oi-bench scale-ingest` pours cached-embedding MS MARCO passages through the
+real ingestion path (dedup, SimHash, chunk cap, URL replacement) into the
+canonical index — validating index behavior at sizes live crawling can't
+reach quickly.
+
+### Found at scale (both fixed)
+
+1. **SimHash threshold 8 collapses at 100k**: 96% of distinct passages were
+   rejected as false-positive "near-duplicates" — with 100k 64-bit
+   fingerprints, unrelated short texts routinely land within 8 bits. New
+   default is 3 (the standard 64-bit SimHash threshold, Charikar), now
+   configurable via `HybridConfig::simhash_threshold`. Trade-off: word-swap
+   paraphrase copies (Hamming 4-8) pass at 3; opt into a looser threshold to
+   catch them. Acceptance at 3: 58% (MS MARCO is heavily duplicated;
+   remainder includes true dupes).
+2. **config.bin schema-evolution brick**: adding a field to `HybridConfig`
+   made every existing index fail to load (bincode EOF). Config parse
+   failures now fall back to defaults with a warning — config holds tunables
+   only, never data.
+
+### Measurements at 58k docs (starter corpus + 57.8k passages)
+
+| Metric | Result |
+|--------|--------|
+| Ingest throughput | ~1,400 docs/s sustained (embeddings precomputed) |
+| Save / load | 0.2s / <1s (178 MB on disk) |
+| Re-ingest of same 100k | 0.6s no-op (URL replacement + hash dedup) |
+| Warm node, repeat query | 9ms |
+| Warm node, first-time query | ~100ms |
+| Cold CLI, local fast path | 0.31–0.37s |
+| Spell-correction (2 OOV tokens, 58k-doc vocab) | within a 1.2s cold query |
+| Battery quality | 14/15 parity held; curated/learned pages still rank where deserved |
+
+Corpus enrichment worked as hoped: topics the starter corpus never covered
+(climate-change causes, vitamin-D symptoms, docker-vs-VM) now answer locally
+in ~0.3s via relevant MS MARCO passages, with cross-store consistency
+(hnsw/bm25/meta 58,240/58,240/58,240) intact.
+
+---
+
 ## Notes
 
 - All benchmarks run on CPU (Apple M-series, 48GB RAM)

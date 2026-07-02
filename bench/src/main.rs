@@ -19,6 +19,7 @@ mod image_gen;
 mod metrics;
 mod msmarco;
 mod scaling;
+mod scale_ingest;
 mod sealqa;
 mod agent_cost;
 mod seed;
@@ -182,6 +183,15 @@ enum Command {
         /// Vector-only mode (skip BM25, set bm25_weight=0.0)
         #[arg(long)]
         vector_only: bool,
+    },
+    /// Ingest N cached MS MARCO passages into a target index (scale testing)
+    ScaleIngest {
+        /// Number of passages to ingest
+        #[arg(short, long, default_value_t = 100_000)]
+        limit: usize,
+        /// Target index directory
+        #[arg(short, long)]
+        index_path: String,
     },
     /// Evaluate against LongSeal benchmark (254 questions, per-question indexing)
     SealQa {
@@ -840,6 +850,9 @@ async fn main() {
                 .map(|s| scaling::parse_sizes(&s))
                 .unwrap_or_else(scaling::default_sizes);
             scaling::run_scaling(&size_list, queries, &output, vector_only);
+        }
+        Command::ScaleIngest { limit, index_path } => {
+            scale_ingest::run_scale_ingest(limit, &index_path);
         }
         Command::SealQa {
             pipeline,
