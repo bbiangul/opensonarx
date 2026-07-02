@@ -1,6 +1,7 @@
 pub mod auth;
 pub mod client;
 pub mod config;
+pub mod dns_verify;
 pub mod engines;
 pub mod gateway_client;
 pub mod leaderboard;

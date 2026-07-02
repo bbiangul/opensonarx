@@ -358,6 +358,19 @@ impl OpenSonarXClient {
             .map(|w| w.address().to_string())
             .unwrap_or_else(|| "no-wallet".to_string());
 
+        // Ownership proof: does the domain publish oi-verify=<wallet> in a
+        // TXT record? Anyone can bond capital to any name — only this proof
+        // ties the bond to the domain owner. Unverified stakes are accepted
+        // (the bond is real and visible) but their verdict caps at "neutral".
+        let dns_verified = crate::dns_verify::verify_domain_ownership(domain, &wallet_addr);
+        if !dns_verified {
+            tracing::warn!(
+                "Domain ownership not verified for {domain}: publish TXT record \
+                 '{}' to unlock the trusted verdict tier",
+                crate::dns_verify::expected_txt(&wallet_addr)
+            );
+        }
+
         let info = StakeInfo {
             domain: domain.to_string(),
             amount_lamports: amount,
@@ -368,7 +381,7 @@ impl OpenSonarXClient {
                 .as_secs() as i64,
             cooldown_until: None,
             wallet: wallet_addr,
-            dns_verified: false,
+            dns_verified,
             reputation: 1.0,
             entity: None,
             disputed: false,

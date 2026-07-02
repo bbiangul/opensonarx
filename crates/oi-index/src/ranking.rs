@@ -104,7 +104,9 @@ pub fn compute_verdict(
     if stake_usd >= 10_000.0 && reputation >= 1.8 && reputation_votes >= 50 && dns_verified {
         return "highly_trusted";
     }
-    if stake_usd >= 1_000.0 && reputation >= 1.3 && reputation_votes >= 10 {
+    // "trusted" requires DNS-proven domain ownership: without it, anyone can
+    // bond capital to a name they don't control and buy the label.
+    if stake_usd >= 1_000.0 && reputation >= 1.3 && reputation_votes >= 10 && dns_verified {
         return "trusted";
     }
     if stake_usd < 1.0 && reputation_votes < 5 {
@@ -366,7 +368,14 @@ mod tests {
 
     #[test]
     fn test_verdict_trusted() {
-        assert_eq!(compute_verdict(1_000.0, 1.3, 10, false, false), "trusted");
+        assert_eq!(compute_verdict(1_000.0, 1.3, 10, false, true), "trusted");
+    }
+
+    #[test]
+    fn test_verdict_trusted_requires_dns_proof() {
+        // Same stake/reputation/votes WITHOUT domain-ownership proof caps at
+        // neutral — capital bonded to a name you don't control buys no label.
+        assert_eq!(compute_verdict(1_000.0, 1.3, 10, false, false), "neutral");
     }
 
     #[test]
