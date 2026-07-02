@@ -113,6 +113,37 @@ impl OpenSonarXClient {
         }
     }
 
+    /// Create a client over an EXISTING shared index (e.g. the resident
+    /// node's `Arc<HybridIndex>`, kept live by the integrated sentinel).
+    /// The client adds the blended-search layer — external engines,
+    /// crawl-on-query learning, spell correction — on top of that index
+    /// without loading a second copy. No storage is attached: persistence
+    /// stays with the index's owner (`save_index` is a no-op here).
+    pub fn with_shared_index(config: SdkConfig, index: Arc<HybridIndex>) -> Self {
+        let embedder: Arc<dyn EmbeddingPipeline> =
+            Arc::new(oi_embed::CachedEmbedder::new(Self::default_embedder(), 10_000));
+        let stake_registry = Arc::new(InMemoryStakeRegistry::new());
+        let wallet = config
+            .wallet_path
+            .as_ref()
+            .and_then(|p| Wallet::from_path(p).ok());
+        let search_engines = crate::engines::default_engines(&config);
+        let leaderboard: Arc<dyn QueryLeaderboard> = Arc::new(InMemoryLeaderboard::new());
+        Self {
+            config,
+            index,
+            stake_registry,
+            embedder,
+            wallet,
+            storage: None,
+            search_engines,
+            leaderboard,
+            topic_router: None,
+            shard_filter: Vec::new(),
+            crawl_queue: std::sync::Mutex::new(Vec::new()),
+        }
+    }
+
     /// Attach a topic router for classify-at-ingest.
     ///
     /// When set, `ingest()` will classify each chunk's embedding into a topic shard

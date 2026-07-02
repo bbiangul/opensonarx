@@ -8,7 +8,12 @@ use std::sync::Arc;
 /// Shared state for the node HTTP API.
 struct ApiState {
     handle: NodeHandle,
-    embedder: Arc<dyn oi_types::EmbeddingPipeline>,
+    /// Blended-search client over the node's SHARED index: external engines,
+    /// crawl-on-query learning, and spell correction on the warm path.
+    client: Arc<oi_sdk::OpenSonarXClient>,
+    /// The shared index + its on-disk location, for persisting learned pages.
+    index: Arc<oi_index::HybridIndex>,
+    index_path: Option<std::path::PathBuf>,
 }
 
 #[derive(Deserialize)]
@@ -41,37 +46,85 @@ async fn search_handler(
     State(state): State<Arc<ApiState>>,
     Json(req): Json<SearchRequest>,
 ) -> Result<Json<Vec<SearchResultItem>>, (axum::http::StatusCode, String)> {
-    // Embed query to f32 LE bytes for the P2P protocol
-    let query_embedding = state
-        .embedder
-        .embed_query(&req.query)
-        .map(|emb| emb.iter().flat_map(|f| f.to_le_bytes()).collect::<Vec<u8>>())
-        .unwrap_or_default();
+    let limit = req.limit as usize;
 
-    let proto_request = proto::QueryRequest {
-        request_id: uuid::Uuid::new_v4().to_string(),
-        query_embedding,
-        query_text: req.query,
-        filters: Some(req.filters.to_proto()),
-        limit: req.limit,
-        signed_ticket: vec![],
-        sender_pubkey: String::new(),
-        nonce: 0,
-    };
+    // Blended search (local + external engines) — blocking work (ONNX embed,
+    // engine HTTP via ureq) moved off the async runtime.
+    let client = state.client.clone();
+    let query = req.query.clone();
+    let filters = req.filters.clone();
+    let blended = tokio::task::spawn_blocking(move || {
+        client.search_blended(&query, limit, &filters)
+    })
+    .await
+    .map_err(|e| (
+        axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+        format!("Search task failed: {e}"),
+    ))?
+    .map_err(|e| (
+        axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+        format!("Search failed: {e}"),
+    ))?;
+    let (mut items, _sources) = blended;
 
-    match state.handle.query(proto_request).await {
-        Ok(response) => {
-            let items = proto_results_to_items(&response.results);
-            Ok(Json(items))
-        }
-        Err(e) => Err((
-            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Query failed: {e}"),
-        )),
+    // Crawl-on-query learning: fire-and-forget — the resident process
+    // indexes the external results in the background, so this query makes
+    // the next one faster and better without adding response latency.
+    // Learned content is persisted immediately (the shared-index client has
+    // no storage of its own, and a killed node must not lose what it learned).
+    let learner = state.client.clone();
+    let index = state.index.clone();
+    let index_path = state.index_path.clone();
+    if learner.pending_crawl_count() > 0 {
+        tokio::task::spawn_blocking(move || {
+            let learned = learner.process_crawl_queue();
+            if learned > 0 {
+                tracing::info!("crawl-on-query: learned {learned} pages");
+                if let Some(path) = index_path
+                    && let Ok(storage) = oi_index::Storage::new(&path)
+                    && let Err(e) = index.save(&storage)
+                {
+                    tracing::warn!("crawl-on-query: failed to persist learned pages: {e}");
+                }
+            }
+        });
     }
+
+    // P2P fan-out: ask network peers too and append anything new (dedup by
+    // URL, blended results first). With zero peers this is just a fast local
+    // re-query whose results all dedup away.
+    if let Ok(query_embedding) = state.client.embedder_arc().embed_query(&req.query) {
+        let proto_request = proto::QueryRequest {
+            request_id: uuid::Uuid::new_v4().to_string(),
+            query_embedding: query_embedding
+                .iter()
+                .flat_map(|f| f.to_le_bytes())
+                .collect(),
+            query_text: req.query,
+            filters: Some(req.filters.to_proto()),
+            limit: req.limit,
+            signed_ticket: vec![],
+            sender_pubkey: String::new(),
+            nonce: 0,
+        };
+        if let Ok(response) = state.handle.query(proto_request).await {
+            let seen: std::collections::HashSet<String> =
+                items.iter().map(|r| r.url.clone()).collect();
+            for item in proto_results_to_items(&response.results) {
+                if !seen.contains(&item.url) {
+                    items.push(item);
+                }
+            }
+            items.truncate(limit);
+            for (i, r) in items.iter_mut().enumerate() {
+                r.rank = (i + 1) as u32;
+            }
+        }
+    }
+
+    Ok(Json(items))
 }
 
-/// Convert proto SearchResult items to SearchResultItem.
 /// Convert proto SearchResult items to SearchResultItem.
 fn proto_results_to_items(results: &[proto::SearchResult]) -> Vec<SearchResultItem> {
     results
@@ -132,12 +185,22 @@ fn proto_results_to_items(results: &[proto::SearchResult]) -> Vec<SearchResultIt
 }
 
 /// Start the node HTTP API server.
+///
+/// `index` is the node's live shared index; `sdk_config` carries the
+/// configured external engines. The API serves the full blended search
+/// (local + external + P2P) with background crawl-on-query learning.
 pub async fn run_node_api(
     port: u16,
     handle: NodeHandle,
+    index: Arc<oi_index::HybridIndex>,
+    index_path: Option<std::path::PathBuf>,
+    sdk_config: oi_sdk::SdkConfig,
 ) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let embedder = oi_sdk::OpenSonarXClient::default_embedder();
-    let state = Arc::new(ApiState { handle, embedder });
+    let client = Arc::new(oi_sdk::OpenSonarXClient::with_shared_index(
+        sdk_config,
+        index.clone(),
+    ));
+    let state = Arc::new(ApiState { handle, client, index, index_path });
 
     let app = Router::new()
         .route("/health", get(health_handler))

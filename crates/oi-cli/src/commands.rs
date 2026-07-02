@@ -926,11 +926,24 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                     Ok(handle) => {
                         println!("  Node running, peer ID: {}", handle.peer_id);
 
-                        // Spawn HTTP API if --http-port is set
+                        // Spawn HTTP API if --http-port is set. It serves the
+                        // full blended search over the node's shared index.
                         if let Some(hp) = http_port {
                             let api_handle = handle.clone();
+                            let api_index = index.clone();
+                            let api_sdk_config = SdkConfig {
+                                brave_api_key: std::env::var("BRAVE_API_KEY").ok(),
+                                search_engines: config.search_engines.clone(),
+                                crawl_on_query: true,
+                                crawl_on_query_max_urls: 3,
+                                ..Default::default()
+                            };
+                            let api_index_path =
+                                crate::config_file::ConfigFile::index_dir();
                             tokio::spawn(async move {
-                                if let Err(e) = crate::node_api::run_node_api(hp, api_handle).await {
+                                if let Err(e) = crate::node_api::run_node_api(
+                                    hp, api_handle, api_index, api_index_path, api_sdk_config,
+                                ).await {
                                     eprintln!("HTTP API error: {e}");
                                 }
                             });
