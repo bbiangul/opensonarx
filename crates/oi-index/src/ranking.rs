@@ -379,6 +379,27 @@ mod tests {
     }
 
     #[test]
+    fn test_verdict_capital_alone_buys_nothing_above_neutral() {
+        // Adversarial: a whale with $1M staked, DNS-verified, but no earned
+        // reputation/votes — money cannot shortcut community validation.
+        assert_eq!(compute_verdict(1_000_000.0, 1.0, 0, false, true), "neutral");
+    }
+
+    #[test]
+    fn test_verdict_disputed_overrides_everything() {
+        // Adversarial: an actively disputed domain keeps the disputed label
+        // no matter how much capital/reputation it holds.
+        assert_eq!(compute_verdict(1_000_000.0, 3.0, 999, true, true), "disputed");
+    }
+
+    #[test]
+    fn test_verdict_reputation_without_stake_stays_neutral() {
+        // Adversarial: reputation farming without bonded capital cannot reach
+        // trusted — there must be something at risk to slash.
+        assert_eq!(compute_verdict(0.0, 2.0, 100, false, true), "neutral");
+    }
+
+    #[test]
     fn test_verdict_unverified() {
         assert_eq!(compute_verdict(0.0, 1.0, 0, false, false), "unverified");
     }
