@@ -2091,6 +2091,10 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
                 }
             }
 
+            if !idx.embedder_name().is_empty() {
+                println!("  Embedder:   {}", idx.embedder_name());
+            }
+
             // Health audit: cross-store consistency + content quality
             let a = idx.audit();
             println!("  Health:");
@@ -2108,6 +2112,91 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
                 println!("    {c:>5}  {d}");
             }
 
+            ExitCode::Success
+        }
+        IndexCommands::Reembed { batch } => {
+            let storage = match oi_index::Storage::new(&index_path) {
+                Ok(s) if s.segment_exists("hnsw.bin") => s,
+                _ => {
+                    output::print_err("No index found at ~/.opensonarx/index/", &config.format);
+                    return ExitCode::UserError;
+                }
+            };
+            let old = match oi_index::HybridIndex::load(&storage) {
+                Ok(i) => i,
+                Err(e) => {
+                    output::print_err(&format!("Failed to load index: {e}"), &config.format);
+                    return ExitCode::UserError;
+                }
+            };
+            let embedder = oi_sdk::OpenSonarXClient::default_embedder();
+            println!(
+                "Re-embedding {} docs: '{}' -> '{}'",
+                old.doc_count(),
+                if old.embedder_name().is_empty() { "(unrecorded)" } else { old.embedder_name() },
+                embedder.name()
+            );
+
+            let chunks = match old.chunks_since(None, 0, usize::MAX) {
+                Ok(c) => c,
+                Err(e) => {
+                    output::print_err(&format!("Failed to read chunks: {e}"), &config.format);
+                    return ExitCode::UserError;
+                }
+            };
+
+            let fresh_config = oi_index::hybrid::HybridConfig {
+                embedder_name: embedder.name().to_string(),
+                ..Default::default()
+            };
+            let new_index = oi_index::HybridIndex::with_config(embedder.dimension(), fresh_config);
+
+            use oi_types::traits::SearchIndex as _;
+            let start = std::time::Instant::now();
+            let batch_size = batch.max(1);
+            let mut done = 0usize;
+            for group in chunks.chunks(batch_size) {
+                let texts: Vec<&str> = group.iter().map(|c| c.content.as_str()).collect();
+                let embeddings = match embedder.embed_text_batch(&texts) {
+                    Ok(e) => e,
+                    Err(e) => {
+                        output::print_err(&format!("Embedding failed: {e}"), &config.format);
+                        return ExitCode::UserError;
+                    }
+                };
+                let reembedded: Vec<oi_types::ContentChunk> = group
+                    .iter()
+                    .zip(embeddings)
+                    .map(|(c, emb)| oi_types::ContentChunk {
+                        chunk_id: c.chunk_id.clone(),
+                        content: c.content.clone(),
+                        embedding: Some(emb),
+                        seq: 0,
+                        meta: c.meta.clone(),
+                    })
+                    .collect();
+                if let Err(e) = new_index.ingest(&reembedded) {
+                    output::print_err(&format!("Ingest failed: {e}"), &config.format);
+                    return ExitCode::UserError;
+                }
+                done += group.len();
+                if done % 5000 < batch_size {
+                    let rate = done as f64 / start.elapsed().as_secs_f64().max(0.001);
+                    println!("  {done} re-embedded ({rate:.0} docs/s)");
+                }
+            }
+
+            // Old index stays intact on disk until this save succeeds.
+            if let Err(e) = new_index.save(&storage) {
+                output::print_err(&format!("Failed to save re-embedded index: {e}"), &config.format);
+                return ExitCode::UserError;
+            }
+            println!(
+                "Done: {} docs re-embedded with '{}' in {:.1}s (replication seqs reset)",
+                new_index.doc_count(),
+                embedder.name(),
+                start.elapsed().as_secs_f64()
+            );
             ExitCode::Success
         }
     }

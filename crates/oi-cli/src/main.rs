@@ -232,6 +232,13 @@ pub enum IndexCommands {
     },
     /// Show index statistics
     Info,
+    /// Re-embed every indexed chunk with the current embedding model
+    /// (required after an embedder upgrade — old vectors are meaningless)
+    Reembed {
+        /// Embedding batch size
+        #[arg(long, default_value = "64")]
+        batch: usize,
+    },
 }
 
 #[derive(Subcommand)]

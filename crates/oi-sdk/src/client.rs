@@ -68,25 +68,41 @@ impl OpenSonarXClient {
             Storage::new(path).ok()
         });
 
+        // Fresh indexes record which embedding model their vectors come from;
+        // loaded indexes are checked against the current model — mismatched
+        // vectors don't error, they silently return garbage similarity.
+        let fresh_config = oi_index::hybrid::HybridConfig {
+            embedder_name: embedder.name().to_string(),
+            ..Default::default()
+        };
         let index = if let Some(ref s) = storage
             && s.segment_exists("hnsw.bin")
         {
             match HybridIndex::load(s) {
                 Ok(idx) => {
                     tracing::info!("Loaded index from disk ({} docs)", idx.doc_count());
+                    let recorded = idx.embedder_name();
+                    if !recorded.is_empty() && recorded != embedder.name() {
+                        tracing::error!(
+                            "EMBEDDER MISMATCH: index was built with '{recorded}' but the \
+                             current model is '{}'. Vector similarity will be meaningless \
+                             until you run `oi index reembed`.",
+                            embedder.name()
+                        );
+                    }
                     Arc::new(idx.with_stake_registry(stake_registry.clone() as Arc<dyn StakeRegistry>))
                 }
                 Err(e) => {
                     tracing::warn!("Failed to load index from disk, starting fresh: {e}");
                     Arc::new(
-                        HybridIndex::new(dim)
+                        HybridIndex::with_config(dim, fresh_config)
                             .with_stake_registry(stake_registry.clone() as Arc<dyn StakeRegistry>),
                     )
                 }
             }
         } else {
             Arc::new(
-                HybridIndex::new(dim)
+                HybridIndex::with_config(dim, fresh_config)
                     .with_stake_registry(stake_registry.clone() as Arc<dyn StakeRegistry>),
             )
         };

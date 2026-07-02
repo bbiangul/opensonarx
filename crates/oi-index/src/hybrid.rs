@@ -110,6 +110,12 @@ pub struct HybridConfig {
     /// SimHash Hamming-distance threshold for cross-source near-duplicate
     /// rejection at ingest. See `Default` for calibration notes.
     pub simhash_threshold: u32,
+    /// Name of the embedding model whose vectors this index holds. Empty for
+    /// legacy indexes (adopted on first save). Querying with a DIFFERENT
+    /// model silently returns garbage similarity — callers must check this
+    /// and re-embed on mismatch (`oi index reembed`).
+    #[serde(default)]
+    pub embedder_name: String,
 }
 
 impl Default for HybridConfig {
@@ -135,6 +141,7 @@ impl Default for HybridConfig {
             // bits. 3 is the standard 64-bit SimHash threshold (Charikar);
             // real copies/mirror spam still land at 0-3.
             simhash_threshold: 3,
+            embedder_name: String::new(),
         }
     }
 }
@@ -347,6 +354,12 @@ impl HybridIndex {
     /// Embedding dimension this index was built for.
     pub fn dim(&self) -> usize {
         self.dim
+    }
+
+    /// Name of the embedding model this index's vectors came from
+    /// (empty for legacy indexes built before the field existed).
+    pub fn embedder_name(&self) -> &str {
+        &self.config.embedder_name
     }
 
     /// Suggest a spelling correction for a query from the indexed vocabulary
