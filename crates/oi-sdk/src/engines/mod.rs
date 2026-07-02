@@ -248,6 +248,14 @@ pub fn default_engines(config: &SdkConfig) -> Vec<Arc<dyn SearchEngine>> {
 }
 
 /// Build a single engine from its config entry.
+///
+/// Key-free engine status (probed 2026-07-01): duckduckgo WORKS (the only
+/// reliable key-free engine); google/bing scrapers return silently empty
+/// (bot walls); qwant 403 (DataDome); stract 404 (service appears shut
+/// down); yep 501. mojeek requires a paid key for its JSON API. Persistent
+/// failures trip the per-engine circuit breaker, so dead engines self-mute
+/// — but production deployments should configure at least one API-backed
+/// engine (brave/serper) rather than lean on scrapers.
 fn build_engine(ec: &SearchEngineConfig) -> Option<Arc<dyn SearchEngine>> {
     match ec.name.to_lowercase().as_str() {
         "duckduckgo" | "ddg" => Some(Arc::new(duckduckgo::DuckDuckGo)),

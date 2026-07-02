@@ -2,7 +2,9 @@ use oi_types::{SearchEngine, SearchResultItem};
 
 use super::urlencoded;
 
-/// Mojeek JSON API adapter — independent search index, optional API key.
+/// Mojeek JSON API adapter — independent search index. The JSON endpoint
+/// (`fmt=json`) requires a paid API key; without one it always returns 403,
+/// so the engine reports unavailable rather than wasting a request per query.
 pub struct Mojeek {
     api_key: Option<String>,
 }
@@ -16,6 +18,10 @@ impl Mojeek {
 impl SearchEngine for Mojeek {
     fn name(&self) -> &str {
         "mojeek"
+    }
+
+    fn is_available(&self) -> bool {
+        self.api_key.is_some()
     }
 
     fn search(&self, query: &str, limit: usize) -> Vec<SearchResultItem> {

@@ -132,6 +132,13 @@ impl Bm25Index {
     pub fn correct_query(&self, query: &str) -> Option<String> {
         const MIN_TOKEN_LEN: usize = 5;
 
+        // Tokens of the query that ARE in the vocabulary — used as context
+        // for the co-occurrence guard below.
+        let context_tokens: Vec<String> = tokenize(query)
+            .into_iter()
+            .filter(|t| self.inverted_index.contains_key(t))
+            .collect();
+
         let mut changed = false;
         let corrected: Vec<String> = query
             .split_whitespace()
@@ -147,8 +154,7 @@ impl Bm25Index {
                 {
                     return word.to_string();
                 }
-                let max_dist = if token.len() >= 8 { 2 } else { 1 };
-                match self.nearest_term(&token, max_dist) {
+                match self.nearest_term(&token, &context_tokens) {
                     Some(term) => {
                         changed = true;
                         term
@@ -161,37 +167,57 @@ impl Bm25Index {
         changed.then(|| corrected.join(" "))
     }
 
-    /// Nearest vocabulary term to `token`: smallest edit distance wins;
-    /// document frequency breaks ties. Distance-tiered df floors keep weak
-    /// matches out: a 1-edit neighbor needs 2 docs, a 2-edit neighbor needs 8
-    /// — so a common-but-far word ("processes") can never beat or stand in
-    /// for a rare-but-adjacent one ("promises"). Linear scan with length
+    /// Nearest vocabulary term to `token` under strict guards tuned against
+    /// false positives (a small corpus makes those cheap and costly:
+    /// "tokio" → "tokyo", "mechanical" → "technical" both shipped before
+    /// these guards existed):
+    /// - edit distance exactly 1 (distance-2 corrections are net-negative);
+    /// - same first letter (real typos rarely miss the first letter);
+    /// - document frequency >= 2;
+    /// - CO-OCCURRENCE: when the query has other in-vocab tokens, the
+    ///   candidate must share at least one document with one of them —
+    ///   "tokyo" never appears near "rust"/"async", "javascript" constantly
+    ///   appears near "async", so context kills the impostor.
+    ///
+    /// Ties break by higher document frequency. Linear scan with length
     /// pruning — fine for corpora up to a few hundred thousand terms.
-    fn nearest_term(&self, token: &str, max_dist: usize) -> Option<String> {
-        const MIN_DF_DIST1: usize = 2;
-        const MIN_DF_DIST2: usize = 8;
+    fn nearest_term(&self, token: &str, context_tokens: &[String]) -> Option<String> {
+        const MIN_DF: usize = 2;
         let tok_len = token.len();
-        let mut best: Option<(&str, usize, usize)> = None; // (term, dist, df)
+        let first_char = token.chars().next()?;
+        let mut best: Option<(&str, usize)> = None; // (term, df)
         for (term, postings) in &self.inverted_index {
             let df = postings.len();
-            if df < MIN_DF_DIST1 || term.len().abs_diff(tok_len) > max_dist {
+            if df < MIN_DF
+                || term.len().abs_diff(tok_len) > 1
+                || !term.starts_with(first_char)
+            {
                 continue;
             }
-            let Some(dist) = bounded_levenshtein(token, term, max_dist) else {
-                continue;
-            };
-            if dist >= 2 && df < MIN_DF_DIST2 {
+            if bounded_levenshtein(token, term, 1) != Some(1) {
                 continue;
             }
-            let better = match best {
-                None => true,
-                Some((_, bd, bdf)) => dist < bd || (dist == bd && df > bdf),
-            };
-            if better {
-                best = Some((term, dist, df));
+            if !context_tokens.is_empty() && !self.co_occurs(term, context_tokens) {
+                continue;
+            }
+            if best.is_none_or(|(_, bdf)| df > bdf) {
+                best = Some((term, df));
             }
         }
-        best.map(|(term, _, _)| term.to_string())
+        best.map(|(term, _)| term.to_string())
+    }
+
+    /// Does `term` share at least one document with any of `context_tokens`?
+    fn co_occurs(&self, term: &str, context_tokens: &[String]) -> bool {
+        let Some(term_postings) = self.inverted_index.get(term) else {
+            return false;
+        };
+        let term_docs: HashSet<usize> = term_postings.iter().map(|&(d, _)| d).collect();
+        context_tokens.iter().any(|ctx| {
+            self.inverted_index
+                .get(ctx)
+                .is_some_and(|p| p.iter().any(|&(d, _)| term_docs.contains(&d)))
+        })
     }
 }
 
@@ -406,6 +432,29 @@ mod tests {
         let idx = spell_test_index();
         let corrected = idx.correct_query("javascrpt promisses async").unwrap();
         assert_eq!(corrected, "javascript promises async");
+    }
+
+    #[test]
+    fn test_correct_query_cooccurrence_guard() {
+        // "tokio" must NOT correct to "tokyo": tokyo never co-occurs with the
+        // query's other terms (rust/async), even though it's 1 edit away.
+        let mut idx = Bm25Index::new();
+        for i in 0..4 {
+            idx.insert(format!("rust{i}"), "rust async runtime programming".into());
+            idx.insert(format!("city{i}"), "tokyo is the capital of japan".into());
+        }
+        assert_eq!(idx.correct_query("rust async runtime tokio"), None);
+        // But with no in-vocab context, a lone plausible typo still corrects.
+        assert_eq!(idx.correct_query("tokyoo").as_deref(), Some("tokyo"));
+    }
+
+    #[test]
+    fn test_correct_query_first_letter_and_dist1_guards() {
+        let idx = spell_test_index();
+        // distance 2 → never corrected (was "mechanical" → "technical")
+        assert_eq!(idx.correct_query("javascrp"), None);
+        // different first letter → never corrected
+        assert_eq!(idx.correct_query("javascrpt xromises").as_deref(), Some("javascript xromises"));
     }
 
     #[test]
