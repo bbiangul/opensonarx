@@ -35,6 +35,8 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
         // and ingested after results are shown (see crawl-on-query in oi-sdk).
         crawl_on_query: true,
         crawl_on_query_max_urls: 3,
+        stakes_path: crate::config_file::ConfigFile::config_dir()
+            .map(|d| d.join("stakes.json").to_string_lossy().to_string()),
     };
     OpenSonarXClient::new(sdk_config)
 }
@@ -938,6 +940,8 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                 search_engines: config.search_engines.clone(),
                                 crawl_on_query: true,
                                 crawl_on_query_max_urls: 3,
+                                stakes_path: crate::config_file::ConfigFile::config_dir()
+                                    .map(|d| d.join("stakes.json").to_string_lossy().to_string()),
                                 ..Default::default()
                             };
                             let api_index_path =

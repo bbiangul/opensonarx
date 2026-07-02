@@ -62,7 +62,7 @@ impl OpenSonarXClient {
         let embedder: Arc<dyn EmbeddingPipeline> = Arc::new(oi_embed::CachedEmbedder::new(embedder, 10_000));
         let dim = embedder.dimension();
         let stake_registry = Arc::new(InMemoryStakeRegistry::new());
-        Self::load_stakes(&stake_registry);
+        Self::load_stakes(&config, &stake_registry);
 
         let storage = config.local_index_path.as_ref().and_then(|path| {
             Storage::new(path).ok()
@@ -124,7 +124,7 @@ impl OpenSonarXClient {
         let embedder: Arc<dyn EmbeddingPipeline> =
             Arc::new(oi_embed::CachedEmbedder::new(Self::default_embedder(), 10_000));
         let stake_registry = Arc::new(InMemoryStakeRegistry::new());
-        Self::load_stakes(&stake_registry);
+        Self::load_stakes(&config, &stake_registry);
         let wallet = config
             .wallet_path
             .as_ref()
@@ -362,7 +362,9 @@ impl OpenSonarXClient {
         // TXT record? Anyone can bond capital to any name — only this proof
         // ties the bond to the domain owner. Unverified stakes are accepted
         // (the bond is real and visible) but their verdict caps at "neutral".
-        let dns_verified = crate::dns_verify::verify_domain_ownership(domain, &wallet_addr);
+        // Without a wallet there is nothing to prove (and no network call).
+        let dns_verified = self.wallet.is_some()
+            && crate::dns_verify::verify_domain_ownership(domain, &wallet_addr);
         if !dns_verified {
             tracing::warn!(
                 "Domain ownership not verified for {domain}: publish TXT record \
@@ -394,27 +396,22 @@ impl OpenSonarXClient {
         Ok(tx_hash)
     }
 
-    /// Path of the local stake mirror: `~/.opensonarx/stakes.json`.
-    ///
-    /// In open/local mode this file IS the stake state; in web3 mode it acts
-    /// as an off-chain mirror the same way `economics.rs` mirrors the
-    /// on-chain program (the chain remains the source of truth).
-    fn stakes_path() -> Option<std::path::PathBuf> {
-        dirs::home_dir().map(|h| h.join(".opensonarx").join("stakes.json"))
-    }
-
-    /// Persist the stake registry so stakes survive across processes —
+    /// Persist the stake registry (off-chain mirror; in web3 mode the chain
+    /// remains the source of truth) so stakes survive across processes —
     /// without this, trust verdicts silently reset on every CLI invocation.
+    /// No-op when `config.stakes_path` is unset (no hidden home-dir writes
+    /// for library consumers).
     fn save_stakes(&self) {
         use oi_types::traits::StakeRegistry;
-        let Some(path) = Self::stakes_path() else { return };
+        let Some(ref path) = self.config.stakes_path else { return };
+        let path = std::path::Path::new(path);
         let Ok(stakes) = self.stake_registry.list_active_stakes() else { return };
         if let Some(parent) = path.parent() {
             let _ = std::fs::create_dir_all(parent);
         }
         match serde_json::to_vec_pretty(&stakes) {
             Ok(bytes) => {
-                if let Err(e) = std::fs::write(&path, bytes) {
+                if let Err(e) = std::fs::write(path, bytes) {
                     tracing::warn!("failed to persist stakes: {e}");
                 }
             }
@@ -423,17 +420,17 @@ impl OpenSonarXClient {
     }
 
     /// Load persisted stakes into the registry (called at client build).
-    fn load_stakes(registry: &InMemoryStakeRegistry) {
-        
-        let Some(path) = Self::stakes_path() else { return };
-        let Ok(bytes) = std::fs::read(&path) else { return };
+    /// No-op when `stakes_path` is unset.
+    fn load_stakes(config: &SdkConfig, registry: &InMemoryStakeRegistry) {
+        let Some(ref path) = config.stakes_path else { return };
+        let Ok(bytes) = std::fs::read(path) else { return };
         match serde_json::from_slice::<Vec<StakeInfo>>(&bytes) {
             Ok(stakes) => {
                 for info in stakes {
                     let _ = registry.add_stake(info);
                 }
             }
-            Err(e) => tracing::warn!("failed to parse stakes.json: {e}"),
+            Err(e) => tracing::warn!("failed to parse stakes file: {e}"),
         }
     }
 

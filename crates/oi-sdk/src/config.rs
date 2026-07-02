@@ -39,6 +39,11 @@ pub struct SdkConfig {
     pub serper_api_key: Option<String>,
     /// Configured search engines (overrides legacy API-key fields when set)
     pub search_engines: Option<Vec<SearchEngineConfig>>,
+    /// Where to persist the stake registry (off-chain mirror). None (default)
+    /// keeps stakes in-memory only — no hidden home-dir writes for library
+    /// consumers; the CLI and node set this to ~/.opensonarx/stakes.json.
+    #[serde(default)]
+    pub stakes_path: Option<String>,
     /// Enable background crawl-on-query for external URLs (default false)
     #[serde(default)]
     pub crawl_on_query: bool,
@@ -75,6 +80,7 @@ impl Default for SdkConfig {
             brave_api_key: None,
             serper_api_key: None,
             search_engines: None,
+            stakes_path: None,
             crawl_on_query: false,
             crawl_on_query_max_urls: 3,
         }
