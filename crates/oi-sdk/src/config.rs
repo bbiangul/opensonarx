@@ -34,7 +34,10 @@ pub struct SdkConfig {
     pub network: String,
     /// Brave Search API key for external search fallback
     pub brave_api_key: Option<String>,
-    /// Configured search engines (overrides legacy brave_api_key when set)
+    /// Serper (Google results) API key for external search fallback.
+    /// When set, Serper is the highest-priority external engine.
+    pub serper_api_key: Option<String>,
+    /// Configured search engines (overrides legacy API-key fields when set)
     pub search_engines: Option<Vec<SearchEngineConfig>>,
     /// Enable background crawl-on-query for external URLs (default false)
     #[serde(default)]
@@ -56,6 +59,7 @@ impl fmt::Debug for SdkConfig {
             .field("local_index_path", &self.local_index_path)
             .field("network", &self.network)
             .field("brave_api_key", &self.brave_api_key.as_ref().map(|_| "[REDACTED]"))
+            .field("serper_api_key", &self.serper_api_key.as_ref().map(|_| "[REDACTED]"))
             .field("search_engines", &self.search_engines)
             .finish()
     }
@@ -69,6 +73,7 @@ impl Default for SdkConfig {
             local_index_path: None,
             network: "mainnet".to_string(),
             brave_api_key: None,
+            serper_api_key: None,
             search_engines: None,
             crawl_on_query: false,
             crawl_on_query_max_urls: 3,

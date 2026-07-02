@@ -29,6 +29,7 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
         local_index_path: seed_index_path,
         network: config.network.clone(),
         brave_api_key: std::env::var("BRAVE_API_KEY").ok(),
+        serper_api_key: std::env::var("SERPER_API_KEY").ok(),
         search_engines: config.search_engines.clone(),
         // Self-building index: external results surfaced by a query get crawled
         // and ingested after results are shown (see crawl-on-query in oi-sdk).
@@ -933,6 +934,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                             let api_index = index.clone();
                             let api_sdk_config = SdkConfig {
                                 brave_api_key: std::env::var("BRAVE_API_KEY").ok(),
+                                serper_api_key: std::env::var("SERPER_API_KEY").ok(),
                                 search_engines: config.search_engines.clone(),
                                 crawl_on_query: true,
                                 crawl_on_query_max_urls: 3,

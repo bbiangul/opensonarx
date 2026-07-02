@@ -237,12 +237,16 @@ pub fn default_engines(config: &SdkConfig) -> Vec<Arc<dyn SearchEngine>> {
         }
         engines
     } else {
-        // Legacy mode
-        let mut engines: Vec<Arc<dyn SearchEngine>> =
-            vec![wrap_engine(Arc::new(duckduckgo::DuckDuckGo))];
+        // Legacy mode: API-backed engines first (Google-quality results,
+        // reliable), free DuckDuckGo scrape as the always-on fallback.
+        let mut engines: Vec<Arc<dyn SearchEngine>> = Vec::new();
+        if let Some(ref key) = config.serper_api_key {
+            engines.push(wrap_engine(Arc::new(serper::Serper::new(key.clone()))));
+        }
         if let Some(ref key) = config.brave_api_key {
             engines.push(wrap_engine(Arc::new(brave::BraveSearch::new(key.clone()))));
         }
+        engines.push(wrap_engine(Arc::new(duckduckgo::DuckDuckGo)));
         engines
     }
 }
