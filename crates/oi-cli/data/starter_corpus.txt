@@ -55,10 +55,12 @@ https://docs.python.org/3/library/re.html
 # ── JavaScript / TypeScript / Web (MDN + TS handbook) ──
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Introduction
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 https://javascript.info/fetch
 https://javascript.info/promise-basics
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
 https://en.wikipedia.org/wiki/HTML
 https://en.wikipedia.org/wiki/CSS
 https://www.typescriptlang.org/docs/handbook/2/everyday-types.html

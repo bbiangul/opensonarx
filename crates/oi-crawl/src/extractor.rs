@@ -54,8 +54,12 @@ pub fn html_to_markdown(html: &str) -> ExtractedContent {
     // Wikipedia-specific and generic boilerplate class/id patterns
     let boilerplate_patterns = [
         "mw-navigation", "mw-panel", "mw-footer", "mw-header", "mw-jump-link",
+        // NOTE: "references" (plural) — the singular prefix rule matched
+        // MDN's "reference-layout__body" wrapper and deleted entire pages.
+        // Wikipedia's big citation blocks are covered by references/reflist/
+        // mw-cite; inline <sup class="reference"> markers are tiny noise.
         "navbox", "infobox", "noprint", "sidebar", "toc", "catlinks",
-        "mw-editsection", "reference", "reflist", "mw-cite", "language-list",
+        "mw-editsection", "references", "reflist", "mw-cite", "language-list",
         "cookie", "banner", "advertisement", "popup", "modal", "social-share",
         "breadcrumb", "skip-link", "sr-only",
         // Docusaurus
@@ -132,6 +136,43 @@ pub fn html_to_markdown(html: &str) -> ExtractedContent {
     } else {
         for child in document.tree.root().children() {
             walk_dom(child, &skip_ids, &mut markdown);
+        }
+    }
+
+    // Safety net: if boilerplate-pattern skips gutted the page (a site's
+    // legitimate content wrapper happened to match a pattern), re-walk with
+    // tag-based skips only. Noisier output beats an empty page — an empty
+    // page fails the crawl quality gate and is lost entirely. Only kicks in
+    // when the retry recovers substantially more (genuinely short pages must
+    // not get their stripped boilerplate re-added).
+    let gutted = markdown.trim().len() < 100;
+    if gutted {
+        let mut tag_skip_ids = std::collections::HashSet::new();
+        for tag in &boilerplate_tags {
+            if let Ok(sel) = Selector::parse(tag) {
+                for el in document.select(&sel) {
+                    tag_skip_ids.insert(el.id());
+                    for desc in el.descendants() {
+                        tag_skip_ids.insert(desc.id());
+                    }
+                }
+            }
+        }
+        let mut retry = String::new();
+        if let Some(root_id) = content_root {
+            if let Some(root_node) = document.tree.get(root_id) {
+                for child in root_node.children() {
+                    walk_dom(child, &tag_skip_ids, &mut retry);
+                }
+            }
+        } else {
+            for child in document.tree.root().children() {
+                walk_dom(child, &tag_skip_ids, &mut retry);
+            }
+        }
+        let recovered = retry.trim().len();
+        if recovered >= 200 && recovered > 5 * markdown.trim().len() {
+            markdown = retry;
         }
     }
 
@@ -811,6 +852,30 @@ mod tests {
         let result = html_to_markdown(html);
         assert!(result.markdown.contains("Actual article body"));
         assert!(!result.markdown.contains("Table of Contents"));
+    }
+
+    #[test]
+    fn test_mdn_reference_layout_not_gutted() {
+        // Regression: MDN reference pages wrap all content in
+        // "reference-layout__body"; the old "reference" prefix pattern
+        // deleted the entire page (0 chars extracted).
+        let body_text = "The Array object enables storing a collection of multiple items. "
+            .repeat(10);
+        let html = format!(
+            r#"<html><head><title>Array - JavaScript | MDN</title></head><body>
+            <main id="content" class="layout__content">
+                <div class="layout__header reference-layout__header"><h1>Array</h1></div>
+                <div class="layout__body reference-layout__body">
+                    <p>{body_text}</p>
+                </div>
+            </main>
+        </body></html>"#
+        );
+        let result = html_to_markdown(&html);
+        assert!(
+            result.markdown.contains("Array object enables storing"),
+            "reference-layout content must survive extraction"
+        );
     }
 
     #[test]
