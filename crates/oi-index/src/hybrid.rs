@@ -179,7 +179,6 @@ pub struct HybridIndex {
     content_hashes: RwLock<HashSet<String>>,
     /// SimHash fingerprints for near-duplicate detection at ingest (band-based LSH)
     simhashes: RwLock<simhash::SimHashIndex>,
-    #[allow(dead_code)]
     dim: usize,
     config: HybridConfig,
     stake_registry: Option<Arc<dyn StakeRegistry>>,
@@ -343,6 +342,11 @@ impl HybridIndex {
 
     pub fn doc_count(&self) -> usize {
         self.bm25.read().map(|b| b.len()).unwrap_or(0)
+    }
+
+    /// Embedding dimension this index was built for.
+    pub fn dim(&self) -> usize {
+        self.dim
     }
 
     /// Suggest a spelling correction for a query from the indexed vocabulary

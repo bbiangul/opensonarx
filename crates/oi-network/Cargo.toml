@@ -7,6 +7,7 @@ description = "libp2p P2P networking layer for OpenSonarX"
 
 [dependencies]
 oi-types = { workspace = true }
+sha2 = { workspace = true }
 oi-index = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

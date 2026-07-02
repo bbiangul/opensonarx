@@ -325,10 +325,19 @@ pub async fn run_event_loop(
                 }
             }
             EventAction::IngestReplicatedChunks { peer, response } => {
-                let chunk_count = response.chunks.len() as u64;
                 let latest_seq = response.latest_seq;
                 if let Some(idx) = &index {
-                    let chunks = convert_proto_chunks_to_content_chunks(&response.chunks);
+                    let received = convert_proto_chunks_to_content_chunks(&response.chunks);
+                    let received_count = received.len();
+                    let chunks = verify_replicated_chunks(received, idx.dim());
+                    let rejected = received_count - chunks.len();
+                    if rejected > 0 {
+                        warn!(
+                            "Rejected {rejected}/{received_count} replicated chunks from {peer} \
+                             (integrity/structure verification failed)"
+                        );
+                    }
+                    let chunk_count = chunks.len() as u64;
                     // Compute max seq from received chunks
                     let max_seq = chunks.iter().map(|c| c.seq).max().unwrap_or(latest_seq);
                     match idx.ingest(&chunks) {
@@ -686,6 +695,55 @@ fn convert_content_chunks_to_proto(chunks: &[oi_types::ContentChunk]) -> Vec<Doc
 }
 
 /// Convert proto `DocumentChunk` to `ContentChunk` (oi-types) for ingestion.
+/// Validate replicated chunks before they touch the index. Replication
+/// previously ingested whatever a peer sent; this enforces:
+/// - integrity: sha256(content) must equal the declared content_hash — the
+///   hash is the dedup/replacement commitment, so a forged one corrupts
+///   local bookkeeping (full authenticity needs chunk signatures; tracked
+///   as follow-up);
+/// - structure: non-empty content (bounded at 64 KiB), url, domain, and the
+///   domain must match the URL's host — otherwise a peer can attribute spam
+///   content to a reputable staked domain;
+/// - embedding sanity: a wrong-dimension vector would make `ingest` fail the
+///   WHOLE batch, letting one bad chunk poison 999 good ones.
+fn verify_replicated_chunks(
+    chunks: Vec<oi_types::ContentChunk>,
+    expected_dim: usize,
+) -> Vec<oi_types::ContentChunk> {
+    use sha2::{Digest, Sha256};
+    const MAX_CONTENT_BYTES: usize = 64 * 1024;
+
+    chunks
+        .into_iter()
+        .filter(|c| {
+            if c.content.is_empty() || c.content.len() > MAX_CONTENT_BYTES {
+                return false;
+            }
+            let Some(meta) = &c.meta else { return false };
+            if meta.url.is_empty() || meta.domain.is_empty() || meta.content_hash.is_empty() {
+                return false;
+            }
+            let host = meta
+                .url
+                .strip_prefix("https://")
+                .or_else(|| meta.url.strip_prefix("http://"))
+                .and_then(|rest| rest.split('/').next())
+                .unwrap_or("");
+            if host != meta.domain && !host.ends_with(&format!(".{}", meta.domain)) {
+                return false;
+            }
+            if let Some(emb) = &c.embedding
+                && emb.len() != expected_dim
+            {
+                return false;
+            }
+            let mut hasher = Sha256::new();
+            hasher.update(c.content.as_bytes());
+            format!("{:x}", hasher.finalize()) == meta.content_hash
+        })
+        .collect()
+}
+
 fn convert_proto_chunks_to_content_chunks(proto_chunks: &[DocumentChunk]) -> Vec<oi_types::ContentChunk> {
     proto_chunks
         .iter()
@@ -1413,5 +1471,66 @@ async fn handle_behaviour_event(
             }
             EventAction::None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sha2::{Digest, Sha256};
+
+    fn valid_chunk(content: &str, url: &str, domain: &str) -> oi_types::ContentChunk {
+        let mut hasher = Sha256::new();
+        hasher.update(content.as_bytes());
+        oi_types::ContentChunk {
+            chunk_id: "c1".to_string(),
+            content: content.to_string(),
+            embedding: Some(vec![0.1; 4]),
+            seq: 1,
+            meta: Some(oi_types::ChunkMeta {
+                url: url.to_string(),
+                title: "t".to_string(),
+                domain: domain.to_string(),
+                content_hash: format!("{:x}", hasher.finalize()),
+                ..Default::default()
+            }),
+        }
+    }
+
+    #[test]
+    fn test_verify_accepts_valid_chunk() {
+        let c = valid_chunk("real content here", "https://example.com/page", "example.com");
+        assert_eq!(verify_replicated_chunks(vec![c], 4).len(), 1);
+    }
+
+    #[test]
+    fn test_verify_rejects_forged_hash() {
+        let mut c = valid_chunk("real content", "https://example.com/p", "example.com");
+        c.meta.as_mut().unwrap().content_hash = "deadbeef".to_string();
+        assert!(verify_replicated_chunks(vec![c], 4).is_empty());
+    }
+
+    #[test]
+    fn test_verify_rejects_domain_url_mismatch() {
+        // Peer attributes spam URL content to a reputable staked domain.
+        let c = valid_chunk("spam text", "https://spam.biz/x", "en.wikipedia.org");
+        assert!(verify_replicated_chunks(vec![c], 4).is_empty());
+    }
+
+    #[test]
+    fn test_verify_accepts_subdomain() {
+        let c = valid_chunk("ok", "https://docs.example.com/p", "example.com");
+        assert_eq!(verify_replicated_chunks(vec![c], 4).len(), 1);
+    }
+
+    #[test]
+    fn test_verify_rejects_wrong_dim_and_oversize() {
+        let mut c = valid_chunk("ok", "https://example.com/p", "example.com");
+        c.embedding = Some(vec![0.1; 8]); // wrong dim would fail whole ingest batch
+        assert!(verify_replicated_chunks(vec![c], 4).is_empty());
+
+        let big = "x".repeat(65 * 1024);
+        let c2 = valid_chunk(&big, "https://example.com/p", "example.com");
+        assert!(verify_replicated_chunks(vec![c2], 4).is_empty());
     }
 }
