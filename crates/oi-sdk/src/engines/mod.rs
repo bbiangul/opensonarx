@@ -403,14 +403,29 @@ mod tests {
 
     #[test]
     fn test_default_engines_with_brave_key() {
+        // API-backed engines come first; free DDG scrape is the fallback.
         let config = SdkConfig {
             brave_api_key: Some("test_key".to_string()),
             ..SdkConfig::default()
         };
         let engines = default_engines(&config);
         assert_eq!(engines.len(), 2);
-        assert_eq!(engines[0].name(), "duckduckgo");
+        assert_eq!(engines[0].name(), "brave");
+        assert_eq!(engines[1].name(), "duckduckgo");
+    }
+
+    #[test]
+    fn test_default_engines_with_serper_key() {
+        let config = SdkConfig {
+            serper_api_key: Some("test_key".to_string()),
+            brave_api_key: Some("test_key".to_string()),
+            ..SdkConfig::default()
+        };
+        let engines = default_engines(&config);
+        assert_eq!(engines.len(), 3);
+        assert_eq!(engines[0].name(), "serper");
         assert_eq!(engines[1].name(), "brave");
+        assert_eq!(engines[2].name(), "duckduckgo");
     }
 
     #[test]
