@@ -361,8 +361,8 @@ pub async fn run_event_loop(
                             // Continuation: the peer holds more beyond this
                             // batch — keep pulling from the new watermark until
                             // caught up (one batch per response, no flooding).
-                            if chunk_count > 0 && latest_seq > max_seq {
-                                if let Some(shard_id) = shard_of_batch {
+                            if chunk_count > 0 && latest_seq > max_seq
+                                && let Some(shard_id) = shard_of_batch {
                                     info!(
                                         "Replication catch-up continues: {} of latest_seq {latest_seq} synced",
                                         max_seq
@@ -374,7 +374,6 @@ pub async fn run_event_loop(
                                     };
                                     let _ = swarm.behaviour_mut().replication.send_request(&peer, req);
                                 }
-                            }
                         }
                         Err(e) => {
                             warn!("Failed to ingest replicated chunks from {peer}: {e}");
@@ -1063,8 +1062,8 @@ async fn handle_behaviour_event(
                         // content-announcement path only covers NEW crawls.
                         if let Some(idx) = &index {
                             let our_docs = idx.doc_count() as u64;
-                            if sa.vector_count > our_docs.saturating_mul(2).max(100) {
-                                if let Some(shard_id) = sa
+                            if sa.vector_count > our_docs.saturating_mul(2).max(100)
+                                && let Some(shard_id) = sa
                                     .shard_ids
                                     .iter()
                                     .find(|sid| shard_ids.contains(*sid))
@@ -1079,7 +1078,6 @@ async fn handle_behaviour_event(
                                         max_chunks: 1000,
                                     };
                                 }
-                            }
                         }
                     }
                     Some(gossip_message::Payload::StakeEvent(se)) => {
