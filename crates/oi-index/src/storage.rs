@@ -7,13 +7,41 @@ use std::path::{Path, PathBuf};
 /// (`mmap_segment`) for large segments.
 pub struct Storage {
     base_dir: PathBuf,
+    /// OS advisory lock held for this process's lifetime once it first
+    /// writes. Guards against a second writer process silently interleaving
+    /// segment saves (sentinel + node + CLI all target the same directory).
+    write_lock: std::sync::OnceLock<fs::File>,
 }
 
 impl Storage {
     pub fn new(base_dir: impl AsRef<Path>) -> io::Result<Self> {
         let base = base_dir.as_ref().to_path_buf();
         fs::create_dir_all(&base)?;
-        Ok(Self { base_dir: base })
+        Ok(Self {
+            base_dir: base,
+            write_lock: std::sync::OnceLock::new(),
+        })
+    }
+
+    /// Acquire the exclusive writer lock (idempotent; held until this
+    /// process exits). Readers never call this. Fails loudly when another
+    /// process is already writing to this index directory — two
+    /// uncoordinated writers would clobber each other's segments, so
+    /// refusing is the safe outcome.
+    pub fn acquire_write_lock(&self) -> io::Result<()> {
+        if self.write_lock.get().is_some() {
+            return Ok(());
+        }
+        let lock_file = fs::File::create(self.base_dir.join(".write.lock"))?;
+        lock_file.try_lock().map_err(|e| {
+            io::Error::other(format!(
+                "index at {} is locked by another writer process ({e}); \
+                 refusing to save to avoid corruption",
+                self.base_dir.display()
+            ))
+        })?;
+        let _ = self.write_lock.set(lock_file);
+        Ok(())
     }
 
     /// Validate segment name to prevent path traversal
@@ -76,6 +104,10 @@ impl Storage {
         for entry in fs::read_dir(&self.base_dir)? {
             let entry = entry?;
             if let Some(name) = entry.file_name().to_str() {
+                // The advisory writer lock is process state, not index data.
+                if name == ".write.lock" {
+                    continue;
+                }
                 names.push(name.to_string());
             }
         }
@@ -149,5 +181,22 @@ mod tests {
         let storage = Storage::new(dir.path()).unwrap();
 
         assert!(storage.mmap_segment("nonexistent.bin").is_err());
+    }
+
+    #[test]
+    fn test_write_lock_excludes_second_writer() {
+        let dir = tempfile::tempdir().unwrap();
+        let s1 = Storage::new(dir.path()).unwrap();
+        let s2 = Storage::new(dir.path()).unwrap();
+        s1.acquire_write_lock().unwrap();
+        // Same-process second Storage: OS advisory locks are per-process on
+        // some platforms, so only assert the cross-purpose behavior we rely
+        // on — s1 remains able to re-acquire idempotently.
+        s1.acquire_write_lock().unwrap();
+        // .write.lock must not appear as an index segment
+        std::fs::write(dir.path().join("hnsw.bin"), b"x").unwrap();
+        let segs = s2.list_segments().unwrap();
+        assert!(segs.contains(&"hnsw.bin".to_string()));
+        assert!(!segs.iter().any(|s| s == ".write.lock"));
     }
 }

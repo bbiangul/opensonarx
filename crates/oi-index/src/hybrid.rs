@@ -511,6 +511,11 @@ impl HybridIndex {
     /// writing to disk. Uses write-to-temp-then-rename to minimize corruption
     /// risk if the process is interrupted mid-save.
     pub fn save(&self, storage: &crate::storage::Storage) -> std::io::Result<()> {
+        // Single-writer guard: refuse to save if another process holds the
+        // index directory's write lock (their in-memory state and ours have
+        // already diverged — interleaved saves would corrupt).
+        storage.acquire_write_lock()?;
+
         // Serialize everything under locks for a consistent snapshot
         let hnsw_bytes;
         let bm25_bytes;
