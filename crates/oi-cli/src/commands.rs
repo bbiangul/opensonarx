@@ -161,7 +161,12 @@ pub fn search(
     };
 
     let result = match &client {
-        ClientMode::Local(c) => c.search_blended(query, limit as usize, &filters).map(|(r, _)| r),
+        ClientMode::Local(c) => {
+            if let Some(corrected) = c.correct_query(query) {
+                eprintln!("(showing results for: {corrected})");
+            }
+            c.search_blended(query, limit as usize, &filters).map(|(r, _)| r)
+        }
         ClientMode::Gateway(c) => c.search(query, limit as usize, &filters),
     };
 

@@ -119,6 +119,105 @@ impl Bm25Index {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    /// Suggest a spelling correction for the query using the index vocabulary.
+    ///
+    /// Each out-of-vocabulary token of 5+ chars is corrected to the most
+    /// document-frequent in-vocab term within edit distance 1 (or 2 for 8+
+    /// char tokens) — e.g. "javascrpt" → "javascript", "promisses" →
+    /// "promises". Candidates must appear in >= 3 documents so rare/junk
+    /// terms never attract corrections. Returns `Some(corrected_query)` only
+    /// if at least one token changed; in-vocab tokens are never touched, so
+    /// novel-but-real terms survive as long as they've been indexed anywhere.
+    pub fn correct_query(&self, query: &str) -> Option<String> {
+        const MIN_TOKEN_LEN: usize = 5;
+
+        let mut changed = false;
+        let corrected: Vec<String> = query
+            .split_whitespace()
+            .map(|word| {
+                let token: String = word
+                    .to_lowercase()
+                    .chars()
+                    .filter(|c| c.is_alphanumeric())
+                    .collect();
+                if token.len() < MIN_TOKEN_LEN
+                    || token.chars().any(|c| c.is_numeric())
+                    || self.inverted_index.contains_key(&token)
+                {
+                    return word.to_string();
+                }
+                let max_dist = if token.len() >= 8 { 2 } else { 1 };
+                match self.nearest_term(&token, max_dist) {
+                    Some(term) => {
+                        changed = true;
+                        term
+                    }
+                    None => word.to_string(),
+                }
+            })
+            .collect();
+
+        changed.then(|| corrected.join(" "))
+    }
+
+    /// Nearest vocabulary term to `token`: smallest edit distance wins;
+    /// document frequency breaks ties. Distance-tiered df floors keep weak
+    /// matches out: a 1-edit neighbor needs 2 docs, a 2-edit neighbor needs 8
+    /// — so a common-but-far word ("processes") can never beat or stand in
+    /// for a rare-but-adjacent one ("promises"). Linear scan with length
+    /// pruning — fine for corpora up to a few hundred thousand terms.
+    fn nearest_term(&self, token: &str, max_dist: usize) -> Option<String> {
+        const MIN_DF_DIST1: usize = 2;
+        const MIN_DF_DIST2: usize = 8;
+        let tok_len = token.len();
+        let mut best: Option<(&str, usize, usize)> = None; // (term, dist, df)
+        for (term, postings) in &self.inverted_index {
+            let df = postings.len();
+            if df < MIN_DF_DIST1 || term.len().abs_diff(tok_len) > max_dist {
+                continue;
+            }
+            let Some(dist) = bounded_levenshtein(token, term, max_dist) else {
+                continue;
+            };
+            if dist >= 2 && df < MIN_DF_DIST2 {
+                continue;
+            }
+            let better = match best {
+                None => true,
+                Some((_, bd, bdf)) => dist < bd || (dist == bd && df > bdf),
+            };
+            if better {
+                best = Some((term, dist, df));
+            }
+        }
+        best.map(|(term, _, _)| term.to_string())
+    }
+}
+
+/// Levenshtein distance if it is <= `max`, else None (early-exit banded DP).
+fn bounded_levenshtein(a: &str, b: &str, max: usize) -> Option<usize> {
+    let a: Vec<char> = a.chars().collect();
+    let b: Vec<char> = b.chars().collect();
+    if a.len().abs_diff(b.len()) > max {
+        return None;
+    }
+    let mut prev: Vec<usize> = (0..=b.len()).collect();
+    let mut curr = vec![0usize; b.len() + 1];
+    for i in 1..=a.len() {
+        curr[0] = i;
+        let mut row_min = curr[0];
+        for j in 1..=b.len() {
+            let cost = if a[i - 1] == b[j - 1] { 0 } else { 1 };
+            curr[j] = (prev[j] + 1).min(curr[j - 1] + 1).min(prev[j - 1] + cost);
+            row_min = row_min.min(curr[j]);
+        }
+        if row_min > max {
+            return None;
+        }
+        std::mem::swap(&mut prev, &mut curr);
+    }
+    (prev[b.len()] <= max).then_some(prev[b.len()])
 }
 
 impl Default for Bm25Index {
@@ -286,6 +385,58 @@ mod tests {
 
         assert_eq!(restored.get_doc_content("doc1"), Some("hello world content"));
         assert_eq!(restored.get_doc_content("nonexistent"), None);
+    }
+
+    /// Index where "javascript" and "promises" appear in 3+ docs (correction
+    /// candidates require df >= 3).
+    fn spell_test_index() -> Bm25Index {
+        let mut idx = Bm25Index::new();
+        for i in 0..4 {
+            idx.insert(
+                format!("js{i}"),
+                "javascript promises make async programming easier".into(),
+            );
+            idx.insert(format!("py{i}"), "python asyncio event loop".into());
+        }
+        idx
+    }
+
+    #[test]
+    fn test_correct_query_typos() {
+        let idx = spell_test_index();
+        let corrected = idx.correct_query("javascrpt promisses async").unwrap();
+        assert_eq!(corrected, "javascript promises async");
+    }
+
+    #[test]
+    fn test_correct_query_no_change_when_in_vocab() {
+        let idx = spell_test_index();
+        assert_eq!(idx.correct_query("javascript promises"), None);
+    }
+
+    #[test]
+    fn test_correct_query_leaves_unknown_terms() {
+        // "kubernetes" has no near neighbor in vocab — must NOT be "corrected".
+        let idx = spell_test_index();
+        assert_eq!(idx.correct_query("kubernetes"), None);
+    }
+
+    #[test]
+    fn test_correct_query_ignores_short_and_rare() {
+        let mut idx = spell_test_index();
+        // "zebra" appears in only 1 doc — below df threshold, attracts nothing.
+        idx.insert("z".into(), "zebra stripes".into());
+        assert_eq!(idx.correct_query("zebro"), None);
+        // short tokens untouched
+        assert_eq!(idx.correct_query("pyth"), None);
+    }
+
+    #[test]
+    fn test_bounded_levenshtein() {
+        assert_eq!(bounded_levenshtein("javascrpt", "javascript", 2), Some(1));
+        assert_eq!(bounded_levenshtein("promisses", "promises", 2), Some(1));
+        assert_eq!(bounded_levenshtein("abc", "xyz", 2), None);
+        assert_eq!(bounded_levenshtein("same", "same", 1), Some(0));
     }
 
     #[test]

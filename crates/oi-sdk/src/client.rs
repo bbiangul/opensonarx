@@ -445,6 +445,15 @@ impl OpenSonarXClient {
         top_k: usize,
         filters: &QueryFilters,
     ) -> Result<(Vec<SearchResultItem>, Vec<String>)> {
+        // Spell-correct from the indexed vocabulary ("javascrpt promisses" →
+        // "javascript promises") — a misspelled query otherwise embeds
+        // off-target for local retrieval. The ORIGINAL query still goes to
+        // external engines: they have far larger correction vocabularies, so
+        // a small-corpus miscorrection must never leak outward.
+        let original_query = query;
+        let corrected = self.correct_query(query);
+        let query = corrected.as_deref().unwrap_or(query);
+
         // Compute query embedding once — used for both local search and external re-scoring
         let query_embedding = self.embedder.embed_query(query)?;
         let local_results = self.index.query(&query_embedding, query, filters, top_k)?;
@@ -488,13 +497,16 @@ impl OpenSonarXClient {
             }
             // Weak coverage — fall through to the external blend. Blend scores
             // are recomputed in merge (the embedder cache makes that free).
-            return self.blend_with_external(query, top_k, filters, local_results, query_embedding, sources_used);
+            return self.blend_with_external(original_query, top_k, filters, local_results, query_embedding, sources_used);
         }
 
-        self.blend_with_external(query, top_k, filters, local_results, query_embedding, sources_used)
+        self.blend_with_external(original_query, top_k, filters, local_results, query_embedding, sources_used)
     }
 
     /// External-engine half of `search_blended`: fetch, merge, crawl-queue.
+    /// `query` is the user's ORIGINAL text (external engines do their own
+    /// spell correction); ranking uses `query_embedding`, which is computed
+    /// from the locally-corrected form.
     fn blend_with_external(
         &self,
         query: &str,
@@ -568,6 +580,14 @@ impl OpenSonarXClient {
         }
 
         Ok((merged, sources_used))
+    }
+
+    /// Suggest a spelling correction for a query from the indexed vocabulary.
+    /// Returns `Some(corrected)` only if a token changed. `search_blended`
+    /// applies this automatically; callers can use it to display a
+    /// "showing results for ..." note.
+    pub fn correct_query(&self, query: &str) -> Option<String> {
+        self.index.correct_query(query)
     }
 
     /// Number of URLs waiting in the crawl-on-query queue.

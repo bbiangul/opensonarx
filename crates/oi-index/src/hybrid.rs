@@ -299,6 +299,13 @@ impl HybridIndex {
         self.bm25.read().map(|b| b.len()).unwrap_or(0)
     }
 
+    /// Suggest a spelling correction for a query from the indexed vocabulary
+    /// (see `Bm25Index::correct_query`). Returns `Some(corrected)` only if a
+    /// token changed.
+    pub fn correct_query(&self, query: &str) -> Option<String> {
+        self.bm25.read().ok().and_then(|b| b.correct_query(query))
+    }
+
     /// Execute a query and return results with per-component timing breakdown.
     pub fn query_timed(
         &self,
