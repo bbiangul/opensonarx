@@ -22,6 +22,7 @@ oi-sdk = { workspace = true }
 oi-index = { workspace = true }
 oi-network = { workspace = true }
 oi-crawl = { workspace = true }
+oi-staking = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }

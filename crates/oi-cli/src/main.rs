@@ -468,12 +468,16 @@ fn main() {
     let cli = Cli::parse();
 
     if cli.verbose {
+        // Logs MUST go to stderr: stdout carries machine-readable output
+        // (-o json/ndjson) and a single stray WARN corrupts it for agents.
         tracing_subscriber::fmt()
             .with_max_level(tracing::Level::DEBUG)
+            .with_writer(std::io::stderr)
             .init();
     } else if !cli.quiet {
         tracing_subscriber::fmt()
             .with_max_level(tracing::Level::WARN)
+            .with_writer(std::io::stderr)
             .init();
     }
 

@@ -25,6 +25,24 @@ struct SearchRequest {
     filters: QueryFilters,
 }
 
+/// Gateway-style flat request (`POST /v1/search`), matching what the hosted
+/// gateway and the shipped Python client speak — so the same client code
+/// works against a local node unchanged.
+#[derive(Deserialize)]
+struct GatewayStyleRequest {
+    query: String,
+    #[serde(default = "default_limit")]
+    top_k: u32,
+    #[serde(default)]
+    min_trust: Option<String>,
+    #[serde(default)]
+    freshness: Option<String>,
+    #[serde(default)]
+    site: Option<String>,
+    #[serde(default)]
+    types: Vec<String>,
+}
+
 fn default_limit() -> u32 {
     5
 }
@@ -46,6 +64,12 @@ async fn search_handler(
     State(state): State<Arc<ApiState>>,
     Json(req): Json<SearchRequest>,
 ) -> Result<Json<Vec<SearchResultItem>>, (axum::http::StatusCode, String)> {
+    if req.query.trim().is_empty() {
+        return Err((
+            axum::http::StatusCode::BAD_REQUEST,
+            "query must not be empty".to_string(),
+        ));
+    }
     let limit = req.limit as usize;
 
     // Blended search (local + external engines) — blocking work (ONNX embed,
@@ -140,6 +164,28 @@ async fn search_handler(
     Ok(Json(items))
 }
 
+/// Gateway-compatible endpoint: flat request shape, `{"results": [...]}`
+/// response — the contract of the hosted gateway's /v1/search, served by the
+/// local node so SDK/tool examples work without a hosted deployment.
+async fn gateway_search_handler(
+    State(state): State<Arc<ApiState>>,
+    Json(req): Json<GatewayStyleRequest>,
+) -> Result<Json<serde_json::Value>, (axum::http::StatusCode, String)> {
+    let inner = SearchRequest {
+        query: req.query,
+        limit: req.top_k,
+        filters: QueryFilters {
+            min_trust: req.min_trust,
+            freshness: req.freshness,
+            site: req.site,
+            types: req.types,
+            ..Default::default()
+        },
+    };
+    let Json(items) = search_handler(State(state), Json(inner)).await?;
+    Ok(Json(serde_json::json!({ "results": items })))
+}
+
 /// Convert proto SearchResult items to SearchResultItem.
 fn proto_results_to_items(results: &[proto::SearchResult]) -> Vec<SearchResultItem> {
     results
@@ -220,6 +266,7 @@ pub async fn run_node_api(
     let app = Router::new()
         .route("/health", get(health_handler))
         .route("/search", post(search_handler))
+        .route("/v1/search", post(gateway_search_handler))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind(("0.0.0.0", port)).await?;

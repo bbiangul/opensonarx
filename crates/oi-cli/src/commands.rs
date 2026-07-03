@@ -120,6 +120,10 @@ pub fn search(
     min_trust: Option<String>,
     node: Option<String>,
 ) -> ExitCode {
+    if query.trim().is_empty() {
+        output::print_err("Query must not be empty", &config.format);
+        return ExitCode::UserError;
+    }
     if let Some(ref t) = min_trust
         && !["unverified", "neutral", "trusted", "highly_trusted"].contains(&t.as_str())
     {
@@ -862,6 +866,23 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                 } else {
                     oi_index::HybridIndex::new(dim)
                 };
+                // Attach the persisted stake state so trust verdicts compute
+                // on node-served results — without this, staked domains read
+                // "unverified" via the node and min_trust filters everything.
+                let node_stake_registry =
+                    std::sync::Arc::new(oi_staking::InMemoryStakeRegistry::new());
+                if let Some(stakes_path) = crate::config_file::ConfigFile::config_dir()
+                    .map(|d| d.join("stakes.json"))
+                    .filter(|p| p.exists())
+                {
+                    oi_sdk::OpenSonarXClient::load_stakes_from(
+                        &stakes_path.to_string_lossy(),
+                        &node_stake_registry,
+                    );
+                }
+                let index = index.with_stake_registry(
+                    node_stake_registry as std::sync::Arc<dyn oi_types::traits::StakeRegistry>,
+                );
                 let index = std::sync::Arc::new(index);
 
                 // Shard mode: explicit --shards override, or auto-discover via topic router
@@ -2056,10 +2077,13 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
                 }
             };
 
-            println!("Index info:");
-            println!("  Path:       {}", index_path.display());
-            println!("  Documents:  {}", idx.doc_count());
-            println!("  Seq:        {}", idx.current_seq());
+            let table_mode = matches!(config.format, crate::output::Format::Table);
+            if table_mode {
+                println!("Index info:");
+                println!("  Path:       {}", index_path.display());
+                println!("  Documents:  {}", idx.doc_count());
+                println!("  Seq:        {}", idx.current_seq());
+            }
 
             // Disk size
             let disk_size: u64 = std::fs::read_dir(&index_path)
@@ -2070,10 +2094,12 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
                         .sum()
                 })
                 .unwrap_or(0);
-            println!("  Disk size:  {:.1} MB", disk_size as f64 / 1_048_576.0);
+            if table_mode {
+                println!("  Disk size:  {:.1} MB", disk_size as f64 / 1_048_576.0);
+            }
 
             // Shard distribution via chunk replication
-            if let Ok(chunks) = idx.get_chunks_for_replication(None, usize::MAX) {
+            if table_mode && let Ok(chunks) = idx.get_chunks_for_replication(None, usize::MAX) {
                 let mut shard_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
                 for chunk in &chunks {
                     let sid = chunk.meta.as_ref()
@@ -2091,22 +2117,50 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
                 }
             }
 
-            if !idx.embedder_name().is_empty() {
+            if table_mode && !idx.embedder_name().is_empty() {
                 println!("  Embedder:   {}", idx.embedder_name());
             }
 
             // Health audit: cross-store consistency + content quality
             let a = idx.audit();
+            let consistent = a.hnsw_count == a.bm25_count
+                && a.bm25_count == a.meta_count
+                && a.meta_without_bm25 == 0;
+            let mut domains: Vec<_> = a.per_domain.into_iter().collect();
+            domains.sort_by(|x, y| y.1.cmp(&x.1));
+
+            if matches!(config.format, crate::output::Format::Json | crate::output::Format::Ndjson) {
+                // Machine-readable health for agents/monitoring.
+                let info = serde_json::json!({
+                    "path": index_path.to_string_lossy(),
+                    "documents": idx.doc_count(),
+                    "seq": idx.current_seq(),
+                    "embedder": idx.embedder_name(),
+                    "health": {
+                        "consistent": consistent,
+                        "hnsw": a.hnsw_count,
+                        "bm25": a.bm25_count,
+                        "metadata": a.meta_count,
+                        "avg_quality": a.avg_quality,
+                        "missing_title": a.missing_title,
+                        "missing_url": a.missing_url,
+                        "orphan_dedup_hashes": a.orphan_hashes,
+                    },
+                    "top_domains": domains.iter().take(8)
+                        .map(|(d, c)| serde_json::json!({"domain": d, "chunks": c}))
+                        .collect::<Vec<_>>(),
+                });
+                println!("{}", serde_json::to_string_pretty(&info).unwrap_or_default());
+                return ExitCode::Success;
+            }
+
             println!("  Health:");
             println!("    hnsw/bm25/meta: {}/{}/{}{}",
                 a.hnsw_count, a.bm25_count, a.meta_count,
-                if a.hnsw_count == a.bm25_count && a.bm25_count == a.meta_count
-                    && a.meta_without_bm25 == 0 { " (consistent)" } else { " (INCONSISTENT!)" });
+                if consistent { " (consistent)" } else { " (INCONSISTENT!)" });
             println!("    avg quality:    {:.3}", a.avg_quality);
             println!("    missing title/url: {}/{}", a.missing_title, a.missing_url);
             println!("    orphan dedup hashes: {}", a.orphan_hashes);
-            let mut domains: Vec<_> = a.per_domain.into_iter().collect();
-            domains.sort_by(|x, y| y.1.cmp(&x.1));
             println!("  Top domains:");
             for (d, c) in domains.into_iter().take(8) {
                 println!("    {c:>5}  {d}");

@@ -439,6 +439,15 @@ impl OpenSonarXClient {
     /// No-op when `stakes_path` is unset.
     fn load_stakes(config: &SdkConfig, registry: &InMemoryStakeRegistry) {
         let Some(ref path) = config.stakes_path else { return };
+        Self::load_stakes_from(path, registry);
+    }
+
+    /// Load a persisted stake mirror file into a registry. Public so hosts
+    /// that build their own index (the P2P node) can attach the same stake
+    /// state — without it, staked domains verdict as "unverified" on that
+    /// surface and min_trust filters everything out.
+    pub fn load_stakes_from(path: &str, registry: &InMemoryStakeRegistry) {
+        
         let Ok(bytes) = std::fs::read(path) else { return };
         match serde_json::from_slice::<Vec<StakeInfo>>(&bytes) {
             Ok(stakes) => {

@@ -5035,6 +5035,7 @@ dependencies = [
  "oi-index",
  "oi-network",
  "oi-sdk",
+ "oi-staking",
  "oi-types",
  "rand 0.8.5",
  "serde",
