@@ -23,6 +23,8 @@ pub struct OpenSonarXClient {
     /// External URLs queued by crawl-on-query during `search_blended`.
     /// Drained by `process_crawl_queue`.
     crawl_queue: std::sync::Mutex<Vec<String>>,
+    /// Usage attribution → creator credits (the payoff leg of the market).
+    creator_ledger: crate::creator_ledger::CreatorLedger,
 }
 
 impl OpenSonarXClient {
@@ -115,6 +117,7 @@ impl OpenSonarXClient {
         let search_engines = crate::engines::default_engines(&config);
         let leaderboard: Arc<dyn QueryLeaderboard> = Arc::new(InMemoryLeaderboard::new());
 
+        let config_creator_ledger_path = config.creator_ledger_path.clone();
         Self {
             config,
             index,
@@ -127,6 +130,9 @@ impl OpenSonarXClient {
             topic_router: None,
             shard_filter: Vec::new(),
             crawl_queue: std::sync::Mutex::new(Vec::new()),
+            creator_ledger: crate::creator_ledger::CreatorLedger::load(
+                config_creator_ledger_path,
+            ),
         }
     }
 
@@ -147,6 +153,7 @@ impl OpenSonarXClient {
             .and_then(|p| Wallet::from_path(p).ok());
         let search_engines = crate::engines::default_engines(&config);
         let leaderboard: Arc<dyn QueryLeaderboard> = Arc::new(InMemoryLeaderboard::new());
+        let config_creator_ledger_path = config.creator_ledger_path.clone();
         Self {
             config,
             index,
@@ -159,6 +166,9 @@ impl OpenSonarXClient {
             topic_router: None,
             shard_filter: Vec::new(),
             crawl_queue: std::sync::Mutex::new(Vec::new()),
+            creator_ledger: crate::creator_ledger::CreatorLedger::load(
+                config_creator_ledger_path,
+            ),
         }
     }
 
@@ -590,6 +600,7 @@ impl OpenSonarXClient {
             }
             self.enrich_content_relevant(&mut local_results, &query_embedding);
             self.record_leaderboard(&local_results);
+            self.attribute_usage(&local_results);
             return Ok((local_results, sources_used));
         }
 
@@ -615,6 +626,7 @@ impl OpenSonarXClient {
             if strong_coverage {
                 self.enrich_content_relevant(&mut local_results, &query_embedding);
                 self.record_leaderboard(&local_results);
+            self.attribute_usage(&local_results);
                 return Ok((local_results, sources_used));
             }
             // Weak coverage — fall through to the external blend. Blend scores
@@ -684,6 +696,7 @@ impl OpenSonarXClient {
         // in practice — but handles the case where external results have content).
         self.enrich_content_relevant(&mut merged, &query_embedding);
         self.record_leaderboard(&merged);
+        self.attribute_usage(&merged);
 
         // Crawl-on-query: queue external results for background indexing so
         // every query permanently grows local coverage. Drained by
@@ -721,6 +734,35 @@ impl OpenSonarXClient {
             return;
         };
         apply_blend_scores(items, 0, &query_embedding, self.embedder.as_ref());
+    }
+
+    /// Attribute served LOCAL results to their creators' usage ledger —
+    /// an agent consuming this content generated no page view; this record
+    /// is what replaces it (see BACKLOG.md Phase 1).
+    fn attribute_usage(&self, results: &[SearchResultItem]) {
+        let served: Vec<(String, u32, bool)> = results
+            .iter()
+            .filter(|r| r.source == "local")
+            .map(|r| {
+                let domain = r
+                    .url
+                    .strip_prefix("https://")
+                    .or_else(|| r.url.strip_prefix("http://"))
+                    .and_then(|rest| rest.split('/').next())
+                    .unwrap_or("")
+                    .to_string();
+                (domain, r.rank, r.stake_usd > 0)
+            })
+            .collect();
+        self.creator_ledger.record_query(&served);
+    }
+
+    /// Creator usage snapshot: (queries_attributed, per-domain usage sorted
+    /// by credits).
+    pub fn creator_earnings(
+        &self,
+    ) -> (u64, Vec<(String, crate::creator_ledger::CreatorUsage)>) {
+        self.creator_ledger.snapshot()
     }
 
     /// Number of URLs waiting in the crawl-on-query queue.

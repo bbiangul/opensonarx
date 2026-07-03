@@ -1,6 +1,7 @@
 pub mod auth;
 pub mod client;
 pub mod config;
+pub mod creator_ledger;
 pub mod dns_verify;
 pub mod engines;
 pub mod gateway_client;

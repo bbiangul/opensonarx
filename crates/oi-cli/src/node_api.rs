@@ -164,6 +164,65 @@ async fn search_handler(
     Ok(Json(items))
 }
 
+/// Minimal human search UI served at `/` — the same trust-priced index,
+/// usable by people without any client code. Inline HTML/JS, no assets.
+async fn ui_handler() -> axum::response::Html<&'static str> {
+    axum::response::Html(UI_HTML)
+}
+
+const UI_HTML: &str = r##"<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenSonarX</title>
+<style>
+ body{font-family:-apple-system,system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;color:#1a1a1a}
+ h1{font-size:1.4rem} h1 span{color:#888;font-weight:400;font-size:.9rem}
+ form{display:flex;gap:.5rem;margin:1rem 0}
+ input[type=text]{flex:1;padding:.6rem .8rem;font-size:1rem;border:1px solid #ccc;border-radius:8px}
+ button{padding:.6rem 1.1rem;font-size:1rem;border:0;border-radius:8px;background:#1a1a1a;color:#fff;cursor:pointer}
+ label{font-size:.85rem;color:#555}
+ .r{padding:.8rem 0;border-bottom:1px solid #eee}
+ .r a{font-size:1.05rem;text-decoration:none;color:#0b57d0} .r a:hover{text-decoration:underline}
+ .meta{font-size:.78rem;color:#777;margin:.15rem 0}
+ .badge{display:inline-block;padding:.05rem .45rem;border-radius:99px;font-size:.72rem;margin-left:.4rem;vertical-align:1px}
+ .neutral{background:#fff3cd;color:#7a5d00}.trusted,.highly_trusted{background:#d1e7dd;color:#0f5132}
+ .unverified,.external{background:#f1f3f4;color:#666}
+ .snippet{font-size:.9rem;color:#333;margin-top:.2rem}
+ .stake{color:#0f5132;font-weight:600}
+ #status{color:#888;font-size:.85rem}
+</style></head><body>
+<h1>OpenSonarX <span>&mdash; trust-priced search; agent usage pays creators</span></h1>
+<form id="f"><input type="text" id="q" placeholder="Search&hellip;" autofocus>
+<button>Search</button></form>
+<label><input type="checkbox" id="trust"> only stake-backed results (min_trust: neutral)</label>
+<p id="status"></p><div id="out"></div>
+<script>
+const f=document.getElementById('f'),q=document.getElementById('q'),out=document.getElementById('out'),st=document.getElementById('status');
+f.addEventListener('submit',async e=>{
+ e.preventDefault(); if(!q.value.trim())return;
+ st.textContent='searching…'; out.innerHTML='';
+ const body={query:q.value,top_k:8};
+ if(document.getElementById('trust').checked) body.min_trust='neutral';
+ const t0=performance.now();
+ try{
+  const res=await fetch('/v1/search',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+  const data=await res.json();
+  const ms=(performance.now()-t0).toFixed(0);
+  const rs=data.results||[];
+  st.textContent=rs.length+' results in '+ms+'ms';
+  const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  for(const r of rs){
+   const d=document.createElement('div'); d.className='r';
+   const stake=r.stake_usd>0?' <span class="stake">$'+r.stake_usd+' staked</span>':'';
+   d.innerHTML='<a href="'+esc(r.url)+'" rel="noopener">'+esc(r.title||r.url)+'</a>'+
+    '<div class="meta">'+esc(r.url)+' <span class="badge '+esc(r.trust_verdict)+'">'+esc(r.trust_verdict)+'</span>'+stake+
+    ' · score '+(r.final_score||0).toFixed(3)+' · '+esc(r.source)+'</div>'+
+    '<div class="snippet">'+esc((r.content_relevant||r.snippet||'').slice(0,300))+'</div>';
+   out.appendChild(d);
+  }
+ }catch(err){ st.textContent='error: '+err; }
+});
+</script></body></html>"##;
+
 /// Gateway-compatible endpoint: flat request shape, `{"results": [...]}`
 /// response — the contract of the hosted gateway's /v1/search, served by the
 /// local node so SDK/tool examples work without a hosted deployment.
@@ -264,6 +323,7 @@ pub async fn run_node_api(
     let state = Arc::new(ApiState { handle, client, index, index_path });
 
     let app = Router::new()
+        .route("/", get(ui_handler))
         .route("/health", get(health_handler))
         .route("/search", post(search_handler))
         .route("/v1/search", post(gateway_search_handler))

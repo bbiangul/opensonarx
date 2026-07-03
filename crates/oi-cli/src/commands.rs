@@ -37,6 +37,8 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
         crawl_on_query_max_urls: 3,
         stakes_path: crate::config_file::ConfigFile::config_dir()
             .map(|d| d.join("stakes.json").to_string_lossy().to_string()),
+        creator_ledger_path: crate::config_file::ConfigFile::config_dir()
+            .map(|d| d.join("creator_ledger.json").to_string_lossy().to_string()),
     };
     OpenSonarXClient::new(sdk_config)
 }
@@ -766,7 +768,13 @@ pub fn jury(config: &CliConfig, action: JuryCommands) -> ExitCode {
 // ── Yield ───────────────────────────────────────────────────────────────────
 
 pub fn yield_cmd(config: &CliConfig, action: YieldCommands) -> ExitCode {
-    if let Some(code) = reject_in_open_mode(config, "yield") { return code; }
+    // Creator earnings are local usage data — viewable in every mode.
+    // On-chain yield (Show/History) still requires a wallet.
+    if !matches!(action, YieldCommands::Creators)
+        && let Some(code) = reject_in_open_mode(config, "yield")
+    {
+        return code;
+    }
     match action {
         YieldCommands::Show => {
             let earnings = oi_sdk::OpenSonarXClient::get_earnings();
@@ -792,6 +800,41 @@ pub fn yield_cmd(config: &CliConfig, action: YieldCommands) -> ExitCode {
                 println!("  Pending tickets: {}", item["pending_tickets"]);
                 println!("  Pending value:  {} lamports", item["pending_truth"]);
             });
+            ExitCode::Success
+        }
+        YieldCommands::Creators => {
+            // Creator earnings: the record of agent usage that replaced the
+            // page views (and ad revenue) agents no longer generate.
+            let client = build_local_client(config);
+            let (queries, rows) = client.creator_earnings();
+            if matches!(config.format, crate::output::Format::Json | crate::output::Format::Ndjson) {
+                let doc = serde_json::json!({
+                    "queries_attributed": queries,
+                    "creators": rows.iter().map(|(d, u)| serde_json::json!({
+                        "domain": d,
+                        "served": u.served,
+                        "top3": u.top3,
+                        "credits": u.credits,
+                        "stake_backed": u.stake_backed,
+                        "last_used": u.last_used,
+                    })).collect::<Vec<_>>(),
+                });
+                println!("{}", serde_json::to_string_pretty(&doc).unwrap_or_default());
+                return ExitCode::Success;
+            }
+            if rows.is_empty() {
+                println!("No creator usage recorded yet. Serve some searches first.");
+                return ExitCode::Success;
+            }
+            println!("Creator earnings ({queries} queries attributed):");
+            println!("{:<40} {:>7} {:>6} {:>8}  STAKED", "DOMAIN", "SERVED", "TOP-3", "CREDITS");
+            for (d, u) in rows.iter().take(25) {
+                println!(
+                    "{:<40} {:>7} {:>6} {:>8}  {}",
+                    d, u.served, u.top3, u.credits,
+                    if u.stake_backed { "yes" } else { "-" }
+                );
+            }
             ExitCode::Success
         }
         YieldCommands::History => {
@@ -963,6 +1006,8 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                 crawl_on_query_max_urls: 3,
                                 stakes_path: crate::config_file::ConfigFile::config_dir()
                                     .map(|d| d.join("stakes.json").to_string_lossy().to_string()),
+                                creator_ledger_path: crate::config_file::ConfigFile::config_dir()
+                                    .map(|d| d.join("creator_ledger.json").to_string_lossy().to_string()),
                                 ..Default::default()
                             };
                             let api_index_path =

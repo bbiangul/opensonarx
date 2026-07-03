@@ -363,6 +363,8 @@ pub enum YieldCommands {
     Show,
     /// Show yield history
     History,
+    /// Creator earnings: how often agents used your content, accrued credits
+    Creators,
 }
 
 #[derive(Subcommand)]

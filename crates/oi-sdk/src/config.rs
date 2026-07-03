@@ -44,6 +44,10 @@ pub struct SdkConfig {
     /// consumers; the CLI and node set this to ~/.opensonarx/stakes.json.
     #[serde(default)]
     pub stakes_path: Option<String>,
+    /// Where to persist the creator usage ledger (agent-usage attribution →
+    /// creator credits). None (default) = in-memory only.
+    #[serde(default)]
+    pub creator_ledger_path: Option<String>,
     /// Enable background crawl-on-query for external URLs (default false)
     #[serde(default)]
     pub crawl_on_query: bool,
@@ -81,6 +85,7 @@ impl Default for SdkConfig {
             serper_api_key: None,
             search_engines: None,
             stakes_path: None,
+            creator_ledger_path: None,
             crawl_on_query: false,
             crawl_on_query_max_urls: 3,
         }
