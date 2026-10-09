@@ -279,6 +279,11 @@ enum Command {
         #[arg(long)]
         model: String,
 
+        /// Model for the stance and responsiveness judgments (default: the
+        /// same as --model, which then only names the extractor)
+        #[arg(long)]
+        judge_model: Option<String>,
+
         /// Server base URL (default: the provider's)
         #[arg(long)]
         base_url: Option<String>,
@@ -1364,6 +1369,7 @@ async fn main() {
             cases,
             provider,
             model,
+            judge_model,
             base_url,
             concurrency,
             no_responsiveness,
@@ -1375,6 +1381,7 @@ async fn main() {
                 &cases,
                 &provider,
                 &model,
+                judge_model.as_deref(),
                 base_url.as_deref(),
                 think.as_deref(),
                 min_source_families,

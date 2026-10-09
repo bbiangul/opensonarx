@@ -93,6 +93,8 @@ struct Report {
     cases_path: String,
     cases_sha256: String,
     model: String,
+    /// Model behind the stance and responsiveness judgments.
+    judge_model: String,
     think: Option<String>,
     policy_id: String,
     cases: usize,
@@ -194,6 +196,7 @@ fn result_item(rank: usize, document: &Document) -> SearchResultItem {
 fn evaluate(
     case: &Case,
     model: &ChatModel,
+    judge: &ChatModel,
     policy: &AnswerPolicy,
     responsiveness: bool,
 ) -> CaseReport {
@@ -224,7 +227,7 @@ fn evaluate(
         .claims
         .iter()
         .take(policy.max_claims)
-        .map(|claim| model.judge(&claim.text, &retained))
+        .map(|claim| judge.judge(&claim.text, &retained))
         .collect::<Result<_, _>>()
         .map_err(|error| model_error = Some(error.to_string()))
         .ok();
@@ -235,7 +238,7 @@ fn evaluate(
         .map(|claim| claim.text.as_str())
         .collect();
     let responsive = if responsiveness && !claim_texts.is_empty() {
-        model
+        judge
             .answers_request(&case.query, &claim_texts)
             .map_err(|error| model_error = Some(error.to_string()))
             .ok()
@@ -350,6 +353,7 @@ pub fn run(
     cases_path: &str,
     provider: &str,
     model: &str,
+    judge_model: Option<&str>,
     base_url: Option<&str>,
     think: Option<&str>,
     min_source_families: Option<usize>,
@@ -381,7 +385,12 @@ pub fn run(
         config.base_url = Some(base_url.to_string());
     }
     config.think = think.map(str::to_string);
+    let mut judge_config = config.clone();
+    if let Some(judge_model) = judge_model {
+        judge_config.model = judge_model.to_string();
+    }
     let chat_model = ChatModel::new(config);
+    let judge = ChatModel::new(judge_config);
     let mut policy = AnswerPolicy::default();
     if let Some(families) = min_source_families {
         // Single-document datasets cannot meet the default two-family rule;
@@ -400,7 +409,9 @@ pub fn run(
         let reports: Vec<CaseReport> = std::thread::scope(|scope| {
             let workers: Vec<_> = batch
                 .iter()
-                .map(|case| scope.spawn(|| evaluate(case, &chat_model, &policy, responsiveness)))
+                .map(|case| {
+                    scope.spawn(|| evaluate(case, &chat_model, &judge, &policy, responsiveness))
+                })
                 .collect();
             workers
                 .into_iter()
@@ -438,6 +449,7 @@ pub fn run(
             .map(|byte| format!("{byte:02x}"))
             .collect(),
         model: ClaimExtractor::model_version(&chat_model),
+        judge_model: StanceJudge::model_version(&judge),
         think: think.map(str::to_string),
         policy_id: policy.policy_id.clone(),
         cases: cases.len(),
