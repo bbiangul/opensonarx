@@ -70,15 +70,18 @@ impl EntityRef {
             return Err(EntityParseError::TooLong);
         }
         // Reject leading/trailing dot or dash
-        if domain.starts_with('.') || domain.ends_with('.')
-            || domain.starts_with('-') || domain.ends_with('-')
+        if domain.starts_with('.')
+            || domain.ends_with('.')
+            || domain.starts_with('-')
+            || domain.ends_with('-')
         {
             return Err(EntityParseError::InvalidChars);
         }
 
         // Validate path characters
         if let Some(path) = path_raw
-            && !path.is_empty() && !path.chars().all(is_path_char)
+            && !path.is_empty()
+            && !path.chars().all(is_path_char)
         {
             return Err(EntityParseError::InvalidChars);
         }
@@ -91,7 +94,10 @@ impl EntityRef {
             .filter(|p| !p.is_empty())
             .map(|p| normalize_path(&domain, p));
 
-        Ok(EntityRef { domain, entity_path })
+        Ok(EntityRef {
+            domain,
+            entity_path,
+        })
     }
 
     /// Canonical string representation (lowercased, normalized).
@@ -339,10 +345,26 @@ mod tests {
     #[test]
     fn test_ugc_platform() {
         assert!(EntityRef::parse("youtube.com").unwrap().is_ugc_platform());
-        assert!(EntityRef::parse("reddit.com/r/rust").unwrap().is_ugc_platform());
-        assert!(EntityRef::parse("twitter.com/elonmusk").unwrap().is_ugc_platform());
-        assert!(EntityRef::parse("www.tiktok.com").unwrap().is_ugc_platform());
-        assert!(EntityRef::parse("www.instagram.com").unwrap().is_ugc_platform());
+        assert!(
+            EntityRef::parse("reddit.com/r/rust")
+                .unwrap()
+                .is_ugc_platform()
+        );
+        assert!(
+            EntityRef::parse("twitter.com/elonmusk")
+                .unwrap()
+                .is_ugc_platform()
+        );
+        assert!(
+            EntityRef::parse("www.tiktok.com")
+                .unwrap()
+                .is_ugc_platform()
+        );
+        assert!(
+            EntityRef::parse("www.instagram.com")
+                .unwrap()
+                .is_ugc_platform()
+        );
         assert!(!EntityRef::parse("nytimes.com").unwrap().is_ugc_platform());
         assert!(!EntityRef::parse("example.com").unwrap().is_ugc_platform());
     }

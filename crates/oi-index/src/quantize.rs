@@ -22,11 +22,7 @@ impl QuantizedVector {
 
         let data: Vec<i8> = v
             .iter()
-            .map(|&x| {
-                ((x - offset) * scale - 128.0)
-                    .round()
-                    .clamp(-128.0, 127.0) as i8
-            })
+            .map(|&x| ((x - offset) * scale - 128.0).round().clamp(-128.0, 127.0) as i8)
             .collect();
 
         Self {
@@ -93,10 +89,7 @@ mod tests {
             .zip(reconstructed.iter())
             .map(|(a, b)| (a - b).abs())
             .fold(0.0f32, f32::max);
-        assert!(
-            max_err < 0.05,
-            "max roundtrip error {max_err} exceeds 0.05"
-        );
+        assert!(max_err < 0.05, "max roundtrip error {max_err} exceeds 0.05");
     }
 
     #[test]
@@ -135,18 +128,13 @@ mod tests {
             ratio < 0.30,
             "memory ratio {ratio} should be roughly 0.27 for 384-dim"
         );
-        assert!(
-            ratio > 0.20,
-            "memory ratio {ratio} is unexpectedly low"
-        );
+        assert!(ratio > 0.20, "memory ratio {ratio} is unexpectedly low");
     }
 
     #[test]
     fn test_quantize_uniform() {
         // Uniform distribution across [-1, 1]
-        let original: Vec<f32> = (0..256)
-            .map(|i| (i as f32 / 128.0) - 1.0)
-            .collect();
+        let original: Vec<f32> = (0..256).map(|i| (i as f32 / 128.0) - 1.0).collect();
         let quantized = QuantizedVector::from_f32(&original);
         let reconstructed = quantized.to_f32();
 

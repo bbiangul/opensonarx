@@ -28,10 +28,8 @@ impl ProjectionMatrix {
             ));
         }
 
-        let input_dim =
-            u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]) as usize;
-        let output_dim =
-            u32::from_le_bytes([bytes[4], bytes[5], bytes[6], bytes[7]]) as usize;
+        let input_dim = u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]) as usize;
+        let output_dim = u32::from_le_bytes([bytes[4], bytes[5], bytes[6], bytes[7]]) as usize;
 
         let expected = 8 + input_dim * output_dim * 4;
         if bytes.len() != expected {
@@ -208,9 +206,7 @@ impl ProjectionMatrix {
         for col in 0..output_dim {
             for prev in 0..col {
                 let dot: f32 = (0..input_dim)
-                    .map(|row| {
-                        weights[row * output_dim + col] * weights[row * output_dim + prev]
-                    })
+                    .map(|row| weights[row * output_dim + col] * weights[row * output_dim + prev])
                     .sum();
                 for row in 0..input_dim {
                     weights[row * output_dim + col] -= dot * weights[row * output_dim + prev];

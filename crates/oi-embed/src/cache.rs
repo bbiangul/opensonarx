@@ -1,6 +1,6 @@
 use oi_types::{EmbeddingPipeline, Result};
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, Mutex, RwLock};
 
 /// A caching wrapper around any `EmbeddingPipeline` that caches `embed_query()`
 /// and `embed_text_batch()` results per input string.
@@ -15,6 +15,10 @@ use std::sync::{Arc, RwLock};
 pub struct CachedEmbedder {
     inner: Arc<dyn EmbeddingPipeline>,
     cache: RwLock<HashMap<String, Vec<f32>>>,
+    /// Serializes cache fills, not hits. The inner ONNX session is serialized
+    /// already; this gate prevents concurrent requests from all missing the
+    /// same keys and queueing duplicate inference batches behind it.
+    miss_lock: Mutex<()>,
     max_entries: usize,
 }
 
@@ -23,6 +27,7 @@ impl CachedEmbedder {
         Self {
             inner,
             cache: RwLock::new(HashMap::new()),
+            miss_lock: Mutex::new(()),
             max_entries,
         }
     }
@@ -35,8 +40,7 @@ impl CachedEmbedder {
     fn cache_put(&self, key: String, value: &[f32]) {
         if let Ok(mut cache) = self.cache.write() {
             if cache.len() >= self.max_entries {
-                let to_remove: Vec<String> =
-                    cache.keys().take(cache.len() / 2).cloned().collect();
+                let to_remove: Vec<String> = cache.keys().take(cache.len() / 2).cloned().collect();
                 for k in to_remove {
                     cache.remove(&k);
                 }
@@ -56,12 +60,23 @@ impl EmbeddingPipeline for CachedEmbedder {
         if let Some(cached) = self.cache_get(&key) {
             return Ok(cached);
         }
+        let _fill = self
+            .miss_lock
+            .lock()
+            .map_err(|error| oi_types::Error::Internal(format!("embedding fill lock: {error}")))?;
+        // Another request may have filled this exact key while we waited.
+        if let Some(cached) = self.cache_get(&key) {
+            return Ok(cached);
+        }
         let embedding = self.inner.embed_query(query)?;
         self.cache_put(key, &embedding);
         Ok(embedding)
     }
 
     fn embed_text_batch(&self, texts: &[&str]) -> Result<Vec<Vec<f32>>> {
+        if texts.is_empty() {
+            return Ok(Vec::new());
+        }
         // Serve hits from cache; batch only the misses through the model.
         let mut results: Vec<Option<Vec<f32>>> = Vec::with_capacity(texts.len());
         let mut miss_indices: Vec<usize> = Vec::new();
@@ -75,6 +90,24 @@ impl EmbeddingPipeline for CachedEmbedder {
             }
         }
 
+        if miss_indices.is_empty() {
+            return Ok(results.into_iter().map(Option::unwrap).collect());
+        }
+
+        let _fill = self
+            .miss_lock
+            .lock()
+            .map_err(|error| oi_types::Error::Internal(format!("embedding fill lock: {error}")))?;
+        // Double-check every miss after acquiring the fill gate. Concurrent
+        // result sets overlap heavily, so most apparent misses may now be hits.
+        miss_indices.retain(|&index| {
+            if let Some(hit) = self.cache_get(&format!("t:{}", texts[index])) {
+                results[index] = Some(hit);
+                false
+            } else {
+                true
+            }
+        });
         if !miss_indices.is_empty() {
             let miss_texts: Vec<&str> = miss_indices.iter().map(|&i| texts[i]).collect();
             let embeddings = self.inner.embed_text_batch(&miss_texts)?;
@@ -84,7 +117,10 @@ impl EmbeddingPipeline for CachedEmbedder {
             }
         }
 
-        Ok(results.into_iter().map(|r| r.expect("all slots filled")).collect())
+        Ok(results
+            .into_iter()
+            .map(|r| r.expect("all slots filled"))
+            .collect())
     }
 
     fn dimension(&self) -> usize {
@@ -105,6 +141,7 @@ mod tests {
     struct CountingEmbedder {
         inner: MockEmbedder,
         query_count: AtomicUsize,
+        batch_count: AtomicUsize,
     }
 
     impl CountingEmbedder {
@@ -112,6 +149,7 @@ mod tests {
             Self {
                 inner: MockEmbedder::new(dim),
                 query_count: AtomicUsize::new(0),
+                batch_count: AtomicUsize::new(0),
             }
         }
     }
@@ -123,7 +161,14 @@ mod tests {
 
         fn embed_query(&self, query: &str) -> Result<Vec<f32>> {
             self.query_count.fetch_add(1, Ordering::SeqCst);
+            std::thread::sleep(std::time::Duration::from_millis(20));
             self.inner.embed_query(query)
+        }
+
+        fn embed_text_batch(&self, texts: &[&str]) -> Result<Vec<Vec<f32>>> {
+            self.batch_count.fetch_add(1, Ordering::SeqCst);
+            std::thread::sleep(std::time::Duration::from_millis(20));
+            self.inner.embed_text_batch(texts)
         }
 
         fn dimension(&self) -> usize {
@@ -156,6 +201,50 @@ mod tests {
         let _r2 = cached.embed_query("world").unwrap();
 
         assert_eq!(counting.query_count.load(Ordering::SeqCst), 2);
+    }
+
+    #[test]
+    fn test_concurrent_query_miss_is_coalesced() {
+        let counting = Arc::new(CountingEmbedder::new(4));
+        let cached = Arc::new(CachedEmbedder::new(counting.clone(), 100));
+        let barrier = Arc::new(std::sync::Barrier::new(8));
+        let workers: Vec<_> = (0..8)
+            .map(|_| {
+                let cached = Arc::clone(&cached);
+                let barrier = Arc::clone(&barrier);
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    cached.embed_query("same cold query").unwrap()
+                })
+            })
+            .collect();
+        for worker in workers {
+            assert_eq!(worker.join().unwrap().len(), 4);
+        }
+        assert_eq!(counting.query_count.load(Ordering::SeqCst), 1);
+    }
+
+    #[test]
+    fn test_concurrent_batch_miss_is_coalesced() {
+        let counting = Arc::new(CountingEmbedder::new(4));
+        let cached = Arc::new(CachedEmbedder::new(counting.clone(), 100));
+        let barrier = Arc::new(std::sync::Barrier::new(8));
+        let workers: Vec<_> = (0..8)
+            .map(|_| {
+                let cached = Arc::clone(&cached);
+                let barrier = Arc::clone(&barrier);
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    cached
+                        .embed_text_batch(&["same passage", "same second passage"])
+                        .unwrap()
+                })
+            })
+            .collect();
+        for worker in workers {
+            assert_eq!(worker.join().unwrap().len(), 2);
+        }
+        assert_eq!(counting.batch_count.load(Ordering::SeqCst), 1);
     }
 
     #[test]

@@ -1,6 +1,6 @@
+use oi_types::Result;
 use oi_types::facts::{ExtractedEntity, Fact, FactExtractionResult};
 use oi_types::traits::FactExtractionPipeline;
-use oi_types::Result;
 use sha2::{Digest, Sha256};
 
 use crate::normalizer;
@@ -140,11 +140,53 @@ fn byte_offset(text: &str, char_idx: usize) -> usize {
 fn is_common_word(s: &str) -> bool {
     matches!(
         s,
-        "The" | "This" | "That" | "These" | "Those" | "It" | "In" | "On" | "At" | "By" | "To"
-            | "For" | "With" | "From" | "As" | "But" | "Or" | "And" | "If" | "So" | "No"
-            | "Not" | "He" | "She" | "We" | "They" | "My" | "Your" | "His" | "Her" | "Its"
-            | "Our" | "An" | "All" | "Each" | "Every" | "Some" | "Any" | "El" | "La" | "Le"
-            | "Les" | "Der" | "Die" | "Das" | "Ein" | "Eine"
+        "The"
+            | "This"
+            | "That"
+            | "These"
+            | "Those"
+            | "It"
+            | "In"
+            | "On"
+            | "At"
+            | "By"
+            | "To"
+            | "For"
+            | "With"
+            | "From"
+            | "As"
+            | "But"
+            | "Or"
+            | "And"
+            | "If"
+            | "So"
+            | "No"
+            | "Not"
+            | "He"
+            | "She"
+            | "We"
+            | "They"
+            | "My"
+            | "Your"
+            | "His"
+            | "Her"
+            | "Its"
+            | "Our"
+            | "An"
+            | "All"
+            | "Each"
+            | "Every"
+            | "Some"
+            | "Any"
+            | "El"
+            | "La"
+            | "Le"
+            | "Les"
+            | "Der"
+            | "Die"
+            | "Das"
+            | "Ein"
+            | "Eine"
     )
 }
 

@@ -56,7 +56,9 @@ pub fn hamming_distance(a: u64, b: u64) -> u32 {
 /// O(n) linear scan — kept for backward compatibility and tests.
 /// For production use, prefer `SimHashIndex::is_near_duplicate()`.
 pub fn is_near_duplicate(new_hash: u64, existing: &[u64], threshold: u32) -> bool {
-    existing.iter().any(|&h| hamming_distance(new_hash, h) <= threshold)
+    existing
+        .iter()
+        .any(|&h| hamming_distance(new_hash, h) <= threshold)
 }
 
 /// Default near-duplicate threshold: 8 bits out of 64.
@@ -297,7 +299,8 @@ mod tests {
     #[test]
     fn test_simhash_index_basic() {
         let mut idx = SimHashIndex::new();
-        let h1 = simhash("Rust is a systems programming language focused on safety and performance");
+        let h1 =
+            simhash("Rust is a systems programming language focused on safety and performance");
         idx.insert(h1);
 
         // Near-duplicate should be found
@@ -305,7 +308,9 @@ mod tests {
         assert!(idx.is_near_duplicate(h2, DEFAULT_THRESHOLD));
 
         // Different text should not be found
-        let h3 = simhash("The global economy shows signs of recovery as inflation rates decline across major markets");
+        let h3 = simhash(
+            "The global economy shows signs of recovery as inflation rates decline across major markets",
+        );
         assert!(!idx.is_near_duplicate(h3, DEFAULT_THRESHOLD));
     }
 
@@ -334,7 +339,12 @@ mod tests {
     fn test_simhash_index_to_hashes_roundtrip() {
         let mut idx = SimHashIndex::new();
         let hashes: Vec<u64> = (0..100)
-            .map(|i| simhash(&format!("unique document number {i} about topic {}", i * 7 + 3)))
+            .map(|i| {
+                simhash(&format!(
+                    "unique document number {i} about topic {}",
+                    i * 7 + 3
+                ))
+            })
             .collect();
         for &h in &hashes {
             idx.insert(h);
@@ -366,13 +376,17 @@ mod tests {
         let mut idx = SimHashIndex::new();
         // Insert 10K distinct hashes
         for i in 0..10_000 {
-            let h = simhash(&format!("completely unique document about subject number {i} with extra words {}", i * 13 + 7));
+            let h = simhash(&format!(
+                "completely unique document about subject number {i} with extra words {}",
+                i * 13 + 7
+            ));
             idx.insert(h);
         }
         assert_eq!(idx.len(), 10_000);
 
         // Query should still be fast and correct
-        let test = simhash("completely unique document about subject number 42 with extra words 553");
+        let test =
+            simhash("completely unique document about subject number 42 with extra words 553");
         assert!(idx.is_near_duplicate(test, DEFAULT_THRESHOLD));
     }
 }

@@ -74,8 +74,8 @@ impl Bm25Index {
 
                 for &(doc_idx, tf) in postings {
                     let doc_len = self.doc_lengths[doc_idx];
-                    let tf_norm =
-                        (tf * (self.k1 + 1.0)) / (tf + self.k1 * (1.0 - self.b + self.b * doc_len / self.avg_dl));
+                    let tf_norm = (tf * (self.k1 + 1.0))
+                        / (tf + self.k1 * (1.0 - self.b + self.b * doc_len / self.avg_dl));
                     *scores.entry(doc_idx).or_default() += idf * tf_norm;
                 }
             }
@@ -188,10 +188,7 @@ impl Bm25Index {
         let mut best: Option<(&str, usize)> = None; // (term, df)
         for (term, postings) in &self.inverted_index {
             let df = postings.len();
-            if df < MIN_DF
-                || term.len().abs_diff(tok_len) > 1
-                || !term.starts_with(first_char)
-            {
+            if df < MIN_DF || term.len().abs_diff(tok_len) > 1 || !term.starts_with(first_char) {
                 continue;
             }
             if bounded_levenshtein(token, term, 1) != Some(1) {
@@ -318,9 +315,18 @@ mod tests {
     #[test]
     fn test_insert_and_search() {
         let mut idx = Bm25Index::new();
-        idx.insert("doc1".into(), "the quick brown fox jumps over the lazy dog".into());
-        idx.insert("doc2".into(), "a fast brown car races past the sleeping cat".into());
-        idx.insert("doc3".into(), "quantum computing research paper on algorithms".into());
+        idx.insert(
+            "doc1".into(),
+            "the quick brown fox jumps over the lazy dog".into(),
+        );
+        idx.insert(
+            "doc2".into(),
+            "a fast brown car races past the sleeping cat".into(),
+        );
+        idx.insert(
+            "doc3".into(),
+            "quantum computing research paper on algorithms".into(),
+        );
 
         let results = idx.search("brown fox", 10);
         assert!(!results.is_empty());
@@ -330,8 +336,14 @@ mod tests {
     #[test]
     fn test_exact_match() {
         let mut idx = Bm25Index::new();
-        idx.insert("doc1".into(), "opensonarx decentralized search protocol".into());
-        idx.insert("doc2".into(), "recipe for chocolate cake baking tips".into());
+        idx.insert(
+            "doc1".into(),
+            "opensonarx decentralized search protocol".into(),
+        );
+        idx.insert(
+            "doc2".into(),
+            "recipe for chocolate cake baking tips".into(),
+        );
 
         let results = idx.search("opensonarx", 5);
         assert_eq!(results.len(), 1);
@@ -367,9 +379,18 @@ mod tests {
     #[test]
     fn test_serialization_roundtrip() {
         let mut idx = Bm25Index::new();
-        idx.insert("doc1".into(), "the quick brown fox jumps over the lazy dog".into());
-        idx.insert("doc2".into(), "a fast brown car races past the sleeping cat".into());
-        idx.insert("doc3".into(), "quantum computing research paper on algorithms".into());
+        idx.insert(
+            "doc1".into(),
+            "the quick brown fox jumps over the lazy dog".into(),
+        );
+        idx.insert(
+            "doc2".into(),
+            "a fast brown car races past the sleeping cat".into(),
+        );
+        idx.insert(
+            "doc3".into(),
+            "quantum computing research paper on algorithms".into(),
+        );
 
         let bytes = idx.to_bytes();
         let restored = Bm25Index::from_bytes(&bytes).unwrap();
@@ -397,7 +418,10 @@ mod tests {
         idx.insert("doc2".into(), "quantum computing research".into());
 
         assert_eq!(idx.get_doc_content("doc1"), Some("the quick brown fox"));
-        assert_eq!(idx.get_doc_content("doc2"), Some("quantum computing research"));
+        assert_eq!(
+            idx.get_doc_content("doc2"),
+            Some("quantum computing research")
+        );
         assert_eq!(idx.get_doc_content("nonexistent"), None);
     }
 
@@ -409,7 +433,10 @@ mod tests {
         let bytes = idx.to_bytes();
         let restored = Bm25Index::from_bytes(&bytes).unwrap();
 
-        assert_eq!(restored.get_doc_content("doc1"), Some("hello world content"));
+        assert_eq!(
+            restored.get_doc_content("doc1"),
+            Some("hello world content")
+        );
         assert_eq!(restored.get_doc_content("nonexistent"), None);
     }
 
@@ -454,7 +481,10 @@ mod tests {
         // distance 2 → never corrected (was "mechanical" → "technical")
         assert_eq!(idx.correct_query("javascrp"), None);
         // different first letter → never corrected
-        assert_eq!(idx.correct_query("javascrpt xromises").as_deref(), Some("javascript xromises"));
+        assert_eq!(
+            idx.correct_query("javascrpt xromises").as_deref(),
+            Some("javascript xromises")
+        );
     }
 
     #[test]

@@ -1,8 +1,8 @@
 use crate::SignedTicket;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashSet, VecDeque};
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::RwLock;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 /// Maximum number of (payer, nonce) pairs to track for replay protection.
 /// At ~80 bytes per entry, 1M entries ≈ 80 MB — bounded and predictable.

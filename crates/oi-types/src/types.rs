@@ -65,7 +65,6 @@ pub struct SearchResultItem {
     pub content_relevant: Option<String>,
 
     // --- Domain-level metadata (helps agents reason about source trustworthiness) ---
-
     /// When OpenSonarX first observed this domain (Unix seconds). None for external-only results.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub domain_first_seen_at: Option<i64>,
@@ -78,6 +77,57 @@ pub struct SearchResultItem {
     /// Total feedback votes for this domain across all epochs. None if no votes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub domain_total_votes: Option<u64>,
+    /// Stage-2 reliance decision. None means the caller used retrieval only.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub decision: Option<SearchDecisionMetadata>,
+}
+
+/// Explainable Stage-2 metadata kept separate from Stage-1 relevance fields.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SearchDecisionMetadata {
+    pub retrieval_rank: u32,
+    pub decision_rank: u32,
+    pub decision_score: f64,
+    pub policy_id: String,
+    /// `deterministic`, `calibrated`, `evidential_only`, or `not_applicable`.
+    pub uncertainty_mode: String,
+    pub p_reliable: Option<f64>,
+    pub interval_90: Option<(f64, f64)>,
+    pub support: f64,
+    pub conflict: f64,
+    pub ignorance: f64,
+    #[serde(default)]
+    pub critical_missing: bool,
+    /// Estimated independence of this evidence unit after known derivations
+    /// are collapsed. This is not a truth probability.
+    #[serde(default = "fully_independent")]
+    pub independence: f64,
+    pub dependency_uncertainty: f64,
+    pub staleness_uncertainty: f64,
+    pub distribution_shift: f64,
+    pub cash_eligible: bool,
+    pub cash_calibrated: bool,
+    pub cash_log_bayes_factor: f64,
+    #[serde(default)]
+    pub evidence_signals: Vec<String>,
+    /// Structured derivation identity when the result could be joined to an
+    /// underlying evidence unit such as one registered poll.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub evidence_lineage: Option<EvidenceLineageMetadata>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EvidenceLineageMetadata {
+    pub unit_kind: String,
+    pub unit_ref: String,
+    pub relation: String,
+    pub cluster_size: usize,
+    pub representative: bool,
+    pub registry_verified: bool,
+}
+
+fn fully_independent() -> f64 {
+    1.0
 }
 
 /// Entry in the most-queried-domains leaderboard.
@@ -135,17 +185,45 @@ impl QueryFilters {
     /// Convert from protobuf Filters message.
     pub fn from_proto(f: &crate::proto::opensonarx::Filters) -> Self {
         Self {
-            min_stake_usd: if f.min_stake_usd > 0 { Some(f.min_stake_usd) } else { None },
-            freshness: if f.freshness.is_empty() { None } else { Some(f.freshness.clone()) },
+            min_stake_usd: if f.min_stake_usd > 0 {
+                Some(f.min_stake_usd)
+            } else {
+                None
+            },
+            freshness: if f.freshness.is_empty() {
+                None
+            } else {
+                Some(f.freshness.clone())
+            },
             types: f.types.clone(),
-            min_reputation: if f.min_reputation > 0.0 { Some(f.min_reputation) } else { None },
-            min_trust: if f.min_trust.is_empty() { None } else { Some(f.min_trust.clone()) },
+            min_reputation: if f.min_reputation > 0.0 {
+                Some(f.min_reputation)
+            } else {
+                None
+            },
+            min_trust: if f.min_trust.is_empty() {
+                None
+            } else {
+                Some(f.min_trust.clone())
+            },
             shards: f.shards.clone(),
             entities: f.entities.clone(),
             content_kinds: f.content_kinds.clone(),
-            locale: if f.locale.is_empty() { None } else { Some(f.locale.clone()) },
-            gl: if f.gl.is_empty() { None } else { Some(f.gl.clone()) },
-            site: if f.site.is_empty() { None } else { Some(f.site.clone()) },
+            locale: if f.locale.is_empty() {
+                None
+            } else {
+                Some(f.locale.clone())
+            },
+            gl: if f.gl.is_empty() {
+                None
+            } else {
+                Some(f.gl.clone())
+            },
+            site: if f.site.is_empty() {
+                None
+            } else {
+                Some(f.site.clone())
+            },
         }
     }
 

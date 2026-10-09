@@ -1,9 +1,9 @@
+use oi_types::MetricsSnapshot;
 /// Prometheus-compatible metrics collector for the OpenSonarX node.
 ///
 /// All counters use lock-free atomics for concurrent recording from
 /// query/ingest hot paths.
 use oi_types::traits::MetricsCollector;
-use oi_types::MetricsSnapshot;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 pub struct IndexMetrics {
@@ -20,7 +20,9 @@ impl IndexMetrics {
     pub fn new() -> Self {
         Self {
             queries_total: AtomicU64::new(0),
-            queries_latency_sum_ms: AtomicU64::new(0u64.to_be_bytes().iter().copied().fold(0u64, |acc, _| acc)), // 0.0 as f64 bits
+            queries_latency_sum_ms: AtomicU64::new(
+                0u64.to_be_bytes().iter().copied().fold(0u64, |acc, _| acc),
+            ), // 0.0 as f64 bits
             ingest_total: AtomicU64::new(0),
             docs_stored: AtomicU64::new(0),
             peers_connected: AtomicU64::new(0),

@@ -7,6 +7,7 @@ pub mod ranking;
 pub mod relevance;
 pub mod simhash;
 pub mod storage;
+pub mod uncertainty;
 
 pub use hybrid::{FusionMethod, HybridConfig, HybridIndex, QueryTimings};
 pub use storage::Storage;

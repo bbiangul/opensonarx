@@ -12,7 +12,7 @@
 //! not move with stake at all.
 //!
 //! Run: cargo test -p oi-index --test stake_ablation -- --nocapture
-use oi_index::ranking::{compute_score, RankingParams};
+use oi_index::ranking::{RankingParams, compute_score};
 
 const SEM_HONEST: f64 = 0.88; // honest content is genuinely more relevant
 const SEM_ADVERSARY: f64 = 0.82; // adversary is *almost* as relevant (worst case)
@@ -70,17 +70,34 @@ fn stake_and_reputation_never_change_rank() {
     let honest_score = score_full(&hon, SEM_HONEST);
 
     eprintln!("\n{}", "=".repeat(60));
-    eprintln!("  STAKE NEUTRALITY — honest(sem={SEM_HONEST}, q=0.95) vs adversary(sem={SEM_ADVERSARY}, q=0.60)");
+    eprintln!(
+        "  STAKE NEUTRALITY — honest(sem={SEM_HONEST}, q=0.95) vs adversary(sem={SEM_ADVERSARY}, q=0.60)"
+    );
     eprintln!("{}", "=".repeat(60));
     eprintln!("  honest score: {honest_score:.4}");
-    eprintln!("\n  {:>12} | {:>10} {:>10} {:>9}", "adv stake", "adv score", "hon score", "winner");
+    eprintln!(
+        "\n  {:>12} | {:>10} {:>10} {:>9}",
+        "adv stake", "adv score", "hon score", "winner"
+    );
     eprintln!("  {}", "-".repeat(47));
 
     let mut prev_adv: Option<f64> = None;
-    for &s in &[0.0, 100.0, 1_000.0, 10_000.0, 50_000.0, 100_000.0, 1_000_000.0] {
+    for &s in &[
+        0.0,
+        100.0,
+        1_000.0,
+        10_000.0,
+        50_000.0,
+        100_000.0,
+        1_000_000.0,
+    ] {
         let adv = adversary(s);
         let adv_score = score_full(&adv, SEM_ADVERSARY);
-        let winner = if adv_score > honest_score { "ADVERSARY" } else { "honest" };
+        let winner = if adv_score > honest_score {
+            "ADVERSARY"
+        } else {
+            "honest"
+        };
         eprintln!(
             "  {:>12} | {:>10.4} {:>10.4} {:>9}",
             format!("${}", s as u64),
@@ -91,12 +108,20 @@ fn stake_and_reputation_never_change_rank() {
 
         // Stake must not move the score at all.
         if let Some(p) = prev_adv {
-            assert!((adv_score - p).abs() < 1e-12, "stake changed the rank score at ${}", s as u64);
+            assert!(
+                (adv_score - p).abs() < 1e-12,
+                "stake changed the rank score at ${}",
+                s as u64
+            );
         }
         prev_adv = Some(adv_score);
 
         // The more-relevant, higher-quality doc must always win.
-        assert!(adv_score < honest_score, "adversary must never outrank via stake (${})", s as u64);
+        assert!(
+            adv_score < honest_score,
+            "adversary must never outrank via stake (${})",
+            s as u64
+        );
 
         // full == stripped, since the scorer ignores stake/reputation entirely.
         assert!(

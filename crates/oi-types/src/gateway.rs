@@ -380,7 +380,10 @@ mod tests {
     #[test]
     fn test_fiat_bond_status_methods() {
         assert_eq!(FiatBondStatus::Held.as_str(), "held");
-        assert_eq!(FiatBondStatus::from_db_str("released"), FiatBondStatus::Released);
+        assert_eq!(
+            FiatBondStatus::from_db_str("released"),
+            FiatBondStatus::Released
+        );
         assert_eq!(FiatBondStatus::from_db_str("unknown"), FiatBondStatus::Held);
     }
 

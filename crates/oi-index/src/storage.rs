@@ -72,9 +72,7 @@ impl Storage {
     }
 
     pub fn segment_exists(&self, name: &str) -> bool {
-        self.safe_path(name)
-            .map(|p| p.exists())
-            .unwrap_or(false)
+        self.safe_path(name).map(|p| p.exists()).unwrap_or(false)
     }
 
     /// Read a segment using memory-mapped I/O for large files.

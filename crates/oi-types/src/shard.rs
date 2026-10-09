@@ -21,7 +21,11 @@ pub const DEFAULT_SUB_SHARDS: usize = 10;
 ///
 /// Takes the first 8 bytes of the content hash as a u64, mods by `num_sub_shards`,
 /// and returns `"{topic_shard}/{bucket}"` (e.g. `"topic-technology/3"`).
-pub fn compute_sub_shard_id(topic_shard: &str, content_hash: &str, num_sub_shards: usize) -> String {
+pub fn compute_sub_shard_id(
+    topic_shard: &str,
+    content_hash: &str,
+    num_sub_shards: usize,
+) -> String {
     assert!(num_sub_shards > 0, "num_sub_shards must be > 0");
     let hash = Sha256::digest(content_hash.as_bytes());
     let val = u64::from_be_bytes(hash[..8].try_into().unwrap());
@@ -34,7 +38,9 @@ pub fn compute_sub_shard_id(topic_shard: &str, content_hash: &str, num_sub_shard
 /// `"topic-technology/3"` → `"topic-technology"`.
 /// If no `/` suffix exists, returns the input unchanged.
 pub fn parent_shard(sub_shard_id: &str) -> &str {
-    sub_shard_id.rsplit_once('/').map_or(sub_shard_id, |(parent, _)| parent)
+    sub_shard_id
+        .rsplit_once('/')
+        .map_or(sub_shard_id, |(parent, _)| parent)
 }
 
 /// Check if a sub-shard belongs to a given parent shard.
@@ -118,11 +124,7 @@ fn cosine_similarity(a: &[f32], b: &[f32]) -> f32 {
     let norm_a: f32 = a.iter().map(|x| x * x).sum::<f32>().sqrt();
     let norm_b: f32 = b.iter().map(|x| x * x).sum::<f32>().sqrt();
     let denom = norm_a * norm_b;
-    if denom < 1e-10 {
-        0.0
-    } else {
-        dot / denom
-    }
+    if denom < 1e-10 { 0.0 } else { dot / denom }
 }
 
 /// Embedding-based topic classifier.
@@ -240,7 +242,11 @@ mod tests {
         assert_eq!(BUILTIN_TOPICS.len(), 10);
         // Verify all shard_ids start with "topic-"
         for t in BUILTIN_TOPICS {
-            assert!(t.shard_id.starts_with("topic-"), "bad shard_id: {}", t.shard_id);
+            assert!(
+                t.shard_id.starts_with("topic-"),
+                "bad shard_id: {}",
+                t.shard_id
+            );
         }
     }
 
@@ -293,10 +299,8 @@ mod tests {
 
     #[test]
     fn test_classify_below_threshold_falls_back() {
-        let router = TopicRouter::new(vec![
-            ("topic-technology".into(), vec![1.0, 0.0, 0.0, 0.0]),
-        ])
-        .with_threshold(0.9);
+        let router = TopicRouter::new(vec![("topic-technology".into(), vec![1.0, 0.0, 0.0, 0.0])])
+            .with_threshold(0.9);
 
         // This embedding is far from all centroids
         let result = router.classify(&[0.0, 0.0, 0.0, 1.0]);
@@ -341,7 +345,11 @@ mod tests {
     fn test_compute_sub_shard_id_format() {
         let id = compute_sub_shard_id("topic-technology", "abc123hash", 10);
         assert!(id.starts_with("topic-technology/"));
-        let bucket: usize = id.strip_prefix("topic-technology/").unwrap().parse().unwrap();
+        let bucket: usize = id
+            .strip_prefix("topic-technology/")
+            .unwrap()
+            .parse()
+            .unwrap();
         assert!(bucket < 10);
     }
 

@@ -1,4 +1,4 @@
-use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
+use criterion::{BenchmarkId, Criterion, criterion_group, criterion_main};
 use oi_index::HybridIndex;
 use oi_types::traits::SearchIndex;
 use oi_types::{ChunkMeta, ContentChunk, QueryFilters};
@@ -41,11 +41,26 @@ fn make_query_embedding(dim: usize) -> Vec<f32> {
 }
 
 static DOMAINS: &[&str] = &[
-    "docs.rust-lang.org", "stackoverflow.com", "arxiv.org", "github.com",
-    "en.wikipedia.org", "developer.mozilla.org", "news.ycombinator.com",
-    "medium.com", "dev.to", "crates.io", "reddit.com", "python.org",
-    "golang.org", "nodejs.org", "reactjs.org", "kubernetes.io",
-    "docker.com", "aws.amazon.com", "cloud.google.com", "azure.microsoft.com",
+    "docs.rust-lang.org",
+    "stackoverflow.com",
+    "arxiv.org",
+    "github.com",
+    "en.wikipedia.org",
+    "developer.mozilla.org",
+    "news.ycombinator.com",
+    "medium.com",
+    "dev.to",
+    "crates.io",
+    "reddit.com",
+    "python.org",
+    "golang.org",
+    "nodejs.org",
+    "reactjs.org",
+    "kubernetes.io",
+    "docker.com",
+    "aws.amazon.com",
+    "cloud.google.com",
+    "azure.microsoft.com",
 ];
 
 static TOPICS: &[&str] = &[
@@ -126,7 +141,9 @@ fn bench_hnsw(c: &mut Criterion) {
 
         group.bench_with_input(BenchmarkId::from_parameter(n), &n, |b, _| {
             b.iter(|| {
-                index.query(&query, "rust programming", &filters, 10).unwrap();
+                index
+                    .query(&query, "rust programming", &filters, 10)
+                    .unwrap();
             });
         });
     }
@@ -149,7 +166,9 @@ fn bench_hybrid(c: &mut Criterion) {
 
         group.bench_with_input(BenchmarkId::from_parameter(n), &n, |b, _| {
             b.iter(|| {
-                index.query(&query, "rust programming language", &filters, 10).unwrap();
+                index
+                    .query(&query, "rust programming language", &filters, 10)
+                    .unwrap();
             });
         });
     }
@@ -166,13 +185,17 @@ fn bench_query_timed(c: &mut Criterion) {
 
     group.bench_function("query", |b| {
         b.iter(|| {
-            index.query(&query, "rust programming", &filters, 10).unwrap();
+            index
+                .query(&query, "rust programming", &filters, 10)
+                .unwrap();
         });
     });
 
     group.bench_function("query_timed", |b| {
         b.iter(|| {
-            index.query_timed(&query, "rust programming", &filters, 10).unwrap();
+            index
+                .query_timed(&query, "rust programming", &filters, 10)
+                .unwrap();
         });
     });
 
@@ -192,7 +215,9 @@ fn bench_hybrid_filtered(c: &mut Criterion) {
     };
     group.bench_function("freshness_7d", |b| {
         b.iter(|| {
-            index.query(&query, "rust programming", &filters_fresh, 10).unwrap();
+            index
+                .query(&query, "rust programming", &filters_fresh, 10)
+                .unwrap();
         });
     });
 
@@ -202,7 +227,9 @@ fn bench_hybrid_filtered(c: &mut Criterion) {
     };
     group.bench_function("type_html", |b| {
         b.iter(|| {
-            index.query(&query, "rust programming", &filters_type, 10).unwrap();
+            index
+                .query(&query, "rust programming", &filters_type, 10)
+                .unwrap();
         });
     });
 
@@ -234,5 +261,12 @@ fn bench_ingest(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_hnsw, bench_hybrid, bench_hybrid_filtered, bench_ingest, bench_query_timed);
+criterion_group!(
+    benches,
+    bench_hnsw,
+    bench_hybrid,
+    bench_hybrid_filtered,
+    bench_ingest,
+    bench_query_timed
+);
 criterion_main!(benches);

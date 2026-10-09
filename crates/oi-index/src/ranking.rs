@@ -1,11 +1,11 @@
 // Ranking formula (stake-neutral):
-//   base_relevance * agent_utility_boost * quality_mult * freshness_mult * dns_mult
+//   base_relevance * agent_utility_boost * quality_mult * freshness_mult
 //   base_relevance = semantic_weight * semantic + bm25_weight * bm25
 //
 // Stake and reputation deliberately do NOT enter the ranking score — capital
-// must not be able to buy rank. They feed `compute_verdict` (an auditable trust
-// label callers filter on via `QueryFilters.min_trust`) instead. Relevance
-// decides order; quality, freshness, and DNS verification modulate it.
+// must not be able to buy rank. They feed legacy `compute_verdict` metadata
+// while callers migrate to claim-level uncertainty. DNS control is provenance
+// metadata and does not modulate relevance.
 
 /// Ordinal rank of a trust verdict, used for `min_trust` filtering.
 /// Higher = more trusted; "disputed"/unknown sort below everything.
@@ -138,17 +138,10 @@ pub fn compute_score(semantic_score: f64, bm25_score: f64, params: &RankingParam
         1.0 // unknown = neutral
     };
 
-    // DNS verification signal
-    let dns_mult = match params.dns_verified {
-        Some(true) => 1.05,  // 5% boost for verified domains
-        Some(false) => 0.95, // 5% penalty for known-unverified
-        None => 1.0,         // unknown = neutral
-    };
-
-    // Stake and reputation are intentionally NOT factored in here. They are
-    // trust signals (see `compute_verdict` / `QueryFilters.min_trust`), not
-    // ranking signals — capital must not buy rank. Relevance decides order.
-    base * params.agent_utility_boost * quality_mult * freshness_mult * dns_mult
+    // Stake, reputation, and DNS verification are intentionally NOT factored
+    // in here. DNS proves a narrow control fact; it does not prove relevance or
+    // accuracy. Claim-level uncertainty belongs to the separate decision stage.
+    base * params.agent_utility_boost * quality_mult * freshness_mult
 }
 
 #[cfg(test)]
@@ -197,15 +190,32 @@ mod tests {
     fn test_stake_never_affects_score() {
         let baseline = compute_score(0.8, 0.0, &neutral_quality_params());
         for stake in [1.0, 100.0, 1_024.0, 50_000.0, 1_000_000_000.0] {
-            let p = RankingParams { entity_stake_usd: stake, ..neutral_quality_params() };
-            assert!((compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
-                "entity stake ${stake} must not change the score");
-            let p = RankingParams { domain_stake_usd: stake, is_ugc_platform: false, ..neutral_quality_params() };
-            assert!((compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
-                "publisher domain stake ${stake} must not change the score");
-            let p = RankingParams { domain_stake_usd: stake, is_ugc_platform: true, ..neutral_quality_params() };
-            assert!((compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
-                "UGC domain stake ${stake} must not change the score");
+            let p = RankingParams {
+                entity_stake_usd: stake,
+                ..neutral_quality_params()
+            };
+            assert!(
+                (compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
+                "entity stake ${stake} must not change the score"
+            );
+            let p = RankingParams {
+                domain_stake_usd: stake,
+                is_ugc_platform: false,
+                ..neutral_quality_params()
+            };
+            assert!(
+                (compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
+                "publisher domain stake ${stake} must not change the score"
+            );
+            let p = RankingParams {
+                domain_stake_usd: stake,
+                is_ugc_platform: true,
+                ..neutral_quality_params()
+            };
+            assert!(
+                (compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
+                "UGC domain stake ${stake} must not change the score"
+            );
         }
     }
 
@@ -214,9 +224,15 @@ mod tests {
         let baseline = compute_score(0.8, 0.0, &neutral_quality_params());
         for rep in [0.0_f64, 0.5, 1.0, 2.0, 3.0] {
             for votes in [0u32, 5, 100] {
-                let p = RankingParams { reputation: rep, reputation_votes: votes, ..neutral_quality_params() };
-                assert!((compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
-                    "reputation {rep} (votes={votes}) must not change the score");
+                let p = RankingParams {
+                    reputation: rep,
+                    reputation_votes: votes,
+                    ..neutral_quality_params()
+                };
+                assert!(
+                    (compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
+                    "reputation {rep} (votes={votes}) must not change the score"
+                );
             }
         }
     }
@@ -224,7 +240,9 @@ mod tests {
     #[test]
     fn test_stake_age_never_affects_score() {
         let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() as i64;
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
         let baseline = compute_score(0.8, 0.0, &neutral_quality_params());
         for age_days in [0i64, 365, 365 * 5] {
             let p = RankingParams {
@@ -232,8 +250,10 @@ mod tests {
                 staked_at: Some(now - age_days * 86400),
                 ..neutral_quality_params()
             };
-            assert!((compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
-                "stake age must not change the score");
+            assert!(
+                (compute_score(0.8, 0.0, &p) - baseline).abs() < 1e-12,
+                "stake age must not change the score"
+            );
         }
     }
 
@@ -277,23 +297,34 @@ mod tests {
     fn test_neutral_quality_mult_with_defaults() {
         let params = RankingParams::default();
         let score = compute_score(1.0, 1.0, &params);
-        assert!((score - NEUTRAL_Q).abs() < 1e-10, "neutral quality_mult should be {NEUTRAL_Q}");
+        assert!(
+            (score - NEUTRAL_Q).abs() < 1e-10,
+            "neutral quality_mult should be {NEUTRAL_Q}"
+        );
     }
 
-    // ── DNS verification ────────────────────────────────────────────────
+    // ── DNS verification is provenance, not relevance ──────────────────
 
     #[test]
-    fn test_dns_verified_boost() {
-        let params = RankingParams { dns_verified: Some(true), ..neutral_quality_params() };
+    fn test_dns_verified_never_affects_score() {
+        let baseline = compute_score(1.0, 1.0, &neutral_quality_params());
+        let params = RankingParams {
+            dns_verified: Some(true),
+            ..neutral_quality_params()
+        };
         let score = compute_score(1.0, 1.0, &params);
-        assert!((score - 1.05).abs() < 1e-10);
+        assert!((score - baseline).abs() < 1e-12);
     }
 
     #[test]
-    fn test_dns_unverified_penalty() {
-        let params = RankingParams { dns_verified: Some(false), ..neutral_quality_params() };
+    fn test_dns_unverified_never_affects_score() {
+        let baseline = compute_score(1.0, 1.0, &neutral_quality_params());
+        let params = RankingParams {
+            dns_verified: Some(false),
+            ..neutral_quality_params()
+        };
         let score = compute_score(1.0, 1.0, &params);
-        assert!((score - 0.95).abs() < 1e-10);
+        assert!((score - baseline).abs() < 1e-12);
     }
 
     // ── Freshness ───────────────────────────────────────────────────────
@@ -301,28 +332,52 @@ mod tests {
     #[test]
     fn test_freshness_boost_recent() {
         let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() as i64;
-        let params = RankingParams { published_at: Some(now - 3600), ..neutral_quality_params() };
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        let params = RankingParams {
+            published_at: Some(now - 3600),
+            ..neutral_quality_params()
+        };
         let score = compute_score(1.0, 1.0, &params);
-        assert!(score > 1.14 && score < 1.16, "recent content ~15% boost, got {score}");
+        assert!(
+            score > 1.14 && score < 1.16,
+            "recent content ~15% boost, got {score}"
+        );
     }
 
     #[test]
     fn test_freshness_smooth_decay_30days() {
         let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() as i64;
-        let params = RankingParams { published_at: Some(now - 86400 * 30), ..neutral_quality_params() };
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        let params = RankingParams {
+            published_at: Some(now - 86400 * 30),
+            ..neutral_quality_params()
+        };
         let score = compute_score(1.0, 1.0, &params);
-        assert!(score > 1.04 && score < 1.07, "30-day content ~5.5% boost, got {score}");
+        assert!(
+            score > 1.04 && score < 1.07,
+            "30-day content ~5.5% boost, got {score}"
+        );
     }
 
     #[test]
     fn test_freshness_no_boost_old() {
         let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() as i64;
-        let params = RankingParams { published_at: Some(now - 86400 * 365), ..neutral_quality_params() };
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        let params = RankingParams {
+            published_at: Some(now - 86400 * 365),
+            ..neutral_quality_params()
+        };
         let score = compute_score(1.0, 1.0, &params);
-        assert!(score > 0.99 && score < 1.01, "1-year content ~0% boost, got {score}");
+        assert!(
+            score > 0.99 && score < 1.01,
+            "1-year content ~0% boost, got {score}"
+        );
     }
 
     // ── Full formula proves stake/reputation are ignored ────────────────
@@ -330,7 +385,9 @@ mod tests {
     #[test]
     fn test_full_formula_with_all_signals() {
         let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() as i64;
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
         let params = RankingParams {
             semantic_weight: 0.8,
             bm25_weight: 0.2,
@@ -349,9 +406,11 @@ mod tests {
         let base = 0.8 * 0.9 + 0.2 * 0.7; // 0.86
         let quality_mult = (0.6 + 0.6 * 0.8) * (1.0 - 0.3 * 0.1) * (1.0 - 0.2 * 0.05);
         let freshness_mult = 1.0 + 0.15 * (-10.0 / 30.0_f64).exp();
-        let dns_mult = 1.05;
-        let expected = base * quality_mult * freshness_mult * dns_mult; // no stake, no reputation
-        assert!((score - expected).abs() < 1e-10, "got {score}, expected {expected}");
+        let expected = base * quality_mult * freshness_mult; // no stake, reputation, or DNS
+        assert!(
+            (score - expected).abs() < 1e-10,
+            "got {score}, expected {expected}"
+        );
     }
 
     // ── Trust verdict (feeds min_trust filter, not the score) ───────────
@@ -363,7 +422,10 @@ mod tests {
 
     #[test]
     fn test_verdict_highly_trusted() {
-        assert_eq!(compute_verdict(10_000.0, 1.8, 50, false, true), "highly_trusted");
+        assert_eq!(
+            compute_verdict(10_000.0, 1.8, 50, false, true),
+            "highly_trusted"
+        );
     }
 
     #[test]
@@ -389,7 +451,10 @@ mod tests {
     fn test_verdict_disputed_overrides_everything() {
         // Adversarial: an actively disputed domain keeps the disputed label
         // no matter how much capital/reputation it holds.
-        assert_eq!(compute_verdict(1_000_000.0, 3.0, 999, true, true), "disputed");
+        assert_eq!(
+            compute_verdict(1_000_000.0, 3.0, 999, true, true),
+            "disputed"
+        );
     }
 
     #[test]

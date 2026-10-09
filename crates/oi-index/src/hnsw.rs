@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
-use std::collections::{BinaryHeap, HashSet};
 use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashSet};
 
 /// HNSW (Hierarchical Navigable Small World) index for approximate nearest neighbor search.
 /// Pure Rust implementation with INT8 quantization support.
@@ -10,11 +10,11 @@ pub struct HnswIndex {
     max_level: usize,
     ef_construction: usize,
     ef_search: usize,
-    m: usize,           // max connections per layer
-    m_max0: usize,      // max connections at layer 0
+    m: usize,      // max connections per layer
+    m_max0: usize, // max connections at layer 0
     entry_point: Option<usize>,
     level_mult: f64,
-    rng_seed: u64,      // per-instance RNG seed
+    rng_seed: u64, // per-instance RNG seed
     /// Soft-deleted node indices — still traversed for graph connectivity but excluded from results.
     deleted: HashSet<usize>,
 }
@@ -51,7 +51,10 @@ impl PartialOrd for Neighbor {
 impl Ord for Neighbor {
     fn cmp(&self, other: &Self) -> Ordering {
         // Min-heap: reverse ordering (smallest distance = highest priority)
-        other.distance.partial_cmp(&self.distance).unwrap_or(Ordering::Equal)
+        other
+            .distance
+            .partial_cmp(&self.distance)
+            .unwrap_or(Ordering::Equal)
     }
 }
 
@@ -158,17 +161,15 @@ impl HnswIndex {
             // Bidirectional connections
             for &neighbor_id in &selected {
                 let cur_len = self.nodes[neighbor_id].neighbors.len();
-                self.nodes[neighbor_id].neighbors.resize(
-                    cur_len.max(l + 1),
-                    Vec::new(),
-                );
+                self.nodes[neighbor_id]
+                    .neighbors
+                    .resize(cur_len.max(l + 1), Vec::new());
                 self.nodes[neighbor_id].neighbors[l].push(node_id);
 
                 // Trim if too many connections
                 if self.nodes[neighbor_id].neighbors[l].len() > max_conn {
                     let nv = self.nodes[neighbor_id].vector.clone();
-                    let neighbor_ids: Vec<usize> =
-                        self.nodes[neighbor_id].neighbors[l].clone();
+                    let neighbor_ids: Vec<usize> = self.nodes[neighbor_id].neighbors[l].clone();
                     let mut scored: Vec<Neighbor> = neighbor_ids
                         .iter()
                         .map(|&id| Neighbor {
@@ -216,13 +217,7 @@ impl HnswIndex {
         current
     }
 
-    fn search_layer(
-        &self,
-        query: &[f32],
-        entry: usize,
-        ef: usize,
-        level: usize,
-    ) -> Vec<Neighbor> {
+    fn search_layer(&self, query: &[f32], entry: usize, ef: usize, level: usize) -> Vec<Neighbor> {
         // Use Vec<bool> instead of HashSet for O(1) visited checks without hashing overhead.
         // Pre-allocated to index size — ~1 byte per node, 8.8M nodes = 8.8MB.
         let mut visited = vec![false; self.nodes.len()];
@@ -322,7 +317,10 @@ impl HnswIndex {
 
     /// Retrieve a stored vector by data_id. O(n) scan — only used for replication, not hot path.
     pub fn get_vector(&self, data_id: &str) -> Option<&Vec<f32>> {
-        self.nodes.iter().find(|n| n.data_id == data_id).map(|n| &n.vector)
+        self.nodes
+            .iter()
+            .find(|n| n.data_id == data_id)
+            .map(|n| &n.vector)
     }
 
     /// Dimension of vectors stored in this index.
@@ -333,13 +331,17 @@ impl HnswIndex {
     /// Serialize the entire index to bytes using bincode.
     pub fn to_bytes(&self) -> Vec<u8> {
         let snapshot = HnswSnapshot {
-            nodes: self.nodes.iter().map(|n| HnswNodeSnapshot {
-                id: n.id,
-                vector: n.vector.clone(),
-                neighbors: n.neighbors.clone(),
-                level: n.level,
-                data_id: n.data_id.clone(),
-            }).collect(),
+            nodes: self
+                .nodes
+                .iter()
+                .map(|n| HnswNodeSnapshot {
+                    id: n.id,
+                    vector: n.vector.clone(),
+                    neighbors: n.neighbors.clone(),
+                    level: n.level,
+                    data_id: n.data_id.clone(),
+                })
+                .collect(),
             dim: self.dim,
             max_level: self.max_level,
             ef_construction: self.ef_construction,
@@ -359,13 +361,17 @@ impl HnswIndex {
     pub fn from_bytes(data: &[u8]) -> Result<Self, bincode::Error> {
         let snapshot: HnswSnapshot = bincode::deserialize(data)?;
         Ok(Self {
-            nodes: snapshot.nodes.into_iter().map(|n| HnswNode {
-                id: n.id,
-                vector: n.vector,
-                neighbors: n.neighbors,
-                level: n.level,
-                data_id: n.data_id,
-            }).collect(),
+            nodes: snapshot
+                .nodes
+                .into_iter()
+                .map(|n| HnswNode {
+                    id: n.id,
+                    vector: n.vector,
+                    neighbors: n.neighbors,
+                    level: n.level,
+                    data_id: n.data_id,
+                })
+                .collect(),
             dim: snapshot.dim,
             max_level: snapshot.max_level,
             ef_construction: snapshot.ef_construction,
@@ -414,7 +420,11 @@ fn cosine_distance(a: &[f32], b: &[f32]) -> f32 {
     let norm_a = dot_product(a, a).sqrt();
     let norm_b = dot_product(b, b).sqrt();
     let denom = norm_a * norm_b;
-    if denom < 1e-10 { 1.0 } else { 1.0 - dot / denom }
+    if denom < 1e-10 {
+        1.0
+    } else {
+        1.0 - dot / denom
+    }
 }
 
 /// SIMD-accelerated dot product.
@@ -607,10 +617,7 @@ mod tests {
             results.iter().map(|(id, _)| id.clone()).collect();
 
         let recall = ground_truth.intersection(&found).count() as f64 / 10.0;
-        assert!(
-            recall >= 0.7,
-            "HNSW recall@10 = {recall}, expected >= 0.7"
-        );
+        assert!(recall >= 0.7, "HNSW recall@10 = {recall}, expected >= 0.7");
     }
 
     #[test]
@@ -649,8 +656,10 @@ mod tests {
     fn test_get_vector() {
         let dim = 4;
         let mut idx = HnswIndex::new(dim);
-        idx.insert("doc_a".to_string(), vec![1.0, 0.0, 0.0, 0.0]).unwrap();
-        idx.insert("doc_b".to_string(), vec![0.0, 1.0, 0.0, 0.0]).unwrap();
+        idx.insert("doc_a".to_string(), vec![1.0, 0.0, 0.0, 0.0])
+            .unwrap();
+        idx.insert("doc_b".to_string(), vec![0.0, 1.0, 0.0, 0.0])
+            .unwrap();
 
         let v = idx.get_vector("doc_a").unwrap();
         assert_eq!(v, &vec![1.0, 0.0, 0.0, 0.0]);
@@ -666,10 +675,16 @@ mod tests {
         let mut idx = HnswIndex::new(4);
         // Insert many nodes — no level should exceed MAX_LEVEL
         for i in 0..1000 {
-            idx.insert(format!("doc_{i}"), vec![i as f32 / 1000.0, 0.5, 0.3, 0.1]).unwrap();
+            idx.insert(format!("doc_{i}"), vec![i as f32 / 1000.0, 0.5, 0.3, 0.1])
+                .unwrap();
         }
         for node in &idx.nodes {
-            assert!(node.level <= MAX_LEVEL, "level {} exceeds max {}", node.level, MAX_LEVEL);
+            assert!(
+                node.level <= MAX_LEVEL,
+                "level {} exceeds max {}",
+                node.level,
+                MAX_LEVEL
+            );
         }
     }
 }

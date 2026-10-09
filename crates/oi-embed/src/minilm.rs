@@ -4,7 +4,7 @@ use ort::value::Value;
 use std::sync::Mutex;
 use tokenizers::Tokenizer;
 
-use crate::model_cache::{ModelCache, MINILM_MODEL, MINILM_TOKENIZER};
+use crate::model_cache::{MINILM_MODEL, MINILM_TOKENIZER, ModelCache};
 
 const DIM: usize = 384;
 const MAX_SEQ_LEN: usize = 256;
@@ -38,7 +38,10 @@ impl MiniLmEmbedder {
         let tokenizer = Tokenizer::from_file(&tokenizer_path)
             .map_err(|e| oi_types::Error::Internal(format!("Tokenizer load: {e}")))?;
 
-        Ok(Self { session: Mutex::new(session), tokenizer })
+        Ok(Self {
+            session: Mutex::new(session),
+            tokenizer,
+        })
     }
 
     fn run_inference(&self, texts: &[&str]) -> Result<Vec<Vec<f32>>> {
@@ -75,15 +78,25 @@ impl MiniLmEmbedder {
 
         let input_ids_val = Value::from_array((&shape as &[usize], input_ids_flat.clone()))
             .map_err(|e| oi_types::Error::Internal(format!("Value: {e}")))?;
-        let attention_mask_val = Value::from_array((&shape as &[usize], attention_mask_flat.clone()))
-            .map_err(|e| oi_types::Error::Internal(format!("Value: {e}")))?;
+        let attention_mask_val =
+            Value::from_array((&shape as &[usize], attention_mask_flat.clone()))
+                .map_err(|e| oi_types::Error::Internal(format!("Value: {e}")))?;
         let token_type_ids_val = Value::from_array((&shape as &[usize], token_type_ids_flat))
             .map_err(|e| oi_types::Error::Internal(format!("Value: {e}")))?;
 
         let inputs = vec![
-            (std::borrow::Cow::from("input_ids"), ort::session::SessionInputValue::from(input_ids_val)),
-            (std::borrow::Cow::from("attention_mask"), ort::session::SessionInputValue::from(attention_mask_val)),
-            (std::borrow::Cow::from("token_type_ids"), ort::session::SessionInputValue::from(token_type_ids_val)),
+            (
+                std::borrow::Cow::from("input_ids"),
+                ort::session::SessionInputValue::from(input_ids_val),
+            ),
+            (
+                std::borrow::Cow::from("attention_mask"),
+                ort::session::SessionInputValue::from(attention_mask_val),
+            ),
+            (
+                std::borrow::Cow::from("token_type_ids"),
+                ort::session::SessionInputValue::from(token_type_ids_val),
+            ),
         ];
 
         let mut session = self
@@ -100,7 +113,11 @@ impl MiniLmEmbedder {
 
         let tensor_shape = tensor_ref.0;
         let hidden_states = tensor_ref.1;
-        let seq_len = if tensor_shape.len() >= 2 { tensor_shape[1] as usize } else { max_len };
+        let seq_len = if tensor_shape.len() >= 2 {
+            tensor_shape[1] as usize
+        } else {
+            max_len
+        };
 
         Ok(Self::cls_pool(hidden_states, batch_size, seq_len))
     }
@@ -172,7 +189,11 @@ mod tests {
     #[test]
     fn test_minilm_batch_embed() {
         let embedder = MiniLmEmbedder::new().expect("Failed to load MiniLM model");
-        let texts = &["hello world", "rust programming language", "machine learning"];
+        let texts = &[
+            "hello world",
+            "rust programming language",
+            "machine learning",
+        ];
         let batch = embedder.embed_text_batch(texts).unwrap();
         assert_eq!(batch.len(), 3);
         for v in &batch {
@@ -191,9 +212,15 @@ mod tests {
     #[test]
     fn test_minilm_similar_texts_closer() {
         let embedder = MiniLmEmbedder::new().expect("Failed to load MiniLM model");
-        let rust = embedder.embed_text("rust programming language systems").unwrap();
-        let cpp = embedder.embed_text("c++ programming language systems").unwrap();
-        let cooking = embedder.embed_text("best chocolate cake recipe baking").unwrap();
+        let rust = embedder
+            .embed_text("rust programming language systems")
+            .unwrap();
+        let cpp = embedder
+            .embed_text("c++ programming language systems")
+            .unwrap();
+        let cooking = embedder
+            .embed_text("best chocolate cake recipe baking")
+            .unwrap();
 
         let sim_rust_cpp: f32 = rust.iter().zip(&cpp).map(|(a, b)| a * b).sum();
         let sim_rust_cooking: f32 = rust.iter().zip(&cooking).map(|(a, b)| a * b).sum();

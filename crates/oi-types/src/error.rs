@@ -348,9 +348,15 @@ mod tests {
     fn test_exit_codes() {
         assert_eq!(ErrorCode::QueryNoResults.exit_code(), ExitCode::Success);
         assert_eq!(ErrorCode::QueryTimeout.exit_code(), ExitCode::NetworkError);
-        assert_eq!(ErrorCode::InsufficientBalance.exit_code(), ExitCode::InsufficientFunds);
+        assert_eq!(
+            ErrorCode::InsufficientBalance.exit_code(),
+            ExitCode::InsufficientFunds
+        );
         assert_eq!(ErrorCode::InvalidWallet.exit_code(), ExitCode::Unauthorized);
-        assert_eq!(ErrorCode::QueryInvalidFilter.exit_code(), ExitCode::UserError);
+        assert_eq!(
+            ErrorCode::QueryInvalidFilter.exit_code(),
+            ExitCode::UserError
+        );
     }
 
     #[test]

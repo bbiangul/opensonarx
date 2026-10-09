@@ -196,6 +196,8 @@ pub struct SearchParams {
     pub gl: Option<String>,
     /// Domain scope filter (e.g., "nytimes.com")
     pub site: Option<String>,
+    /// Freshness window for providers that support it (e.g., "day", "week", "month").
+    pub freshness: Option<String>,
 }
 
 /// Search engine adapter — owned by oi-sdk engine modules, consumed by OpenSonarXClient.
@@ -209,17 +211,44 @@ pub trait SearchEngine: Send + Sync {
     /// Execute a search query and return up to `limit` results.
     fn search(&self, query: &str, limit: usize) -> Vec<SearchResultItem>;
 
+    /// Execute a search while preserving transport/parser failure separately
+    /// from a legitimate empty result set. Existing engines default to a
+    /// successful call; network adapters should override this so resilience
+    /// layers never infer provider health from result cardinality.
+    fn search_checked(
+        &self,
+        query: &str,
+        limit: usize,
+    ) -> std::result::Result<Vec<SearchResultItem>, ()> {
+        Ok(self.search(query, limit))
+    }
+
     /// Execute a search query with locale/region/site parameters.
     ///
     /// Default: prepends `site:` to query if set, delegates to `search()`.
     /// Override in engines with native locale support (Serper, Brave, DDG).
-    fn search_with_params(&self, query: &str, limit: usize, params: &SearchParams) -> Vec<SearchResultItem> {
+    fn search_with_params(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> Vec<SearchResultItem> {
         let q = if let Some(ref site) = params.site {
             format!("site:{site} {query}")
         } else {
             query.to_string()
         };
         self.search(&q, limit)
+    }
+
+    /// Parameterized counterpart of [`SearchEngine::search_checked`].
+    fn search_with_params_checked(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> std::result::Result<Vec<SearchResultItem>, ()> {
+        Ok(self.search_with_params(query, limit, params))
     }
 
     /// Whether this engine requires an API key to function.
@@ -351,11 +380,16 @@ mod tests {
     #[test]
     fn test_entity_stake_found_returns_entity() {
         let mut stakes = HashMap::new();
-        stakes.insert("youtube.com/c/test".to_string(), make_info("youtube.com/c/test"));
+        stakes.insert(
+            "youtube.com/c/test".to_string(),
+            make_info("youtube.com/c/test"),
+        );
         stakes.insert("youtube.com".to_string(), make_info("youtube.com"));
         let reg = MockRegistry { stakes };
 
-        let result = reg.get_entity_stake("youtube.com/c/test", "youtube.com").unwrap();
+        let result = reg
+            .get_entity_stake("youtube.com/c/test", "youtube.com")
+            .unwrap();
         assert!(result.is_some());
         assert_eq!(result.unwrap().domain, "youtube.com/c/test");
     }
@@ -367,7 +401,9 @@ mod tests {
         let reg = MockRegistry { stakes };
 
         // Entity not found, domain is NOT UGC → falls back to domain
-        let result = reg.get_entity_stake("nytimes.com/2024/article", "nytimes.com").unwrap();
+        let result = reg
+            .get_entity_stake("nytimes.com/2024/article", "nytimes.com")
+            .unwrap();
         assert!(result.is_some());
         assert_eq!(result.unwrap().domain, "nytimes.com");
     }
@@ -379,14 +415,20 @@ mod tests {
         let reg = MockRegistry { stakes };
 
         // Entity not found, domain IS UGC → does NOT fall back
-        let result = reg.get_entity_stake("youtube.com/c/unknown", "youtube.com").unwrap();
+        let result = reg
+            .get_entity_stake("youtube.com/c/unknown", "youtube.com")
+            .unwrap();
         assert!(result.is_none());
     }
 
     #[test]
     fn test_neither_entity_nor_domain_returns_none() {
-        let reg = MockRegistry { stakes: HashMap::new() };
-        let result = reg.get_entity_stake("example.com/path", "example.com").unwrap();
+        let reg = MockRegistry {
+            stakes: HashMap::new(),
+        };
+        let result = reg
+            .get_entity_stake("example.com/path", "example.com")
+            .unwrap();
         assert!(result.is_none());
     }
 

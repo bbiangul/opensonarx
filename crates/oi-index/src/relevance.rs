@@ -69,10 +69,7 @@ pub fn extract_relevant_semantic(
         })
         .collect();
 
-    let best_score = all_scores
-        .iter()
-        .map(|(_, s)| *s)
-        .fold(0.0f64, f64::max);
+    let best_score = all_scores.iter().map(|(_, s)| *s).fold(0.0f64, f64::max);
 
     // Dynamic threshold: relative to best, but never below FLOOR
     let threshold = FLOOR.max(best_score * RELATIVE_FACTOR);
@@ -99,7 +96,11 @@ pub fn extract_relevant_semantic(
         .collect::<Vec<_>>()
         .join(" ");
 
-    if relevant.is_empty() { None } else { Some(relevant) }
+    if relevant.is_empty() {
+        None
+    } else {
+        Some(relevant)
+    }
 }
 
 /// Cosine similarity between two vectors (local helper for relevance scoring).
@@ -145,11 +146,7 @@ pub fn extract_relevant(
         .enumerate()
         .filter_map(|(i, (text, byte_start, byte_end))| {
             let score = score_sentence(text, *byte_start, *byte_end, &keywords, facts);
-            if score >= 0.5 {
-                Some((i, score))
-            } else {
-                None
-            }
+            if score >= 0.5 { Some((i, score)) } else { None }
         })
         .collect();
 
@@ -170,7 +167,11 @@ pub fn extract_relevant(
         .collect::<Vec<_>>()
         .join(" ");
 
-    if relevant.is_empty() { None } else { Some(relevant) }
+    if relevant.is_empty() {
+        None
+    } else {
+        Some(relevant)
+    }
 }
 
 /// Split content into sentences, tracking byte offsets into the original `content`.
@@ -214,9 +215,7 @@ fn split_sentences(content: &str) -> Vec<(String, usize, usize)> {
                 && (i + 1 >= chars.len() || chars[i + 1].is_whitespace());
 
             // Only break on double-newline (paragraph boundary), not single newlines
-            let is_para_break = ch == '\n'
-                && i + 1 < chars.len()
-                && chars[i + 1] == '\n';
+            let is_para_break = ch == '\n' && i + 1 < chars.len() && chars[i + 1] == '\n';
 
             if is_sentence_end || is_para_break {
                 let trimmed = current.trim().to_string();
@@ -286,7 +285,12 @@ fn tokenize_query(query: &str) -> Vec<String> {
     let mut seen = HashSet::new();
     query
         .split_whitespace()
-        .map(|w| w.chars().filter(|c| c.is_alphanumeric()).collect::<String>().to_lowercase())
+        .map(|w| {
+            w.chars()
+                .filter(|c| c.is_alphanumeric())
+                .collect::<String>()
+                .to_lowercase()
+        })
         .filter(|w| w.len() >= 2 && seen.insert(w.clone()))
         .collect()
 }
@@ -329,11 +333,10 @@ fn contains_word(haystack: &str, needle: &str) -> bool {
     let mut start = 0;
     while let Some(pos) = haystack[start..].find(needle) {
         let abs_pos = start + pos;
-        let before_ok = abs_pos == 0
-            || !haystack.as_bytes()[abs_pos - 1].is_ascii_alphanumeric();
+        let before_ok = abs_pos == 0 || !haystack.as_bytes()[abs_pos - 1].is_ascii_alphanumeric();
         let after_pos = abs_pos + needle.len();
-        let after_ok = after_pos >= haystack.len()
-            || !haystack.as_bytes()[after_pos].is_ascii_alphanumeric();
+        let after_ok =
+            after_pos >= haystack.len() || !haystack.as_bytes()[after_pos].is_ascii_alphanumeric();
         if before_ok && after_ok {
             return true;
         }
@@ -375,7 +378,8 @@ mod tests {
 
     #[test]
     fn test_entity_boosted_sentences_rank_higher() {
-        let content = "Barack Obama was president. The weather is nice today. Obama signed the act.";
+        let content =
+            "Barack Obama was president. The weather is nice today. Obama signed the act.";
         let facts = FactExtractionResult {
             entities: vec![ExtractedEntity {
                 mention: "Barack Obama".to_string(),
@@ -424,10 +428,13 @@ mod tests {
         assert!(result.is_some());
         let text = result.unwrap();
         // Count sentences by splitting on period-space pattern
-        let sentences: Vec<&str> = text.split(". ")
-            .filter(|s| !s.is_empty())
-            .collect();
-        assert!(sentences.len() <= 5, "got {} sentences: {:?}", sentences.len(), sentences);
+        let sentences: Vec<&str> = text.split(". ").filter(|s| !s.is_empty()).collect();
+        assert!(
+            sentences.len() <= 5,
+            "got {} sentences: {:?}",
+            sentences.len(),
+            sentences
+        );
     }
 
     #[test]
@@ -536,7 +543,7 @@ mod tests {
                     mention: "Microsoft".to_string(),
                     normalized: "microsoft".to_string(),
                     entity_type: "organization".to_string(),
-                    start: 0,   // byte offset of "Microsoft" in content
+                    start: 0, // byte offset of "Microsoft" in content
                     end: 9,
                     confidence: 0.95,
                 },
@@ -544,7 +551,7 @@ mod tests {
                     mention: "Apple".to_string(),
                     normalized: "apple".to_string(),
                     entity_type: "organization".to_string(),
-                    start: 31,  // byte offset of "Apple" in content
+                    start: 31, // byte offset of "Apple" in content
                     end: 36,
                     confidence: 0.90,
                 },
@@ -603,9 +610,9 @@ mod tests {
                         Rust prevents dangling pointers and double frees.";
         let query_emb = vec![1.0f32, 0.0, 0.0];
         let sentence_embs = vec![
-            vec![0.9, 0.1, 0.0],   // high sim with query
-            vec![0.0, 0.0, 1.0],   // orthogonal
-            vec![0.8, 0.2, 0.0],   // moderate sim
+            vec![0.9, 0.1, 0.0], // high sim with query
+            vec![0.0, 0.0, 1.0], // orthogonal
+            vec![0.8, 0.2, 0.0], // moderate sim
         ];
         let result = extract_relevant_semantic(content, &query_emb, &sentence_embs, None);
         assert!(result.is_some());
@@ -617,13 +624,11 @@ mod tests {
 
     #[test]
     fn test_semantic_threshold_filters_low_scores() {
-        let content = "Sentence about nothing in particular here. Another irrelevant sentence about stuff.";
+        let content =
+            "Sentence about nothing in particular here. Another irrelevant sentence about stuff.";
         let query_emb = vec![1.0f32, 0.0, 0.0];
         // Both sentences have very low similarity
-        let sentence_embs = vec![
-            vec![0.1, 0.1, 0.9],
-            vec![0.0, 0.1, 0.9],
-        ];
+        let sentence_embs = vec![vec![0.1, 0.1, 0.9], vec![0.0, 0.1, 0.9]];
         let result = extract_relevant_semantic(content, &query_emb, &sentence_embs, None);
         assert!(result.is_none());
     }
@@ -635,8 +640,8 @@ mod tests {
         // cos([1,0,0], [a,b,c]) = a/sqrt(a^2+b^2+c^2)
         // With a=0.44, b=0.8, c=0.4: sim = 0.44/sqrt(0.9936) ≈ 0.441
         let sentence_embs = vec![
-            vec![0.44, 0.8, 0.4],  // cosine sim ≈ 0.44, below 0.5 floor
-            vec![0.0, 0.0, 1.0],   // orthogonal
+            vec![0.44, 0.8, 0.4], // cosine sim ≈ 0.44, below 0.5 floor
+            vec![0.0, 0.0, 1.0],  // orthogonal
         ];
         let facts = FactExtractionResult {
             entities: vec![ExtractedEntity {
@@ -746,8 +751,7 @@ mod tests {
     #[test]
     fn test_heading_merges_forward() {
         // Short heading "## Resources" should merge into the NEXT sentence, not the previous one
-        let content =
-            "Previous section is done.\n\n## Resources\n\nHere are some useful links for further reading.";
+        let content = "Previous section is done.\n\n## Resources\n\nHere are some useful links for further reading.";
         let sentences = split_sentences(content);
         // Find the sentence containing "Resources"
         let heading_sentence = sentences.iter().find(|(t, _, _)| t.contains("Resources"));
@@ -762,13 +766,11 @@ mod tests {
             "Heading should merge forward into next sentence, got: {text:?}"
         );
         // "Resources" should NOT be in the previous sentence
-        if let Some((prev_text, _, _)) = sentences.iter().find(|(t, _, _)| t.contains("Previous"))
-        {
+        if let Some((prev_text, _, _)) = sentences.iter().find(|(t, _, _)| t.contains("Previous")) {
             assert!(
                 !prev_text.contains("Resources"),
                 "Heading should not merge backward, got: {prev_text:?}"
             );
         }
     }
-
 }

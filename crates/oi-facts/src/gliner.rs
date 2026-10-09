@@ -1,12 +1,12 @@
+use oi_types::Result;
 use oi_types::facts::{ExtractedEntity, Fact, FactExtractionResult};
 use oi_types::traits::FactExtractionPipeline;
-use oi_types::Result;
 use ort::session::Session;
 use ort::value::Value;
 use std::borrow::Cow;
 use std::sync::Mutex;
 
-use crate::model_cache::{ModelCache, GLINER_MULTI_MODEL, GLINER_MULTI_TOKENIZER};
+use crate::model_cache::{GLINER_MULTI_MODEL, GLINER_MULTI_TOKENIZER, ModelCache};
 use crate::normalizer;
 
 /// Default entity labels for zero-shot NER.
@@ -87,8 +87,14 @@ impl GlinerFactExtractor {
         Ok(Self {
             session: Mutex::new(session),
             tokenizer,
-            entity_labels: DEFAULT_ENTITY_LABELS.iter().map(|s| s.to_string()).collect(),
-            relation_labels: DEFAULT_RELATION_LABELS.iter().map(|s| s.to_string()).collect(),
+            entity_labels: DEFAULT_ENTITY_LABELS
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
+            relation_labels: DEFAULT_RELATION_LABELS
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
             entity_threshold: 0.5,
             relation_threshold: 0.5,
         })
@@ -329,9 +335,7 @@ impl GlinerFactExtractor {
                 }
             }
         } else {
-            tracing::warn!(
-                "Unexpected GLiNER output shape: {tensor_shape:?} (ndims={ndims})"
-            );
+            tracing::warn!("Unexpected GLiNER output shape: {tensor_shape:?} (ndims={ndims})");
         }
 
         // 10. Non-maximum suppression: keep highest confidence, remove overlaps
@@ -531,7 +535,9 @@ mod tests {
     #[test]
     fn test_gliner_load() {
         if skip_if_no_model() {
-            eprintln!("Skipping: GLiNER model not cached. Run `cargo test --features onnx` after downloading.");
+            eprintln!(
+                "Skipping: GLiNER model not cached. Run `cargo test --features onnx` after downloading."
+            );
             return;
         }
         let ext = GlinerFactExtractor::new();

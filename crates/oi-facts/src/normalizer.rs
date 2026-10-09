@@ -100,12 +100,7 @@ pub fn normalize_person(s: &str) -> String {
     ];
     let mut result = s.to_string();
     for title in &titles {
-        if result.starts_with(title)
-            && result
-                .chars()
-                .nth(title.len())
-                .is_some_and(|c| c == ' ')
-        {
+        if result.starts_with(title) && result.chars().nth(title.len()).is_some_and(|c| c == ' ') {
             result = result[title.len()..].trim_start().to_string();
             break; // Only strip one title
         }
@@ -169,10 +164,7 @@ mod tests {
 
     #[test]
     fn test_normalize_unicode() {
-        assert_eq!(
-            normalize_entity("São Paulo", "location"),
-            "são paulo"
-        );
+        assert_eq!(normalize_entity("São Paulo", "location"), "são paulo");
         assert_eq!(normalize_entity("Zürich", "location"), "zürich");
     }
 }

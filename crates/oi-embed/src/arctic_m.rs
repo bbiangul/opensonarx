@@ -4,7 +4,7 @@ use ort::value::Value;
 use std::sync::Mutex;
 use tokenizers::Tokenizer;
 
-use crate::model_cache::{ModelCache, ARCTIC_M_MODEL, ARCTIC_M_TOKENIZER};
+use crate::model_cache::{ARCTIC_M_MODEL, ARCTIC_M_TOKENIZER, ModelCache};
 
 const DIM: usize = 768;
 const MAX_SEQ_LEN: usize = 512;

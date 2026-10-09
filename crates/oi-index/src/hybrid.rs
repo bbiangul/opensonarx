@@ -1,9 +1,9 @@
-use oi_types::{ChunkMeta, ContentChunk, QueryFilters, Result, SearchResultItem};
-use oi_types::traits::{Reranker, ReputationProvider, SearchIndex, StakeRegistry};
 use crate::bm25::Bm25Index;
 use crate::hnsw::HnswIndex;
 use crate::ranking::{self, RankingParams};
 use crate::simhash;
+use oi_types::traits::{ReputationProvider, Reranker, SearchIndex, StakeRegistry};
+use oi_types::{ChunkMeta, ContentChunk, QueryFilters, Result, SearchResultItem};
 use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, RwLock};
@@ -28,12 +28,14 @@ pub struct QueryTimings {
 
 /// Helper to acquire a read lock, converting poison errors into oi_types::Error.
 fn read_lock<T>(lock: &RwLock<T>) -> Result<std::sync::RwLockReadGuard<'_, T>> {
-    lock.read().map_err(|e| oi_types::Error::Internal(format!("lock poisoned: {e}")))
+    lock.read()
+        .map_err(|e| oi_types::Error::Internal(format!("lock poisoned: {e}")))
 }
 
 /// Helper to acquire a write lock, converting poison errors into oi_types::Error.
 fn write_lock<T>(lock: &RwLock<T>) -> Result<std::sync::RwLockWriteGuard<'_, T>> {
-    lock.write().map_err(|e| oi_types::Error::Internal(format!("lock poisoned: {e}")))
+    lock.write()
+        .map_err(|e| oi_types::Error::Internal(format!("lock poisoned: {e}")))
 }
 
 /// Boost factor for chunks whose domain matches a technology keyword in the query.
@@ -56,9 +58,7 @@ fn query_domain_boost(query_lower: &str, domain: &str) -> f64 {
     let domain_lower = domain.to_lowercase();
 
     for &(keyword, patterns) in AFFINITIES {
-        if query_lower.contains(keyword)
-            && patterns.iter().any(|p| domain_lower.contains(p))
-        {
+        if query_lower.contains(keyword) && patterns.iter().any(|p| domain_lower.contains(p)) {
             return 1.5;
         }
     }
@@ -72,8 +72,8 @@ fn total_cmp_desc(a: f64, b: f64) -> std::cmp::Ordering {
         // NaN handling: push NaN to the end
         match (a.is_nan(), b.is_nan()) {
             (true, true) => std::cmp::Ordering::Equal,
-            (true, false) => std::cmp::Ordering::Greater,  // a is NaN → a goes after b
-            (false, true) => std::cmp::Ordering::Less,     // b is NaN → b goes after a
+            (true, false) => std::cmp::Ordering::Greater, // a is NaN → a goes after b
+            (false, true) => std::cmp::Ordering::Less,    // b is NaN → b goes after a
             _ => std::cmp::Ordering::Equal,
         }
     })
@@ -284,7 +284,8 @@ impl HybridIndex {
                 // Filter by shard_id if specified (prefix match for sub-shards)
                 if let Some(sid) = shard_id {
                     match &meta.shard_id {
-                        Some(chunk_shard) if oi_types::shard::is_sub_shard_of(chunk_shard, sid) => {}
+                        Some(chunk_shard) if oi_types::shard::is_sub_shard_of(chunk_shard, sid) => {
+                        }
                         Some(_) => continue,
                         None => continue,
                     }
@@ -317,7 +318,10 @@ impl HybridIndex {
 
         let mut chunks = Vec::new();
         for (chunk_id, meta) in other_meta.iter() {
-            let content = other_bm25.get_doc_content(chunk_id).unwrap_or("").to_string();
+            let content = other_bm25
+                .get_doc_content(chunk_id)
+                .unwrap_or("")
+                .to_string();
             let embedding = other_hnsw.get_vector(chunk_id).cloned();
 
             chunks.push(ContentChunk {
@@ -340,7 +344,8 @@ impl HybridIndex {
         self
     }
 
-    /// Attach a reputation provider for applying domain reputation in core ranking.
+    /// Attach a reputation provider for enriching results with legacy metadata.
+    /// Reputation does not enter the Stage-1 ranking score.
     pub fn with_reputation_provider(mut self, provider: Arc<dyn ReputationProvider>) -> Self {
         self.reputation_provider = Some(provider);
         self
@@ -449,14 +454,14 @@ impl HybridIndex {
         let hnsw_ms = t.elapsed().as_secs_f64() * 1000.0;
 
         // ── BM25 search (skip entirely when weight is zero) ──
-        let t = Instant::now();
         let bm25 = read_lock(&self.bm25)?;
-        let bm25_results = if self.config.bm25_weight > 0.0 {
-            bm25.search(text, pool_size)
+        let (bm25_results, bm25_ms) = if self.config.bm25_weight > 0.0 {
+            let t = Instant::now();
+            let results = bm25.search(text, pool_size);
+            (results, t.elapsed().as_secs_f64() * 1000.0)
         } else {
-            vec![]
+            (vec![], 0.0)
         };
-        let bm25_ms = t.elapsed().as_secs_f64() * 1000.0;
 
         let meta_store = read_lock(&self.metadata)?;
 
@@ -473,8 +478,12 @@ impl HybridIndex {
         // ── Fusion ──
         let t = Instant::now();
         let candidates = self.fuse_candidates(
-            &vector_results, &bm25_results, &meta_store,
-            filters, freshness_cutoff, pool_size,
+            &vector_results,
+            &bm25_results,
+            &meta_store,
+            filters,
+            freshness_cutoff,
+            pool_size,
         );
         let fusion_ms = t.elapsed().as_secs_f64() * 1000.0;
 
@@ -487,9 +496,10 @@ impl HybridIndex {
         let t = Instant::now();
         let mut results = self.enrich_and_score(candidates, top_k, &meta_store, &bm25, text);
 
-        // ── Trust gate ──
-        // Stake/reputation never move the ranking score; they surface as a trust
-        // verdict that callers can require a floor on. Disputed/unknown sort below all.
+        // ── Legacy explicit post-ranking trust gate ──
+        // Stake/reputation never move Stage-1 scores or candidate generation. This
+        // compatibility filter is applied only when a caller explicitly requests it;
+        // OpenUncertainty policies should use typed claim evidence instead.
         if let Some(ref min) = filters.min_trust {
             let floor = ranking::trust_rank(min);
             results.retain(|r| ranking::trust_rank(&r.trust_verdict) >= floor);
@@ -530,31 +540,37 @@ impl HybridIndex {
         let content_hashes_bytes;
         let simhashes_bytes;
         {
-            let hnsw = self.hnsw.read()
+            let hnsw = self
+                .hnsw
+                .read()
                 .map_err(|e| std::io::Error::other(format!("hnsw lock poisoned: {e}")))?;
-            let bm25 = self.bm25.read()
+            let bm25 = self
+                .bm25
+                .read()
                 .map_err(|e| std::io::Error::other(format!("bm25 lock poisoned: {e}")))?;
-            let meta = self.metadata.read()
+            let meta = self
+                .metadata
+                .read()
                 .map_err(|e| std::io::Error::other(format!("metadata lock poisoned: {e}")))?;
-            let ch = self.content_hashes.read()
+            let ch = self
+                .content_hashes
+                .read()
                 .map_err(|e| std::io::Error::other(format!("content_hashes lock poisoned: {e}")))?;
-            let sh = self.simhashes.read()
+            let sh = self
+                .simhashes
+                .read()
                 .map_err(|e| std::io::Error::other(format!("simhashes lock poisoned: {e}")))?;
 
             hnsw_bytes = hnsw.to_bytes();
             bm25_bytes = bm25.to_bytes();
-            meta_bytes = bincode::serialize(&*meta)
-                .map_err(std::io::Error::other)?;
-            content_hashes_bytes = bincode::serialize(&*ch)
-                .map_err(std::io::Error::other)?;
+            meta_bytes = bincode::serialize(&*meta).map_err(std::io::Error::other)?;
+            content_hashes_bytes = bincode::serialize(&*ch).map_err(std::io::Error::other)?;
             // Serialize as flat Vec<u64> for backward compatibility
-            simhashes_bytes = bincode::serialize(sh.to_hashes())
-                .map_err(std::io::Error::other)?;
+            simhashes_bytes = bincode::serialize(sh.to_hashes()).map_err(std::io::Error::other)?;
         }
         // Locks are dropped — writers can proceed while we do I/O
 
-        let config_bytes = bincode::serialize(&self.config)
-            .map_err(std::io::Error::other)?;
+        let config_bytes = bincode::serialize(&self.config).map_err(std::io::Error::other)?;
 
         // Write to temp names first, then rename to final names.
         storage.write_segment("hnsw.bin.tmp", &hnsw_bytes)?;
@@ -719,7 +735,8 @@ fn pass_filters(
         }
         // Site/domain scope filter
         if let Some(ref site) = filters.site
-            && meta.domain != *site && !meta.domain.ends_with(&format!(".{site}"))
+            && meta.domain != *site
+            && !meta.domain.ends_with(&format!(".{site}"))
         {
             return false;
         }
@@ -727,7 +744,10 @@ fn pass_filters(
         // Uses prefix matching so "topic-technology" matches "topic-technology/3" (sub-shards).
         if !filters.shards.is_empty()
             && let Some(sid) = &meta.shard_id
-            && !filters.shards.iter().any(|s| oi_types::shard::is_sub_shard_of(sid, s))
+            && !filters
+                .shards
+                .iter()
+                .any(|s| oi_types::shard::is_sub_shard_of(sid, s))
         {
             return false;
         }
@@ -779,7 +799,10 @@ fn parse_freshness_secs(freshness: &str) -> Option<u64> {
 
 /// Keep only the best-scoring candidate per URL.
 /// Candidates without a URL (no metadata) are always kept.
-fn dedup_best_per_url(candidates: Vec<Candidate>, meta_store: &HashMap<String, ChunkMeta>) -> Vec<Candidate> {
+fn dedup_best_per_url(
+    candidates: Vec<Candidate>,
+    meta_store: &HashMap<String, ChunkMeta>,
+) -> Vec<Candidate> {
     let mut best_per_url: HashMap<String, usize> = HashMap::new();
     for (i, c) in candidates.iter().enumerate() {
         let url = meta_store.get(&c.id).map(|m| m.url.as_str()).unwrap_or("");
@@ -787,7 +810,9 @@ fn dedup_best_per_url(candidates: Vec<Candidate>, meta_store: &HashMap<String, C
             continue;
         }
         match best_per_url.entry(url.to_string()) {
-            std::collections::hash_map::Entry::Vacant(e) => { e.insert(i); }
+            std::collections::hash_map::Entry::Vacant(e) => {
+                e.insert(i);
+            }
             std::collections::hash_map::Entry::Occupied(mut e) => {
                 if candidates[i].preliminary_score > candidates[*e.get()].preliminary_score {
                     e.insert(i);
@@ -810,7 +835,11 @@ fn dedup_best_per_url(candidates: Vec<Candidate>, meta_store: &HashMap<String, C
 /// Internal candidate from fusion/rerank stage.
 struct Candidate {
     id: String,
+    /// Max-normalized vector score used by the local fusion policy.
     vec_score: f64,
+    /// Absolute cosine returned by HNSW, preserved so downstream blending can
+    /// compare local and external candidates without re-embedding local text.
+    absolute_vec_score: f64,
     bm25_score: f64,
     preliminary_score: f64,
     reranked: bool,
@@ -829,15 +858,25 @@ impl HybridIndex {
     ) -> Vec<Candidate> {
         match self.config.fusion {
             FusionMethod::WeightedSum => {
-                let max_vec = vector_results.first().map(|(_, s)| *s as f64).unwrap_or(1.0).max(1e-10);
-                let max_bm25 = bm25_results.first().map(|(_, s)| *s).unwrap_or(1.0).max(1e-10);
+                let max_vec = vector_results
+                    .first()
+                    .map(|(_, s)| *s as f64)
+                    .unwrap_or(1.0)
+                    .max(1e-10);
+                let max_bm25 = bm25_results
+                    .first()
+                    .map(|(_, s)| *s)
+                    .unwrap_or(1.0)
+                    .max(1e-10);
 
-                let mut merged: HashMap<String, (f64, f64)> = HashMap::new();
+                let mut merged: HashMap<String, (f64, f64, f64)> = HashMap::new();
                 for (id, score) in vector_results {
-                    merged.entry(id.clone()).or_default().0 = *score as f64 / max_vec;
+                    let entry = merged.entry(id.clone()).or_default();
+                    entry.0 = *score as f64 / max_vec;
+                    entry.1 = *score as f64;
                 }
                 for (id, score) in bm25_results {
-                    merged.entry(id.clone()).or_default().1 = *score / max_bm25;
+                    merged.entry(id.clone()).or_default().2 = *score / max_bm25;
                 }
 
                 let sw = self.config.semantic_weight;
@@ -845,12 +884,19 @@ impl HybridIndex {
 
                 merged
                     .into_iter()
-                    .filter_map(|(id, (vec_score, bm25_score))| {
+                    .filter_map(|(id, (vec_score, absolute_vec_score, bm25_score))| {
                         if !pass_filters(meta_store, &id, filters, freshness_cutoff) {
                             return None;
                         }
                         let preliminary_score = sw * vec_score + bw * bm25_score;
-                        Some(Candidate { id, vec_score, bm25_score, preliminary_score, reranked: false })
+                        Some(Candidate {
+                            id,
+                            vec_score,
+                            absolute_vec_score,
+                            bm25_score,
+                            preliminary_score,
+                            reranked: false,
+                        })
                     })
                     .collect()
             }
@@ -866,21 +912,28 @@ impl HybridIndex {
                     bm25_rank.insert(id.clone(), rank + 1);
                 }
 
-                let max_vec = vector_results.first().map(|(_, s)| *s as f64).unwrap_or(1.0).max(1e-10);
-                let max_bm25 = bm25_results.first().map(|(_, s)| *s).unwrap_or(1.0).max(1e-10);
-                let mut raw_scores: HashMap<String, (f64, f64)> = HashMap::new();
+                let max_vec = vector_results
+                    .first()
+                    .map(|(_, s)| *s as f64)
+                    .unwrap_or(1.0)
+                    .max(1e-10);
+                let max_bm25 = bm25_results
+                    .first()
+                    .map(|(_, s)| *s)
+                    .unwrap_or(1.0)
+                    .max(1e-10);
+                let mut raw_scores: HashMap<String, (f64, f64, f64)> = HashMap::new();
                 for (id, score) in vector_results {
-                    raw_scores.entry(id.clone()).or_default().0 = *score as f64 / max_vec;
+                    let entry = raw_scores.entry(id.clone()).or_default();
+                    entry.0 = *score as f64 / max_vec;
+                    entry.1 = *score as f64;
                 }
                 for (id, score) in bm25_results {
-                    raw_scores.entry(id.clone()).or_default().1 = *score / max_bm25;
+                    raw_scores.entry(id.clone()).or_default().2 = *score / max_bm25;
                 }
 
-                let all_ids: std::collections::HashSet<String> = vec_rank
-                    .keys()
-                    .chain(bm25_rank.keys())
-                    .cloned()
-                    .collect();
+                let all_ids: std::collections::HashSet<String> =
+                    vec_rank.keys().chain(bm25_rank.keys()).cloned().collect();
 
                 let absent_rank = pool_size + 1;
 
@@ -893,8 +946,16 @@ impl HybridIndex {
                         let vr = *vec_rank.get(&id).unwrap_or(&absent_rank);
                         let br = *bm25_rank.get(&id).unwrap_or(&absent_rank);
                         let rrf_score = 1.0 / (RRF_K + vr as f64) + 1.0 / (RRF_K + br as f64);
-                        let (vs, bs) = raw_scores.get(&id).copied().unwrap_or((0.0, 0.0));
-                        Some(Candidate { id, vec_score: vs, bm25_score: bs, preliminary_score: rrf_score, reranked: false })
+                        let (vs, absolute_vs, bs) =
+                            raw_scores.get(&id).copied().unwrap_or((0.0, 0.0, 0.0));
+                        Some(Candidate {
+                            id,
+                            vec_score: vs,
+                            absolute_vec_score: absolute_vs,
+                            bm25_score: bs,
+                            preliminary_score: rrf_score,
+                            reranked: false,
+                        })
                     })
                     .collect()
             }
@@ -921,10 +982,7 @@ impl HybridIndex {
                 let mut reranked: Vec<Candidate> = candidates.drain(..rerank_count).collect();
                 let tail = candidates;
 
-                let mut scored: Vec<(Candidate, f32)> = reranked
-                    .drain(..)
-                    .zip(scores)
-                    .collect();
+                let mut scored: Vec<(Candidate, f32)> = reranked.drain(..).zip(scores).collect();
                 scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
                 let n = scored.len().max(1) as f64;
@@ -947,17 +1005,32 @@ impl HybridIndex {
     /// Enrich candidates with stake/reputation data, score, sort, cap per-domain/URL, assign ranks.
     fn enrich_and_score(
         &self,
-        mut candidates: Vec<Candidate>,
+        candidates: Vec<Candidate>,
         top_k: usize,
         meta_store: &HashMap<String, ChunkMeta>,
         bm25: &Bm25Index,
         query_text: &str,
     ) -> Vec<SearchResultItem> {
+        self.enrich_and_score_with_url_dedup(candidates, top_k, meta_store, bm25, query_text, true)
+    }
+
+    fn enrich_and_score_with_url_dedup(
+        &self,
+        mut candidates: Vec<Candidate>,
+        top_k: usize,
+        meta_store: &HashMap<String, ChunkMeta>,
+        bm25: &Bm25Index,
+        query_text: &str,
+        dedup_urls: bool,
+    ) -> Vec<SearchResultItem> {
         // Apply domain affinity boost BEFORE sorting so that domain-matching
         // candidates can overtake cross-language competitors.
         let query_lower = query_text.to_lowercase();
         for c in &mut candidates {
-            let domain = meta_store.get(&c.id).map(|m| m.domain.as_str()).unwrap_or("");
+            let domain = meta_store
+                .get(&c.id)
+                .map(|m| m.domain.as_str())
+                .unwrap_or("");
             let boost = query_domain_boost(&query_lower, domain);
             c.preliminary_score *= boost;
         }
@@ -965,12 +1038,17 @@ impl HybridIndex {
         candidates.sort_by(|a, b| total_cmp_desc(a.preliminary_score, b.preliminary_score));
 
         // Document-level dedup: keep only best chunk per URL.
-        candidates = dedup_best_per_url(candidates, meta_store);
-        if self.config.max_per_domain > 0 {
+        if dedup_urls {
+            candidates = dedup_best_per_url(candidates, meta_store);
+        }
+        if dedup_urls && self.config.max_per_domain > 0 {
             // Apply domain-level cap
             let mut domain_counts: HashMap<String, usize> = HashMap::new();
             candidates.retain(|c| {
-                let domain = meta_store.get(&c.id).map(|m| m.domain.as_str()).unwrap_or("");
+                let domain = meta_store
+                    .get(&c.id)
+                    .map(|m| m.domain.as_str())
+                    .unwrap_or("");
                 if !domain.is_empty() {
                     let dc = domain_counts.entry(domain.to_string()).or_insert(0);
                     *dc += 1;
@@ -1066,14 +1144,9 @@ impl HybridIndex {
                 let published_at = meta.and_then(|m| m.published_at);
 
                 let disputed = effective_info.map(|i| i.disputed).unwrap_or(false);
-                let staked_at = effective_info
-                    .map(|i| i.staked_at)
-                    .filter(|&t| t > 0);
+                let staked_at = effective_info.map(|i| i.staked_at).filter(|&t| t > 0);
 
-                let rep_votes = rep_map
-                    .get(domain)
-                    .map(|&(_, votes)| votes)
-                    .unwrap_or(0);
+                let rep_votes = rep_map.get(domain).map(|&(_, votes)| votes).unwrap_or(0);
 
                 let params = RankingParams {
                     // Pass the configured hybrid weights so compute_score blends the
@@ -1097,7 +1170,7 @@ impl HybridIndex {
                     c.preliminary_score
                 } else {
                     // Rank by the weighted blend of the (max-normalized) vector + BM25
-                    // scores, then modulate by quality/freshness/dns. Empirically this
+                    // scores, then modulate by quality/freshness. Empirically this
                     // weighted-sum base beats a normalized rank-fusion (RRF) base on real
                     // IR — BEIR scifact nDCG@10 0.6980 vs 0.6875 — because it preserves
                     // score *magnitude* (e.g. a stronger BM25 term match) that pure rank
@@ -1112,7 +1185,8 @@ impl HybridIndex {
                 let title = meta.map(|m| m.title.as_str()).unwrap_or("");
                 let title_lower = title.to_lowercase();
                 let title_boost = if !query_words.is_empty() && !title_lower.is_empty() {
-                    let hits = query_words.iter()
+                    let hits = query_words
+                        .iter()
                         .filter(|w| title_lower.contains(&w.to_lowercase()))
                         .count();
                     let ratio = hits as f64 / query_words.len() as f64;
@@ -1152,12 +1226,17 @@ impl HybridIndex {
                     title: meta.map(|m| m.title.clone()).unwrap_or_default(),
                     snippet,
                     content_md: content.to_string(),
-                    semantic_score: c.vec_score,
+                    semantic_score: c.absolute_vec_score,
                     bm25_score: c.bm25_score,
                     final_score: score,
                     stake_truth,
                     stake_usd: stake_usd_val,
-                    stake_type: if entity_info.is_some() { "entity" } else { "domain" }.to_string(),
+                    stake_type: if entity_info.is_some() {
+                        "entity"
+                    } else {
+                        "domain"
+                    }
+                    .to_string(),
                     reputation: rep,
                     content_hash: meta.map(|m| m.content_hash.clone()).unwrap_or_default(),
                     extraction_quality: "full".to_string(),
@@ -1175,6 +1254,7 @@ impl HybridIndex {
                     domain_url_count: None,
                     domain_reputation_score: None,
                     domain_total_votes: None,
+                    decision: None,
                 }
             })
             .collect();
@@ -1189,6 +1269,136 @@ impl HybridIndex {
         }
 
         results
+    }
+
+    /// Query only chunks whose metadata URL exactly matches one of `urls`.
+    ///
+    /// This bypasses the global HNSW/BM25 candidate window while preserving
+    /// normal scoring, per-URL deduplication, stake metadata, and optional
+    /// reranking. It is intended for bounded, already-selected crawl targets
+    /// such as a versioned authority entrypoint or a poll corroboration URL;
+    /// callers must not use it as a substitute for discovery.
+    pub fn query_exact_urls(
+        &self,
+        embedding: &[f32],
+        text: &str,
+        urls: &[String],
+        top_k: usize,
+    ) -> Result<Vec<SearchResultItem>> {
+        self.query_exact_urls_internal(embedding, text, urls, top_k, true)
+    }
+
+    /// Bounded retained chunks for a known URL set, without premature URL
+    /// deduplication. These are evidence candidates, not additional sources.
+    /// Presentation and independent-source accounting must still dedup URLs.
+    pub fn query_exact_url_chunks(
+        &self,
+        embedding: &[f32],
+        text: &str,
+        urls: &[String],
+        top_k: usize,
+    ) -> Result<Vec<SearchResultItem>> {
+        self.query_exact_urls_internal(embedding, text, urls, top_k.min(256), false)
+    }
+
+    fn query_exact_urls_internal(
+        &self,
+        embedding: &[f32],
+        text: &str,
+        urls: &[String],
+        top_k: usize,
+        dedup_urls: bool,
+    ) -> Result<Vec<SearchResultItem>> {
+        if top_k == 0 || urls.is_empty() {
+            return Ok(Vec::new());
+        }
+        let requested = urls
+            .iter()
+            .map(|url| url.trim_end_matches('/'))
+            .collect::<HashSet<_>>();
+        let meta_store = read_lock(&self.metadata)?;
+        let bm25 = read_lock(&self.bm25)?;
+        let hnsw = read_lock(&self.hnsw)?;
+        let matching_ids = meta_store
+            .iter()
+            .filter(|(_, meta)| requested.contains(meta.url.trim_end_matches('/')))
+            .map(|(id, _)| id.clone())
+            .collect::<Vec<_>>();
+        if matching_ids.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let bm25_scores = bm25
+            .search(text, bm25.len())
+            .into_iter()
+            .collect::<HashMap<_, _>>();
+        let cosine = |vector: &[f32]| {
+            if vector.len() != embedding.len() || vector.is_empty() {
+                return 0.0;
+            }
+            let (dot, query_norm, vector_norm) = embedding.iter().zip(vector).fold(
+                (0.0_f64, 0.0_f64, 0.0_f64),
+                |acc, (left, right)| {
+                    (
+                        acc.0 + f64::from(*left) * f64::from(*right),
+                        acc.1 + f64::from(*left) * f64::from(*left),
+                        acc.2 + f64::from(*right) * f64::from(*right),
+                    )
+                },
+            );
+            let denominator = query_norm.sqrt() * vector_norm.sqrt();
+            if denominator <= f64::EPSILON {
+                0.0
+            } else {
+                dot / denominator
+            }
+        };
+        let raw = matching_ids
+            .into_iter()
+            .map(|id| {
+                let vector_score = hnsw
+                    .get_vector(&id)
+                    .map(|vector| cosine(vector))
+                    .unwrap_or(0.0);
+                let bm25_score = bm25_scores.get(&id).copied().unwrap_or(0.0);
+                (id, vector_score, bm25_score)
+            })
+            .collect::<Vec<_>>();
+        let max_vector = raw
+            .iter()
+            .map(|(_, score, _)| *score)
+            .fold(0.0_f64, f64::max)
+            .max(1e-10);
+        let max_bm25 = raw
+            .iter()
+            .map(|(_, _, score)| *score)
+            .fold(0.0_f64, f64::max)
+            .max(1e-10);
+        let mut candidates = raw
+            .into_iter()
+            .map(|(id, absolute_vec_score, raw_bm25_score)| {
+                let vec_score = absolute_vec_score / max_vector;
+                let bm25_score = raw_bm25_score / max_bm25;
+                Candidate {
+                    id,
+                    vec_score,
+                    absolute_vec_score,
+                    bm25_score,
+                    preliminary_score: self.config.semantic_weight * vec_score
+                        + self.config.bm25_weight * bm25_score,
+                    reranked: false,
+                }
+            })
+            .collect::<Vec<_>>();
+        candidates = self.maybe_rerank(candidates, text, &bm25);
+        Ok(self.enrich_and_score_with_url_dedup(
+            candidates,
+            top_k,
+            &meta_store,
+            &bm25,
+            text,
+            dedup_urls,
+        ))
     }
 }
 
@@ -1316,6 +1526,7 @@ impl SearchIndex for HybridIndex {
         let mut batch_urls: HashSet<String> = replaced_urls;
         let mut url_ingest_counts: HashMap<String, usize> = HashMap::new();
         let mut inserted: u64 = 0;
+        let mut metadata_refreshed: u64 = 0;
 
         for chunk in chunks {
             // Per-URL chunk cap: prevent large pages from dominating the index
@@ -1335,10 +1546,26 @@ impl SearchIndex for HybridIndex {
                     && !meta.content_hash.is_empty()
                     && !content_hashes.insert(meta.content_hash.clone())
                 {
+                    // An unchanged recrawl is still a successful live
+                    // observation. Preserve deduplication of the immutable
+                    // content/vector while advancing freshness metadata for
+                    // the same URL+hash. A cross-source copy with the same
+                    // hash must not refresh the original publisher.
+                    for existing in meta_store.values_mut().filter(|existing| {
+                        existing.url == meta.url && existing.content_hash == meta.content_hash
+                    }) {
+                        if meta.crawled_at > existing.crawled_at {
+                            existing.crawled_at = meta.crawled_at;
+                            if meta.published_at.is_some() {
+                                existing.published_at = meta.published_at;
+                            }
+                            metadata_refreshed += 1;
+                        }
+                    }
                     tracing::debug!(
                         chunk_id = %chunk.chunk_id,
                         content_hash = %meta.content_hash,
-                        "skipping exact duplicate"
+                        "skipping exact duplicate after refreshing same-page metadata"
                     );
                     continue;
                 }
@@ -1374,9 +1601,12 @@ impl SearchIndex for HybridIndex {
 
             if let Some(embedding) = &chunk.embedding {
                 hnsw.insert(chunk.chunk_id.clone(), embedding.clone())
-                    .map_err(|e| oi_types::Error::Internal(
-                        format!("HNSW insert failed for chunk {}: {e}", chunk.chunk_id)
-                    ))?;
+                    .map_err(|e| {
+                        oi_types::Error::Internal(format!(
+                            "HNSW insert failed for chunk {}: {e}",
+                            chunk.chunk_id
+                        ))
+                    })?;
             }
             // Include title in BM25 text so keyword matches on page titles
             // boost relevant chunks (e.g., searching "tuple" matches a page titled
@@ -1404,9 +1634,10 @@ impl SearchIndex for HybridIndex {
             inserted += 1;
         }
 
-        if inserted > 0 {
+        if inserted > 0 || metadata_refreshed > 0 {
             self.dirty.store(true, Ordering::Release);
-            self.unsaved_count.fetch_add(inserted, Ordering::Release);
+            self.unsaved_count
+                .fetch_add(inserted + metadata_refreshed, Ordering::Release);
         }
 
         Ok(())
@@ -1451,9 +1682,13 @@ mod tests {
     }
 
     fn make_entity_chunk(
-        id: &str, text: &str, embedding: Vec<f32>,
-        url: &str, title: &str,
-        entity: Option<&str>, content_kind: Option<&str>,
+        id: &str,
+        text: &str,
+        embedding: Vec<f32>,
+        url: &str,
+        title: &str,
+        entity: Option<&str>,
+        content_kind: Option<&str>,
     ) -> ContentChunk {
         ContentChunk {
             chunk_id: id.to_string(),
@@ -1463,7 +1698,12 @@ mod tests {
             meta: Some(ChunkMeta {
                 url: url.to_string(),
                 title: title.to_string(),
-                domain: url.split("//").nth(1).and_then(|s| s.split('/').next()).unwrap_or("").to_string(),
+                domain: url
+                    .split("//")
+                    .nth(1)
+                    .and_then(|s| s.split('/').next())
+                    .unwrap_or("")
+                    .to_string(),
                 content_hash: format!("hash_{id}"),
                 crawled_at: Some(
                     std::time::SystemTime::now()
@@ -1489,7 +1729,13 @@ mod tests {
         }
     }
 
-    fn make_chunk_with_meta(id: &str, text: &str, embedding: Vec<f32>, url: &str, title: &str) -> ContentChunk {
+    fn make_chunk_with_meta(
+        id: &str,
+        text: &str,
+        embedding: Vec<f32>,
+        url: &str,
+        title: &str,
+    ) -> ContentChunk {
         ContentChunk {
             chunk_id: id.to_string(),
             content: text.to_string(),
@@ -1498,7 +1744,12 @@ mod tests {
             meta: Some(ChunkMeta {
                 url: url.to_string(),
                 title: title.to_string(),
-                domain: url.split("//").nth(1).and_then(|s| s.split('/').next()).unwrap_or("").to_string(),
+                domain: url
+                    .split("//")
+                    .nth(1)
+                    .and_then(|s| s.split('/').next())
+                    .unwrap_or("")
+                    .to_string(),
                 content_hash: format!("hash_{id}"),
                 crawled_at: Some(
                     std::time::SystemTime::now()
@@ -1520,8 +1771,16 @@ mod tests {
         let index = HybridIndex::new(dim);
 
         let chunks = vec![
-            make_chunk("c1", "rust programming language systems", vec![1.0, 0.0, 0.0, 0.0]),
-            make_chunk("c2", "python scripting language data science", vec![0.0, 1.0, 0.0, 0.0]),
+            make_chunk(
+                "c1",
+                "rust programming language systems",
+                vec![1.0, 0.0, 0.0, 0.0],
+            ),
+            make_chunk(
+                "c2",
+                "python scripting language data science",
+                vec![0.0, 1.0, 0.0, 0.0],
+            ),
             make_chunk("c3", "rust web framework actix", vec![0.9, 0.1, 0.0, 0.0]),
         ];
         index.ingest(&chunks).unwrap();
@@ -1549,8 +1808,20 @@ mod tests {
         let url = "https://example.com/page";
         index
             .ingest(&[
-                make_chunk_with_meta("v1a", "old content alpha version", vec![1.0, 0.0, 0.0, 0.0], url, "Page"),
-                make_chunk_with_meta("v1b", "old content beta version", vec![0.9, 0.1, 0.0, 0.0], url, "Page"),
+                make_chunk_with_meta(
+                    "v1a",
+                    "old content alpha version",
+                    vec![1.0, 0.0, 0.0, 0.0],
+                    url,
+                    "Page",
+                ),
+                make_chunk_with_meta(
+                    "v1b",
+                    "old content beta version",
+                    vec![0.9, 0.1, 0.0, 0.0],
+                    url,
+                    "Page",
+                ),
             ])
             .unwrap();
         assert_eq!(index.doc_count(), 2);
@@ -1558,14 +1829,31 @@ mod tests {
         // Re-crawl: content drifted → new hashes, same URL.
         index
             .ingest(&[
-                make_chunk_with_meta("v2a", "new content alpha revised", vec![1.0, 0.0, 0.0, 0.0], url, "Page"),
-                make_chunk_with_meta("v2b", "new content beta revised", vec![0.9, 0.1, 0.0, 0.0], url, "Page"),
+                make_chunk_with_meta(
+                    "v2a",
+                    "new content alpha revised",
+                    vec![1.0, 0.0, 0.0, 0.0],
+                    url,
+                    "Page",
+                ),
+                make_chunk_with_meta(
+                    "v2b",
+                    "new content beta revised",
+                    vec![0.9, 0.1, 0.0, 0.0],
+                    url,
+                    "Page",
+                ),
             ])
             .unwrap();
         assert_eq!(index.doc_count(), 2, "changed URL must replace, not stack");
 
         let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "content alpha", &QueryFilters::default(), 4)
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "content alpha",
+                &QueryFilters::default(),
+                4,
+            )
             .unwrap();
         assert!(!results.is_empty());
         for r in &results {
@@ -1582,12 +1870,28 @@ mod tests {
         let index = HybridIndex::new(4);
         let url = "https://example.com/stable";
         let batch = vec![
-            make_chunk_with_meta("s1", "stable content one", vec![1.0, 0.0, 0.0, 0.0], url, "Stable"),
-            make_chunk_with_meta("s2", "stable content two", vec![0.0, 1.0, 0.0, 0.0], url, "Stable"),
+            make_chunk_with_meta(
+                "s1",
+                "stable content one",
+                vec![1.0, 0.0, 0.0, 0.0],
+                url,
+                "Stable",
+            ),
+            make_chunk_with_meta(
+                "s2",
+                "stable content two",
+                vec![0.0, 1.0, 0.0, 0.0],
+                url,
+                "Stable",
+            ),
         ];
         index.ingest(&batch).unwrap();
         index.ingest(&batch).unwrap();
-        assert_eq!(index.doc_count(), 2, "unchanged re-crawl must dedup to a no-op");
+        assert_eq!(
+            index.doc_count(),
+            2,
+            "unchanged re-crawl must dedup to a no-op"
+        );
     }
 
     #[test]
@@ -1624,12 +1928,13 @@ mod tests {
         let dim = 4;
         let index = HybridIndex::new(dim);
 
-        let chunks = vec![
-            make_chunk_with_meta(
-                "c1", "rust programming guide", vec![1.0, 0.0, 0.0, 0.0],
-                "https://example.com/rust", "Rust Guide",
-            ),
-        ];
+        let chunks = vec![make_chunk_with_meta(
+            "c1",
+            "rust programming guide",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/rust",
+            "Rust Guide",
+        )];
         index.ingest(&chunks).unwrap();
 
         let results = index
@@ -1644,19 +1949,54 @@ mod tests {
     }
 
     #[test]
+    fn result_preserves_absolute_vector_cosine_for_downstream_blending() {
+        let index = HybridIndex::new(4);
+        index
+            .ingest(&[make_chunk_with_meta(
+                "absolute",
+                "absolute semantic score",
+                vec![0.8, 0.6, 0.0, 0.0],
+                "https://example.com/absolute",
+                "Absolute",
+            )])
+            .unwrap();
+
+        let result = index
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "unmatched lexical query",
+                &QueryFilters::default(),
+                1,
+            )
+            .unwrap()
+            .remove(0);
+        assert!(
+            (result.semantic_score - 0.8).abs() < 1e-5,
+            "absolute cosine was replaced by query-local normalization: {}",
+            result.semantic_score
+        );
+    }
+
+    #[test]
     fn test_content_type_filter() {
         let dim = 4;
         let index = HybridIndex::new(dim);
 
         let mut pdf_chunk = make_chunk_with_meta(
-            "c1", "pdf document content", vec![1.0, 0.0, 0.0, 0.0],
-            "https://example.com/doc.pdf", "PDF Doc",
+            "c1",
+            "pdf document content",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/doc.pdf",
+            "PDF Doc",
         );
         pdf_chunk.meta.as_mut().unwrap().content_type = Some("application/pdf".to_string());
 
         let html_chunk = make_chunk_with_meta(
-            "c2", "html page content about programming", vec![0.9, 0.1, 0.0, 0.0],
-            "https://example.com/page", "HTML Page",
+            "c2",
+            "html page content about programming",
+            vec![0.9, 0.1, 0.0, 0.0],
+            "https://example.com/page",
+            "HTML Page",
         );
 
         index.ingest(&[pdf_chunk, html_chunk]).unwrap();
@@ -1685,14 +2025,20 @@ mod tests {
             .as_secs();
 
         let mut recent = make_chunk_with_meta(
-            "c1", "recent news article", vec![1.0, 0.0, 0.0, 0.0],
-            "https://example.com/new", "Recent",
+            "c1",
+            "recent news article",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/new",
+            "Recent",
         );
         recent.meta.as_mut().unwrap().crawled_at = Some(now - 3600); // 1 hour ago
 
         let mut old = make_chunk_with_meta(
-            "c2", "old news article stale", vec![0.9, 0.1, 0.0, 0.0],
-            "https://example.com/old", "Old",
+            "c2",
+            "old news article stale",
+            vec![0.9, 0.1, 0.0, 0.0],
+            "https://example.com/old",
+            "Old",
         );
         old.meta.as_mut().unwrap().crawled_at = Some(now - 86400 * 30); // 30 days ago
 
@@ -1709,6 +2055,43 @@ mod tests {
 
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].title, "Recent");
+    }
+
+    #[test]
+    fn exact_chunk_access_does_not_turn_chunks_into_documents() {
+        let index = HybridIndex::new(4);
+        let url = "https://example.test/history";
+        index.ingest(&[
+            make_chunk_with_meta("part-a", "Navigation downloads support documentation introductory company history", vec![1.0, 0.0, 0.0, 0.0], url, "Company history"),
+            make_chunk_with_meta("part-b", "Independent archive records identify Alice Example as the founder in nineteen eighty", vec![0.8, 0.2, 0.0, 0.0], url, "Company history"),
+        ]).unwrap();
+        let urls = vec![url.to_string()];
+        let query = [1.0, 0.0, 0.0, 0.0];
+        assert_eq!(
+            index
+                .query_exact_urls(&query, "founder history", &urls, 10)
+                .unwrap()
+                .len(),
+            1
+        );
+        let chunks = index
+            .query_exact_url_chunks(&query, "founder history", &urls, 10)
+            .unwrap();
+        assert_eq!(chunks.len(), 2);
+        assert!(chunks.iter().all(|chunk| chunk.url == url));
+        assert_eq!(
+            index
+                .query_exact_url_chunks(&query, "history", &urls, 1)
+                .unwrap()
+                .len(),
+            1
+        );
+        assert!(
+            index
+                .query_exact_url_chunks(&query, "history", &[], 10)
+                .unwrap()
+                .is_empty()
+        );
     }
 
     #[test]
@@ -1742,7 +2125,12 @@ mod tests {
 
         // Query vector is closest to c1; query text matches neither doc in BM25
         let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "unrelated search terms", &QueryFilters::default(), 2)
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "unrelated search terms",
+                &QueryFilters::default(),
+                2,
+            )
             .unwrap();
 
         assert_eq!(results.len(), 2);
@@ -1760,14 +2148,27 @@ mod tests {
         let index = HybridIndex::with_config(4, config);
 
         let chunks = vec![
-            make_chunk("c1", "rust programming language systems", vec![1.0, 0.0, 0.0, 0.0]),
-            make_chunk("c2", "python scripting language data science", vec![0.0, 1.0, 0.0, 0.0]),
+            make_chunk(
+                "c1",
+                "rust programming language systems",
+                vec![1.0, 0.0, 0.0, 0.0],
+            ),
+            make_chunk(
+                "c2",
+                "python scripting language data science",
+                vec![0.0, 1.0, 0.0, 0.0],
+            ),
             make_chunk("c3", "rust web framework actix", vec![0.9, 0.1, 0.0, 0.0]),
         ];
         index.ingest(&chunks).unwrap();
 
         let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "rust programming", &QueryFilters::default(), 3)
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "rust programming",
+                &QueryFilters::default(),
+                3,
+            )
             .unwrap();
 
         assert!(!results.is_empty());
@@ -1795,66 +2196,103 @@ mod tests {
         assert!(!results.is_empty());
     }
 
-    // ── Stake enrichment tests ──────────────────────────────────────────
+    // ── Registry metadata and relevance-separation tests ────────────────
 
     #[test]
-    fn test_stake_enrichment_boosts_staked_content() {
+    fn test_stake_enrichment_is_relevance_neutral() {
         let dim = 4;
         let mut stakes = HashMap::new();
-        stakes.insert("example.com".to_string(), make_stake_info("example.com", 1000.0));
+        stakes.insert(
+            "example.com".to_string(),
+            make_stake_info("example.com", 1000.0),
+        );
         let registry = Arc::new(MockStakeRegistry { stakes });
 
-        let index = HybridIndex::with_config(dim, HybridConfig::default())
-            .with_stake_registry(registry);
+        let enriched_index =
+            HybridIndex::with_config(dim, HybridConfig::default()).with_stake_registry(registry);
+        let plain_index = HybridIndex::with_config(dim, HybridConfig::default());
 
         let chunks = vec![
             make_chunk_with_meta(
-                "c1", "rust programming guide covering ownership and borrowing in detail", vec![1.0, 0.0, 0.0, 0.0],
-                "https://example.com/rust", "Staked Rust Guide",
+                "c1",
+                "rust programming guide covering ownership and borrowing in detail",
+                vec![1.0, 0.0, 0.0, 0.0],
+                "https://example.com/rust",
+                "Staked Rust Guide",
             ),
             make_chunk_with_meta(
-                "c2", "introduction to the rust compiler architecture and build system internals", vec![0.99, 0.01, 0.0, 0.0],
-                "https://other.com/rust", "Unstaked Rust Guide",
+                "c2",
+                "introduction to the rust compiler architecture and build system internals",
+                vec![0.99, 0.01, 0.0, 0.0],
+                "https://other.com/rust",
+                "Unstaked Rust Guide",
             ),
         ];
-        index.ingest(&chunks).unwrap();
+        enriched_index.ingest(&chunks).unwrap();
+        plain_index.ingest(&chunks).unwrap();
 
-        let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "rust programming", &QueryFilters::default(), 2)
+        let enriched = enriched_index
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "rust programming",
+                &QueryFilters::default(),
+                2,
+            )
+            .unwrap();
+        let plain = plain_index
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "rust programming",
+                &QueryFilters::default(),
+                2,
+            )
             .unwrap();
 
-        assert_eq!(results.len(), 2);
-        // c1 ranks first on RELEVANCE (exact vector match), not stake — stake is
-        // enriched onto the result (stake_truth > 0) but never moves the score.
-        assert_eq!(results[0].url, "https://example.com/rust");
-        assert!(results[0].stake_truth > 0);
-        assert!(results[0].final_score > results[1].final_score);
+        assert_eq!(enriched.len(), 2);
+        assert_eq!(plain.len(), 2);
+        for (with_stake, without_stake) in enriched.iter().zip(&plain) {
+            assert_eq!(with_stake.url, without_stake.url);
+            assert!((with_stake.final_score - without_stake.final_score).abs() < 1e-12);
+        }
+        // Registry data is visible as legacy metadata, but cannot alter order or score.
+        assert_eq!(enriched[0].url, "https://example.com/rust");
+        assert!(enriched[0].stake_truth > 0);
+        assert_eq!(plain[0].stake_truth, 0);
     }
 
     #[test]
     fn test_publisher_domain_passthrough() {
         let dim = 4;
         let mut stakes = HashMap::new();
-        stakes.insert("nytimes.com".to_string(), make_stake_info("nytimes.com", 1000.0));
+        stakes.insert(
+            "nytimes.com".to_string(),
+            make_stake_info("nytimes.com", 1000.0),
+        );
         let registry = Arc::new(MockStakeRegistry { stakes });
 
-        let index = HybridIndex::with_config(dim, HybridConfig::default())
-            .with_stake_registry(registry);
+        let index =
+            HybridIndex::with_config(dim, HybridConfig::default()).with_stake_registry(registry);
 
-        let chunks = vec![
-            make_chunk_with_meta(
-                "c1", "breaking news article economics", vec![1.0, 0.0, 0.0, 0.0],
-                "https://nytimes.com/article", "Breaking News",
-            ),
-        ];
+        let chunks = vec![make_chunk_with_meta(
+            "c1",
+            "breaking news article economics",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://nytimes.com/article",
+            "Breaking News",
+        )];
         index.ingest(&chunks).unwrap();
 
         let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "breaking news", &QueryFilters::default(), 1)
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "breaking news",
+                &QueryFilters::default(),
+                1,
+            )
             .unwrap();
 
         assert_eq!(results.len(), 1);
-        // Publisher domain: stake passes through
+        // Publisher domain: stake passes through as legacy metadata.
         assert!(results[0].stake_truth > 0);
         assert_eq!(results[0].stake_type, "domain");
     }
@@ -1864,27 +2302,37 @@ mod tests {
         let dim = 4;
         let mut stakes = HashMap::new();
         // Stake on youtube.com (UGC) — should give ZERO boost to channel content
-        stakes.insert("youtube.com".to_string(), make_stake_info("youtube.com", 5000.0));
+        stakes.insert(
+            "youtube.com".to_string(),
+            make_stake_info("youtube.com", 5000.0),
+        );
         let registry = Arc::new(MockStakeRegistry { stakes });
 
-        let index = HybridIndex::with_config(dim, HybridConfig::default())
-            .with_stake_registry(registry);
+        let index =
+            HybridIndex::with_config(dim, HybridConfig::default()).with_stake_registry(registry);
 
-        let chunks = vec![
-            make_entity_chunk(
-                "c1", "linear algebra video math", vec![1.0, 0.0, 0.0, 0.0],
-                "https://youtube.com/watch?v=abc", "Linear Algebra",
-                Some("youtube.com/c/3blue1brown"), Some("video"),
-            ),
-        ];
+        let chunks = vec![make_entity_chunk(
+            "c1",
+            "linear algebra video math",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://youtube.com/watch?v=abc",
+            "Linear Algebra",
+            Some("youtube.com/c/3blue1brown"),
+            Some("video"),
+        )];
         index.ingest(&chunks).unwrap();
 
         let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "linear algebra", &QueryFilters::default(), 1)
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "linear algebra",
+                &QueryFilters::default(),
+                1,
+            )
             .unwrap();
 
         assert_eq!(results.len(), 1);
-        // UGC: domain stake gives zero passthrough — no entity stake either
+        // UGC: domain stake gives zero metadata passthrough — no entity stake either
         assert_eq!(results[0].stake_truth, 0);
     }
 
@@ -1892,27 +2340,34 @@ mod tests {
     fn test_entity_stake_on_ugc_platform() {
         let dim = 4;
         let mut stakes = HashMap::new();
-        // Stake on specific YouTube channel — should boost that channel's content
+        // Stake on a specific YouTube channel is attached as metadata only.
         stakes.insert(
             "youtube.com/c/3blue1brown".to_string(),
             make_stake_info("youtube.com/c/3blue1brown", 1000.0),
         );
         let registry = Arc::new(MockStakeRegistry { stakes });
 
-        let index = HybridIndex::with_config(dim, HybridConfig::default())
-            .with_stake_registry(registry);
+        let index =
+            HybridIndex::with_config(dim, HybridConfig::default()).with_stake_registry(registry);
 
-        let chunks = vec![
-            make_entity_chunk(
-                "c1", "linear algebra video math", vec![1.0, 0.0, 0.0, 0.0],
-                "https://youtube.com/watch?v=abc", "Linear Algebra",
-                Some("youtube.com/c/3blue1brown"), Some("video"),
-            ),
-        ];
+        let chunks = vec![make_entity_chunk(
+            "c1",
+            "linear algebra video math",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://youtube.com/watch?v=abc",
+            "Linear Algebra",
+            Some("youtube.com/c/3blue1brown"),
+            Some("video"),
+        )];
         index.ingest(&chunks).unwrap();
 
         let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "linear algebra", &QueryFilters::default(), 1)
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "linear algebra",
+                &QueryFilters::default(),
+                1,
+            )
             .unwrap();
 
         assert_eq!(results.len(), 1);
@@ -1925,24 +2380,34 @@ mod tests {
         let dim = 4;
         let mut stakes = HashMap::new();
         // Only domain-level stake (entity == domain case)
-        stakes.insert("example.com".to_string(), make_stake_info("example.com", 500.0));
+        stakes.insert(
+            "example.com".to_string(),
+            make_stake_info("example.com", 500.0),
+        );
         let registry = Arc::new(MockStakeRegistry { stakes });
 
-        let index = HybridIndex::with_config(dim, HybridConfig::default())
-            .with_stake_registry(registry);
+        let index =
+            HybridIndex::with_config(dim, HybridConfig::default()).with_stake_registry(registry);
 
         // Chunk where entity == domain — should NOT double-count
-        let chunks = vec![
-            make_entity_chunk(
-                "c1", "example site content page", vec![1.0, 0.0, 0.0, 0.0],
-                "https://example.com/page", "Example",
-                Some("example.com"), None,
-            ),
-        ];
+        let chunks = vec![make_entity_chunk(
+            "c1",
+            "example site content page",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/page",
+            "Example",
+            Some("example.com"),
+            None,
+        )];
         index.ingest(&chunks).unwrap();
 
         let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "example site", &QueryFilters::default(), 1)
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "example site",
+                &QueryFilters::default(),
+                1,
+            )
             .unwrap();
 
         assert_eq!(results.len(), 1);
@@ -1959,14 +2424,22 @@ mod tests {
 
         let chunks = vec![
             make_entity_chunk(
-                "c1", "rust programming video tutorial", vec![1.0, 0.0, 0.0, 0.0],
-                "https://youtube.com/watch?v=abc", "Rust Video",
-                Some("youtube.com/c/rustchannel"), Some("video"),
+                "c1",
+                "rust programming video tutorial",
+                vec![1.0, 0.0, 0.0, 0.0],
+                "https://youtube.com/watch?v=abc",
+                "Rust Video",
+                Some("youtube.com/c/rustchannel"),
+                Some("video"),
             ),
             make_entity_chunk(
-                "c2", "rust programming article guide", vec![0.9, 0.1, 0.0, 0.0],
-                "https://blog.com/rust", "Rust Article",
-                None, None,
+                "c2",
+                "rust programming article guide",
+                vec![0.9, 0.1, 0.0, 0.0],
+                "https://blog.com/rust",
+                "Rust Article",
+                None,
+                None,
             ),
         ];
         index.ingest(&chunks).unwrap();
@@ -1980,7 +2453,10 @@ mod tests {
             .unwrap();
 
         assert_eq!(results.len(), 1);
-        assert_eq!(results[0].entity.as_deref(), Some("youtube.com/c/rustchannel"));
+        assert_eq!(
+            results[0].entity.as_deref(),
+            Some("youtube.com/c/rustchannel")
+        );
     }
 
     #[test]
@@ -1990,14 +2466,22 @@ mod tests {
 
         let chunks = vec![
             make_entity_chunk(
-                "c1", "linear algebra explained visual", vec![1.0, 0.0, 0.0, 0.0],
-                "https://youtube.com/watch?v=abc", "Math Video",
-                Some("youtube.com/c/3blue1brown"), Some("video"),
+                "c1",
+                "linear algebra explained visual",
+                vec![1.0, 0.0, 0.0, 0.0],
+                "https://youtube.com/watch?v=abc",
+                "Math Video",
+                Some("youtube.com/c/3blue1brown"),
+                Some("video"),
             ),
             make_entity_chunk(
-                "c2", "linear algebra explained text post", vec![0.9, 0.1, 0.0, 0.0],
-                "https://reddit.com/r/math/post1", "Math Post",
-                Some("reddit.com/r/math"), Some("post"),
+                "c2",
+                "linear algebra explained text post",
+                vec![0.9, 0.1, 0.0, 0.0],
+                "https://reddit.com/r/math/post1",
+                "Math Post",
+                Some("reddit.com/r/math"),
+                Some("post"),
             ),
         ];
         index.ingest(&chunks).unwrap();
@@ -2020,9 +2504,11 @@ mod tests {
         let index = HybridIndex::new(dim);
 
         // Chunk with no metadata
-        let chunks = vec![
-            make_chunk("c1", "rust programming language", vec![1.0, 0.0, 0.0, 0.0]),
-        ];
+        let chunks = vec![make_chunk(
+            "c1",
+            "rust programming language",
+            vec![1.0, 0.0, 0.0, 0.0],
+        )];
         index.ingest(&chunks).unwrap();
 
         let filters = QueryFilters {
@@ -2042,9 +2528,11 @@ mod tests {
         let dim = 4;
         let index = HybridIndex::new(dim);
 
-        let chunks = vec![
-            make_chunk("c1", "rust programming language", vec![1.0, 0.0, 0.0, 0.0]),
-        ];
+        let chunks = vec![make_chunk(
+            "c1",
+            "rust programming language",
+            vec![1.0, 0.0, 0.0, 0.0],
+        )];
         index.ingest(&chunks).unwrap();
 
         let filters = QueryFilters {
@@ -2065,12 +2553,18 @@ mod tests {
 
         let chunks = vec![
             make_chunk_with_meta(
-                "c1", "rust programming guide", vec![1.0, 0.0, 0.0, 0.0],
-                "https://example.com/rust", "Rust Guide",
+                "c1",
+                "rust programming guide",
+                vec![1.0, 0.0, 0.0, 0.0],
+                "https://example.com/rust",
+                "Rust Guide",
             ),
             make_chunk_with_meta(
-                "c2", "python data science", vec![0.0, 1.0, 0.0, 0.0],
-                "https://example.com/python", "Python Guide",
+                "c2",
+                "python data science",
+                vec![0.0, 1.0, 0.0, 0.0],
+                "https://example.com/python",
+                "Python Guide",
             ),
         ];
         index.ingest(&chunks).unwrap();
@@ -2102,9 +2596,11 @@ mod tests {
         let dim = 4;
         let index = HybridIndex::new(dim);
 
-        let chunks = vec![
-            make_chunk("c1", "rust programming language", vec![1.0, 0.0, 0.0, 0.0]),
-        ];
+        let chunks = vec![make_chunk(
+            "c1",
+            "rust programming language",
+            vec![1.0, 0.0, 0.0, 0.0],
+        )];
         index.ingest(&chunks).unwrap();
 
         // No filters → metadata-less chunks should still appear
@@ -2156,6 +2652,55 @@ mod tests {
     }
 
     #[test]
+    fn test_same_page_exact_recrawl_refreshes_metadata_without_new_document() {
+        let index = HybridIndex::new(4);
+        let make = |id: &str, url: &str, crawled_at: u64| ContentChunk {
+            chunk_id: id.to_string(),
+            content: "unchanged election poll page".to_string(),
+            embedding: Some(vec![1.0, 0.0, 0.0, 0.0]),
+            seq: 0,
+            meta: Some(ChunkMeta {
+                url: url.to_string(),
+                title: "Poll".to_string(),
+                domain: "example.com".to_string(),
+                content_hash: "same-page-hash".to_string(),
+                crawled_at: Some(crawled_at),
+                ..Default::default()
+            }),
+        };
+        index
+            .ingest(&[make("old", "https://example.com/poll", 100)])
+            .unwrap();
+        index
+            .ingest(&[make("new", "https://example.com/poll", 200)])
+            .unwrap();
+
+        assert_eq!(index.doc_count(), 1);
+        let results = index
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "election poll",
+                &QueryFilters::default(),
+                5,
+            )
+            .unwrap();
+        assert_eq!(results[0].crawled_at, Some(200));
+
+        index
+            .ingest(&[make("copy", "https://copy.example/poll", 300)])
+            .unwrap();
+        let results = index
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "election poll",
+                &QueryFilters::default(),
+                5,
+            )
+            .unwrap();
+        assert_eq!(results[0].crawled_at, Some(200));
+    }
+
+    #[test]
     fn test_near_duplicate_rejected_at_ingest() {
         let dim = 4;
         let index = HybridIndex::new(dim);
@@ -2202,7 +2747,10 @@ mod tests {
         // operator opts into a looser threshold; the scale-calibrated default
         // (3) lets them through — at 100k docs a threshold of 8 rejected 96%
         // of distinct passages as false positives.
-        let config = HybridConfig { simhash_threshold: 8, ..HybridConfig::default() };
+        let config = HybridConfig {
+            simhash_threshold: 8,
+            ..HybridConfig::default()
+        };
         let index = HybridIndex::with_config(4, config);
         let mk = |id: &str, content: &str, hash: &str, url: &str| ContentChunk {
             chunk_id: id.to_string(),
@@ -2223,7 +2771,11 @@ mod tests {
                 mk("p2", "Rust is a systems programming language focused on safety and speed for concurrent applications", "h2", "https://b.com/x"),
             ])
             .unwrap();
-        assert_eq!(index.doc_count(), 1, "paraphrase should be rejected at threshold 8");
+        assert_eq!(
+            index.doc_count(),
+            1,
+            "paraphrase should be rejected at threshold 8"
+        );
     }
 
     #[test]
@@ -2233,7 +2785,8 @@ mod tests {
 
         let chunk1 = ContentChunk {
             chunk_id: "c1".to_string(),
-            content: "Rust is a systems programming language focused on safety and performance".to_string(),
+            content: "Rust is a systems programming language focused on safety and performance"
+                .to_string(),
             embedding: Some(vec![1.0, 0.0, 0.0, 0.0]),
             seq: 0,
             meta: Some(ChunkMeta {
@@ -2260,7 +2813,11 @@ mod tests {
         };
 
         index.ingest(&[chunk1, chunk2]).unwrap();
-        assert_eq!(index.doc_count(), 2, "different content should both be ingested");
+        assert_eq!(
+            index.doc_count(),
+            2,
+            "different content should both be ingested"
+        );
     }
 
     #[test]
@@ -2304,13 +2861,21 @@ mod tests {
         index.ingest(&chunks).unwrap();
 
         let results = index
-            .query(&[1.0, 0.0, 0.0, 0.0], "unique topic", &QueryFilters::default(), 10)
+            .query(
+                &[1.0, 0.0, 0.0, 0.0],
+                "unique topic",
+                &QueryFilters::default(),
+                10,
+            )
             .unwrap();
 
         // Count per domain
-        let mut domain_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+        let mut domain_counts: std::collections::HashMap<String, usize> =
+            std::collections::HashMap::new();
         for r in &results {
-            *domain_counts.entry(extract_domain_from_url(&r.url)).or_insert(0) += 1;
+            *domain_counts
+                .entry(extract_domain_from_url(&r.url))
+                .or_insert(0) += 1;
         }
 
         for (domain, count) in &domain_counts {
@@ -2334,12 +2899,18 @@ mod tests {
 
         let chunks = vec![
             make_chunk_with_meta(
-                "c1", "rust programming guide", vec![1.0, 0.0, 0.0, 0.0],
-                "https://example.com/rust", "Rust Guide",
+                "c1",
+                "rust programming guide",
+                vec![1.0, 0.0, 0.0, 0.0],
+                "https://example.com/rust",
+                "Rust Guide",
             ),
             make_chunk_with_meta(
-                "c2", "python data science introduction", vec![0.0, 1.0, 0.0, 0.0],
-                "https://example.com/python", "Python Guide",
+                "c2",
+                "python data science introduction",
+                vec![0.0, 1.0, 0.0, 0.0],
+                "https://example.com/python",
+                "Python Guide",
             ),
         ];
         index.ingest(&chunks).unwrap();
@@ -2366,7 +2937,11 @@ mod tests {
             }),
         };
         loaded.ingest(&[dup]).unwrap();
-        assert_eq!(loaded.doc_count(), 2, "exact dup should be rejected after load");
+        assert_eq!(
+            loaded.doc_count(),
+            2,
+            "exact dup should be rejected after load"
+        );
 
         // Verify search still works
         let results = loaded
@@ -2381,14 +2956,20 @@ mod tests {
         let index = HybridIndex::new(dim);
 
         let mut tech_chunk = make_chunk_with_meta(
-            "c1", "rust programming guide", vec![1.0, 0.0, 0.0, 0.0],
-            "https://example.com/rust", "Rust Guide",
+            "c1",
+            "rust programming guide",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/rust",
+            "Rust Guide",
         );
         tech_chunk.meta.as_mut().unwrap().shard_id = Some("topic-technology".to_string());
 
         let mut sci_chunk = make_chunk_with_meta(
-            "c2", "quantum physics research paper discoveries", vec![0.0, 1.0, 0.0, 0.0],
-            "https://example.com/quantum", "Quantum Physics",
+            "c2",
+            "quantum physics research paper discoveries",
+            vec![0.0, 1.0, 0.0, 0.0],
+            "https://example.com/quantum",
+            "Quantum Physics",
         );
         sci_chunk.meta.as_mut().unwrap().shard_id = Some("topic-science".to_string());
 
@@ -2399,19 +2980,25 @@ mod tests {
         assert_eq!(all.len(), 2);
 
         // Filter by technology shard
-        let tech = index.get_chunks_for_replication(Some("topic-technology"), 100).unwrap();
+        let tech = index
+            .get_chunks_for_replication(Some("topic-technology"), 100)
+            .unwrap();
         assert_eq!(tech.len(), 1);
         assert_eq!(tech[0].chunk_id, "c1");
         assert!(tech[0].embedding.is_some());
         assert!(!tech[0].content.is_empty());
 
         // Filter by science shard
-        let sci = index.get_chunks_for_replication(Some("topic-science"), 100).unwrap();
+        let sci = index
+            .get_chunks_for_replication(Some("topic-science"), 100)
+            .unwrap();
         assert_eq!(sci.len(), 1);
         assert_eq!(sci[0].chunk_id, "c2");
 
         // Non-existent shard
-        let none = index.get_chunks_for_replication(Some("topic-sports"), 100).unwrap();
+        let none = index
+            .get_chunks_for_replication(Some("topic-sports"), 100)
+            .unwrap();
         assert!(none.is_empty());
 
         // max_chunks cap
@@ -2425,14 +3012,20 @@ mod tests {
         let index = HybridIndex::new(dim);
 
         let mut tech_chunk = make_chunk_with_meta(
-            "c1", "rust programming guide covering systems design", vec![1.0, 0.0, 0.0, 0.0],
-            "https://example.com/rust", "Rust Guide",
+            "c1",
+            "rust programming guide covering systems design",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/rust",
+            "Rust Guide",
         );
         tech_chunk.meta.as_mut().unwrap().shard_id = Some("topic-technology".to_string());
 
         let mut sci_chunk = make_chunk_with_meta(
-            "c2", "quantum physics research paper discoveries", vec![0.9, 0.1, 0.0, 0.0],
-            "https://example.com/quantum", "Quantum Physics",
+            "c2",
+            "quantum physics research paper discoveries",
+            vec![0.9, 0.1, 0.0, 0.0],
+            "https://example.com/quantum",
+            "Quantum Physics",
         );
         sci_chunk.meta.as_mut().unwrap().shard_id = Some("topic-science".to_string());
 
@@ -2458,8 +3051,11 @@ mod tests {
 
         // Chunk with no shard_id (unclassified / old data)
         let chunk = make_chunk_with_meta(
-            "c1", "some content without shard classification", vec![1.0, 0.0, 0.0, 0.0],
-            "https://example.com/page", "Unclassified",
+            "c1",
+            "some content without shard classification",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/page",
+            "Unclassified",
         );
         index.ingest(&[chunk]).unwrap();
 
@@ -2472,7 +3068,11 @@ mod tests {
             .query(&[1.0, 0.0, 0.0, 0.0], "content", &filters, 5)
             .unwrap();
 
-        assert_eq!(results.len(), 1, "unclassified content should pass shard filter");
+        assert_eq!(
+            results.len(),
+            1,
+            "unclassified content should pass shard filter"
+        );
     }
 
     #[test]
@@ -2483,12 +3083,13 @@ mod tests {
         let dim = 4;
         let index = HybridIndex::new(dim);
 
-        let chunks = vec![
-            make_chunk_with_meta(
-                "c1", "test content for backward compat", vec![1.0, 0.0, 0.0, 0.0],
-                "https://example.com/page", "Test",
-            ),
-        ];
+        let chunks = vec![make_chunk_with_meta(
+            "c1",
+            "test content for backward compat",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/page",
+            "Test",
+        )];
         index.ingest(&chunks).unwrap();
 
         let dir = tempfile::tempdir().unwrap();
@@ -2518,7 +3119,11 @@ mod tests {
             }),
         };
         loaded.ingest(&[dup]).unwrap();
-        assert_eq!(loaded.doc_count(), 1, "dup should be rejected even after backward-compat load");
+        assert_eq!(
+            loaded.doc_count(),
+            1,
+            "dup should be rejected even after backward-compat load"
+        );
     }
 
     #[test]
@@ -2528,12 +3133,18 @@ mod tests {
 
         let chunks = vec![
             make_chunk_with_meta(
-                "c1", "rust programming guide", vec![1.0, 0.0, 0.0, 0.0],
-                "https://example.com/rust", "Rust Guide",
+                "c1",
+                "rust programming guide",
+                vec![1.0, 0.0, 0.0, 0.0],
+                "https://example.com/rust",
+                "Rust Guide",
             ),
             make_chunk_with_meta(
-                "c2", "python data science", vec![0.0, 1.0, 0.0, 0.0],
-                "https://other.com/python", "Python Guide",
+                "c2",
+                "python data science",
+                vec![0.0, 1.0, 0.0, 0.0],
+                "https://other.com/python",
+                "Python Guide",
             ),
         ];
         index.ingest(&chunks).unwrap();
@@ -2563,12 +3174,13 @@ mod tests {
         let dim = 4;
         let index = HybridIndex::new(dim);
 
-        let chunks = vec![
-            make_chunk_with_meta(
-                "c1", "rust programming guide", vec![1.0, 0.0, 0.0, 0.0],
-                "https://example.com/rust", "Rust Guide",
-            ),
-        ];
+        let chunks = vec![make_chunk_with_meta(
+            "c1",
+            "rust programming guide",
+            vec![1.0, 0.0, 0.0, 0.0],
+            "https://example.com/rust",
+            "Rust Guide",
+        )];
         index.ingest(&chunks).unwrap();
 
         let removed = index.remove_by_url("https://nonexistent.com/page").unwrap();
@@ -2593,11 +3205,20 @@ mod tests {
         index.ingest(&chunks).unwrap();
 
         let (results, timings) = index
-            .query_timed(&[1.0, 0.0, 0.0, 0.0], "rust programming", &QueryFilters::default(), 2)
+            .query_timed(
+                &[1.0, 0.0, 0.0, 0.0],
+                "rust programming",
+                &QueryFilters::default(),
+                2,
+            )
             .unwrap();
 
         // BM25 should be effectively zero (just lock acquisition)
-        assert!(timings.bm25_ms < 0.1, "bm25_ms={}, expected near zero", timings.bm25_ms);
+        assert!(
+            timings.bm25_ms < 0.1,
+            "bm25_ms={}, expected near zero",
+            timings.bm25_ms
+        );
         // Results should still come back from HNSW
         assert!(!results.is_empty());
         assert_eq!(results[0].result_id, "c1");
@@ -2617,36 +3238,78 @@ mod tests {
         fn emb(a: f32, b: f32, c: f32) -> Vec<f32> {
             let mut v = vec![a, b, c, 0.01, 0.01, 0.01, 0.01, 0.01];
             let norm: f32 = v.iter().map(|x| x * x).sum::<f32>().sqrt();
-            for x in &mut v { *x /= norm; }
+            for x in &mut v {
+                *x /= norm;
+            }
             v
         }
 
         let chunks = vec![
             // Rust docs — strong vector match to "rust" queries
-            make_chunk("rust1", "rust ownership borrowing lifetimes", emb(0.95, 0.05, 0.0)),
-            make_chunk("rust2", "rust async await tokio runtime", emb(0.90, 0.10, 0.0)),
-            make_chunk("rust3", "cargo build system dependencies", emb(0.85, 0.05, 0.1)),
+            make_chunk(
+                "rust1",
+                "rust ownership borrowing lifetimes",
+                emb(0.95, 0.05, 0.0),
+            ),
+            make_chunk(
+                "rust2",
+                "rust async await tokio runtime",
+                emb(0.90, 0.10, 0.0),
+            ),
+            make_chunk(
+                "rust3",
+                "cargo build system dependencies",
+                emb(0.85, 0.05, 0.1),
+            ),
             // Python docs
-            make_chunk("py1", "python pandas dataframe analysis", emb(0.05, 0.95, 0.0)),
+            make_chunk(
+                "py1",
+                "python pandas dataframe analysis",
+                emb(0.05, 0.95, 0.0),
+            ),
             make_chunk("py2", "python numpy array operations", emb(0.10, 0.90, 0.0)),
             // Error code doc — weak vector signal, strong keyword signal
-            make_chunk("err1", "error E2025 borrow checker conflict resolution", emb(0.4, 0.1, 0.5)),
+            make_chunk(
+                "err1",
+                "error E2025 borrow checker conflict resolution",
+                emb(0.4, 0.1, 0.5),
+            ),
             // API doc — exact function name matters
-            make_chunk("api1", "fn get_program_accounts returns all accounts matching filter", emb(0.5, 0.1, 0.4)),
+            make_chunk(
+                "api1",
+                "fn get_program_accounts returns all accounts matching filter",
+                emb(0.5, 0.1, 0.4),
+            ),
             // Mixed: keyword overlap with rust, but embedding in python cluster
-            make_chunk("mixed1", "rust vs python performance comparison benchmark", emb(0.1, 0.85, 0.05)),
+            make_chunk(
+                "mixed1",
+                "rust vs python performance comparison benchmark",
+                emb(0.1, 0.85, 0.05),
+            ),
         ];
 
         // --- Hybrid index (80/20) ---
-        let hybrid = HybridIndex::with_config(dim, HybridConfig {
-            semantic_weight: 0.8, bm25_weight: 0.2, skip_dedup: true, ..Default::default()
-        });
+        let hybrid = HybridIndex::with_config(
+            dim,
+            HybridConfig {
+                semantic_weight: 0.8,
+                bm25_weight: 0.2,
+                skip_dedup: true,
+                ..Default::default()
+            },
+        );
         hybrid.ingest(&chunks).unwrap();
 
         // --- Vector-only index (100/0) ---
-        let vector_only = HybridIndex::with_config(dim, HybridConfig {
-            semantic_weight: 1.0, bm25_weight: 0.0, skip_dedup: true, ..Default::default()
-        });
+        let vector_only = HybridIndex::with_config(
+            dim,
+            HybridConfig {
+                semantic_weight: 1.0,
+                bm25_weight: 0.0,
+                skip_dedup: true,
+                ..Default::default()
+            },
+        );
         vector_only.ingest(&chunks).unwrap();
 
         let filters = QueryFilters::default();
@@ -2654,8 +3317,12 @@ mod tests {
         // Category 1: Semantic query — embedding close to rust cluster
         // Both modes should find rust docs. BM25 adds little here.
         let q_emb = emb(0.92, 0.08, 0.0);
-        let h = hybrid.query(&q_emb, "systems programming memory safety", &filters, 3).unwrap();
-        let v = vector_only.query(&q_emb, "systems programming memory safety", &filters, 3).unwrap();
+        let h = hybrid
+            .query(&q_emb, "systems programming memory safety", &filters, 3)
+            .unwrap();
+        let v = vector_only
+            .query(&q_emb, "systems programming memory safety", &filters, 3)
+            .unwrap();
         let h_ids: Vec<&str> = h.iter().map(|r| r.result_id.as_str()).collect();
         let v_ids: Vec<&str> = v.iter().map(|r| r.result_id.as_str()).collect();
         println!("Semantic query:    hybrid={h_ids:?}  vector={v_ids:?}");
@@ -2667,7 +3334,9 @@ mod tests {
         // Embedding is ambiguous (middle of space), but BM25 nails it.
         let q_emb = emb(0.4, 0.2, 0.4);
         let h = hybrid.query(&q_emb, "error E2025", &filters, 3).unwrap();
-        let v = vector_only.query(&q_emb, "error E2025", &filters, 3).unwrap();
+        let v = vector_only
+            .query(&q_emb, "error E2025", &filters, 3)
+            .unwrap();
         let h_ids: Vec<&str> = h.iter().map(|r| r.result_id.as_str()).collect();
         let v_ids: Vec<&str> = v.iter().map(|r| r.result_id.as_str()).collect();
         println!("Exact keyword:     hybrid={h_ids:?}  vector={v_ids:?}");
@@ -2679,8 +3348,12 @@ mod tests {
 
         // Category 3: Function name — "get_program_accounts"
         let q_emb = emb(0.5, 0.1, 0.4);
-        let h = hybrid.query(&q_emb, "get_program_accounts", &filters, 3).unwrap();
-        let v = vector_only.query(&q_emb, "get_program_accounts", &filters, 3).unwrap();
+        let h = hybrid
+            .query(&q_emb, "get_program_accounts", &filters, 3)
+            .unwrap();
+        let v = vector_only
+            .query(&q_emb, "get_program_accounts", &filters, 3)
+            .unwrap();
         let h_ids: Vec<&str> = h.iter().map(|r| r.result_id.as_str()).collect();
         let v_ids: Vec<&str> = v.iter().map(|r| r.result_id.as_str()).collect();
         println!("API name:          hybrid={h_ids:?}  vector={v_ids:?}");
@@ -2704,12 +3377,17 @@ mod tests {
 
     #[test]
     fn test_chunks_since_returns_only_newer() {
-        let cfg = HybridConfig { skip_dedup: true, ..Default::default() };
+        let cfg = HybridConfig {
+            skip_dedup: true,
+            ..Default::default()
+        };
         let idx = HybridIndex::with_config(4, cfg);
         let chunks: Vec<ContentChunk> = (0..5)
             .map(|i| ContentChunk {
                 chunk_id: format!("chunk-{i}"),
-                content: format!("unique content number {i} with distinctly different words and phrases"),
+                content: format!(
+                    "unique content number {i} with distinctly different words and phrases"
+                ),
                 embedding: Some(vec![1.0, 0.0, 0.0, 0.0]),
                 seq: 0,
                 meta: Some(ChunkMeta {
@@ -2738,7 +3416,10 @@ mod tests {
 
     #[test]
     fn test_chunks_since_shard_filter() {
-        let cfg = HybridConfig { skip_dedup: true, ..Default::default() };
+        let cfg = HybridConfig {
+            skip_dedup: true,
+            ..Default::default()
+        };
         let idx = HybridIndex::with_config(4, cfg);
         let mut chunks: Vec<ContentChunk> = Vec::new();
         for i in 0..4 {
@@ -2821,7 +3502,10 @@ mod tests {
         for i in 0..10 {
             chunks.push(ContentChunk {
                 chunk_id: format!("a{i}"),
-                content: format!("rust vector method number {i} for data manipulation {}", i * 17 + 3),
+                content: format!(
+                    "rust vector method number {i} for data manipulation {}",
+                    i * 17 + 3
+                ),
                 embedding: Some(vec![0.9 - i as f32 * 0.05, 0.1 + i as f32 * 0.05, 0.0, 0.0]),
                 seq: i as u64,
                 meta: Some(ChunkMeta {
@@ -2838,7 +3522,10 @@ mod tests {
         for i in 0..2 {
             chunks.push(ContentChunk {
                 chunk_id: format!("b{i}"),
-                content: format!("typescript array methods tutorial guide part {i} with examples {}", i * 31 + 7),
+                content: format!(
+                    "typescript array methods tutorial guide part {i} with examples {}",
+                    i * 31 + 7
+                ),
                 embedding: Some(vec![0.85, 0.15, 0.0, 0.0]),
                 seq: i as u64,
                 meta: Some(ChunkMeta {

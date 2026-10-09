@@ -70,10 +70,7 @@ impl ModelCache {
             if let Some(expected) = manifest.sha256 {
                 let actual = sha256_file(&path)?;
                 if actual != expected {
-                    tracing::warn!(
-                        "SHA-256 mismatch for {}, re-downloading",
-                        manifest.filename
-                    );
+                    tracing::warn!("SHA-256 mismatch for {}, re-downloading", manifest.filename);
                     fs::remove_file(&path).map_err(ModelCacheError::Io)?;
                     return self.download(manifest);
                 }
@@ -111,8 +108,7 @@ impl ModelCache {
 
         // Stream body to a temp file in 64KB chunks (no size limit)
         let mut reader = resp.into_body().into_reader();
-        let mut file =
-            fs::File::create(&tmp_path).map_err(ModelCacheError::Io)?;
+        let mut file = fs::File::create(&tmp_path).map_err(ModelCacheError::Io)?;
         let mut hasher = manifest.sha256.map(|_| Sha256::new());
         let mut total_bytes: u64 = 0;
         let mut last_report: u64 = 0;
@@ -156,11 +152,7 @@ impl ModelCache {
 
         // Atomic rename: tmp -> final
         fs::rename(&tmp_path, &path).map_err(ModelCacheError::Io)?;
-        tracing::info!(
-            "Downloaded {} ({} bytes)",
-            manifest.filename,
-            total_bytes
-        );
+        tracing::info!("Downloaded {} ({} bytes)", manifest.filename, total_bytes);
 
         Ok(path)
     }

@@ -4,7 +4,7 @@ use ort::value::Value;
 use std::sync::Mutex;
 use tokenizers::Tokenizer;
 
-use crate::model_cache::{ModelCache, CLIP_TEXT_MODEL, CLIP_TOKENIZER, CLIP_VISION_MODEL};
+use crate::model_cache::{CLIP_TEXT_MODEL, CLIP_TOKENIZER, CLIP_VISION_MODEL, ModelCache};
 use crate::projection::ProjectionMatrix;
 
 const CLIP_DIM: usize = 768;
@@ -168,7 +168,10 @@ impl ClipEmbedder {
         // Load cached PCA projection or compute from calibration corpus
         let projection_path = cache.cache_dir().join(PROJECTION_FILENAME);
         let projection = if projection_path.exists() {
-            tracing::debug!("Loading cached PCA projection from {}", projection_path.display());
+            tracing::debug!(
+                "Loading cached PCA projection from {}",
+                projection_path.display()
+            );
             ProjectionMatrix::from_file(&projection_path)?
         } else {
             tracing::info!(
@@ -187,7 +190,10 @@ impl ClipEmbedder {
 
             let proj = ProjectionMatrix::from_pca(&embeddings, CLIP_DIM, OUTPUT_DIM);
             proj.save(&projection_path)?;
-            tracing::info!("PCA projection matrix cached at {}", projection_path.display());
+            tracing::info!(
+                "PCA projection matrix cached at {}",
+                projection_path.display()
+            );
             proj
         };
 
@@ -201,8 +207,8 @@ impl ClipEmbedder {
 
     /// Preprocess an image for Jina CLIP: resize to 224x224, normalize.
     fn preprocess_image(image_bytes: &[u8]) -> Result<(Vec<usize>, Vec<f32>)> {
-        use image::imageops::FilterType;
         use image::GenericImageView;
+        use image::imageops::FilterType;
 
         let img = image::load_from_memory(image_bytes)
             .map_err(|e| oi_types::Error::Internal(format!("Image load: {e}")))?;
@@ -265,9 +271,10 @@ impl EmbeddingPipeline for ClipEmbedder {
         let pixel_val = Value::from_array((shape.as_slice(), data))
             .map_err(|e| oi_types::Error::Internal(format!("Value: {e}")))?;
 
-        let inputs = vec![
-            (std::borrow::Cow::from("pixel_values"), ort::session::SessionInputValue::from(pixel_val)),
-        ];
+        let inputs = vec![(
+            std::borrow::Cow::from("pixel_values"),
+            ort::session::SessionInputValue::from(pixel_val),
+        )];
 
         let mut session = self
             .vision_session

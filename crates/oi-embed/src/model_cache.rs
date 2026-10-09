@@ -114,10 +114,7 @@ impl ModelCache {
             if let Some(expected) = manifest.sha256 {
                 let actual = sha256_file(&path)?;
                 if actual != expected {
-                    tracing::warn!(
-                        "SHA-256 mismatch for {}, re-downloading",
-                        manifest.filename
-                    );
+                    tracing::warn!("SHA-256 mismatch for {}, re-downloading", manifest.filename);
                     fs::remove_file(&path).map_err(ModelCacheError::Io)?;
                     return self.download(manifest);
                 }
@@ -174,11 +171,7 @@ impl ModelCache {
         }
 
         fs::write(&path, &bytes).map_err(ModelCacheError::Io)?;
-        tracing::info!(
-            "Downloaded {} ({} bytes)",
-            manifest.filename,
-            bytes.len()
-        );
+        tracing::info!("Downloaded {} ({} bytes)", manifest.filename, bytes.len());
 
         Ok(path)
     }
@@ -253,9 +246,7 @@ fn sha256_bytes(data: &[u8]) -> String {
 }
 
 fn dirs_home() -> Option<PathBuf> {
-    std::env::var("HOME")
-        .ok()
-        .map(PathBuf::from)
+    std::env::var("HOME").ok().map(PathBuf::from)
 }
 
 #[cfg(test)]

@@ -50,7 +50,10 @@ impl OllamaEmbedder {
             .ok_or_else(|| {
                 oi_types::Error::Internal(format!(
                     "Ollama probe: unexpected response shape: {}",
-                    String::from_utf8_lossy(&resp_bytes).chars().take(200).collect::<String>()
+                    String::from_utf8_lossy(&resp_bytes)
+                        .chars()
+                        .take(200)
+                        .collect::<String>()
                 ))
             })?;
 
@@ -87,9 +90,7 @@ impl OllamaEmbedder {
 
         let embeddings = parsed["embeddings"]
             .as_array()
-            .ok_or_else(|| {
-                oi_types::Error::Internal("Ollama: missing embeddings array".into())
-            })?;
+            .ok_or_else(|| oi_types::Error::Internal("Ollama: missing embeddings array".into()))?;
 
         let mut results = Vec::with_capacity(embeddings.len());
         for emb in embeddings {
@@ -117,7 +118,9 @@ impl EmbeddingPipeline for OllamaEmbedder {
 
     fn embed_query(&self, query: &str) -> Result<Vec<f32>> {
         // Qwen3-Embedding supports instruction-aware queries
-        let prefixed = format!("Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: {query}");
+        let prefixed = format!(
+            "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: {query}"
+        );
         self.embed_text(&prefixed)
     }
 
