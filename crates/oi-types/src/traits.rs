@@ -102,6 +102,8 @@ pub trait GovernanceRegistry: Send + Sync {
 ///
 /// Methods accept governable parameters so the off-chain engine mirrors
 /// on-chain behavior when DAO governance changes economic constants.
+/// Percentage-based operations return an error for invalid allocations instead
+/// of clamping inputs, minting apparent revenue or underflowing the remainder.
 pub trait EconomicsEngine: Send + Sync {
     /// Compute token emission for an epoch given total staked
     fn compute_emission(&self, epoch: u64, total_staked: u64) -> u64;
@@ -109,7 +111,7 @@ pub trait EconomicsEngine: Send + Sync {
     /// Compute burn amount from query fees and dispute slashes.
     /// `burn_pct` — governable burn percentage (0-100, default 10).
     /// Dispute slashes are not burned at settlement (handled lazily on-chain).
-    fn compute_burn(&self, query_fees: u64, dispute_slashes: u64, burn_pct: u8) -> u64;
+    fn compute_burn(&self, query_fees: u64, dispute_slashes: u64, burn_pct: u8) -> Result<u64>;
 
     /// Compute channel settlement shares: (publisher, curator, sentinel, burned).
     /// Mirrors on-chain SettleChannel: `burn_pct`% burned, `sentinel_fee_pct`%
@@ -121,18 +123,19 @@ pub trait EconomicsEngine: Send + Sync {
         query_revenue: u64,
         burn_pct: u8,
         sentinel_fee_pct: u8,
-    ) -> (u64, u64, u64, u64);
+    ) -> Result<(u64, u64, u64, u64)>;
 
     /// Compute emission split: (staker_portion, sentinel_portion).
     /// `staker_pct` — governable staker emission share (0-100, default 70).
-    fn compute_emission_shares(&self, emission_amount: u64, staker_pct: u8) -> (u64, u64);
+    fn compute_emission_shares(&self, emission_amount: u64, staker_pct: u8) -> Result<(u64, u64)>;
 
     /// Compute curator yield cap.
     /// `cap_bps` — governable yield cap in basis points (default 1500 = 15.00% APY).
-    fn compute_curator_yield_cap(&self, stake_amount: u64, duration_secs: u64, cap_bps: u64) -> u64;
+    fn compute_curator_yield_cap(&self, stake_amount: u64, duration_secs: u64, cap_bps: u64)
+    -> Result<u64>;
 
     /// Compute escrow yield for a state channel
-    fn compute_escrow_yield(&self, channel_amount: u64, duration_secs: u64) -> u64;
+    fn compute_escrow_yield(&self, channel_amount: u64, duration_secs: u64) -> Result<u64>;
 }
 
 /// Reranker — cross-encoder that scores (query, document) pairs for second-stage ranking.

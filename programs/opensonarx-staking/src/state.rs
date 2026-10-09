@@ -125,7 +125,7 @@ pub struct ProtocolConfig {
     pub proposal_deposit: u64,        // $TRUTH deposit required to create a proposal (0 = free)
     pub curator_yield_cap_bps: u64,   // Curator yield cap in basis points (1500 = 15.00% APY)
     // ── Medium Economic Fixes ──
-    pub sentinel_fee_pct: u8,           // % of channel spend routed to sentinel reward pool (default 0)
+    pub sentinel_fee_pct: u8,           // % of channel spend routed to sentinel reward pool (initializer default 5)
     pub accumulated_sentinel_fees: u64, // Sentinel fees awaiting distribution
     pub total_funded: u64,              // Cumulative tokens funded to vault via FundRewards
     pub total_distributed: u64,         // Cumulative tokens distributed via UpdateRewardIndex

@@ -15,6 +15,19 @@ use solana_program::{
 use crate::error::StakingError;
 use crate::state::*;
 
+/// Match the local integer split and reject corrupt/legacy-invalid config even
+/// if governance validation was bypassed. u128 prevents u64 multiplication wrap.
+fn settlement_shares(amount: u64, burn_pct: u8, sentinel_pct: u8)
+    -> Result<(u64, u64, u64), ProgramError>
+{
+    if u16::from(burn_pct) + u16::from(sentinel_pct) > 100 {
+        return Err(StakingError::ParamOutOfRange.into());
+    }
+    let burned = (u128::from(amount) * u128::from(burn_pct) / 100) as u64;
+    let sentinel = (u128::from(amount) * u128::from(sentinel_pct) / 100) as u64;
+    Ok((amount - burned - sentinel, burned, sentinel))
+}
+
 /// Verify that the previous instruction is an Ed25519 precompile instruction
 /// and that the signed message matches our expected ticket data.
 ///
@@ -290,10 +303,8 @@ pub fn process_settle_channel(
 
     // ── Fee split (governable burn_pct + sentinel_fee_pct, remainder to payee) ──
     // M1 fix: sentinel fees are accumulated on-chain in the vault, not routed off-chain.
-    let burn_amount = actual_spent * config.burn_pct as u64 / 100;
-    let sentinel_fee = actual_spent * config.sentinel_fee_pct as u64 / 100;
-    // Remainder from integer division goes to payee to avoid token loss
-    let payee_amount = actual_spent - burn_amount - sentinel_fee;
+    let (payee_amount, burn_amount, sentinel_fee) =
+        settlement_shares(actual_spent, config.burn_pct, config.sentinel_fee_pct)?;
 
     // Sentinel fee stays in vault; accumulate for distribution via UpdateRewardIndex
     config.accumulated_sentinel_fees = config.accumulated_sentinel_fees
@@ -375,4 +386,29 @@ pub fn process_settle_channel(
         payee_amount, burn_amount, sentinel_fee, refund
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod economic_tests {
+    use super::*;
+
+    #[test]
+    fn all_valid_splits_conserve_even_at_u64_max() {
+        for amount in [0, 1, 99, 100, 101, u64::MAX] {
+            for burn in 0..=100 {
+                for sentinel in 0..=100 - burn {
+                    let (p, b, s) = settlement_shares(amount, burn, sentinel).unwrap();
+                    assert_eq!(p as u128 + b as u128 + s as u128, amount as u128);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn corrupt_config_fails_before_payout() {
+        for amount in [0, 1, u64::MAX] {
+            assert!(settlement_shares(amount, 100, 1).is_err());
+            assert!(settlement_shares(amount, 255, 255).is_err());
+        }
+    }
 }

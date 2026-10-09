@@ -22,10 +22,10 @@ pub struct BurnEvent {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevenueShare {
     pub total_revenue: u64,
-    pub publisher_share: u64,  // 35%
-    pub curator_share: u64,    // 10%
-    pub sentinel_share: u64,   // 10%
-    pub burned: u64,           // 45%
+    pub publisher_share: u64,
+    pub curator_share: u64,
+    pub sentinel_share: u64,
+    pub burned: u64,
 }
 
 /// Curator yield cap computation result.
@@ -49,7 +49,8 @@ pub struct EscrowYield {
 /// Mirrors the on-chain ProtocolConfig fields that affect economics.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GovernableParams {
-    /// Burn percentage for channel settlement (0-100, default 45)
+    /// Burn percentage for legacy token channels (0-100, default 10).
+    /// This is not a P0 stablecoin service-price allocation.
     pub burn_pct: u8,
     /// Staker share of emissions (0-100, default 70)
     pub staker_emission_pct: u8,
@@ -70,7 +71,7 @@ pub struct GovernableParams {
 impl Default for GovernableParams {
     fn default() -> Self {
         Self {
-            burn_pct: 45,
+            burn_pct: 10,
             staker_emission_pct: 70,
             curator_yield_cap_bps: 1500,
             max_total_supply: u64::MAX,
@@ -127,6 +128,12 @@ pub struct SubsidizedQuery {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_legacy_burn_default_matches_contract_initializer() {
+        // This is the legacy token channel, not a proposed stablecoin API fee.
+        assert_eq!(GovernableParams::default().burn_pct, 10);
+    }
 
     #[test]
     fn test_free_tier_budget_remaining() {
