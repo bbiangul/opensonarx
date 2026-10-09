@@ -17,9 +17,11 @@ use crate::state::*;
 
 /// Match the local integer split and reject corrupt/legacy-invalid config even
 /// if governance validation was bypassed. u128 prevents u64 multiplication wrap.
-fn settlement_shares(amount: u64, burn_pct: u8, sentinel_pct: u8)
-    -> Result<(u64, u64, u64), ProgramError>
-{
+fn settlement_shares(
+    amount: u64,
+    burn_pct: u8,
+    sentinel_pct: u8,
+) -> Result<(u64, u64, u64), ProgramError> {
     if u16::from(burn_pct) + u16::from(sentinel_pct) > 100 {
         return Err(StakingError::ParamOutOfRange.into());
     }
