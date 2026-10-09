@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "capture": {
+    "captured_at": "2026-08-22T08:55:00-03:00",
+    "engine": "Google Search",
+    "locale": "pt-BR",
+    "country": "BR",
+    "personalization": "pws=0; signed out",
+    "candidate_set": "First five visible organic links containing an H3; ads, AI answers, carousels, related searches, and knowledge-panel links excluded",
+    "capture_method": "Visible in-app browser DOM; query URL pinned to hl=pt-BR&gl=br&pws=0"
+  },
+  "cases": [
+    {
+      "id": "nav_claude",
+      "query": "claude",
+      "intent": "navigational",
+      "contract": {
+        "top1_any_url": ["claude.ai/", "claude.com/"],
+        "min_distinct_domains_top3": 1
+      },
+      "google_results": [
+        {"rank": 1, "title": "Claude: Sign in", "url": "https://claude.ai/"},
+        {"rank": 2, "title": "Download Claude | Claude by Anthropic", "url": "https://claude.com/download"},
+        {"rank": 3, "title": "Claude by Anthropic – Apps no Google Play", "url": "https://play.google.com/store/apps/details?id=com.anthropic.claude&hl=pt_BR"},
+        {"rank": 4, "title": "Claude – Wikipédia, a enciclopédia livre", "url": "https://pt.wikipedia.org/wiki/Claude"},
+        {"rank": 5, "title": "O que é Claude AI? Conheça a inteligência artificial da ...", "url": "https://www.alura.com.br/artigos/o-que-e-claude-ai"}
+      ]
+    },
+    {
+      "id": "transaction_claude_login",
+      "query": "claude login",
+      "intent": "transactional",
+      "contract": {
+        "top1_any_url": ["claude.ai/magic-link", "claude.ai/login", "claude.com/login", "platform.claude.com/login"],
+        "top1_forbidden_url": ["login-Claude"],
+        "min_distinct_domains_top3": 1
+      },
+      "google_results": [
+        {"rank": 1, "title": "Sign in to Claude.ai", "url": "https://claude.ai/magic-link"},
+        {"rank": 2, "title": "Sign in", "url": "https://claude.ai/login?returnTo=%2F%3F"},
+        {"rank": 3, "title": "Claude", "url": "https://claude.com/"},
+        {"rank": 4, "title": "with your Claude.ai account to authenticate connections", "url": "https://claude.ai/login?selectAccount=true"},
+        {"rank": 5, "title": "Faça login em sua conta Claude | Anthropic Help Center", "url": "https://support.claude.com/pt/articles/13189465-faca-login-em-sua-conta-claude"}
+      ]
+    },
+    {
+      "id": "tool_python_compiler",
+      "query": "python online compiler",
+      "intent": "tool",
+      "contract": {
+        "top1_forbidden_url": ["python.org/"],
+        "top1_surface_groups": [["python"], ["compiler", "compilador", "editor", "ide", "interpreter", "interpretador"]],
+        "min_distinct_domains_top3": 3
+      },
+      "google_results": [
+        {"rank": 1, "title": "Online Python Compiler - online editor", "url": "https://www.onlinegdb.com/online_python_compiler"},
+        {"rank": 2, "title": "Online Python Compiler (Interpreter)", "url": "https://www.programiz.com/python-programming/online-compiler/"},
+        {"rank": 3, "title": "Online Python - IDE, Editor, Compiler, Interpreter", "url": "https://www.online-python.com/"},
+        {"rank": 4, "title": "Python Online Compiler & Interpreter", "url": "https://onecompiler.com/python"},
+        {"rank": 5, "title": "Trinket: run code anywhere", "url": "https://trinket.io/embed/python3"}
+      ]
+    },
+    {
+      "id": "nav_gama_fund_typo",
+      "query": "gama found",
+      "intent": "navigational",
+      "contract": {
+        "top1_any_url": ["gamafund.com/"],
+        "top1_forbidden_url": ["gamefound.com/", "gama-am.ch", "gamainvestimentos.com.br"],
+        "min_distinct_domains_top3": 1,
+        "target_context": "The intended Gama Fund entity is fixed by the user-provided reference; without that context this typo is ambiguous."
+      },
+      "google_results": [
+        {"rank": 1, "title": "Gamefound", "url": "https://gamefound.com/en"},
+        {"rank": 2, "title": "Log in", "url": "https://gamefound.com/admin"},
+        {"rank": 3, "title": "Procurar projetos", "url": "https://gamefound.com/pt/projects/search/path?projectTags=91"},
+        {"rank": 4, "title": "Gamefound - Apps on Google Play", "url": "https://play.google.com/store/apps/details?id=com.gamefound.app"},
+        {"rank": 5, "title": "Gamefound (@gamefound.crowdfunding)", "url": "https://www.facebook.com/gamefound.crowdfunding/"}
+      ]
+    },
+    {
+      "id": "diligence_gama",
+      "query": "gama fund é legítimo",
+      "intent": "due_diligence",
+      "contract": {
+        "top1_self_declaration_url": ["gamafund.com/"],
+        "min_distinct_domains_top3": 2,
+        "top3_entity_context_any": ["google", "monashees"],
+        "target_context": "The intended entity is the Google and Monashees Gama Fund; same-name funds are identity mismatches, not evidence.",
+        "expected_opensonarx_answer_status": "insufficient_evidence"
+      },
+      "google_results": [
+        {"rank": 1, "title": "Gama Fund — O programa de coinvestimento do Fundo de ...", "url": "https://gamafund.com/"},
+        {"rank": 2, "title": "Gama Fund — The Monashees' and Google's AI Future Fund ...", "url": "https://gamafund.com/"},
+        {"rank": 3, "title": "Gama Fund, de Google e Monashees, estende ... - Startups", "url": "https://startups.com.br/negocios/inteligencia-artificial/gama-fund-de-google-e-monashees-estende-prazo-de-inscricoes/"},
+        {"rank": 4, "title": "Google e Monashees criam fundo de IA para startups do ...", "url": "https://finsidersbrasil.com.br/tecnologia-para-fintechs/google-e-monashees-lancam-fundo-de-us-2-mi-para-startups-de-ia/"},
+        {"rank": 5, "title": "Google e Monashees investirão até US$ 10 milhões em ...", "url": "https://valor.globo.com/empresas/noticia/2026/06/10/google-e-monashees-investirao-ate-us-10-mi-em-startups-de-ia-no-brasil.ghtml"}
+      ]
+    },
+    {
+      "id": "current_brazil_election_poll",
+      "query": "pesquisa eleitoral presidente brasil hoje",
+      "intent": "current_events",
+      "contract": {
+        "top3_forbidden_url": ["/tudo-sobre/", "que-horas-sai", "quando-sai", "previsao"],
+        "min_distinct_domains_top3": 3,
+        "require_dated_direct_hit_top3": true,
+        "expected_opensonarx_answer_status": "extractive"
+      },
+      "google_results": [
+        {"rank": 1, "title": "Datafolha, 1º turno: veja intenção de voto por região, gênero ...", "url": "https://g1.globo.com/politica/eleicoes/2026/pesquisa-eleitoral/noticia/2026/08/22/datafolha-1o-turno-veja-intencao-de-voto-por-regiao-genero-idade-posicao-politica-e-religiao.ghtml"},
+        {"rank": 2, "title": "Pesquisa Datafolha para presidente: veja novos números ...", "url": "https://noticias.uol.com.br/eleicoes/2026/08/21/pesquisa-datafolha-para-presidente-veja-novos-numeros-atualizados.ghtm"},
+        {"rank": 3, "title": "Os números da nova pesquisa Datafolha para presidente", "url": "https://www.gazetadopovo.com.br/eleicoes/2026/pesquisa-eleitoral-2026/datafolha-presidente-agosto-2026/"},
+        {"rank": 4, "title": "Datafolha: Pesquisa Eleitoral, Avaliação de Governo e Opinião", "url": "https://datafolha.folha.uol.com.br/"},
+        {"rank": 5, "title": "A nova pesquisa de intenção de voto para presidente, com ...", "url": "https://www.cartacapital.com.br/politica/a-nova-pesquisa-de-intencao-de-voto-para-presidente-com-6-mil-entrevistados/"}
+      ]
+    },
+    {
+      "id": "factual_pix_creator",
+      "query": "quem criou o Pix?",
+      "intent": "factual",
+      "contract": {
+        "top3_forbidden_url": ["pixbet", "instagram.com", "facebook.com"],
+        "min_distinct_domains_top3": 3,
+        "primary_url_any_top5": ["bcb.gov.br/"],
+        "expected_opensonarx_answer_status": "extractive"
+      },
+      "google_results": [
+        {"rank": 1, "title": "Quem criou o Pix e como o sistema foi construído", "url": "https://ranking.org.br/artigos/quem-criou-o-pix"},
+        {"rank": 2, "title": "Afinal, quem criou o Pix? Entenda por que Bolsonaro não ...", "url": "https://fpabramo.org.br/afinal-quem-criou-o-pix-entenda-por-que-bolsonaro-nao-e-o-pai-do-sistema/"},
+        {"rank": 3, "title": "Quem criou o Pix e como ele transformou os pagamentos", "url": "https://www.mercadopago.com.br/blog/quem-criou-pix"},
+        {"rank": 4, "title": "Quem criou o Pix? Como nasceu o sistema ...", "url": "https://www.bbc.com/portuguese/articles/c0r2kkg1lqyo"},
+        {"rank": 5, "title": "Pix – Wikipédia, a enciclopédia livre", "url": "https://pt.wikipedia.org/wiki/Pix"}
+      ]
+    },
+    {
+      "id": "factual_anthropic_founders",
+      "query": "quem fundou a Anthropic?",
+      "intent": "factual",
+      "contract": {
+        "top1_forbidden_url": ["claude.com/"],
+        "min_distinct_domains_top3": 3,
+        "expected_opensonarx_answer_status": "insufficient_evidence"
+      },
+      "google_results": [
+        {"rank": 1, "title": "Quem são os fundadores da Anthropic, que desbancou o ...", "url": "https://revistapegn.globo.com/tecnologia/noticia/2026/03/quem-sao-os-fundadores-da-anthropic-que-desbancou-o-chatgpt-nos-eua-ao-desafiar-o-pentagono.ghtml"},
+        {"rank": 2, "title": "Anthropic – Wikipédia, a enciclopédia livre", "url": "https://pt.wikipedia.org/wiki/Anthropic"},
+        {"rank": 3, "title": "Dario Amodei: quem é o fundador da Anthropic, dona do ...", "url": "https://www.infomoney.com.br/perfil/dario-amodei/"},
+        {"rank": 4, "title": "Dario Amodei – Wikipédia, a enciclopédia livre", "url": "https://pt.wikipedia.org/wiki/Dario_Amodei"},
+        {"rank": 5, "title": "O Dario Amodei, fundador e CEO da Anthropic disse no ...", "url": "https://www.instagram.com/reel/DUimPBwjZzl/"}
+      ]
+    },
+    {
+      "id": "current_generic_ai_news",
+      "query": "últimas notícias de inteligência artificial hoje",
+      "intent": "current_events",
+      "contract": {
+        "top3_forbidden_url": ["/tudo-sobre/", "exame.com/inteligencia-artificial/"],
+        "min_distinct_domains_top3": 3,
+        "require_dated_direct_hit_top3": true,
+        "expected_opensonarx_answer_status": "insufficient_evidence"
+      },
+      "google_results": [
+        {"rank": 1, "title": "Inteligência Artificial: ultimas notícias e novidades", "url": "https://exame.com/inteligencia-artificial/"},
+        {"rank": 2, "title": "Tudo sobre Inteligência Artificial", "url": "https://www.cnnbrasil.com.br/tudo-sobre/inteligencia-artificial/"},
+        {"rank": 3, "title": "Inteligência artificial - Últimas notícias", "url": "https://www.infomoney.com.br/tudo-sobre/inteligencia-artificial/"},
+        {"rank": 4, "title": "Inteligência Artificial: Aplicações, ética e direito | Tec - Folha", "url": "https://www1.folha.uol.com.br/tec/inteligencia-artificial/"},
+        {"rank": 5, "title": "inteligência artificial - Valor Econômico - Globo", "url": "https://valor.globo.com/empresas/inteligencia-artificial/"}
+      ]
+    }
+  ]
+}

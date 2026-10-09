@@ -49,10 +49,7 @@ struct PrecomputedData {
     content_to_id: HashMap<String, String>,
 }
 
-fn precompute(
-    dataset: &BenchmarkDataset,
-    embedder: &dyn EmbeddingPipeline,
-) -> PrecomputedData {
+fn precompute(dataset: &BenchmarkDataset, embedder: &dyn EmbeddingPipeline) -> PrecomputedData {
     let mut doc_embeddings = HashMap::new();
     let mut content_to_id = HashMap::new();
 
@@ -116,12 +113,7 @@ pub fn run_sweep(
                         ..Default::default()
                     };
 
-                    let result = evaluate_config(
-                        dataset,
-                        &precomputed,
-                        dim,
-                        config,
-                    );
+                    let result = evaluate_config(dataset, &precomputed, dim, config);
                     results.push(result);
                 }
             }
@@ -185,7 +177,8 @@ fn evaluate_config(
         };
 
         let start = Instant::now();
-        let search_results = match index.query(query_emb, &case.query, &QueryFilters::default(), 10) {
+        let search_results = match index.query(query_emb, &case.query, &QueryFilters::default(), 10)
+        {
             Ok(r) => r,
             Err(_) => continue,
         };
@@ -208,11 +201,16 @@ fn evaluate_config(
             .relevant_docs
             .iter()
             .filter_map(|d| {
-                precomputed.content_to_id.get(&d.content).map(|id| (id.clone(), d.relevance))
+                precomputed
+                    .content_to_id
+                    .get(&d.content)
+                    .map(|id| (id.clone(), d.relevance))
             })
             .collect();
-        let relevance_refs: Vec<(&str, u8)> =
-            relevance_map.iter().map(|(s, r)| (s.as_str(), *r)).collect();
+        let relevance_refs: Vec<(&str, u8)> = relevance_map
+            .iter()
+            .map(|(s, r)| (s.as_str(), *r))
+            .collect();
 
         sum_recall_1 += metrics::recall_at_k(&relevant_refs, &retrieved_ids, 1);
         sum_recall_5 += metrics::recall_at_k(&relevant_refs, &retrieved_ids, 5);
@@ -248,8 +246,11 @@ impl std::fmt::Display for SweepResult {
             self.config.ef_search,
             self.config.pool_multiplier,
             fusion,
-            self.recall_1, self.recall_5, self.recall_10,
-            self.mrr, self.ndcg_10,
+            self.recall_1,
+            self.recall_5,
+            self.recall_10,
+            self.mrr,
+            self.ndcg_10,
             self.avg_latency_ms,
         )
     }

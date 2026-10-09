@@ -1,4 +1,4 @@
-use image::{ImageBuffer, Rgb, codecs::png::PngEncoder, ImageEncoder};
+use image::{codecs::png::PngEncoder, ImageBuffer, ImageEncoder, Rgb};
 use std::io::Cursor;
 
 /// A template for generating a synthetic image.
@@ -10,16 +10,46 @@ pub struct ImageTemplate {
 /// All available image templates.
 pub fn all_templates() -> Vec<ImageTemplate> {
     vec![
-        ImageTemplate { label: "red_square".into(), description: "A bright red square on black background".into() },
-        ImageTemplate { label: "blue_circle".into(), description: "A blue circle centered on black background".into() },
-        ImageTemplate { label: "green_triangle".into(), description: "A green triangle on black background".into() },
-        ImageTemplate { label: "sunset_gradient".into(), description: "A warm sunset gradient from orange to purple".into() },
-        ImageTemplate { label: "checkerboard".into(), description: "A black and white checkerboard pattern".into() },
-        ImageTemplate { label: "solid_black".into(), description: "A solid black image".into() },
-        ImageTemplate { label: "solid_white".into(), description: "A solid white image".into() },
-        ImageTemplate { label: "stripes".into(), description: "Horizontal alternating red and white stripes".into() },
-        ImageTemplate { label: "dots".into(), description: "White dots on a dark blue background".into() },
-        ImageTemplate { label: "diagonal_lines".into(), description: "Diagonal white lines on gray background".into() },
+        ImageTemplate {
+            label: "red_square".into(),
+            description: "A bright red square on black background".into(),
+        },
+        ImageTemplate {
+            label: "blue_circle".into(),
+            description: "A blue circle centered on black background".into(),
+        },
+        ImageTemplate {
+            label: "green_triangle".into(),
+            description: "A green triangle on black background".into(),
+        },
+        ImageTemplate {
+            label: "sunset_gradient".into(),
+            description: "A warm sunset gradient from orange to purple".into(),
+        },
+        ImageTemplate {
+            label: "checkerboard".into(),
+            description: "A black and white checkerboard pattern".into(),
+        },
+        ImageTemplate {
+            label: "solid_black".into(),
+            description: "A solid black image".into(),
+        },
+        ImageTemplate {
+            label: "solid_white".into(),
+            description: "A solid white image".into(),
+        },
+        ImageTemplate {
+            label: "stripes".into(),
+            description: "Horizontal alternating red and white stripes".into(),
+        },
+        ImageTemplate {
+            label: "dots".into(),
+            description: "White dots on a dark blue background".into(),
+        },
+        ImageTemplate {
+            label: "diagonal_lines".into(),
+            description: "Diagonal white lines on gray background".into(),
+        },
     ]
 }
 
@@ -29,7 +59,9 @@ const SIZE: u32 = 64;
 /// Returns (png_bytes, description).
 pub fn generate_image(label: &str) -> (Vec<u8>, String) {
     let templates = all_templates();
-    let tpl = templates.iter().find(|t| t.label == label)
+    let tpl = templates
+        .iter()
+        .find(|t| t.label == label)
         .unwrap_or_else(|| panic!("Unknown image template: {label}"));
 
     let img = match label {

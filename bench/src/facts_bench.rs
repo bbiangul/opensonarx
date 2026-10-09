@@ -103,8 +103,11 @@ pub fn run_facts_bench(pipeline_name: &str, output_format: &str, skip_langs: &[S
             })
             .collect();
 
-        let gold_entities: Vec<EntitySpan> =
-            sample.expected_entities.iter().map(|e| e.to_span()).collect();
+        let gold_entities: Vec<EntitySpan> = sample
+            .expected_entities
+            .iter()
+            .map(|e| e.to_span())
+            .collect();
 
         // Convert predicted facts to relations
         let pred_rels: Vec<RelationSpan> = extraction

@@ -1,0 +1,519 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v4",
+  "sealed_at": "2026-08-23T00:18:51Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      }
+    ],
+    "selected_tsv_sha256": "134c72f5833532ac708c1a88adf0dac7e678ae90fc858013bdb51e9a6d68d52c",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true
+  },
+  "queries": [
+    {
+      "id": "msmarco-712944",
+      "query": "what is an earpod?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "712944",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-490505",
+      "query": "routing number springfield cu",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "490505",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-846438",
+      "query": "what is the sheath that runs up the outside of the leg?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "846438",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-90169",
+      "query": "cgd autoimmune",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "90169",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-757511",
+      "query": "what is imazamox",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "757511",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1215",
+      "query": "3 levels of government in canada and their responsibilities",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1215",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1068952",
+      "query": "what is a priority",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1068952",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-846513",
+      "query": "what is the shingles jab?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "846513",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-401640",
+      "query": "is aep regulated",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "401640",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-357162",
+      "query": "how to end your period early",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "357162",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-45757",
+      "query": "average temperatures des moines iowa",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "45757",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-535142",
+      "query": "utm rounds",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "535142",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1288",
+      "query": "3/5 of 60",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1288",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024528",
+      "query": "what muscles could be involved in a rotator cuff injury",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024528",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1069028",
+      "query": "what is a preliminary source",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069028",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-891082",
+      "query": "what removes plaque from arteries",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "891082",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-713134",
+      "query": "what is an efficient market",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "713134",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-624176",
+      "query": "what do oil do to your body",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "624176",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-757644",
+      "query": "what is impact ratio analysis",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "757644",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024591",
+      "query": "declared definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024591",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-624199",
+      "query": "what do opm investigators do",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "624199",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024592",
+      "query": "what movie does dumbledore fight voldemort in",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024592",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024599",
+      "query": "who attacked rand paul",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024599",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1069108",
+      "query": "what is a position paper in research",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069108",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-134861",
+      "query": "definition of galvanized conduit",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "134861",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1069128",
+      "query": "what is a portable engine",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069128",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-980168",
+      "query": "where is clifton springs, ny",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "980168",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-490802",
+      "query": "russ simmons net worth",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "490802",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-357340",
+      "query": "how to estimate a remodel",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "357340",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-45924",
+      "query": "average temperatures las vegas by month",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "45924",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024667",
+      "query": "what month does winter start in new zealand",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024667",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024669",
+      "query": "who becomes president if the president is impeached",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024669",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024672",
+      "query": "decide personal finance definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024672",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-935707",
+      "query": "when are mushrooms in season",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "935707",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024727",
+      "query": "what mla format",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024727",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1069222",
+      "query": "what is a pmi id",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069222",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-490883",
+      "query": "rwa definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "490883",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-846806",
+      "query": "what is the simplest whole-number ratio of atoms in a molecule or formula unit called?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "846806",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-490903",
+      "query": "ryan gosling how tall",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "490903",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-713360",
+      "query": "what is an elp",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "713360",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-46040",
+      "query": "average thickness of paper",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "46040",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-535421",
+      "query": "valentina  definition name",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "535421",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1576",
+      "query": "60x40 slab cost",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1576",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-802372",
+      "query": "what is tarragon sauce",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "802372",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-46081",
+      "query": "average time for an appraisal",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "46081",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1069313",
+      "query": "what is a phosphodiesterase inhibitor",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069313",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-46095",
+      "query": "average time for hair to grow",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "46095",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    },
+    {
+      "id": "msmarco-1024835",
+      "query": "what method of penetrant removal is solvent removable",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024835",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_4"
+    }
+  ]
+}

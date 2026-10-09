@@ -10,7 +10,7 @@ path = "src/main.rs"
 
 [features]
 default = []
-onnx = ["oi-embed/onnx"]
+onnx = ["oi-embed/onnx", "oi-sdk/onnx"]
 reranker = ["onnx", "oi-embed/reranker"]
 arctic-m = ["onnx", "oi-embed/arctic-m"]
 arctic-l = ["onnx", "oi-embed/arctic-l"]
@@ -25,6 +25,7 @@ oi-staking = { path = "../crates/oi-staking" }
 oi-embed = { path = "../crates/oi-embed" }
 oi-crawl = { path = "../crates/oi-crawl" }
 oi-facts = { path = "../crates/oi-facts" }
+oi-sdk = { path = "../crates/oi-sdk", default-features = false }
 axum = "0.8"
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }

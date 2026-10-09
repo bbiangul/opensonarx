@@ -57,8 +57,7 @@ fn ensure_parquet() -> Result<PathBuf, String> {
     }
 
     // Step 1: Resolve the parquet URL via the HuggingFace JSON API
-    let api_url =
-        "https://huggingface.co/api/datasets/vtllms/sealqa/parquet/longseal/test";
+    let api_url = "https://huggingface.co/api/datasets/vtllms/sealqa/parquet/longseal/test";
     tracing::info!("Resolving parquet URL from {}", api_url);
 
     let resp = ureq::get(api_url)
@@ -98,10 +97,7 @@ fn ensure_parquet() -> Result<PathBuf, String> {
 // ── Parquet parsing ──
 
 /// Extract a list of SealDoc from a struct-array column (golds, 12_docs, etc.)
-fn extract_doc_list(
-    list_array: &arrow::array::ListArray,
-    row: usize,
-) -> Vec<SealDoc> {
+fn extract_doc_list(list_array: &arrow::array::ListArray, row: usize) -> Vec<SealDoc> {
     use arrow::array::Array;
 
     if list_array.is_null(row) {
@@ -152,13 +148,12 @@ fn parse_parquet(path: &std::path::Path) -> Result<Vec<SealQuestion>, String> {
         };
 
         // Try large_list if regular list fails (HuggingFace sometimes uses LargeList)
-        let get_large_list_col =
-            |name: &str| -> Option<&arrow::array::LargeListArray> {
-                schema
-                    .index_of(name)
-                    .ok()
-                    .and_then(|i| batch.column(i).as_any().downcast_ref())
-            };
+        let get_large_list_col = |name: &str| -> Option<&arrow::array::LargeListArray> {
+            schema
+                .index_of(name)
+                .ok()
+                .and_then(|i| batch.column(i).as_any().downcast_ref())
+        };
 
         let question_col = get_string_col("question");
         let answer_col = get_string_col("answer");
@@ -249,10 +244,7 @@ fn parse_parquet(path: &std::path::Path) -> Result<Vec<SealQuestion>, String> {
 }
 
 /// Extract docs from a LargeListArray (HuggingFace sometimes uses this type)
-fn extract_doc_list_large(
-    list_array: &arrow::array::LargeListArray,
-    row: usize,
-) -> Vec<SealDoc> {
+fn extract_doc_list_large(list_array: &arrow::array::LargeListArray, row: usize) -> Vec<SealDoc> {
     use arrow::array::Array;
 
     if list_array.is_null(row) {
@@ -520,10 +512,16 @@ pub fn run_sealqa(
 
         // Compute metrics using top-10 slice
         let gold_urls: Vec<&str> = q.golds.iter().map(|g| g.url.as_str()).collect();
-        let all_retrieved_urls: Vec<&str> =
-            search_results.iter().map(|r| r.url.as_str()).collect();
+        let all_retrieved_urls: Vec<&str> = search_results.iter().map(|r| r.url.as_str()).collect();
 
-        let mrr_10 = metrics::mrr(&gold_urls, &all_retrieved_urls.iter().take(10).copied().collect::<Vec<_>>());
+        let mrr_10 = metrics::mrr(
+            &gold_urls,
+            &all_retrieved_urls
+                .iter()
+                .take(10)
+                .copied()
+                .collect::<Vec<_>>(),
+        );
         let recall_1 = metrics::recall_at_k(&gold_urls, &all_retrieved_urls, 1);
         let recall_3 = metrics::recall_at_k(&gold_urls, &all_retrieved_urls, 3);
         let recall_5 = metrics::recall_at_k(&gold_urls, &all_retrieved_urls, 5);
@@ -652,10 +650,7 @@ pub fn run_sealqa(
         }
         _ => {
             // Overall metrics
-            println!(
-                "{:<16} {:>10}",
-                "Metric", "Score"
-            );
+            println!("{:<16} {:>10}", "Metric", "Score");
             println!("{}", "-".repeat(28));
             println!("{:<16} {:>10.4}", "MRR@10", avg_mrr);
             println!("{:<16} {:>10.4}", "Recall@1", avg_r1);
@@ -674,10 +669,18 @@ pub fn run_sealqa(
                 let pct = count as f64 / results.len() as f64 * 100.0;
                 println!("{:<16} {:>6} {:>7.1}%", bucket, count, pct);
             }
-            println!("{:<16} {:>6} {:>7.1}%", "TOTAL found", total_with_gold,
-                total_with_gold as f64 / results.len() as f64 * 100.0);
-            println!("{:<16} {:>6} {:>7.1}%", "TOTAL missing", total_missing,
-                total_missing as f64 / results.len() as f64 * 100.0);
+            println!(
+                "{:<16} {:>6} {:>7.1}%",
+                "TOTAL found",
+                total_with_gold,
+                total_with_gold as f64 / results.len() as f64 * 100.0
+            );
+            println!(
+                "{:<16} {:>6} {:>7.1}%",
+                "TOTAL missing",
+                total_missing,
+                total_missing as f64 / results.len() as f64 * 100.0
+            );
 
             // Topic breakdown
             println!("\n--- By Topic ---");
@@ -696,14 +699,8 @@ pub fn run_sealqa(
                 "\nLatency (end-to-end): p50={:.1}ms  p95={:.1}ms",
                 lat_p50, lat_p95
             );
-            println!(
-                "  Embed:  p50={:.1}ms  p95={:.1}ms",
-                emb_p50, emb_p95
-            );
-            println!(
-                "  Search: p50={:.1}ms  p95={:.1}ms\n",
-                srch_p50, srch_p95
-            );
+            println!("  Embed:  p50={:.1}ms  p95={:.1}ms", emb_p50, emb_p95);
+            println!("  Search: p50={:.1}ms  p95={:.1}ms\n", srch_p50, srch_p95);
         }
     }
 }

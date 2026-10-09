@@ -1,0 +1,532 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-highstakes-heldout-v3",
+  "sealed_at": "2026-08-23T00:37:10Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "candidate_cue_regex": "symptom|disease|medicine|medication|drug|side effect|doctor|hospital|health|cancer|blood|pain|syndrome|treatment|infection|pregnan|allerg|autoimmune|surgery|diagnos|vaccine|therapy|stroke|heart|kidney|liver|diabetes|depression|anxiety|disorder|tax|loan|mortgage|credit|insurance|annuity|salary|bankruptcy|interest rate|retirement|investment|pension|debt|legal|law|lawsuit|court|eviction|custody|divorce|criminal|regulated|regulation|rights|attorney|benefits",
+    "permutation": "score=(query_id*48271+20260824) mod 2147483647; ascending numeric",
+    "selected_tsv_schema": "source_id TAB query LF",
+    "selected_tsv_sha256": "a945c08da34d2dc2847ecf9bdd69a004938e13e1715f8195f966992fa5cff05b",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true,
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v4.json",
+        "sha256": "87521c1797a79539dcc2d90f7f374259dc3c0425cfbb74ca3c844d741bdb8c67"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v5.json",
+        "sha256": "ac49568636f830aad1d1979c73e82578d26e67eb9f9f9676401995be4fcd5b7a"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v2.json",
+        "sha256": "a0d480ab908a1e14bffddbf2634f52273552e93dcdb763332994487b5e131c00"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "id": "msmarco-hs3-985165",
+      "query": "why are jury trials important to court cases like those of felina early v. suzy snoozer",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "985165",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-95409",
+      "query": "common causes for elevated liver enzymes",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "95409",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-985207",
+      "query": "why are healthy microglia important?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "985207",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-184452",
+      "query": "eye surgery lasik cost",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "184452",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-406923",
+      "query": "is commemorative air force contribution tax deductible?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "406923",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-985275",
+      "query": "why are bacterial infections common in diabetics",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "985275",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-851813",
+      "query": "what is the treatment of throat voice box?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "851813",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-51054",
+      "query": "benefits of noni soap",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "51054",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-51090",
+      "query": "benefits of oxygen pills",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "51090",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-451609",
+      "query": "medication administration closed system",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "451609",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-51276",
+      "query": "benefits of the master cleanse lemonade diet",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "51276",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-362845",
+      "query": "how to get student loans without a cosigner",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "362845",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-718782",
+      "query": "what is anxiety",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "718782",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-585378",
+      "query": "what causes anemia symptoms",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "585378",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-807880",
+      "query": "what is the bcbs anthem insurance",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "807880",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-1074989",
+      "query": "what is a cyst on the kidneys do",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1074989",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-1074997",
+      "query": "cinnamon honey and lemon benefits",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1074997",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-452200",
+      "query": "medicine that causes tremor",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "452200",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-96310",
+      "query": "composition and functions of blood types",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "96310",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-585680",
+      "query": "what causes bilateral hip pain",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "585680",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-585743",
+      "query": "what causes bladder pains",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "585743",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-585806",
+      "query": "what causes bloating ,high blood pressure, and constipation",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "585806",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-541425",
+      "query": "washington state mortgage rates",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "541425",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-808362",
+      "query": "what is the best medication for hemorrhoids",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "808362",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-96749",
+      "query": "concurrent disorders definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "96749",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-1031032",
+      "query": "what is the third law",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1031032",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-586268",
+      "query": "what causes busted blood vessels",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "586268",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-808716",
+      "query": "what is the best treatment for melanoma",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "808716",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-408419",
+      "query": "is disorderly conduct a violation",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "408419",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-897789",
+      "query": "what state is legal for marijuana",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "897789",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-497470",
+      "query": "side effects for constipation",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "497470",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-497536",
+      "query": "side effects of baytril injections in dogs",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "497536",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-497596",
+      "query": "side effects of flaygl antibiotics",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "497596",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-319652",
+      "query": "how much fluid should you drink a day if you have kidney stones",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "319652",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-987066",
+      "query": "who was a doctor tha",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "987066",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-408765",
+      "query": "is drinking too much water bad for high blood pressure",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "408765",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-497757",
+      "query": "side effects steroid injection",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "497757",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-186390",
+      "query": "fenugreek supplement benefits",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "186390",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-142039",
+      "query": "description of how early pregnancy bloating feels",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "142039",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-409071",
+      "query": "is ecpi an accredited college in virginia",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "409071",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-8714",
+      "query": "_____ is the name used to refer to the era of legalized segregation in the united states",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "8714",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-765147",
+      "query": "what is legal outside counsel",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "765147",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-943190",
+      "query": "when did women's rights begin in canada",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "943190",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-453856",
+      "query": "military salary pay average",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "453856",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-587326",
+      "query": "what causes dry mouth medications",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "587326",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-9083",
+      "query": "____________________ is considered the father of modern medicine.",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "9083",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-142579",
+      "query": "devine paint color stores",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "142579",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    },
+    {
+      "id": "msmarco-hs3-187186",
+      "query": "fingers carpal tunnel symptoms",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "187186",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v3"
+    }
+  ]
+}

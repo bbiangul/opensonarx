@@ -891,13 +891,8 @@ fn chinese_samples() -> Vec<FactsBenchmarkSample> {
             language: "zh".into(),
             category: "wiki".into(),
             text: "长城是中国最著名的建筑之一，始建于公元前7世纪，横跨中国北部多个省份。".into(),
-            expected_entities: vec![
-                e("长城", "location", 0, 6),
-                e("中国", "location", 9, 15),
-            ],
-            expected_facts: vec![
-                f("长城", "located_in", "中国"),
-            ],
+            expected_entities: vec![e("长城", "location", 0, 6), e("中国", "location", 9, 15)],
+            expected_facts: vec![f("长城", "located_in", "中国")],
         },
         FactsBenchmarkSample {
             id: "zh-sports-01".into(),
@@ -910,9 +905,7 @@ fn chinese_samples() -> Vec<FactsBenchmarkSample> {
                 e("上海海港", "organization", 27, 39),
                 e("北京国安", "organization", 54, 66),
             ],
-            expected_facts: vec![
-                f("武磊", "plays_for", "上海海港"),
-            ],
+            expected_facts: vec![f("武磊", "plays_for", "上海海港")],
         },
         FactsBenchmarkSample {
             id: "zh-company-01".into(),
@@ -962,13 +955,8 @@ fn chinese_samples() -> Vec<FactsBenchmarkSample> {
             language: "zh".into(),
             category: "wiki".into(),
             text: "故宫位于北京中心，是明清两代的皇家宫殿，建于1406年。".into(),
-            expected_entities: vec![
-                e("故宫", "location", 0, 6),
-                e("北京", "location", 9, 15),
-            ],
-            expected_facts: vec![
-                f("故宫", "located_in", "北京"),
-            ],
+            expected_entities: vec![e("故宫", "location", 0, 6), e("北京", "location", 9, 15)],
+            expected_facts: vec![f("故宫", "located_in", "北京")],
         },
         FactsBenchmarkSample {
             id: "zh-sports-02".into(),
@@ -1167,7 +1155,11 @@ mod tests {
     #[test]
     fn test_dataset_loads() {
         let samples = load_dataset();
-        assert!(samples.len() >= 70, "Expected 70+ samples, got {}", samples.len());
+        assert!(
+            samples.len() >= 70,
+            "Expected 70+ samples, got {}",
+            samples.len()
+        );
     }
 
     #[test]
@@ -1196,12 +1188,18 @@ mod tests {
                 assert!(
                     entity.start < entity.end,
                     "Sample {}: entity '{}' has invalid offsets ({}, {})",
-                    sample.id, entity.mention, entity.start, entity.end
+                    sample.id,
+                    entity.mention,
+                    entity.start,
+                    entity.end
                 );
                 assert!(
                     entity.end <= sample.text.len(),
                     "Sample {}: entity '{}' end {} exceeds text length {}",
-                    sample.id, entity.mention, entity.end, sample.text.len()
+                    sample.id,
+                    entity.mention,
+                    entity.end,
+                    sample.text.len()
                 );
             }
         }

@@ -1,0 +1,500 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v1",
+  "sealed_at": "2026-08-22T23:35:30Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true
+  },
+  "queries": [
+    {
+      "id": "msmarco-755878",
+      "query": "what is hp system bios",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "755878",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-44072",
+      "query": "average snowfall in chatsworth ga",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "44072",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-577930",
+      "query": "what audience can you reach boosting post facebook",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "577930",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-88577",
+      "query": "causes of swelling in the feet and ankles",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "88577",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1022832",
+      "query": "what percent of blood plasma",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1022832",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-755907",
+      "query": "what is hpp header",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "755907",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-933861",
+      "query": "what's the weather of qatar?",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "933861",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-311067",
+      "query": "how much does a professional swimmer make",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "311067",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1022907",
+      "query": "what part of the nervous system does adderall affect",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1022907",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1022911",
+      "query": "what part of the integumentary system does scc",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1022911",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-933946",
+      "query": "what's the weight of a gallon of milk",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "933946",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-222158",
+      "query": "how do you find the mean on excel",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "222158",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-578100",
+      "query": "what axis is intellectual disability on",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "578100",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1023025",
+      "query": "what part of florida is patrick air force base",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1023025",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-667136",
+      "query": "what happens when catalytic converter is bad",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "667136",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-622658",
+      "query": "what do cpa's earn",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "622658",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-266760",
+      "query": "how long should i boil corn on the cob?",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "266760",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-88831",
+      "query": "causes of trigger finger in children",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "88831",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-800652",
+      "query": "what is subsidized vs unsubsidized",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "800652",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-978605",
+      "query": "where is bradley, il",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "978605",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-711682",
+      "query": "what is an analyzer in clinical laboratory scientist",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "711682",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1067587",
+      "query": "what is a situational purpose",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1067587",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-934134",
+      "query": "what's what caused the dark ages?",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "934134",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1023111",
+      "query": "which way should solar panels face in the winter",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1023111",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-489257",
+      "query": "rigorous testing definition",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "489257",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-622725",
+      "query": "what do decomposers and scavengers",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "622725",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-711710",
+      "query": "what is an anemic",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "711710",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-622734",
+      "query": "what do demographers study and predict",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "622734",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-444790",
+      "query": "makeover cost",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "444790",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-400311",
+      "query": "is a lower ph level better in drinking water",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "400311",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1067640",
+      "query": "what is a signal transduction pathway example",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1067640",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1067659",
+      "query": "what is a seller's contribution",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1067659",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-711759",
+      "query": "what is an ankle dislocation",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "711759",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-934223",
+      "query": "what's your favorite pet",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "934223",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-934235",
+      "query": "what's your favourite place",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "934235",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-266920",
+      "query": "how long should i slow cook ribs",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "266920",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-711803",
+      "query": "what is an annuity for dummies",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "711803",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-711811",
+      "query": "what is an anoscopy for",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "711811",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-2",
+      "query": " Androgen receptor define",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-489374",
+      "query": "risperdal m tab side effects",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "489374",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-800792",
+      "query": "what is sucrose used for",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "800792",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1067724",
+      "query": "what is a sea stack",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1067724",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-578362",
+      "query": "what bands are thrash metal",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "578362",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-845304",
+      "query": "what is the salary for the mayor of york pa",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "845304",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-711840",
+      "query": "what is an antelopes baby called",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "711840",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1067764",
+      "query": "what is a sales cycle process?",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1067764",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-667373",
+      "query": "what happens when stop drinking alcohol",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "667373",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    },
+    {
+      "id": "msmarco-1067772",
+      "query": "what is a sabbatical policy for nonprofit",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1067772",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_web"
+    }
+  ]
+}

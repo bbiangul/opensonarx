@@ -1,0 +1,548 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v9",
+  "sealed_at": "2026-08-23T01:03:38Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "selected_tsv_schema": "source_id TAB query LF",
+    "selected_tsv_sha256": "1e826bae81dfe34776cfb74dce1f83f10b34fd221d16f5159616b6a0da1a95bb",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true,
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v4.json",
+        "sha256": "87521c1797a79539dcc2d90f7f374259dc3c0425cfbb74ca3c844d741bdb8c67"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v5.json",
+        "sha256": "ac49568636f830aad1d1979c73e82578d26e67eb9f9f9676401995be4fcd5b7a"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v6.json",
+        "sha256": "f2baeb137df79aa989434ae943dd23417d38f4c7ecec0df863cd6778c114c1d7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v7.json",
+        "sha256": "3cbacdb5a49799459302c8cea5e00983dc00121002a4b8652d83362647202bab"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v2.json",
+        "sha256": "a0d480ab908a1e14bffddbf2634f52273552e93dcdb763332994487b5e131c00"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v3.json",
+        "sha256": "56b20550fe96ad2cd2a0ac7efeff7dd768dcdf77477040cf6d8618cc026b172e"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v8.json",
+        "sha256": "faade6b31e3ee5264ccf1d068ae120ed51c0410c7654baf6436456e3e9ee9d76"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "id": "msmarco-1026775",
+      "query": "what kind of mixture is rocky road ice cream",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1026775",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-537410",
+      "query": "virus reproduce name",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "537410",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1071270",
+      "query": "why is metric system also called decimal systems of units",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1071270",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-403954",
+      "query": "is bass season open in mi",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "403954",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1026789",
+      "query": "who directed hostel",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1026789",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-92542",
+      "query": "circulation money definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "92542",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1026799",
+      "query": "what kind of match is necessary for an organ transplant",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1026799",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-181531",
+      "query": "esr test meaning",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "181531",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-270520",
+      "query": "how long to fast before stress test",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "270520",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-359499",
+      "query": "how to find threads per inch on a metric bolt",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "359499",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-982348",
+      "query": "where is eunice nm",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "982348",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-492988",
+      "query": "saptco bus schedule",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "492988",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-626462",
+      "query": "what do you do in a film production club",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "626462",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-581975",
+      "query": "what can i eat to make me have a bowel movement",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "581975",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-537505",
+      "query": "visceral defined",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "537505",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-404051",
+      "query": "is beer or wine more fattening",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "404051",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-537526",
+      "query": "visible light from the sun",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "537526",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-270603",
+      "query": "how long to fry okra",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "270603",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1071389",
+      "query": "what is a linear regression distribution type",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1071389",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-937947",
+      "query": "when did congress pass us immigration and nationality act",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "937947",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-715508",
+      "query": "what is an integrated studies degree",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "715508",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-270642",
+      "query": "how long to get a bachelors",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "270642",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-315131",
+      "query": "how much does it cost to clear a drain",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "315131",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-804523",
+      "query": "what is the airport code for love field",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "804523",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-982481",
+      "query": "where is fairview",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "982481",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-448630",
+      "query": "meaning of name nairi",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "448630",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1026991",
+      "query": "what kind of flour can you use in bread machines",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1026991",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1071485",
+      "query": "why is my ping 31 ms",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1071485",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-760070",
+      "query": "what is intervention fees",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "760070",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-715588",
+      "query": "what is an interlude",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "715588",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-582146",
+      "query": "what can keep ED",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "582146",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-404202",
+      "query": "is betadine and iodine the same",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "404202",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-938066",
+      "query": "when did dc comics start",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "938066",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1071534",
+      "query": "what is a lantern fish",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1071534",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1071545",
+      "query": "what is a labia?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1071545",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-537706",
+      "query": "vitamin b contraindications",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "537706",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-448745",
+      "query": "meaning of name suri",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "448745",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-626701",
+      "query": "what do you mean by crude",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "626701",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-849142",
+      "query": "what is the success of loring ward",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "849142",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-315291",
+      "query": "how much does it cost to file for an appeal",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "315291",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-893642",
+      "query": "what should a single sauna's temp be set at",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "893642",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-1071598",
+      "query": "what is a koalas environment",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1071598",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-938140",
+      "query": "when did disney make beauty and the beast",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "938140",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-226335",
+      "query": "how does genome editing work",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "226335",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-671219",
+      "query": "what injection do they give for withdrawal",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "671219",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-804687",
+      "query": "what is the altitude of be",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "804687",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-537761",
+      "query": "vitamin d deficiency and skin lesions",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "537761",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    },
+    {
+      "id": "msmarco-893681",
+      "query": "what should bad cholesterol number be",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "893681",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_9"
+    }
+  ]
+}

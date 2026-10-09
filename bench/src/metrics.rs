@@ -4,10 +4,7 @@ pub fn recall_at_k(relevant_ids: &[&str], retrieved_ids: &[&str], k: usize) -> f
         return 0.0;
     }
     let top_k: Vec<&str> = retrieved_ids.iter().take(k).copied().collect();
-    let found = relevant_ids
-        .iter()
-        .filter(|r| top_k.contains(r))
-        .count();
+    let found = relevant_ids.iter().filter(|r| top_k.contains(r)).count();
     found as f64 / relevant_ids.len() as f64
 }
 
@@ -23,11 +20,7 @@ pub fn mrr(relevant_ids: &[&str], retrieved_ids: &[&str]) -> f64 {
 
 /// nDCG@K: normalized discounted cumulative gain.
 /// `relevance_map` maps doc_id -> graded relevance (0-3).
-pub fn ndcg_at_k(
-    relevance_map: &[(&str, u8)],
-    retrieved_ids: &[&str],
-    k: usize,
-) -> f64 {
+pub fn ndcg_at_k(relevance_map: &[(&str, u8)], retrieved_ids: &[&str], k: usize) -> f64 {
     let get_rel = |id: &str| -> f64 {
         relevance_map
             .iter()
@@ -131,7 +124,10 @@ mod tests {
         let rels = vec![("a", 3u8), ("b", 2), ("c", 1)];
         let retrieved = vec!["a", "b", "c"];
         let score = ndcg_at_k(&rels, &retrieved, 3);
-        assert!((score - 1.0).abs() < 0.001, "perfect ranking should give nDCG=1.0, got {score}");
+        assert!(
+            (score - 1.0).abs() < 0.001,
+            "perfect ranking should give nDCG=1.0, got {score}"
+        );
     }
 
     #[test]

@@ -69,7 +69,11 @@ fn dataset_dir(name: &str) -> PathBuf {
 fn ensure_dataset(name: &str) -> Result<PathBuf, String> {
     let dir = dataset_dir(name);
     if dir.join("corpus.jsonl").exists() {
-        tracing::info!("BEIR dataset '{}' already cached at {}", name, dir.display());
+        tracing::info!(
+            "BEIR dataset '{}' already cached at {}",
+            name,
+            dir.display()
+        );
         return Ok(dir);
     }
 
@@ -93,8 +97,7 @@ fn ensure_dataset(name: &str) -> Result<PathBuf, String> {
     tracing::info!("Downloaded {} bytes, extracting...", bytes.len());
 
     let reader = std::io::Cursor::new(&bytes);
-    let mut archive =
-        zip::ZipArchive::new(reader).map_err(|e| format!("zip open failed: {e}"))?;
+    let mut archive = zip::ZipArchive::new(reader).map_err(|e| format!("zip open failed: {e}"))?;
 
     let base = cache_dir();
     std::fs::create_dir_all(&base).map_err(|e| format!("mkdir: {e}"))?;
@@ -242,10 +245,8 @@ fn evaluate_queries(
             .map(|(id, _)| id.as_str())
             .collect();
 
-        let relevance_refs: Vec<(&str, u8)> = doc_qrels
-            .iter()
-            .map(|(id, s)| (id.as_str(), *s))
-            .collect();
+        let relevance_refs: Vec<(&str, u8)> =
+            doc_qrels.iter().map(|(id, s)| (id.as_str(), *s)).collect();
 
         ndcg_10_sum += metrics::ndcg_at_k(&relevance_refs, &retrieved_ids, 10);
         recall_10_sum += metrics::recall_at_k(&relevant_ids, &retrieved_ids, 10);
@@ -296,7 +297,13 @@ fn build_chunks(corpus: &[BeirDoc], embeddings: Vec<Vec<f32>>) -> Vec<ContentChu
 
 // ── Public entry points ──
 
-pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, semantic_weight: Option<f64>, rerank: bool) {
+pub fn run_beir(
+    dataset_name: &str,
+    pipeline_name: &str,
+    output_format: &str,
+    semantic_weight: Option<f64>,
+    rerank: bool,
+) {
     let embedder = crate::get_embedder(pipeline_name);
     let dim = embedder.dimension();
 
@@ -341,7 +348,10 @@ pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, se
         std::process::exit(1);
     });
 
-    let query_map: HashMap<&str, &str> = queries.iter().map(|q| (q.id.as_str(), q.text.as_str())).collect();
+    let query_map: HashMap<&str, &str> = queries
+        .iter()
+        .map(|q| (q.id.as_str(), q.text.as_str()))
+        .collect();
     let eval_query_ids: Vec<&str> = qrels.keys().map(|s| s.as_str()).collect();
 
     // Default to the production HybridConfig weight so an unflagged run
@@ -351,7 +361,10 @@ pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, se
     println!("\n=== BEIR Evaluation: {} ===", dataset_name);
     println!(
         "Pipeline: {} ({}-dim) | Weights: semantic={:.2} bm25={:.2} | Rerank: {}",
-        embedder.name(), dim, sw, 1.0 - sw,
+        embedder.name(),
+        dim,
+        sw,
+        1.0 - sw,
         if reranker.is_some() { "yes" } else { "no" }
     );
     println!(
@@ -394,7 +407,13 @@ pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, se
     let docs_per_sec = corpus.len() as f64 / ingest_secs;
 
     // 5. Evaluate
-    let (m, mut query_latencies) = evaluate_queries(&index, embedder.as_ref(), &query_map, &eval_query_ids, &qrels);
+    let (m, mut query_latencies) = evaluate_queries(
+        &index,
+        embedder.as_ref(),
+        &query_map,
+        &eval_query_ids,
+        &qrels,
+    );
 
     query_latencies.sort_by(|a, b| a.partial_cmp(b).unwrap());
     let p50 = percentile(&query_latencies, 50.0);
@@ -428,15 +447,12 @@ pub fn run_beir(dataset_name: &str, pipeline_name: &str, output_format: &str, se
                 .map(|v| format!("{:.4}", v))
                 .unwrap_or_else(|| "-".to_string());
 
+            println!("{:<16} {:<10} {:<10}", "Metric", "Ours", "Published");
+            println!("{:<16} {:<10} {:<10}", "------", "----", "---------");
             println!(
-                "{:<16} {:<10} {:<10}",
-                "Metric", "Ours", "Published"
+                "{:<16} {:<10.4} {:<10}",
+                "nDCG@10", m.ndcg_10, published_str
             );
-            println!(
-                "{:<16} {:<10} {:<10}",
-                "------", "----", "---------"
-            );
-            println!("{:<16} {:<10.4} {:<10}", "nDCG@10", m.ndcg_10, published_str);
             println!("{:<16} {:<10.4} {:<10}", "Recall@10", m.recall_10, "-");
             println!("{:<16} {:<10.4} {:<10}", "Recall@100", m.recall_100, "-");
             println!("{:<16} {:<10.4} {:<10}", "MRR@10", m.mrr_10, "-");
@@ -474,16 +490,26 @@ pub fn sweep_beir(dataset_name: &str, pipeline_name: &str) {
         std::process::exit(1);
     });
 
-    let query_map: HashMap<&str, &str> = queries.iter().map(|q| (q.id.as_str(), q.text.as_str())).collect();
+    let query_map: HashMap<&str, &str> = queries
+        .iter()
+        .map(|q| (q.id.as_str(), q.text.as_str()))
+        .collect();
     let eval_query_ids: Vec<&str> = qrels.keys().map(|s| s.as_str()).collect();
 
     println!("\n=== BEIR Weight Sweep: {} ===", dataset_name);
     println!("Pipeline: {} ({}-dim)", embedder.name(), dim);
-    println!("Corpus: {} docs | Queries: {} (with qrels)", corpus.len(), eval_query_ids.len());
+    println!(
+        "Corpus: {} docs | Queries: {} (with qrels)",
+        corpus.len(),
+        eval_query_ids.len()
+    );
 
     // Embed once
     let embed_start = Instant::now();
-    let doc_texts: Vec<String> = corpus.iter().map(|d| format!("{} {}", d.title, d.text)).collect();
+    let doc_texts: Vec<String> = corpus
+        .iter()
+        .map(|d| format!("{} {}", d.title, d.text))
+        .collect();
     let doc_refs: Vec<&str> = doc_texts.iter().map(|s| s.as_str()).collect();
     let embeddings = embed_in_batches(embedder.as_ref(), &doc_refs, 32).unwrap_or_else(|e| {
         eprintln!("Embedding failed: {e}");
@@ -512,17 +538,33 @@ pub fn sweep_beir(dataset_name: &str, pipeline_name: &str) {
         let chunks = build_chunks(&corpus, embeddings.clone());
         index.ingest(&chunks).unwrap();
 
-        let (m, _) = evaluate_queries(&index, embedder.as_ref(), &query_map, &eval_query_ids, &qrels);
+        let (m, _) = evaluate_queries(
+            &index,
+            embedder.as_ref(),
+            &query_map,
+            &eval_query_ids,
+            &qrels,
+        );
 
         let marker = if let Some(pub_val) = published {
-            if m.ndcg_10 >= pub_val { " *" } else { "" }
+            if m.ndcg_10 >= pub_val {
+                " *"
+            } else {
+                ""
+            }
         } else {
             ""
         };
 
         println!(
             "{:>8.2} {:>8.2} {:>10.4} {:>10.4} {:>10.4} {:>8.4}{}",
-            sw, 1.0 - sw, m.ndcg_10, m.recall_10, m.recall_100, m.mrr_10, marker
+            sw,
+            1.0 - sw,
+            m.ndcg_10,
+            m.recall_10,
+            m.recall_100,
+            m.mrr_10,
+            marker
         );
     }
 

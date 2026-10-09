@@ -34,10 +34,11 @@ pub fn run_dist_sim(
         }
     };
 
-    let corpus = msmarco::parse_collection(&dir.join("collection.tsv"), limit).unwrap_or_else(|e| {
-        eprintln!("Failed to parse collection: {e}");
-        std::process::exit(1);
-    });
+    let corpus =
+        msmarco::parse_collection(&dir.join("collection.tsv"), limit).unwrap_or_else(|e| {
+            eprintln!("Failed to parse collection: {e}");
+            std::process::exit(1);
+        });
     let queries = msmarco::parse_queries(&dir.join(msmarco::QUERIES_TSV)).unwrap_or_else(|e| {
         eprintln!("Failed to parse queries: {e}");
         std::process::exit(1);
@@ -48,15 +49,12 @@ pub fn run_dist_sim(
     });
 
     let corpus_pids: Vec<String> = corpus.iter().map(|(pid, _)| pid.clone()).collect();
-    let pid_set: std::collections::HashSet<&str> =
-        corpus_pids.iter().map(|s| s.as_str()).collect();
+    let pid_set: std::collections::HashSet<&str> = corpus_pids.iter().map(|s| s.as_str()).collect();
 
     // Only evaluate queries whose relevant passages are in our corpus
     let eval_query_ids: Vec<&str> = qrels
         .keys()
-        .filter(|qid| {
-            qrels[*qid].iter().any(|pid| pid_set.contains(pid.as_str()))
-        })
+        .filter(|qid| qrels[*qid].iter().any(|pid| pid_set.contains(pid.as_str())))
         .map(|s| s.as_str())
         .collect();
 
@@ -158,7 +156,8 @@ pub fn run_dist_sim(
     let baseline_start = Instant::now();
     let baseline_index = HybridIndex::with_config(dim, config.clone());
     // Re-load embeddings for baseline (they were consumed above)
-    let baseline_embeddings = msmarco::embed_with_checkpoints(&embedder, &corpus, pipeline_name, dim);
+    let baseline_embeddings =
+        msmarco::embed_with_checkpoints(&embedder, &corpus, pipeline_name, dim);
     let baseline_chunks: Vec<ContentChunk> = corpus
         .iter()
         .zip(baseline_embeddings.into_iter())
@@ -233,12 +232,9 @@ pub fn run_dist_sim(
             if node_sizes[node_id] == 0 {
                 continue;
             }
-            if let Ok(results) = node_indices[node_id].query(
-                &query_emb,
-                query_text,
-                &QueryFilters::default(),
-                100,
-            ) {
+            if let Ok(results) =
+                node_indices[node_id].query(&query_emb, query_text, &QueryFilters::default(), 100)
+            {
                 for r in results {
                     let pid = r.url.strip_prefix("marco://").unwrap_or(&r.url).to_string();
                     all_results.push((pid, r.final_score));

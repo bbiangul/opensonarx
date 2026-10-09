@@ -1,0 +1,556 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v11",
+  "sealed_at": "2026-08-23T02:56:15Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "selected_tsv_schema": "source_id TAB query LF",
+    "selected_tsv_sha256": "75736ca6de54524bd44218ccb207089b41342cbb4c657fd352f38b3b53065785",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true,
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v4.json",
+        "sha256": "87521c1797a79539dcc2d90f7f374259dc3c0425cfbb74ca3c844d741bdb8c67"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v5.json",
+        "sha256": "ac49568636f830aad1d1979c73e82578d26e67eb9f9f9676401995be4fcd5b7a"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v6.json",
+        "sha256": "f2baeb137df79aa989434ae943dd23417d38f4c7ecec0df863cd6778c114c1d7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v7.json",
+        "sha256": "3cbacdb5a49799459302c8cea5e00983dc00121002a4b8652d83362647202bab"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v2.json",
+        "sha256": "a0d480ab908a1e14bffddbf2634f52273552e93dcdb763332994487b5e131c00"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v3.json",
+        "sha256": "56b20550fe96ad2cd2a0ac7efeff7dd768dcdf77477040cf6d8618cc026b172e"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v8.json",
+        "sha256": "faade6b31e3ee5264ccf1d068ae120ed51c0410c7654baf6436456e3e9ee9d76"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v9.json",
+        "sha256": "810c6315f194c75948126f267f6dcc3f839cedfa72344bd6e504a5ce758329ca"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v10.json",
+        "sha256": "c0b072aa59e2ad3ba8f28671438c6d532a7c1f1b5dbce3d3ce565b4c2f5a4c32"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "id": "msmarco-315884",
+      "query": "how much does it cost to hire a web designer",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "315884",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1072188",
+      "query": "what is a home plan for parole",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1072188",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-538333",
+      "query": "voluntary muscle definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "538333",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-538340",
+      "query": "voluntary paternity establishment florida",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "538340",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-582848",
+      "query": "what can you recycle for money",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "582848",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-48998",
+      "query": "bash meanong",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "48998",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-938773",
+      "query": "when did grubhub start up",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "938773",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1027785",
+      "query": "who fought in world war",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1027785",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-449442",
+      "query": "meaning of the indian name parth",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "449442",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-983299",
+      "query": "where is george michael buried",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "983299",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1027817",
+      "query": "what kind of business is wild planet",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1027817",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-760908",
+      "query": "what is iseek answerworks english runtime",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "760908",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-760930",
+      "query": "what is islet transplantation",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "760930",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1027865",
+      "query": "who founded general electric company",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1027865",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-405036",
+      "query": "is burning sage evil",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "405036",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-138127",
+      "query": "definition of sexul reproduction in science",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "138127",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-93649",
+      "query": "clutch baseball definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "93649",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-627513",
+      "query": "what doe the 4th estate mean",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "627513",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1027919",
+      "query": "what kind idea had wovoka",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1027919",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-405090",
+      "query": "is bv an std",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "405090",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-983438",
+      "query": "where is glenfinnan",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "983438",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-538570",
+      "query": "vvi airport code",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "538570",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-983451",
+      "query": "where is glossotonsillar",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "983451",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-938963",
+      "query": "when did hugh glass die",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "938963",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-494086",
+      "query": "search definition of a deacon",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "494086",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-761032",
+      "query": "what is issue two on the ohio ballot",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "761032",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-49234",
+      "query": "bay rum scent",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "49234",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-138223",
+      "query": "definition of slouch",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "138223",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-983499",
+      "query": "where is gold located with the earth",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "983499",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1072479",
+      "query": "what is a gui|",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1072479",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-939020",
+      "query": "when did ice cube start rapping",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "939020",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-672109",
+      "query": "what is .img format",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "672109",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1072506",
+      "query": "why is the lean concept important to study?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1072506",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-761096",
+      "query": "what is it called the thing that hold the tire",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "761096",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1072513",
+      "query": "what is a gsep",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1072513",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-138266",
+      "query": "definition of solar wind",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "138266",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-983543",
+      "query": "where is goodland fl,",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "983543",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-716641",
+      "query": "what is an open access university",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "716641",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-405238",
+      "query": "is callahan an irish name",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "405238",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-93823",
+      "query": "co-curricular vs extracurricular definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "93823",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-894610",
+      "query": "what side of the car should a car seat be on",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "894610",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-939104",
+      "query": "when did internet become popular",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "939104",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-449750",
+      "query": "meaning of the name elodie",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "449750",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1028098",
+      "query": "what islands have pine tree",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1028098",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-227317",
+      "query": "how does programmatic buying work",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "227317",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-583234",
+      "query": "what car is the vacca in real life",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "583234",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1072603",
+      "query": "what is a great dane and mastiff",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1072603",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    },
+    {
+      "id": "msmarco-1028131",
+      "query": "who has absolute monarchy",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1028131",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_11"
+    }
+  ]
+}

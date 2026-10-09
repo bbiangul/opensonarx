@@ -1,0 +1,2415 @@
+{
+  "experiment": "blind-pooled-search-quality-packet-v1",
+  "created_at_unix_ms": 1787453931452,
+  "manifest_name": "opensonarx-generalization-msmarco-heldout-v11",
+  "manifest_sha256": "f691123c91bff1bcb5783707541cc48a1a38800d1eb47634578ccc01c07590af",
+  "opensonarx_capture_sha256": "129497379ca4986605ef59a2347df8a494aa5bd27fbd8c79aed274a1d3183e87",
+  "market_capture_sha256": "8fc95cf080a0555676766ecfac944d5d1dce4c2982ce811dd9f78b8756c99e3b",
+  "top_k_per_system": 5,
+  "blinding_nonce_commitment": "d6c74d562c04e65f0354a3c2dacb75664913a2970201d7dc4fceda1b0ba0580d",
+  "system_identity_present": false,
+  "rubric": {
+    "relevance": {
+      "0": "unrelated or cannot help answer the query",
+      "1": "topically related but weak or indirect",
+      "2": "materially useful for the user's likely intent",
+      "3": "directly satisfies the likely intent"
+    },
+    "query_relative_authority": {
+      "0": "unknown, inappropriate, or clearly unreliable for this claim",
+      "1": "secondary source with limited accountability or expertise",
+      "2": "credible expert, institution, or well-supported reference",
+      "3": "primary, official, or best-available authority for this query"
+    },
+    "direct_answer_support": {
+      "0": "title/snippet does not support a usable answer",
+      "1": "partially supports an answer or requires material qualification",
+      "2": "directly supports a clear answer with appropriate context"
+    },
+    "severe_error": "true only for a materially false, deceptive, wrong-entity, or dangerously stale result",
+    "unsafe_reliance": "true when relying on this result could cause material harm given the query stakes",
+    "judge_confidence": {
+      "0": "low; insufficient context or expertise",
+      "1": "moderate",
+      "2": "high"
+    }
+  },
+  "queries": [
+    {
+      "id": "msmarco-315884",
+      "query": "how much does it cost to hire a web designer",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-bf423eb3b28189e81f14",
+          "title": "How much does it cost to hire a web designer? - Spin Modern",
+          "url": "https://spinmodern.com/how-much-does-it-cost-to-hire-a-web-designer/",
+          "snippet": "The cost for designing and building a complex website averages around $5000 for a quality product. Setup, maintenance, and training are additional costs, so be ..."
+        },
+        {
+          "candidate_id": "c-fd89c86b9a3a9e462eba",
+          "title": "Best Freelance Web Designers for Hire (Aug 2026)",
+          "url": "https://www.upwork.com/hire/web-designers/",
+          "snippet": "Hiring a web designer generally costs $15-$30 per hour, depending on scope, complexity, and the designer's experience level."
+        },
+        {
+          "candidate_id": "c-ecf3105e8da9da7b8857",
+          "title": "How Much Do Web Designers Charge? A Pricing Guide - FreshBooks",
+          "url": "https://www.freshbooks.com/hub/estimates/how-much-do-web-designers-charge?srsltid=AfmBOoqqWaIMV0DjmFmyM3PaTk4DnD4sfshCistGOj6MYmCvnwFdcuZO",
+          "snippet": "Web designers typically charge about $75 per hour. A company website, even for small businesses, could potentially cost between $5,000 and $10, ..."
+        },
+        {
+          "candidate_id": "c-1ec42a4d3c8f32114896",
+          "title": "How Much Does it Cost to Hire a Web Designer in 2025? - Fiverr",
+          "url": "https://www.fiverr.com/resources/guides/business/web-designer-costs",
+          "snippet": "In 2025, it costs anywhere between $30 to $200 per hour to hire a freelance web designer. Project-based pricing: $1,000 to $25,000 per project Hourly pricing: ..."
+        },
+        {
+          "candidate_id": "c-4f4d2633c22850b6e21c",
+          "title": "How Much Does It Cost to Hire a Web Designer? - YouTube",
+          "url": "https://www.youtube.com/watch?v=Am11dRTgVys",
+          "snippet": "Thinking about hiring a web designer but not sure what it will cost? In this video, we break down the real costs of hiring a professional ..."
+        },
+        {
+          "candidate_id": "c-321501e9b194ccc93756",
+          "title": "How Much Do Web Designers Charge? A Pricing Guide",
+          "url": "https://www.freshbooks.com/hub/estimates/how-much-do-web-designers-charge?srsltid=AfmBOor-CDOsf8o_esOSZK2t-GE4Grz_yLKrvta3wEVBLUjfGE9zWcBu",
+          "snippet": "Web designers typically charge about $75 per hour. A company website, even for small businesses, could potentially cost between $5,000 and $10, ..."
+        },
+        {
+          "candidate_id": "c-368c42a7e68c25ad162b",
+          "title": "How much to hire to a website designer to build a subscription ...",
+          "url": "https://www.reddit.com/r/ecommerce/comments/1juyqli/how_much_to_hire_to_a_website_designer_to_build_a/",
+          "snippet": "I would say between $5,000-$8,000 for initial setup, then for basic management (hosting, plugin licensing, patching $150 to $250 per month, ..."
+        },
+        {
+          "candidate_id": "c-9ff77e9bfb746cfcacec",
+          "title": "2026 Website Developer Cost",
+          "url": "https://www.thumbtack.com/p/website-development-prices",
+          "snippet": "The average cost for a Web Designer is $1057. To hire a Web Designer to design your website, you are likely to spend between $614 and $1817 ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1072188",
+      "query": "what is a home plan for parole",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-b6e187bbe2946e38bb8d",
+          "title": "Home Plan Status - Parole - Commonwealth of Pennsylvania",
+          "url": "https://www.pa.gov/agencies/cor/parole/home-plan-status",
+          "snippet": "In Residence Inmates may submit a home plan proposal to a home even if someone living there is already on parole or probation."
+        },
+        {
+          "candidate_id": "c-19a289d627301d311f26",
+          "title": "What is done in home placement investigation for probation or parole ...",
+          "url": "https://www.quora.com/What-is-done-in-home-placement-investigation-for-probation-or-parole-cases-What-will-be-searched",
+          "snippet": "You mean what part of your home will be searched for contraband before the approval is given for the person who is on probation or parole ..."
+        },
+        {
+          "candidate_id": "c-376ba7559b190b9e5e62",
+          "title": "Prison board: Pa. overcrowding often due to parolees' lack of home plan",
+          "url": "https://www.corrections1.com/overcrowding/articles/prison-board-pa-overcrowding-often-due-to-parolees-lack-of-home-plan-hpSdEIECoa0RPWQG/",
+          "snippet": "Prior to parole consideration, an inmate must complete a home plan and have it approved by the state Board of Parole and Probation."
+        },
+        {
+          "candidate_id": "c-df331c100b2bd4130cd5",
+          "title": "Q: Is it legal for parole to reject a home plan after approving it?",
+          "url": "https://answers.justia.com/question/2025/04/15/is-it-legal-for-parole-to-reject-a-home-1057233",
+          "snippet": "Yes, a parole board or supervising authority can legally reverse a previously approved home plan, but they are expected to have a valid reason ..."
+        },
+        {
+          "candidate_id": "c-8f61f622a69bdb850869",
+          "title": "[AL] I am my brother's home plan for parole. I have a lot of ... - Reddit",
+          "url": "https://www.reddit.com/r/legaladvice/comments/31vcmm/al_i_am_my_brothers_home_plan_for_parole_i_have_a/",
+          "snippet": "My brother has a parole hearing in June. He and my mother feel it's almost guaranteed, as long as his home plan is a family member."
+        },
+        {
+          "candidate_id": "c-d32332097d5a9ad36b59",
+          "title": "Hard to Place Parolees: Steps to Secure a Home Plan - JustAnswer",
+          "url": "https://www.justanswer.com/criminal-law/3h5hm-policy-hard-place-once-prisoner.html",
+          "snippet": "As a guideline, parole staff has 30 days to approve or deny a new home plan proposal after the field agent receives it. often face housing barriers labeled as ..."
+        },
+        {
+          "candidate_id": "c-d58a2cd18ef458357fab",
+          "title": "The Role of Probation and Parole in Making Housing a Priority for ...",
+          "url": "https://csgjusticecenter.org/publications/the-role-of-probation-and-parole-in-making-housing-a-priority-for-people-with-behavioral-health-needs/",
+          "snippet": "Parole and probation officers are well positioned to help people with behavioral health needs obtain safe and affordable housing as they reenter the community."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-538333",
+      "query": "voluntary muscle definition",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-60e90c77c65208c67196",
+          "title": "Voluntary Muscles vs. Involuntary Muscles",
+          "url": "https://www.verywellhealth.com/voluntary-muscles-5199032",
+          "snippet": "Voluntary muscles are those under conscious control, like neck and leg muscles you choose to move. Heart muscle is an involuntary muscle."
+        },
+        {
+          "candidate_id": "c-fc93488c293b5b93e4ea",
+          "title": "VOLUNTARY",
+          "url": "https://www.dictionary.com/browse/voluntary",
+          "snippet": "VOLUNTARY definition: done, made, brought about, undertaken, etc., of one's own accord or by free choice. See examples of …"
+        },
+        {
+          "candidate_id": "c-75200b845ceb4996991f",
+          "title": "Anatomical terms of muscle",
+          "url": "https://en.wikipedia.org/wiki/Anatomical_terms_of_muscle",
+          "snippet": "cardiac. Skeletal muscle, or \"voluntary muscle\", is a striated muscle tissue that primarily joins to bone with tendons. Skeletal muscle enables movement"
+        },
+        {
+          "candidate_id": "c-b0d3c0c6b0e15e195f6c",
+          "title": "Skeletal muscle cramp",
+          "url": "https://en.wikipedia.org/wiki/Skeletal_muscle_cramp",
+          "snippet": "pathological conditions. The definition of a cramp is narrower than that of a muscle spasm: spasms include any involuntary abnormal muscle contractions, while"
+        },
+        {
+          "candidate_id": "c-8d794766db5774c680e1",
+          "title": "Voluntary muscle Definition and Examples",
+          "url": "https://www.biologyonline.com/dictionary/voluntary-muscle",
+          "snippet": "Definition noun, plural: voluntary muscles. A muscle that can be controlled voluntarily. Supplement Some of the muscles of the body may be ..."
+        },
+        {
+          "candidate_id": "c-be98b596853d0319d3e4",
+          "title": "Sclerosis (medicine)",
+          "url": "https://en.wikipedia.org/wiki/Sclerosis_(medicine)",
+          "snippet": "disease of the ears. Primary lateral sclerosis, progressive muscle weakness in the voluntary muscles. Primary sclerosing cholangitis, a hardening of the bile"
+        },
+        {
+          "candidate_id": "c-b80021bd721b8ccfa832",
+          "title": "VOLUNTARY",
+          "url": "https://dictionary.cambridge.org/dictionary/english/voluntary",
+          "snippet": "VOLUNTARY definition: 1. done, made, or given willingly, without being forced or paid to do it: 2. A voluntary…. Learn more."
+        },
+        {
+          "candidate_id": "c-35ef6ec43dd198bef0ef",
+          "title": "Voluntary muscle - Definition, Meaning & Synonyms",
+          "url": "https://www.vocabulary.com/dictionary/voluntary%20muscle",
+          "snippet": "a muscle that is connected at either or both ends to a bone and so move parts of the skeleton; a muscle that is characterized by transverse stripes"
+        },
+        {
+          "candidate_id": "c-78cee33a773faef61675",
+          "title": "VOLUNTARY MUSCLE Definition & Meaning",
+          "url": "https://www.dictionary.com/browse/voluntary-muscle",
+          "snippet": "A voluntary muscle is a muscle that you choose to move, like those in the arms and legs, as opposed to the ones that move automatically, like the heart."
+        },
+        {
+          "candidate_id": "c-902803709ece280ff506",
+          "title": "What are the differences between voluntary muscles and ...",
+          "url": "https://www.aatbio.com/resources/faq-frequently-asked-questions/what-are-the-differences-between-voluntary-muscles-and-involuntary-muscles",
+          "snippet": "Definition. Refer to muscles that are controlled by an individual's will and are almost always associated with the skeleton system. Refer to ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-538340",
+      "query": "voluntary paternity establishment florida",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-aabe72a05566ed07c9c1",
+          "title": "Florida Statutes Section 742.10",
+          "url": "https://www.leg.state.fl.us/Statutes/index.cfm?App_mode=Display_Statute&URL=0700-0799/0742/Sections/0742.10.html",
+          "snippet": "(1) Except as provided in chapters 39 and 63, this chapter provides the primary jurisdiction and procedures for the determination of paternity for children ..."
+        },
+        {
+          "candidate_id": "c-886615fea6658dbb3afd",
+          "title": "How Paternity is Established in Florida",
+          "url": "https://lauristonlawfirm.com/faq/how-paternity-is-established-in-florida/",
+          "snippet": "Voluntary Establishment of Paternity. The easiest way to establish the paternity of a child is through voluntary acknowledgement by the mother and father. Both ..."
+        },
+        {
+          "candidate_id": "c-3b68744663b6d82ec399",
+          "title": "Florida's New Paternity Law - Cairns Law",
+          "url": "https://www.cairnslaw.com/floridas-new-paternity-law/",
+          "snippet": "Under the new law, as long as both parents sign a voluntary acknowledgment of paternity, the father will automatically receive parental rights ..."
+        },
+        {
+          "candidate_id": "c-55ce16b57636c4832be2",
+          "title": "Florida Child Support Program - Establish Paternity",
+          "url": "https://floridarevenue.com/childsupport/Pages/paternity.aspx",
+          "snippet": "paternity can be established voluntarily by both parents in the hospital. This is the quickest and easiest way to establish paternity if the parents are ..."
+        },
+        {
+          "candidate_id": "c-0ef04aed87c113d1a1a0",
+          "title": "Putative Father Registry - Florida Department of Health",
+          "url": "https://www.floridahealth.gov/certificates-records/birth-certificates/putative-father-registry/",
+          "snippet": "The purpose of the registry is to permit a man alleging to be the unmarried biological father of a child to preserve his right to notice and consent in the ..."
+        },
+        {
+          "candidate_id": "c-42943fe139d4f2d42c24",
+          "title": "Voluntary Acknowledgment of Paternity in Florida",
+          "url": "https://www.sinatralegal.com/blog/2025/08/29/voluntary-acknowledgment-of-paternity-in-florida-is-it-legally-binding/",
+          "snippet": "In Florida, the Voluntary Acknowledgment of Paternity (VAP) is a legal document that unmarried parents typically sign shortly after a child's ..."
+        },
+        {
+          "candidate_id": "c-12dd78dda120c9865e21",
+          "title": "Florida Paternity Lawyer | When Paternity Testing Is Required",
+          "url": "https://lopeslawoffices.com/paternity-testing-in-florida-when-is-it-required-and-why-it-matters/",
+          "snippet": "According to Florida Statute §742.10, no legal father is listed on a child's birth certificate unless paternity is established voluntarily or by court order ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-582848",
+      "query": "what can you recycle for money",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-8deea99936097fa982fe",
+          "title": "Cans for Cash - Can Manufacturers Institute - Can Central",
+          "url": "https://www.cancentral.com/cansforcash/",
+          "snippet": "You simply bring your used beverage cans to a scrap yard where they will inspect your cans, weigh the total, and offer you a price. Call ahead though, as not ..."
+        },
+        {
+          "candidate_id": "c-1b7c1f85930cc489306e",
+          "title": "21 Items That You Can Recycle for Money",
+          "url": "https://www.sofi.com/learn/content/items-you-can-recycle-for-money/",
+          "snippet": "There are lots of items you can recycle for money: cans, metal, old cars, used clothing, electronics, and even human hair and cooking oil."
+        },
+        {
+          "candidate_id": "c-1cc14b711e55422a570a",
+          "title": "Recycling is in Your Hands! - CalRecycle - CA.gov",
+          "url": "https://calrecycle.ca.gov/bevcontainer/consumers/",
+          "snippet": "Rates for All Recycling Centers ; Glass, 1.79, $0.101 ; #1 PET (Polyethylene Terephthalate), 26.7, $1.46 ; #2 HDPE (High Density Polyethylene), 9.3, $0.67 ; #3 PVC ..."
+        },
+        {
+          "candidate_id": "c-fd9ceaaa89a66c1546cc",
+          "title": "6 Best Items to Recycle For Money: Trash For Cash - CleanRiver",
+          "url": "https://cleanriver.com/resource/blog-best-items-to-recycle-for-money-trash-for-cash/",
+          "snippet": "6 Best Items To Recycle For Money: Trash For Cash · 1. Aluminum Cans · 2. Plastic and Glass Bottles · 3. Ink Cartridges · 4. Cardboard · 5. Electronic Waste · 6."
+        },
+        {
+          "candidate_id": "c-21ef0f616761ef7ffcbf",
+          "title": "Is there anyplace to recycle where you can earn money? Like how the ...",
+          "url": "https://www.facebook.com/groups/583092845100966/posts/1510654312344810/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-30227ab6198fe1845811",
+          "title": "Where do I sell recyclables? : r/Minneapolis - Reddit",
+          "url": "https://www.reddit.com/r/Minneapolis/comments/1blzrt9/where_do_i_sell_recyclables/",
+          "snippet": "recycling like soda cans, plastic bottles, or glass? only part of your recycling that you can sell is aluminum cans , Northern Metals buys cans."
+        },
+        {
+          "candidate_id": "c-22828bd5475ca6d480eb",
+          "title": "Make Money From Your Recycling",
+          "url": "https://www.recyclingbins.co.uk/blogs/recycling-around-the-world/recycle-equals-money?srsltid=AfmBOoomFqJl6fmGKgpFt8BJRh2hPQtIaNYRUlzmAOkWGZl-jzklhEWA",
+          "snippet": "Recycling Aluminium Cans For Cash · Recycling Cardboard Toilet Roll Tubes For Cash · Recycling Old Mobile Phones & Tech For Cash · Recycling Empty ..."
+        },
+        {
+          "candidate_id": "c-21de6485bcadb7cdfcd1",
+          "title": "How to make some money recycling",
+          "url": "https://www.youtube.com/watch?v=VuCtiSbaF9Q",
+          "snippet": "How to make some money recycling … starting Plastic Recycling Brothers. Can You Make Collecting Bottles & Cans?"
+        },
+        {
+          "candidate_id": "c-f77db2a16e571eddd6ab",
+          "title": "Make Money From Your Recycling",
+          "url": "https://www.recyclingbins.co.uk/blogs/recycling-around-the-world/recycle-equals-money?srsltid=AfmBOoq0mt8jtbAJQ-YmUbOw4ciBoeGdIMaziDpUZWrbBp6gD2R7edO2",
+          "snippet": "Your empty cosmetics bottles, designer shoe boxes, and old mobile phones could be worth a fortune, and you could even cash in on empty cans and ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-48998",
+      "query": "bash meanong",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-7c1db874dcb889db97e2",
+          "title": "BASH Definition & Meaning | Dictionary.com",
+          "url": "https://www.dictionary.com/browse/bash",
+          "snippet": "Bash means \"to strike\" something with great force. It's been adopted as slang for hurling insults or verbal abuse at someone. A bash is also an older slang ..."
+        },
+        {
+          "candidate_id": "c-de972ec4ddeae160f573",
+          "title": "BASH Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/bash",
+          "snippet": "The meaning of BASH is to strike violently : hit; also : to injure or damage by striking : smash —often used with in. a forceful blow bash at it"
+        },
+        {
+          "candidate_id": "c-27ddcd616c9ead6344ce",
+          "title": "what is bash and what's its use? : r/learnprogramming - Reddit",
+          "url": "https://www.reddit.com/r/learnprogramming/comments/uy61er/what_is_bash_and_whats_its_use/",
+          "snippet": "Bash is a scripting language used to interact with an operating system and do terminal based tasks, but can basically do anything a simple ..."
+        },
+        {
+          "candidate_id": "c-d97396dc4e3cb474b238",
+          "title": "Bash",
+          "url": "https://bash.com/",
+          "snippet": "Bash is a fashion and lifestyle shopping platform in South Africa offering over 200 of the world’s best brands and 2000+ new items …"
+        },
+        {
+          "candidate_id": "c-0a9cd011503829ef06c1",
+          "title": "Bash (Unix shell) - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Bash_(Unix_shell)",
+          "snippet": "Bash (short for \"Bourne Again SHell\") is an interactive command interpreter and command language developed for Unix-like operating systems."
+        },
+        {
+          "candidate_id": "c-bcba7266d7cbe0181870",
+          "title": "BASH | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/bash",
+          "snippet": "to attack someone or something with an object: He bashed his arm against a shelf. If you bash someone with words, you criticize that person severely:."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-938773",
+      "query": "when did grubhub start up",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-7ca1e02d33ac8a64bb80",
+          "title": "How Grubhub Went From Apartment Project To $2 Billion IPO",
+          "url": "https://www.entrepreneur.com/growing-a-business/how-grubhub-went-from-apartment-project-to-2-billion-ipo/439432",
+          "snippet": "In 2002, Mike Evans, co-founder of Grubhub, was a restless coder at a tech company … released November 1 by Legacy Lit. later Grubhub pulled in ..."
+        },
+        {
+          "candidate_id": "c-64219101a688a0bfc08b",
+          "title": "How This Guy Turned A $140 Check Into A $4.3 Billion ...",
+          "url": "https://www.reddit.com/r/Entrepreneur/comments/17bj8af/how_this_guy_turned_a_140_check_into_a_43_billion/",
+          "snippet": "GrubHub Founder Mike Evans shares the story: first 3-4 weeks, What actually ended up working was a relationship an entrepreneur. I just started ..."
+        },
+        {
+          "candidate_id": "c-db23ce75c4ec13a08472",
+          "title": "Grubhub",
+          "url": "https://en.wikipedia.org/wiki/Grubhub",
+          "snippet": "Founded in 2004, it became a subsidiary of the Dutch company Just Eat Takeaway after 2021. In June 2014, Grubhub began offering delivery for restaurants"
+        },
+        {
+          "candidate_id": "c-1e27d9e883647a9ec1aa",
+          "title": "Mike Evans, founder of GrubHub, shares his startup journey - YouTube",
+          "url": "https://www.youtube.com/watch?v=QT3XYbPnAF8",
+          "snippet": "Mike Evans revolutionized online food ordering when he started GrubHub in 2002. His new book \"Hangry\" chronicles the ups and downs of ..."
+        },
+        {
+          "candidate_id": "c-cc014fd7e2fa45164fa2",
+          "title": "Grubhub Founder Mike Evans: A Startup Journey and What ...",
+          "url": "https://www.commonwealthclub.org/events/archive/video/grubhub-founder-mike-evans-startup-journey-and-what-came-next",
+          "snippet": "The story of how Grubhub was founded and what its founder, Mike Evans, learned along the way is a story important for anyone who cares about our ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1027785",
+      "query": "who fought in world war",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a66b7e1bb034343c24c7",
+          "title": "World War II | Facts, Summary, History, Dates, Combatants, & Causes",
+          "url": "https://www.britannica.com/event/World-War-II",
+          "snippet": "The main combatants were the Axis powers (Germany, Italy, and Japan) and the Allies (France, Great Britain, the United States, the Soviet Union, and, to a ..."
+        },
+        {
+          "candidate_id": "c-ba0b798a99d269767bc2",
+          "title": "World War I: Causes and Timeline | HISTORY",
+          "url": "https://www.history.com/topics/world-war-i",
+          "snippet": "World War I—also known as the Great War—pitted Germany, Austria-Hungary and the Ottoman Empire against Great Britain, the United States, France, Russia, ..."
+        },
+        {
+          "candidate_id": "c-86406391ce82b8ded781",
+          "title": "First World War - National Army Museum",
+          "url": "https://www.nam.ac.uk/explore/first-world-war",
+          "snippet": "The First World War saw the Entente Powers - led by France, Russia, the British Empire, and later Italy (from 1915) and the United States (from 1917)"
+        },
+        {
+          "candidate_id": "c-0df490e03a8f62685e25",
+          "title": "Participants in World War I",
+          "url": "https://www.worldwar1centennial.org/index.php/edu-home/edu-topics/583-the-world-at-war/5048-participants-in-world-war-i.html",
+          "snippet": "Participants in World War I ; Serbia; Russia; Montenegro; France; Belgium; Great Britain Includes Canada, Australia, New Zealand, India, South Africa & other ..."
+        },
+        {
+          "candidate_id": "c-484904b159a4b5bbbe26",
+          "title": "World War I",
+          "url": "https://en.wikipedia.org/wiki/World_War_I",
+          "snippet": "Allied Powers: France · United Kingdom. show. and Empire: Australia · Canada · Ceylon · Egypt · Newfoundland · New Zealand · India · South Africa · Russia ( ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-449442",
+      "query": "meaning of the indian name parth",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-4d336520940ddb321a0b",
+          "title": "Parth - Baby name meaning, origin, and popularity",
+          "url": "https://www.babycentre.co.uk/babyname/1052833/parth",
+          "snippet": "With Parth, you get a Hindu name with a royal feel. It means “a prince or king”, making it a strong, concise choice for your baby boy."
+        },
+        {
+          "candidate_id": "c-5187c7a16fd99967a3ec",
+          "title": "Meaning of the name Parth",
+          "url": "https://www.wisdomlib.org/names/parth",
+          "snippet": "Parth literally translates to \"son of Pritha.\" In the context of the Mahabharata, it serves as one of the primary epithets for Arjuna,"
+        },
+        {
+          "candidate_id": "c-8a756e79674210eca0bb",
+          "title": "Parth - Pronunciation and Meaning - YouTube",
+          "url": "https://www.youtube.com/watch?v=3QD0scIZVNE",
+          "snippet": "Welcome to All About Names. In this video, we provide the correct pronunciation and meaning of Parth. Our channel is directed and narrated ..."
+        },
+        {
+          "candidate_id": "c-99db82fc5b243e2fe00c",
+          "title": "Parth - Baby Name Meaning, Origin, and Popularity for a Boy | Nameberry",
+          "url": "https://nameberry.com/b/boy-baby-name-parth",
+          "snippet": "The name derives from Sanskrit, meaning 'son of Pritha' (another name for Kunti, Arjuna's mother), though it is also associated with meanings like 'earth' or ' ..."
+        },
+        {
+          "candidate_id": "c-b31a6638b7dcdfa4fbba",
+          "title": "Meaning of Parth Name",
+          "url": "https://snugkins.com/blogs/baby-names/meaning-of-parth?srsltid=AfmBOoo-u7KiZdZNBm4_3pnN7auv1vr0C9MjnJ40l4AaDVm1UFy9u8e4",
+          "snippet": "Derived from Sanskrit origins, Parth is often associated with meanings like warrior or charioteer. In Hindu mythology, Parth is another name for Arjuna, the ..."
+        },
+        {
+          "candidate_id": "c-d26115b6609483151d45",
+          "title": "What is the meaning of the name parth? - Quora",
+          "url": "https://www.quora.com/What-is-the-meaning-of-the-name-parth",
+          "snippet": "meaning in Sanskrit \"Parth\" means \"A person who never misses his target\". Parth was the name of Arjun, the hero of Indian epic “Mahabharat.” ..."
+        },
+        {
+          "candidate_id": "c-2ecbe37e5b43679a88b3",
+          "title": "Parth - Baby name meaning, origin, and popularity - BabyCenter",
+          "url": "https://www.babycenter.com/baby-names/details/parth-470135",
+          "snippet": "Parth is a strong, meaningful name of Indian origin. It is another name for Arjun, a heroic figure from ancient Indian epics, symbolizing courage and ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-983299",
+      "query": "where is george michael buried",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-b2bd9595bcfebd7a59b8",
+          "title": "George Michael",
+          "url": "https://highgatecemetery.org/explore/george-michael",
+          "snippet": "George Michael (1963-2016) is buried in the West side of Highgate Cemetery, on one side of his mother's grave. His sister Melanie is on the other."
+        },
+        {
+          "candidate_id": "c-aef28ae75c7f149cd759",
+          "title": "For some time after George Michael's funeral, his grave ...",
+          "url": "https://www.instagram.com/p/DPGLU3KDLht/?hl",
+          "snippet": "#George Michael is buried in the West Side of Highgate Cemetery in North London. He is laid to rest in a family plot alongside his mother ..."
+        },
+        {
+          "candidate_id": "c-80522dd510ace41f9337",
+          "title": "George Michael (1963-2016) - Memorials",
+          "url": "https://www.findagrave.com/memorial/174391357/george-michael",
+          "snippet": "He was laid to rest in a private ceremony on March 29, 2017, in Highgate Cemetery, next to his mother."
+        },
+        {
+          "candidate_id": "c-9dd487c1d9f6a4310175",
+          "title": "George Michael laid to rest in Highgate cemetery in London",
+          "url": "https://www.theguardian.com/music/2017/mar/30/george-michael-funeral-highgate-cemetery",
+          "snippet": "George Michael's funeral took place in London on Wednesday, when he was buried near his mother, Lesley, in Highgate cemetery in north London."
+        },
+        {
+          "candidate_id": "c-c91f13047bccaf951ed0",
+          "title": "English singer, songwriter and record producer, George ...",
+          "url": "https://www.reddit.com/r/CemeteryPorn/comments/1atg9ke/english_singer_songwriter_and_record_producer/",
+          "snippet": "George Michael, (1963-2016) is buried in the West side of Highgate Cemetery in London. Hanwell Cemetery, West London."
+        },
+        {
+          "candidate_id": "c-69cb093e763f946b39c0",
+          "title": "GEORGE MICHAEL GRAVESITE - New headstone and how it ...",
+          "url": "https://www.youtube.com/watch?v=CFjU8SSjN38",
+          "snippet": "George Michael's grave at Highgate Cemetery, which was un-marked at the time. In December 2021 a headstone was finaly placed on George Michael' ..."
+        },
+        {
+          "candidate_id": "c-df53d008753b20b87c22",
+          "title": "George Michael's family grave in Highgate Cemetery London",
+          "url": "https://www.facebook.com/groups/742494956570217/posts/1821659061987129/",
+          "snippet": "George Michael his mother and sisters grave Highgate cemetery London. No sign telling us not to take photos. Not on a guided tour."
+        },
+        {
+          "candidate_id": "c-b6634fa7f72c994fa91b",
+          "title": "George Michael's headstone revealed nearly five years ...",
+          "url": "https://www.smoothradio.com/artists/george-michael/headstone-grave-highgate-tribute/",
+          "snippet": "The funeral of George took place on March 29, 2017 - it was a private ceremony and he was buried in Highgate Cemetery in North London near his ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1027817",
+      "query": "what kind of business is wild planet",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-ec5c4df6b0928dd535df",
+          "title": "Wild Planet | Sustainably Sourced Seafood and more –",
+          "url": "https://wildplanetfoods.com/?srsltid=AfmBOooIrEmdWJrqdrd0dzrBPbyFdCA7stTv5t0LuHwl178PSkrVco0p",
+          "snippet": "WE ARE THE ORIGINAL SUSTAINABLE SEAFOOD COMPANY. we've been using our canned products, Wild Planet Foods, Inc.,"
+        },
+        {
+          "candidate_id": "c-2b888eeb09d8e4de7c97",
+          "title": "Wild Planet Fish",
+          "url": "https://www.bolton.com/categories/food/wild-planet",
+          "snippet": "Wild Planet is the first large-scale, sustainably-focused canned seafood company in the United States. Sustainable canned fish brand in the US 2"
+        },
+        {
+          "candidate_id": "c-e0faf6f655a46de8a64f",
+          "title": "Bill Carvalho's Wild Planet: 20 Years of Seafood Revolution –",
+          "url": "https://wildplanetfoods.com/blogs/blog/bill-carvalho-wild-planet-20-years-of-seafood-revolution?srsltid=AfmBOopVKKjk1f85sL7m_r2BWv23wrWC5Zfr4oi6hv9bQAidrUBF223Y",
+          "snippet": "Twenty years ago, he founded Wild Planet Foods, a shelf-stable seafood company that would revolutionize the industry's approach to sustainability. Carvalho's ..."
+        },
+        {
+          "candidate_id": "c-f3cd6e613fe4c3d8a9ec",
+          "title": "Wild Planet | Sustainably Sourced Seafood and more –",
+          "url": "https://wildplanetfoods.com/?srsltid=AfmBOopsQZKkKaS3bg6GojOe0PGmzUE09Z83xE-aaIfD32-xvWRB3GFD",
+          "snippet": "WE ARE THE ORIGINAL SUSTAINABLE SEAFOOD COMPANY. we've been using our canned products, Wild Planet Foods, Inc.,"
+        },
+        {
+          "candidate_id": "c-fc8a36ef7927b33efd3b",
+          "title": "Wild Planet Foods 2026 Company Profile",
+          "url": "https://pitchbook.com/profiles/company/54959-32",
+          "snippet": "Manufacturer of food products intended to provide canned seafood. The company offers a full line of fresh-from-the-sea seafood including tuna, salmon, sardines ..."
+        },
+        {
+          "candidate_id": "c-58ca6f74c2d3d3a61efc",
+          "title": "Celebrating 20 Years of Sustainable Canned Seafood",
+          "url": "https://wildplanetfoods.com/blogs/blog/celebrating-20-years-of-sustainable-canned-seafood?srsltid=AfmBOoppw7EzaLO-T3OYZrrR044D5hcGeBUIx2zJ8RtSdiw6b_tKQ5Yf",
+          "snippet": "Wild Planet has been crafting delicious, nutritious, sustainably caught canned seafood and pushing boundaries for 20 years."
+        },
+        {
+          "candidate_id": "c-d69eee69a20dfec8e038",
+          "title": "About Wild Planet Seafood –",
+          "url": "https://wildplanetfoods.com/pages/about-wild-planet-seafood?srsltid=AfmBOorQ8199XWNkeKu0lvy2fY45S-5cgUTfqWwza0e2Kc-0Yi9dxlYc",
+          "snippet": "Curious about Wild Planet Seafood? From day one, our vision has been to transform fishing into a force for good by practicing sustainable harvesting."
+        },
+        {
+          "candidate_id": "c-012cf86240b5dede5609",
+          "title": "2018 Supplier of the Year Wild Planet Foods l Whole ...",
+          "url": "https://www.youtube.com/watch?v=uHDQEQc-oQw",
+          "snippet": "Wild Planet Foods is the first large-scale sustainably focused seafood company in the United States. It sources tuna exclusively from pole and ..."
+        },
+        {
+          "candidate_id": "c-5e9902ced3e693edf97f",
+          "title": "Wild Planet Foods",
+          "url": "https://www.linkedin.com/company/wild-planet-foods",
+          "snippet": "Wild Planet Foods is the first large-scale sustainably focused seafood company. Food and Beverage Manufacturing Company size 11-50 employees Type Privately ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-760908",
+      "query": "what is iseek answerworks english runtime",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-d64595b420450854f5f1",
+          "title": "Does Quicken Premier need iSeek Answerworks?Closed",
+          "url": "https://community.quicken.com/discussion/7922175/does-quicken-premier-need-iseek-answerworks",
+          "snippet": "I was going through my PC today removing some outdated/unused program via Control Panel and I found a program installed called iSeek AnswerWorks"
+        },
+        {
+          "candidate_id": "c-2aa988f788ebaccd2a5b",
+          "title": "iSEEK AnswerWorks English Runtime Download",
+          "url": "https://iseek-answerworks-english-runtime.software.informer.com/",
+          "snippet": "iSEEK AnswerWorks English Runtime is a lightweight natural-language search component developed by Vantage Linguistics. It is bundled with many Windows ..."
+        },
+        {
+          "candidate_id": "c-0177736f8b89a39946c0",
+          "title": "Iseek answerworks should i remove it",
+          "url": "https://sarevnashville.amebaownd.com/posts/45647254/",
+          "snippet": "ISEEK AnswerWorks (sometimes referred to as iSEEK AnswerWorks English Runtime) is a search engine application that aims to make searches ..."
+        },
+        {
+          "candidate_id": "c-7f86df873d78f40ced73",
+          "title": "[Guide] What is iSEEK AnswerWorks? - SoftwareKeep",
+          "url": "https://softwarekeep.com/blogs/what-is/what-is-iseek-answerworks?srsltid=AfmBOop3y-lEikZTdjrqI5WIq9uAHRtu1rMXwdYZLTAWPdhP75_FusHG",
+          "snippet": "iSEEK AnswerWorks (sometimes referred to as iSEEK AnswerWorks English Runtime) is a search engine application that aims to make searches more advanced."
+        },
+        {
+          "candidate_id": "c-9702f5c58f6e9919c002",
+          "title": "iSEEK AnswerWorks English Runtime by Vantage Linguistics",
+          "url": "https://www.shouldiremoveit.com/iseek-answerworks-english-runtime-7691-program.aspx",
+          "snippet": "iSEEK AnswerWorks English Runtime is a software program developed by Vantage Linguistics. The most common release is 010.000.0101,"
+        },
+        {
+          "candidate_id": "c-0d5a503eae9366f32dac",
+          "title": "Answerworks :: Vantage Linguistics",
+          "url": "https://www.vantagelinguistics.com/answerworks",
+          "snippet": "iSEEK AnswerWorks employs an intuitive, natural language interface and semantic search technology, users can phrase their questions in everyday language"
+        },
+        {
+          "candidate_id": "c-d3ba63821214695beb6d",
+          "title": "iSEEK AnswerWorks English Runtime - Download",
+          "url": "https://iseek-answerworks-english-runtime.updatestar.com/",
+          "snippet": "ISEEK AnswerWorks English Runtime is a software developed by Vantage Linguistics that provides natural language processing capabilities to various applications."
+        },
+        {
+          "candidate_id": "c-4a3b225943c01ea7b4cb",
+          "title": "[Guide] What is iSEEK AnswerWorks?",
+          "url": "https://softwarekeep.com/blogs/what-is/what-is-iseek-answerworks?srsltid=AfmBOoocs3Du9X8H1GCPjzmBTUyOOueaACVLkRaTR1JwdvxiGc52yFnX",
+          "snippet": "iSEEK AnswerWorks (sometimes referred to as iSEEK AnswerWorks English Runtime) is a search engine application that aims to make searches more advanced."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-760930",
+      "query": "what is islet transplantation",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a659ab6188999c9fb45c",
+          "title": "Islets Vs Islands: What’s The Difference? Explained Simply",
+          "url": "https://islandsandislets.com/islets-vs-islands-whats-the-difference/",
+          "snippet": "An islet is a tiny, naturally formed island that is usually uninhabited. An island, in contrast, is a larger landmass surrounded by water …"
+        },
+        {
+          "candidate_id": "c-ca2d89895c321830e610",
+          "title": "What Is Islet Transplantation - DRIF - Diabetes Research Institute",
+          "url": "https://diabetesresearch.org/what-is-islet-transplantation/",
+          "snippet": "Islet transplantation is the process of separating the islet cells from a donor pancreas and then transplanting these cells into a person with type 1 diabetes."
+        },
+        {
+          "candidate_id": "c-3c1d6051ee5ca4628fea",
+          "title": "Pancreas and Islet Cell Transplant | Northwestern Medicine",
+          "url": "https://www.nm.org/conditions-and-care-areas/organ-transplantation/pancreas-and-islet-cell-transplantation",
+          "snippet": "Islet cell transplantation by itself is the transfer of healthy islet of Langerhans cells from a healthy pancreas to a diabetic patient whose islet cells are ..."
+        },
+        {
+          "candidate_id": "c-e1924ad4f72030e425be",
+          "title": "ISLET",
+          "url": "https://dictionary.cambridge.org/dictionary/english/islet",
+          "snippet": "ISLET definition: 1. a small island: 2. one of many groups of cells in the pancreas that produce hormones such as…. Learn more."
+        },
+        {
+          "candidate_id": "c-f8fdfe25647042e57c06",
+          "title": "Deceased Donor Islet",
+          "url": "https://www.breakthrought1d.org/news-and-updates/deceased-donor-islet-cell-transplantation-101/",
+          "snippet": "Mar 9, 2026"
+        },
+        {
+          "candidate_id": "c-a4320eac96c273800984",
+          "title": "Pancreatic Islet Transplantation",
+          "url": "https://www.niddk.nih.gov/health-information/diabetes/overview/insulin-medicines-treatments/pancreatic-islet-transplantation",
+          "snippet": "Pancreatic islets, also called islets of Langerhans, are groups of cells in your pancreas. The pancreas is an organ that makes …"
+        },
+        {
+          "candidate_id": "c-d7849e387c508c8fc3d2",
+          "title": "Pancreatic islet transplantation: current advances and challenges",
+          "url": "https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2024.1391504/full",
+          "snippet": "Pancreatic islet transplantation (IT) is a procedure that involves the purification of pancreatic islet cells from a donor pancreas, whether it is xenogeneic"
+        },
+        {
+          "candidate_id": "c-83535ed2e20bce544064",
+          "title": "Islet Cell Transplant | UI Health",
+          "url": "https://hospital.uillinois.edu/primary-and-specialty-care/transplantation-program/pancreas-transplant/islet-cell-transplant",
+          "snippet": "Islet cell transplantation is an experimental procedure that transfers insulin-producing cells from a donor pancreas to a recipient with type 1 diabetes."
+        },
+        {
+          "candidate_id": "c-ce782f6bef3ffd0e207a",
+          "title": "Islet",
+          "url": "https://en.wikipedia.org/wiki/Islet",
+          "snippet": "An islet (/ ˈaɪ.lət /, EYE-lət) [1] is generally a small island. Definitions vary and are not precise, but some suggest that an islet is a …"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1027865",
+      "query": "who founded general electric company",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-991cc1273744b532ac92",
+          "title": "Thomas Edison | GE News",
+          "url": "https://www.ge.com/news/taxonomy/term/400",
+          "snippet": "Thomas Edison's new company created the General Electric Research Laboratory, It was an idea led by GE's chief engineer at the time, Charles P. Steinmetz,"
+        },
+        {
+          "candidate_id": "c-a4e95e2103aaa17aa1eb",
+          "title": "General Electric",
+          "url": "https://en.wikipedia.org/wiki/General_Electric",
+          "snippet": "General Electric ; Founders. Charles A. Coffin · Thomas Edison · Henry L. Higginson · J. P. Morgan · H. M. Twombly (et al.) ; Defunct, April 2, 2024; 2 years ago ..."
+        },
+        {
+          "candidate_id": "c-cbf750efe068494796b4",
+          "title": "General Electric: The First Electronics Giant - AudioScape",
+          "url": "https://www.audio-scape.com/news/a-brief-history-of-general-electric?srsltid=AfmBOooB9SzMex-FX2Auwrc-I6Oj5bKDjO0OKv4YQ4MStD7_Ol56NMhT",
+          "snippet": "General Electric: Founding & Early History. Edison was involved in a ... Company, General Electric was officially formed on April 15, 1892."
+        },
+        {
+          "candidate_id": "c-73cc15904e34ee850125",
+          "title": "GE History",
+          "url": "https://www.ge.com/history-ge",
+          "snippet": "Reginald Jones, GE's Chairman and CEO from 1972 to 1981, leads a national effort to support minority engineering. Throughout the 70s, the GE Foundation provides ..."
+        },
+        {
+          "candidate_id": "c-9cd7dba7849f54ccd63e",
+          "title": "General Electric (GE) | History, Acquisitions, Products, & ...",
+          "url": "https://www.britannica.com/money/General-Electric",
+          "snippet": "Edison General had been founded as the Edison Electric Light Company in 1878 by Thomas Edison to market his incandescent lamp and other later ..."
+        },
+        {
+          "candidate_id": "c-5607e2d5b931a846185c",
+          "title": "About: GE Today, GE History",
+          "url": "https://www.ge.com/about-us",
+          "snippet": "Since 1892. We dared to imagine a bolder, brighter tomorrow and vowed to build a world that works, for everyone. That promise continues at GE Aerospace, ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-405036",
+      "query": "is burning sage evil",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-1ed79e37a6e96db9e747",
+          "title": "❌ Burning sage doesn't cleanse your house… it invites ...",
+          "url": "https://www.facebook.com/BrysonGrayOfficial/posts/-burning-sage-doesnt-cleanse-your-house-it-invites-demons-in/1212109043918313/",
+          "snippet": "Burning sage will never remove evil spirits. It actually invites them in. Burning sage also shows a lack of trust in God. His blood that causes ..."
+        },
+        {
+          "candidate_id": "c-46d9f6d1898bad790c62",
+          "title": "Is burning sage (smudging) compatible with true Christianity?",
+          "url": "https://www.reddit.com/r/TrueChristian/comments/14bp97b/is_burning_sage_smudging_compatible_with_true/",
+          "snippet": "Just so I am clear, even if the practice is focused solely on prayer to God, burning sage (smudging) is still considered a pagan practice and against ..."
+        },
+        {
+          "candidate_id": "c-72bf72cbe6727bcc5a1f",
+          "title": "Burning sage is not a biblical practice",
+          "url": "https://www.facebook.com/groups/447670389320125/posts/2193124254774721/",
+          "snippet": "Believers do not need to resort to burning sage to ward off the devil or his evil spirits. sage burning is sinful, and is actually the act of ..."
+        },
+        {
+          "candidate_id": "c-a12d22530878dd0e9333",
+          "title": "Burning sage  does WHAT???  #God #Jesus #HolySpirit",
+          "url": "https://www.facebook.com/therealcoachjosiah1/videos/burning-sage-does-what-god-jesus-holyspirit-angela-scaffidi/1909327556540376/",
+          "snippet": "Sage would word off evil spirits. Sage also kills bacteria. In witchcraft, sage is burned to ward off demons or \"bad energy\" Burning it to kill ..."
+        },
+        {
+          "candidate_id": "c-6c2f0b0fa051c63811e2",
+          "title": "What Does the Bible Say About Burning Sage?",
+          "url": "https://www.learnreligions.com/burning-sage-in-the-bible-5073572",
+          "snippet": "Burning sage is neither encouraged nor forbidden in the Bible. The Bible does not expressly forbid or encourage burning sage, any form of ..."
+        },
+        {
+          "candidate_id": "c-f8dca0ea1386426a061b",
+          "title": "I was told that burning sage or smudge sticks summons ...",
+          "url": "https://www.quora.com/I-was-told-that-burning-sage-or-smudge-sticks-summons-demons-or-is-the-doorway-for-demonic-spirits-How-true-is-this-Any-experiences",
+          "snippet": "I was told that burning sage or smudge sticks summons demons or is the doorway for demonic spirits. How true is this? Any experiences?"
+        },
+        {
+          "candidate_id": "c-4dbe190986196b0e3e97",
+          "title": "Is burning sage compatible with the Christian faith or is it ...",
+          "url": "https://forums.crosswalk.com/t/is-burning-sage-compatible-with-the-christian-faith-or-is-it-witchcraft/6849",
+          "snippet": "No, burning sage for spiritual purposes is not biblical and is not something that a Christian should do. It is true that in the Old Testament, ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-138127",
+      "query": "definition of sexul reproduction in science",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-362a79bb490e87be1af0",
+          "title": "Sexual reproduction - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sexual_reproduction",
+          "snippet": "Sexual reproduction is a type of reproduction that involves a complex life cycle in which a gamete (haploid reproductive cells, such as a sperm or egg cell)"
+        },
+        {
+          "candidate_id": "c-e071177bd26c07fda733",
+          "title": "Sexual vs. Asexual Reproduction - Learn Genetics (Utah)",
+          "url": "https://learn.genetics.utah.edu/content/basics/reproduction/",
+          "snippet": "In sexual reproduction, two parents contribute genetic information to produce unique offspring. Sexual and asexual reproduction have advantages and ..."
+        },
+        {
+          "candidate_id": "c-290e68e8eafa00be318f",
+          "title": "Sexual Reproduction | Springer Nature Link",
+          "url": "https://link.springer.com/rwe/10.1007/978-3-319-19650-3_437",
+          "snippet": "'Sexual Reproduction' published in 'Encyclopedia of Evolutionary Psychological Science'"
+        },
+        {
+          "candidate_id": "c-34514f0b1f5f12d3c69e",
+          "title": "Sexual Reproduction | Definition, Process & Types - Study.com",
+          "url": "https://study.com/academy/lesson/sexual-reproduction-definition-lesson-quiz.html",
+          "snippet": "Sexual reproduction is the coming together of two parents' genetic material to create offspring. The goal of sexual reproduction is to increase genetic ..."
+        },
+        {
+          "candidate_id": "c-ad947bb4c7a941494c71",
+          "title": "Sexual reproduction | Definition, Process, & Plants | Britannica",
+          "url": "https://www.britannica.com/science/sexual-reproduction",
+          "snippet": "Sexual reproduction, the production of new organisms by the combination of genetic information of two individuals of different sexes."
+        },
+        {
+          "candidate_id": "c-07764fc54a185aa68cb9",
+          "title": "Sexual and Asexual Reproduction Explained - YouTube",
+          "url": "https://www.youtube.com/watch?v=co5jZId0F-g",
+          "snippet": "Flash cards every weekday: https://www.instagram.com/igcsebioflashcards There are main types of reproduction in living organisms: sexual and ..."
+        },
+        {
+          "candidate_id": "c-c47c9f9b082a5169bd96",
+          "title": "What is sexual reproduction? - Facebook",
+          "url": "https://www.facebook.com/groups/148053357916877/posts/392306883491522/",
+          "snippet": "Sexual reproduction is a process of creating offspring by combining genetic material from two parents. It involves the fusion of gametes (sex ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-93649",
+      "query": "clutch baseball definition",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-569dbfd0af77223222da",
+          "title": "Clutch Baseball Dictionary",
+          "url": "https://www.baseball-almanac.com/dictionary-term.php?term=clutch",
+          "snippet": "Any difficult, tense, or critical situation, often one in which the outcome of a game hinges on the success or failure of a team or individual player."
+        },
+        {
+          "candidate_id": "c-fc71a38a3404c2f6a787",
+          "title": "Is \"Clutch\" Actually Real IN Baseball?",
+          "url": "https://www.youtube.com/watch?v=ipxdqLwBWjE",
+          "snippet": "We've all heard it before: “He's clutch.” But is that just a story we tell, or can you actually measure clutch performance in baseball?"
+        },
+        {
+          "candidate_id": "c-ff78965be0ad3af3b756",
+          "title": "Clutch Performance in Baseball Explained",
+          "url": "https://www.tiktok.com/@xavier_scruggs/video/7494665375154720046",
+          "snippet": "When we talk about someone being \"clutch\" in baseball, we refer to their ability to perform exceptionally well during crucial moments of the ..."
+        },
+        {
+          "candidate_id": "c-e1f63ce9a13c643106dd",
+          "title": "Clutch | Sabermetrics Library",
+          "url": "https://library.fangraphs.com/misc/clutch/",
+          "snippet": "Clutch measures how well a player performed in high leverage situations. It's calculated as such: Clutch = (WPA / pLI) – WPA/LI."
+        },
+        {
+          "candidate_id": "c-9b4fe9e5d0bc9f053883",
+          "title": "Clutch hitter",
+          "url": "https://en.wikipedia.org/wiki/Clutch_hitter",
+          "snippet": "A clutch hitter is a baseball player who is seemingly adept at getting a hit in high-pressure situations, i.e. in the clutch."
+        },
+        {
+          "candidate_id": "c-1f709985380544d715e2",
+          "title": "What do we mean when we say someone is 'clutch'? | 06/20 ...",
+          "url": "https://www.mlb.com/video/gennaro-on-defining-clutch-c838204883",
+          "snippet": "What do we mean when we say someone is 'clutch'? Baseball SABR Style on SiriusXM, takes a look at how we define the word \"clutch\""
+        },
+        {
+          "candidate_id": "c-d7c2130c0b59fca49545",
+          "title": "CLUTCH PITCHING IN BASEBALL: DOES IT EXIST? Nat ...",
+          "url": "https://scholarship.tricolib.brynmawr.edu/bitstreams/c7987a7a-b8c3-45ae-beac-9028cf56e8e5/download",
+          "snippet": "We can also conclude with over 99% confidence that each pitcher with three instances of clutch performance is indeed truly clutch by our definition. For ..."
+        },
+        {
+          "candidate_id": "c-fe65e185a57bb6ce62d6",
+          "title": "The Statistical Mirage of Clutch Hitting",
+          "url": "https://sabr.org/journal/article/the-statistical-mirage-of-clutch-hitting/",
+          "snippet": "They defined the best clutch hitter as the man whose total batting average improved the most in late-inning pressure situations."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-627513",
+      "query": "what doe the 4th estate mean",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-0bf71caf57be7e747bb9",
+          "title": "The Fourth Estate As The Final Check | Yale Law School",
+          "url": "https://law.yale.edu/mfia/case-disclosed/fourth-estate-final-check",
+          "snippet": "Beyond the three traditional branches of government, there is another that has often been described as a fourth branch: the free press."
+        },
+        {
+          "candidate_id": "c-699e76fc69c102191322",
+          "title": "FOURTH ESTATE Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/fourth%20estate",
+          "snippet": "The meaning of FOURTH ESTATE is the public press : journalists as a group. mely, the nobility, the clergy, and the common people. fourth estate ..."
+        },
+        {
+          "candidate_id": "c-6192c1e235531f6d6935",
+          "title": "What is the Fourth Estate? - ThoughtCo",
+          "url": "https://www.thoughtco.com/what-is-the-fourth-estate-3368058",
+          "snippet": "The Fourth Estate refers to the press and its important role in democracy. The term 'Fourth Estate' is outdated because of growing public ..."
+        },
+        {
+          "candidate_id": "c-8c63a1be573a80f5f4b7",
+          "title": "Fifth Estate | Meaning & the Impact of Media - Lesson - Study.com",
+          "url": "https://study.com/learn/lesson/fifth-estate-media.html",
+          "snippet": "What is the 1st 2nd 3rd and 4th estate? ... The traditional four estates are: clergy, nobility, commoners and bourgeois, and media. Many consider the modern ..."
+        },
+        {
+          "candidate_id": "c-a30340b9179c585b5648",
+          "title": "Fourth Estate Meaning - YouTube",
+          "url": "https://www.youtube.com/watch?v=t5V_jfxSPpA",
+          "snippet": "Fourth Estate Meaning - Fifth Estate Definition - Fourth Estate Examples - Fifth Estate Explained - Society - Fourth Estate Fifth Estate ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1027919",
+      "query": "what kind idea had wovoka",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-8a00e66d621d192751a5",
+          "title": "Wovoka | Biography, Ghost Dance, & Facts",
+          "url": "https://www.britannica.com/biography/Wovoka",
+          "snippet": "Wovoka (1858–1932) was a Native American religious leader who initiated the second Ghost Dance movement around 1890. His father was a Paiute shaman. Around 1888 ..."
+        },
+        {
+          "candidate_id": "c-3104ed58023b0fd761c8",
+          "title": "A rhetorical history of the 1890 Ghost Dance Prophet",
+          "url": "https://oasis.library.unlv.edu/cgi/viewcontent.cgi?article",
+          "snippet": "Wovoka's Great Revelation of New Years Day was only one of many visions he had had up to that point (Hittman Wovoka 63). However, the precepts contained in ..."
+        },
+        {
+          "candidate_id": "c-1bdf1bbeef204a46e1be",
+          "title": "Wovoka Wilderness Additional Resources",
+          "url": "https://www.nevadawilderness.org/wovoka_wilderness_additional_resources",
+          "snippet": "Wovoka preached to the people to be kind, be good to the Earth, and be good to one another regardless of race and back ground. He spoke of living a good clean ..."
+        },
+        {
+          "candidate_id": "c-8d66e20dd0734172c697",
+          "title": "Wovoka's Message: The Promise of the Ghost Dance",
+          "url": "https://www.pbs.org/kenburns/the-west/wovokas-message",
+          "snippet": "Wovoka (also known as Jack Wilson) delivered his message orally, and it was transcribed by a member of the group who had attended Carlisle Indian School."
+        },
+        {
+          "candidate_id": "c-277e2a7bc1b7b14c2591",
+          "title": "Wovoka",
+          "url": "https://en.wikipedia.org/wiki/Wovoka",
+          "snippet": "Wovoka's vision entailed the resurrection of the Paiute dead, and the removal of whites and their works from North America. a traditional round dance known as ..."
+        },
+        {
+          "candidate_id": "c-9b269766d92ba31973fb",
+          "title": "📆 This Date in American Indian History January 1, ...",
+          "url": "https://www.facebook.com/aktalakota/posts/-this-date-in-american-indian-historyjanuary-1-1889on-this-day-wovoka-jack-wilso/1160716302891244/",
+          "snippet": "Man Wovoka (aka: Jack Wilson) had a prophetic vision. He combined principles of both Christianity and Shamanism into the concept of the Ghost ..."
+        },
+        {
+          "candidate_id": "c-c772fce6a69ab314a898",
+          "title": "Ghost Dance Movement | History | Research Starters",
+          "url": "https://www.ebsco.com/research-starters/history/ghost-dance-movement",
+          "snippet": "The Ghost Dance Movement originated in the late 19th century, specifically in 1890, based on the visions of Wovoka, a Paiute shaman from Nevada."
+        },
+        {
+          "candidate_id": "c-167b80e3ac64e4e61e58",
+          "title": "The Ghost Dance Religion and the Prophet Wovoka",
+          "url": "https://medium.com/wild-westerns/the-ghost-dance-religion-and-the-prophet-wovoka-630c8ef3218c",
+          "snippet": "The gospel Wovoka preached was a mixture of traditional Native American beliefs and Christianity. He claimed that Jesus Christ had reappeared ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-405090",
+      "query": "is bv an std",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-63fa325b3d2077fda5bb",
+          "title": "Bacterial vaginosis: Common vaginal condition is really an STD, study finds",
+          "url": "https://www.cnn.com/2025/03/05/health/bacterial-vaginosis-sexually-transmitted-wellness",
+          "snippet": "Bacterial vaginosis, which affects nearly 1 in 3 women, should be considered a sexually transmitted disease, according to a new study."
+        },
+        {
+          "candidate_id": "c-d40279ce086a7206abe4",
+          "title": "STD Awareness: Is Bacterial Vaginosis a Sexually ...",
+          "url": "https://www.plannedparenthoodaction.org/planned-parenthood-advocates-arizona/blog/std-awareness-is-bacterial-vaginosis-a-sexually-transmitted-disease",
+          "snippet": "The consensus seems to be that BV isn't officially an STD, but even reliable sources have somewhat contradictory information. Planned Parenthood ..."
+        },
+        {
+          "candidate_id": "c-9811a593327738a9f4a2",
+          "title": "Can Men Get Bacterial Vaginosis? | University of Rochester Medicine",
+          "url": "https://www.urmc.rochester.edu/news/publications/health-matters/can-men-have-bacterial-vaginosis",
+          "snippet": "Is Bacterial Vaginosis a Sexually Transmitted Infection (STI)? No. BV is like an STI in that: It occurs four days after sexual activity Sexual ..."
+        },
+        {
+          "candidate_id": "c-5e2dd25331c379626401",
+          "title": "Bacterial Vaginosis (BV): Causes, Symptoms & Treatment",
+          "url": "https://my.clevelandclinic.org/health/diseases/3963-bacterial-vaginosis",
+          "snippet": "Is bacterial vaginosis an STD or STI? Bacterial vaginosis isn't sexually transmitted, but it's linked to sexual activity. Researchers think ..."
+        },
+        {
+          "candidate_id": "c-33639d84fbc6ab32d8b6",
+          "title": "Relationship between Bacterial Vaginosis and Sexually ... - PMC",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10609101/",
+          "snippet": "by L Abou Chacra · 2023 · Cited by 35 — Although bacterial vaginosis (BV) is not considered to be an STI, it may be associated with an increased risk of contracting a wide range of ..."
+        },
+        {
+          "candidate_id": "c-f66d2cba04591cec3187",
+          "title": "About Bacterial Vaginosis (BV) - CDC",
+          "url": "https://www.cdc.gov/bacterial-vaginosis/about/index.html",
+          "snippet": "Bacterial vaginosis (BV) is a common, treatable, vaginal condition. It can increase the risk of other sexually transmitted infections (STIs) ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-983438",
+      "query": "where is glenfinnan",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-3a59646b2a1f7914c26b",
+          "title": "Glenfinnan Monument | National Trust for Scotland",
+          "url": "https://www.nts.org.uk/visit/places/glenfinnan-monument",
+          "snippet": "Surrounded by mountains on the shores of Loch Shiel, Glenfinnan Monument is a Highland gem and a tranquil spot : the 1745 Jacobite Rising."
+        },
+        {
+          "candidate_id": "c-aa5a870f83e3e043bae8",
+          "title": "Glenfinnan - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Glenfinnan",
+          "snippet": "is a hamlet in Lochaber area of the Highlands of Scotland. at the head of the loch, France on Eriskay in the Western Isles, travelling to the mainland"
+        },
+        {
+          "candidate_id": "c-91940a12f170346063f3",
+          "title": "Glenfinnan Monument & Viaduct - Brown Sign Blogging",
+          "url": "https://brownsignblogging.com/glenfinnan-monument-viaduct/",
+          "snippet": "Location: Glenfinnan, Lochaber PH37 4LT. The Glenfinnan Monument, a lonely sentinel standing watch from Loch Shiel's narrow northern shore. It is one of ..."
+        },
+        {
+          "candidate_id": "c-b4cc1a4c31c0e76729bf",
+          "title": "Glenfinnan Viewpoint, Monument, and Viaduct - Scotland - AllTrails",
+          "url": "https://www.alltrails.com/trail/scotland/highlands/glenfinnan-viewpoint-monument-and-viaduct",
+          "snippet": "3.9-mile out-and-back trail near Glenfinnan, Highlands. Generally considered an easy route, it takes an average of 1 h 48 min to complete."
+        },
+        {
+          "candidate_id": "c-34e3652034ba748e04dd",
+          "title": "Discover the Beauty of Glenfinnan: A Highland Gem - Scotland's Wild",
+          "url": "https://www.scotlandswild.com/glenfinnan",
+          "snippet": "Glenfinnan, situated in the Lochaber region of the Scottish Highlands, holds a significant place in history. led his standard along the shores of Loch Shiel. ..."
+        },
+        {
+          "candidate_id": "c-05003e39e9389c6014c4",
+          "title": "Glenfinnan : Scotland Travel Guide",
+          "url": "https://www.nordicvisitor.com/scotland/attractions/glenfinnan/",
+          "snippet": "Glenfinnan is a village in the Scottish Highlands with a long and interesting history, notably for being the site of the Jacobite rising of 1745."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-538570",
+      "query": "vvi airport code",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-b5766be64d7359398c35",
+          "title": "Santa Cruz Viru Viru International Airport, Bolivia",
+          "url": "https://www.wego.vn/en/airports/srz/airports-in-santa-cruz-de-la-sierra-6901/santa-cruz-viru-viru-international-airport-vvi",
+          "snippet": "Santa Cruz Viru Viru International Airport. IATA Code. VVI. Latitude. -17.6447. Longitude. -63.1353. Live flight status. Santa Cruz Viru Viru International ..."
+        },
+        {
+          "candidate_id": "c-7c4f7dc1a1ddb4d0d881",
+          "title": "Viru Viru Airport, Santa Cruz De La Sierra - VVI SLVR",
+          "url": "https://www.businessairnews.com/hb_airportpage.html?recnum=2244",
+          "snippet": "IATA Code: VVI ICAO Code: SLVR Latitude: -17.644N Longitude: 63.135W. Runway: 3500m. Hours of operation: 24hrs with restrictions. Tel: +591 3 852 118"
+        },
+        {
+          "candidate_id": "c-ea999e1a313f9ce1842b",
+          "title": "Viru Viru International Airport",
+          "url": "https://en.wikipedia.org/wiki/Viru_Viru_International_Airport",
+          "snippet": "Viru Viru International Airport (IATA: VVI, ICAO: SLVR) is an international airport serving Santa Cruz de la Sierra, located 17 km (11 mi) north of the city."
+        },
+        {
+          "candidate_id": "c-10864825af6ef308487a",
+          "title": "Viru Viru International - Bolivia",
+          "url": "https://www.world-airport-codes.com/bolivia/viru-viru-international-6636.html",
+          "snippet": "Viru Viru International is located in Bolivia, using iata code VVI, and icao code SLVR.Find out the key information for this airport."
+        },
+        {
+          "candidate_id": "c-5e0df40d7eb207ffa35c",
+          "title": "Flights from Viru Viru International airport",
+          "url": "https://www.kiwi.com/en/airport/vvi/viru-viru-international-santa-cruz-de-la-sierra-bolivia/",
+          "snippet": "IATA code, VVI. ICAO code, SLVR. Latitude & longitude, -17.644722, -63.135278. Time zone, America/La_Paz. Popular destinations from Viru Viru International (VVI)."
+        },
+        {
+          "candidate_id": "c-19ce44532b0e7f66abd1",
+          "title": "Aeropuerto Internacional Viru Viru - Airport Codes - Seabay Logistics",
+          "url": "https://www.seabaycargo.com/airport-code/vvi-aeropuerto-internacional-viru-viru.html",
+          "snippet": "Aeropuerto Internacional Viru Viru (IATA code: VVI, ICAO code: SLVR) in Santa Cruz de la Sierra is Bolivia's largest and most popular international airport."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-983451",
+      "query": "where is glossotonsillar",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-3d6caacd19043232d582",
+          "title": "Oropharyngeal Cancer Imaging - EPOS™",
+          "url": "https://epos.myesr.org/poster/esr/ranzcr2014/R-0171/results",
+          "snippet": "Tumors of the anterior tonsillar pillars commonly invade the palatoglossus muscle superiorly to involve the lateral aspect of the soft palate. Tonsilllar ..."
+        },
+        {
+          "candidate_id": "c-8091db7ae590bbf1dbdf",
+          "title": "Anatomy - Oropharyngeal Cancer",
+          "url": "https://thancguide.org/cancer-types/throat/pharyngeal/oropharyngeal/anatomy/",
+          "snippet": "Glossotonsillar sulcus. This is the bottom part of the tonsils where they blend into the lingual tonsil tissue on the back of the tongue. It is basically the ..."
+        },
+        {
+          "candidate_id": "c-417cf5bc916e62382362",
+          "title": "Oropharynx: Introduction - Radiology Key",
+          "url": "https://radiologykey.com/oropharynx-introduction/",
+          "snippet": "the sulci between the lateral oropharyngeal wall and tongue base are known as the glossotonsillar sulci. Lymphoid tissue normally lies in the ..."
+        },
+        {
+          "candidate_id": "c-5a29d463533808ff3490",
+          "title": "Left Glossotonsillar Sulcus squamous cell carcinoma - Medality / MRI Online",
+          "url": "https://medality.com/course/radiology-oral-cavity-and-oropharynx/chapter/lesson/sequence/oral-cavity/unit/left-glossotonsillar-sulcus-squamous-cell-carcinom/",
+          "snippet": "little area that it stretches out is 0:55 referred to as the glossotonsillar sulcus. it's a subtle area, the circumvallate papillae. left lateral aspect of the ..."
+        },
+        {
+          "candidate_id": "c-3be0c2c3217bdf7e5ac9",
+          "title": "Oropharynx | Radiology Reference Article | Radiopaedia.org",
+          "url": "https://radiopaedia.org/articles/oropharynx?lang=us",
+          "snippet": "Various spaces are included: glossotonsillar sulci (area between base of tongue/lingual tonsils and palatine tonsils) valleculae (space between ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-938963",
+      "query": "when did hugh glass die",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a4e34854f3f655c132d5",
+          "title": "Hugh Glass's 200-year-old letter notes comrades' death - News",
+          "url": "https://news.sd.gov/news?id=news_kb_article_view&sysparm_article=KB0040311",
+          "snippet": "Hugh Glass in June 1823, died in the early morning hours of June 2, 1823. In the winter of 1833, he was killed by a band of Arikara on the ..."
+        },
+        {
+          "candidate_id": "c-f0d46aba7c65b7518365",
+          "title": "Later Life - The Real Story of Hugh Glass",
+          "url": "https://hughglass.org/later-life/",
+          "snippet": "Hugh Glass's demise … the spring of 1833. Glass and two men were killed on the Yellowstone River in the spring of 1833,"
+        },
+        {
+          "candidate_id": "c-02e7a20d9b83792e8c3c",
+          "title": "Hugh Glass - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Hugh_Glass",
+          "snippet": "Hugh Glass ( c. 1783 – 1833) Died 1833 (aged approximately 50) Unorganized U.S. territory (near present-day Williston, North Dakota) s the tale of the two of ..."
+        },
+        {
+          "candidate_id": "c-e05425bcaa6065b6f383",
+          "title": "Hugh Glass: The Epic True Tale - Cowboys and Indians Magazine",
+          "url": "https://www.cowboysindians.com/2015/11/the-epic-true-tale-of-hugh-glass/",
+          "snippet": "The last we hear of him is in 1833, back on the Yellowstone River. All three trappers were killed and scalped. Glass, then past 50, was buried in an unmarked ..."
+        },
+        {
+          "candidate_id": "c-79f84d21422a0a68403b",
+          "title": "Hugh Glass | Biography & Facts | Britannica",
+          "url": "https://www.britannica.com/biography/Hugh-Glass",
+          "snippet": "Hugh Glass was left for dead after a bear attack in August 1823. Although he reportedly had a broken leg, a ripped scalp, a punctured throat, and numerous ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-494086",
+      "query": "search definition of a deacon",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a36877b02a7a76d7a57d",
+          "title": "Glossary of British terms not widely used in the United States",
+          "url": "https://en.wikipedia.org/wiki/Glossary_of_British_terms_not_widely_used_in_the_United_States",
+          "snippet": "September 2, 2018. \"Chambers – Search Chambers\". \"AFTERS definition and meaning | Collins English Dictionary\". \"Definition of AFTERS\". www.merriam-webster"
+        },
+        {
+          "candidate_id": "c-4704062822c1ecbd2f5a",
+          "title": "What Is a Deacon? - Diocese of Rockford Diaconate Office",
+          "url": "https://deaconrockford.org/what-is-a-deacon",
+          "snippet": "\"deacon\" comes from the Greek phrase diakonos and means \"servant.\" Like Catholic priests, deacons share in a degree of the sacrament of ordination, or Holy ..."
+        },
+        {
+          "candidate_id": "c-5884ff2aebfc76c1185d",
+          "title": "What are the responsibilities of deacons in the church?",
+          "url": "https://www.gotquestions.org/deacons-church.html",
+          "snippet": "It refers to an attendant, a waiter, or one who ministers to another. From this word we get the English word “deacon.” are to be appointed to ..."
+        },
+        {
+          "candidate_id": "c-3b39543664fa7104a61d",
+          "title": "Deacons - The Gospel Coalition",
+          "url": "https://www.thegospelcoalition.org/essay/deacons/",
+          "snippet": "Deacons are model servants appointed to a local church office, deployed to assist the pastors to promote unity, organize services, and meet needs."
+        },
+        {
+          "candidate_id": "c-412f505e0081300e6be3",
+          "title": "Deacon - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Deacon",
+          "snippet": "A deacon (from Greek \"assistant\", \"servant\") is a member of the diaconate, an office in Christian churches that is generally associated with service of some ..."
+        },
+        {
+          "candidate_id": "c-67e638baf1dce88f3d4b",
+          "title": "DEACON Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/deacon",
+          "snippet": "The meaning of DEACON is a subordinate officer in a Christian church. a Roman Catholic, Anglican, or Eastern Orthodox … one of the laity elected"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-761032",
+      "query": "what is issue two on the ohio ballot",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a6c4c46f4718089fef3c",
+          "title": "Ohio Ballot Board | Ballot Language Review & Certification ...",
+          "url": "https://www.ohiosos.gov/office/duties-and-responsibilities/ohio-ballot-board",
+          "snippet": "The Ohio Ballot Board is responsible for prescribing and certifying the language used on ballots for proposed state constitutional amendments, initiatives, and ..."
+        },
+        {
+          "candidate_id": "c-a9460ebfd6c2a2d66b33",
+          "title": "Ohio Issue 2 explained for the May 6 primary election: What is it?",
+          "url": "https://www.youtube.com/watch?v=ZNVE3ucN0-M",
+          "snippet": "Authorize the state to issue bonds or other obligations to finance or assist in financing public infrastructure capital improvements for local ..."
+        },
+        {
+          "candidate_id": "c-098d6358a8cddc19a43d",
+          "title": "2025 Ohio Issue 2",
+          "url": "https://en.wikipedia.org/wiki/2025_Ohio_Issue_2",
+          "snippet": "\"Issue 2 on May 2025 ballot: Ohio to vote on $2.5B bond initiative for public infrastructure projects\". · \"What is Ohio Issue 2 on the May ballot? · \"Ohio primary ..."
+        },
+        {
+          "candidate_id": "c-4ff1666beeb3d41e63e6",
+          "title": "Election Day is this week. Here's what Issue 2 on Ohio's ...",
+          "url": "https://ohiocapitaljournal.com/2025/05/05/election-day-is-this-week-heres-what-issue-2-on-ohios-ballot-means/",
+          "snippet": "Issue 2. It is a constitutional amendment meant to support local infrastructure projects, Issue 2 is the bond package paying for local ..."
+        },
+        {
+          "candidate_id": "c-da599d304098e85fb293",
+          "title": "Issue 2: County Charter Amendment 2025",
+          "url": "https://co.summitoh.net/pages/Issue-2-County-Charter-Amendment-2025.html",
+          "snippet": "The proposed charter amendment would protect you, the taxpayer, from sudden increases in your property tax bills by limiting the county's unvoted millage ..."
+        },
+        {
+          "candidate_id": "c-316e6c2352133821151f",
+          "title": "Putting an Issue on the Ballot in Ohio",
+          "url": "https://www.ohiosos.gov/office/duties-and-responsibilities/putting-an-issue-on-the-ballot",
+          "snippet": "This process allows Ohio citizens the right to challenge legislation they disagree with before it takes effect. Legal authority: Article II, Section 1c, Ohio ..."
+        },
+        {
+          "candidate_id": "c-8a6d1d75dd012dd0f97c",
+          "title": "Ohio Issue 2, Local Public Infrastructure Bond Amendment ...",
+          "url": "https://ballotpedia.org/Ohio_Issue_2,_Local_Public_Infrastructure_Bond_Amendment_(May_2025)",
+          "snippet": "Issue 2 was a constitutional amendment allowing the state government to issue $2.5 billion in general obligation bonds over ten years — no more than $250 ..."
+        },
+        {
+          "candidate_id": "c-07f7b92b54249bc4fd2e",
+          "title": "Issue 2 on the November 2023 Ballot A legal analysis by ...",
+          "url": "https://www.ohioattorneygeneral.gov/SpecialPages/BALLOT-ISSUE-2-FINAL.aspx",
+          "snippet": "ISSUE 2: Marijuana Legalization. TYPE OF LEGISLATION: Issue 2 is an indirect initiated statute. This method of amending Ohio law is one of three methods."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-49234",
+      "query": "bay rum scent",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-7f3b53620f2c1798a006",
+          "title": "Signature Men's Bay Rum Cologne, Soap, and Grooming Essentials",
+          "url": "https://stjohnsbayrum.com/collections/bay-rum-cologne?srsltid=AfmBOopJCc1z6Hfub8VS-A4IUQxVNiQ5AA7ssF-QxdImbKBnkQR4jXLw",
+          "snippet": "From $45 rum scent, bay rum is widely regarded as a masculine scent. The combination of bay leaf, clove, and cinnamon gives it a bold, spicy fragrance that is ..."
+        },
+        {
+          "candidate_id": "c-07113a6aad285924a555",
+          "title": "How do you feel about bay rum fragrances and which should I ...",
+          "url": "https://basenotes.com/threads/how-do-you-feel-about-bay-rum-fragrances-and-which-should-i-check-out.547554/",
+          "snippet": "bay rum is a really fleeting fragrance- kind of like lime. It's very often combined with clove. A very heavy aromatic scent with bay leaf"
+        },
+        {
+          "candidate_id": "c-a064e1c1622361c90f47",
+          "title": "St. Johns Bay Rum® | Original Bay Rum Cologne & Aftershave",
+          "url": "https://stjohnsbayrum.com/?srsltid=AfmBOoo1Q7eK_13ZkmOmSyP1pHL7xsw5rTIIONrN2kjZvWrNR5bhhejO",
+          "snippet": "Makers of the Original Bay Rum since 1849. Discover our colognes, aftershave, and grooming essentials, crafted with island heritage and timeless appeal."
+        },
+        {
+          "candidate_id": "c-278e1e183ef2a2189875",
+          "title": "Amazon.com: St. John Bay Rum Aftershave and Cologne",
+          "url": "https://www.amazon.com/St-Johns-Aftershave-Fragrance-Handcrafted/dp/B009P8NHZS",
+          "snippet": "Original Bay Rum contains the best smelling cologne oils, with a distinctly masculine scent. It contains eucalyptus to cleanse, cool, and hydrate … eucalyptus, ..."
+        },
+        {
+          "candidate_id": "c-5188e13452d432f959ea",
+          "title": "What does Bay Rum smell like? : r/Wet_Shavers - Reddit",
+          "url": "https://www.reddit.com/r/Wet_Shavers/comments/487j1e/what_does_bay_rum_smell_like/",
+          "snippet": "It's warm and spicy. Cinnamon, clove, sage, and a warm brown sugary/molassesy touch. Each bay rum differs, where some can be woody, citrus, or ..."
+        },
+        {
+          "candidate_id": "c-1ee108493a4956f19166",
+          "title": "History of Bay Rum Aftershave & Cologne: Grooming Out of Necessity",
+          "url": "https://stjohnsbayrum.com/blogs/news/history-of-the-bay-rum-aftershave-grooming-out-of-necessity?srsltid=AfmBOoqtNUPm9pdTA42ZlCMICkKeEEOBvjSGIULJwxeV5mz9HslXREzH",
+          "snippet": "Bay Rum cologne and aftershave gives you a commanding air and connects you with the rich history of the tropics. Discover Bay Rum Products at St ..."
+        },
+        {
+          "candidate_id": "c-f18669d00e09d2e36316",
+          "title": "Bay rum - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Bay_rum",
+          "snippet": "Bay rum is a type of cologne and aftershave lotion. Other uses include as under-arm deodorant, fragrance for shaving soap and hair cream, as well as a ..."
+        },
+        {
+          "candidate_id": "c-069f3ade1da83df572e3",
+          "title": "Scents - Everything Bay Rum",
+          "url": "https://www.everythingbayrum.com/scents?srsltid=AfmBOoqkxC5sNPyGxPEfacSqyhet2f1V-4fzL_XGhSRtAKMisCOp3u-G",
+          "snippet": "We offer 9 different scents and over 88 different bay rum products. A unique blend of Bay Oil & Oils of Clove Bud, Lime, Sage, Rosemary, Ginger, Orange, ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-138223",
+      "query": "definition of slouch",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-c9209ad9f305c3390566",
+          "title": "SLOUCH definition in American English - Collins Dictionary",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/slouch",
+          "snippet": "If someone slouches, they sit or stand with their shoulders and head bent so they look lazy and unattractive. Try not to slouch when you are sitting down."
+        },
+        {
+          "candidate_id": "c-4e0dc9cbc92a6b33d07a",
+          "title": "SLOUCH | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/slouch",
+          "snippet": "to stand, sit, or walk with the shoulders hanging forward and the head bent slightly over so that you look tired and bored:"
+        },
+        {
+          "candidate_id": "c-aad68fff93433b3f4f56",
+          "title": "SLOUCH Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/slouch",
+          "snippet": "The meaning of SLOUCH is an awkward fellow : lout. a lazy or incompetent person … a gait or posture characterized by an ungainly stooping of ..."
+        },
+        {
+          "candidate_id": "c-845599490525c611a2e7",
+          "title": "SLOUCH Definition & Meaning - Dictionary.com",
+          "url": "https://www.dictionary.com/browse/slouch",
+          "snippet": "To slouch is to sit or stand with your shoulders hunched. Most people are more likely to slouch when they're tired or bored."
+        },
+        {
+          "candidate_id": "c-ca14ed93d21b17873fdc",
+          "title": "Slouch Meaning - GRE 3500 Vocabulary Slouch - YouTube",
+          "url": "https://www.youtube.com/watch?v=VsUII0uLpA0",
+          "snippet": "Slouch Meaning - Slouch Examples - Slouch Definition - Slouch Defined - GRE 3500 Vocabulary Slouch Slouch - Slouch Meaning - Slouch Examples ..."
+        },
+        {
+          "candidate_id": "c-496b941eb1b6f5272f79",
+          "title": "Slouch Definition & Meaning | Britannica Dictionary",
+          "url": "https://www.britannica.com/dictionary/slouch",
+          "snippet": ": to walk, sit, or stand lazily with your head and shoulders bent forward Sit up straight. informal : a lazy or worthless person (chiefly US)"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-983499",
+      "query": "where is gold located with the earth",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-67a5fc9874752c908ab9",
+          "title": "Where Gold Is Found in Nature (Rocks, Rivers, and Creeks)",
+          "url": "https://garrett.com/where-gold-is-found-in-nature-rocks-rivers-and-creeks/",
+          "snippet": "Gold is found in nature primarily in rocks, quartz veins, rivers, streams, and creeks, as well as in soil, sediment, and trace amounts in seawater."
+        },
+        {
+          "candidate_id": "c-7ba01b20e9c5f70f5d4c",
+          "title": "Gold's Origin Story and How it Forms on Earth - Physical Gold",
+          "url": "https://www.physicalgold.com/insights/where-does-gold-come-from/",
+          "snippet": "They are therefore typically located along the boundaries of tectonic plates or in regions with volcanic activity, as extreme heat and … star ..."
+        },
+        {
+          "candidate_id": "c-29e8c27b4e8378c97939",
+          "title": "Where is Gold Found on Earth? - YouTube",
+          "url": "https://www.youtube.com/watch?v=YGtRgJfGvXI&vl=en",
+          "snippet": "Curious about where gold hides in rocks and sedimentary layers? In this geology guide, we explain gold deposits, how gold concentrates in ..."
+        },
+        {
+          "candidate_id": "c-8995c472b91a74c16134",
+          "title": "How much gold has been found in the world? | U.S. Geological Survey",
+          "url": "https://www.usgs.gov/faqs/how-much-gold-has-been-found-world",
+          "snippet": "Most of that gold has come from just three countries: China, Australia, and South Africa. is 23 meters wide on every side."
+        },
+        {
+          "candidate_id": "c-c64dc2351963834cef6f",
+          "title": "How Is Gold Formed and Where Do We Find It?",
+          "url": "https://www.chards.co.uk/guides/how-is-gold-formed-and-where-do-we-find-it-gold-guide/1177",
+          "snippet": "While gold is formed in the stars, it can also be found in the Earth's crust. Gold is primarily formed through hydrothermal processes, which ..."
+        },
+        {
+          "candidate_id": "c-d3bb73e9319de24e8a34",
+          "title": "Why do gold deposits form only in certain areas of the earth?",
+          "url": "https://earthscience.stackexchange.com/questions/2393/why-do-gold-deposits-form-only-in-certain-areas-of-the-earth",
+          "snippet": "In the map above you can find that most elements are spread evenly throughout Earth's crust and that they are available all around the Earth. However, ..."
+        },
+        {
+          "candidate_id": "c-18af51583160c17f268f",
+          "title": "So, where does gold come from? : r/geology - Reddit",
+          "url": "https://www.reddit.com/r/geology/comments/1c12z0t/so_where_does_gold_come_from/",
+          "snippet": "Gold is a metal that is naturally found in the Earth, just like iron, copper, and nickel. gold is found throughout the earth at relatively low ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1072479",
+      "query": "what is a gui|",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-e1b5c4458d7f7b02fc9e",
+          "title": "What the heck is a GUI? : r/linux4noobs",
+          "url": "https://www.reddit.com/r/linux4noobs/comments/pqdisj/what_the_heck_is_a_gui/",
+          "snippet": "Hey all, I’m relatively new to the world of computer science and even newer to the world of Linux, and while I’ve been using computers for years, ..."
+        },
+        {
+          "candidate_id": "c-10d50f621ec94b2bf24f",
+          "title": "What is a GUI| How does GUI work",
+          "url": "https://www.lenovo.com/us/en/glossary/what-is-a-gui/?srsltid=AfmBOoo4x7DdIDh9jc2ioBgMd8ASPcgZw30ruX7ZcVffRj7FEi88kjuc",
+          "snippet": "Graphical User Interface (GUI) tools are software that assist users in performing tasks such as creating websites, editing images and videos, or navigating the ..."
+        },
+        {
+          "candidate_id": "c-bf86be56e46c4f0d2b39",
+          "title": "Graphical User Interface | GUI Definition, Components & ...",
+          "url": "https://study.com/academy/lesson/video/what-is-a-graphical-user-interface-gui-definition-components-examples.html",
+          "snippet": "GUI stands for graphical user interface, which enables users to engage with computer applications through visual symbols rather than text commands."
+        },
+        {
+          "candidate_id": "c-51822d839d10293b9f6e",
+          "title": "Graphical user interface (GUI)",
+          "url": "https://www.britannica.com/technology/graphical-user-interface",
+          "snippet": "A graphical user interface (GUI) enables people to communicate with a computer through visual metaphors, symbols, and pointing devices. GUIs use ..."
+        },
+        {
+          "candidate_id": "c-f6f756b3c64698111ed7",
+          "title": "What is a GUI| How does GUI work",
+          "url": "https://www.lenovo.com/us/en/glossary/what-is-a-gui/?srsltid=AfmBOooHcAmtNSPDV4nyJDginNUunuKLC6C4Bz_v8_-H6JUzX4lhx-iW",
+          "snippet": "Graphical User Interface (GUI) tools are software that assist users in performing tasks such as creating websites, editing images and videos, or navigating the ..."
+        },
+        {
+          "candidate_id": "c-4cc7329374bdfba397a3",
+          "title": "What Is a GUI?",
+          "url": "https://www.coursera.org/articles/gui",
+          "snippet": "A graphical user interface (GUI) enables user interaction with a computer or website through visual elements, such as windows, icons, and menus."
+        },
+        {
+          "candidate_id": "c-6e10b14f51e1acfe8a29",
+          "title": "Graphical user interface",
+          "url": "https://en.wikipedia.org/wiki/Graphical_user_interface",
+          "snippet": "A graphical user interface, or GUI, is a form of user interface that allows users to interact with electronic devices through graphical icons and visual ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-939020",
+      "query": "when did ice cube start rapping",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-93640d67598c5caaed14",
+          "title": "Rapper, actor and producer Ice Cube shares stories from his ...",
+          "url": "https://www.facebook.com/GrahamBensinger/posts/rapper-actor-and-producer-ice-cube-shares-stories-from-his-early-music-career-in/422672369222925/",
+          "snippet": "He began rapping in high school and started his rap career as a member of Stereo Crew, through Epic Records in 1986, and C.I.A. with the 1987 ..."
+        },
+        {
+          "candidate_id": "c-a2e234584b0f3d03c837",
+          "title": "Ice Cube",
+          "url": "https://www.imdb.com/name/nm0001084/",
+          "snippet": "Ice Cube's debut in Boyz n the Hood (1991) led to more roles in such films as Trespass (1992), Dangerous Ground (1997) and Anaconda (1997)."
+        },
+        {
+          "candidate_id": "c-a5adf98da941d6284cb2",
+          "title": "June 15 In Hip-Hop History: Ice Cube Is Born - Power 105.1",
+          "url": "https://power1051.iheart.com/content/2023-06-14-june-15-in-hip-hop-history-ice-cube-is-born/",
+          "snippet": "' He officially got his start in the music industry in the mid 1980's as one-third of the rap trio Cru In Action! (C.I.A.) with K-Dee and ..."
+        },
+        {
+          "candidate_id": "c-ebc60ab4a29ed0bb921c",
+          "title": "Ice Cube's Impact on Hip-Hop from 1988 to 1996",
+          "url": "https://www.facebook.com/groups/undergroundhiphopmixtapes/posts/8730412613743838/",
+          "snippet": "In 1986, at the age of 16, Ice Cube began rapping in the trio C.I.A. but soon joined the newly formed rap group N.W.A."
+        },
+        {
+          "candidate_id": "c-cd69ca1a296946420500",
+          "title": "Ice Cube | Biography, Albums, Songs, & Movies",
+          "url": "https://www.britannica.com/biography/Ice-Cube",
+          "snippet": "Ice Cube became interested in hip-hop in his early teens and took to writing lyrics. After beginning the rap group C.I.A. (Cru' in Action!) and ..."
+        },
+        {
+          "candidate_id": "c-f28971e466733095b2d3",
+          "title": "Ice Cube",
+          "url": "https://wbssmedia.com/artists/detail/1285",
+          "snippet": "In 1986, at the age of 16, Ice Cube began rapping in the trio C.I.A. but soon joined the newly formed rap group N.W.A. He was N.W.A's lead rapper and main ..."
+        },
+        {
+          "candidate_id": "c-20eb7737ae04570620dc",
+          "title": "Ice Cube | Biography | Research Starters",
+          "url": "https://www.ebsco.com/research-starters/biography/ice-cube",
+          "snippet": "Ice Cube was introduced to hip-hop via the song “Rapper's Delight” by the Sugarhill Gang, which is often credited as the first rap song ever recorded."
+        },
+        {
+          "candidate_id": "c-e4ddbf4e4f04df4a6571",
+          "title": "Ice Cube",
+          "url": "https://en.wikipedia.org/wiki/Ice_Cube",
+          "snippet": "In 1986, at the age of 16, Ice Cube began rapping in the trio C.I.A. but soon joined the newly formed rap group N.W.A. He was N.W.A's lead rapper and main ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-672109",
+      "query": "what is .img format",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-bf00d0317cdd14c13c4e",
+          "title": "IMG (file format)",
+          "url": "https://en.wikipedia.org/wiki/IMG_(file_format)",
+          "snippet": "An IMG file, a.k.a. raw disk image, contains a complete and uncompressed disk image of a storage device's data content."
+        },
+        {
+          "candidate_id": "c-10041e1613371816bf8f",
+          "title": "What exactly is the point of an .img file?",
+          "url": "https://forum.imgburn.com/topic/445-what-exactly-is-the-point-of-an-img-file/",
+          "snippet": "an img file is like an iso file... and hopefully you know the concept of an ISO?! It's a complete image of the disc."
+        },
+        {
+          "candidate_id": "c-1b1fcc14770123368522",
+          "title": "How to use .img files - IONOS",
+          "url": "https://www.ionos.com/digitalguide/server/know-how/img-file-extension/",
+          "snippet": "The .img file format .img is short for “image” and indicates that the file is an exact disk image of a CD or DVD. This means that an .img file ..."
+        },
+        {
+          "candidate_id": "c-e281c68b1589fc5391f2",
+          "title": "The Ultimate Guide to IMG Files",
+          "url": "https://www.paintshoppro.com/en/pages/img-file/?srsltid=AfmBOooxeTy97sR27OSo2rrWiMcKLVRjWAIoDoV75TyknWa1SJB4mLh8",
+          "snippet": "IMG files are an example of archived file formats. An IMG file is one with an .img file extension. They are typically bitmap files containing image data. This ..."
+        },
+        {
+          "candidate_id": "c-4160b8d49b4aceb4da3e",
+          "title": "What Is A .img File",
+          "url": "https://laptopjudge.com/what-is-a-img-file/",
+          "snippet": "Jan 10, 2026"
+        },
+        {
+          "candidate_id": "c-a7833ad7fd054b3414b3",
+          "title": "How open .img file - Microsoft Q&A",
+          "url": "https://learn.microsoft.com/en-us/answers/questions/5492080/how-open-img-file",
+          "snippet": "Windows 11 pro, how to open .img file for install Office 2021"
+        },
+        {
+          "candidate_id": "c-59541b1d36760bfbd94d",
+          "title": "IMG File Extension - What is .img and how to open?",
+          "url": "https://www.reviversoft.com/en/file-extensions/img",
+          "snippet": "A Macintosh disk image file is a mirror copy of the Mac file system and can be mounted on a computer as a virtual hard disk drive."
+        },
+        {
+          "candidate_id": "c-b4eeacfc7dc1587c598c",
+          "title": "IMG (file format",
+          "url": "https://en.wikipedia.org/wiki/IMG_%28file_format%29",
+          "snippet": "Raw disk image files sometimes have the filename extension .img, but the extension is used for other file formats and often other …"
+        },
+        {
+          "candidate_id": "c-7ed24137146f750fb50d",
+          "title": ".iso vs .img files : r/computing",
+          "url": "https://www.reddit.com/r/computing/comments/npzs9j/iso_vs_img_files/",
+          "snippet": "I am using Tails on a USB stick to live boot to my laptop. I have the option to download it as a .img file and as a .iso file."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1072506",
+      "query": "why is the lean concept important to study?",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-2f4ca990de13ec3e9d9c",
+          "title": "An overview of Lean theory and value stream mapping - NCBI",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK338851/",
+          "snippet": "The underlying assumption of the Lean concept is that the delivery of a product or service should give value to customers. Thus, Lean tools and methods are used ..."
+        },
+        {
+          "candidate_id": "c-e17290336a2b152b262f",
+          "title": "What is the lean concept and why is it important to study ... - Course Sidekick",
+          "url": "https://www.coursesidekick.com/course-questions/4176223",
+          "snippet": "Studying lean principles is important for individuals and organizations to enhance efficiency, reduce costs, improve quality, and boost ..."
+        },
+        {
+          "candidate_id": "c-bb3194b325e4f9503a78",
+          "title": "What are the Benefits of Studying Lean?",
+          "url": "https://goodelearning.com/benefits-of-studying-learning-lean/",
+          "snippet": "The principles of Lean are designed to boost the productivity and efficiency of essential business processes, resulting in more refined ..."
+        },
+        {
+          "candidate_id": "c-370cde6ff3a6b2575200",
+          "title": "What is Lean? Definition - Lean Management, Methods & Principles",
+          "url": "https://www.beewatec.com/en/blog/what-is-lean-definition-lean-management-methods-and-principles",
+          "snippet": "What is Lean? Lean is a concept of lean management and aims to make value creation efficient and reduce waste."
+        },
+        {
+          "candidate_id": "c-8946babde22e6977aff9",
+          "title": "What is Lean? Lean Manufacturing & Lean Enterprise - ASQ",
+          "url": "https://asq.org/quality-resources/lean?srsltid=AfmBOoo8_o-Hm9JVd1uPcJWiwxWg674ykJPJiyvu6fVlXTR47DLgA8Gk",
+          "snippet": "Lean is defined as a set of management practices to improve efficiency and effectiveness by eliminating waste. The core principle of lean is to reduce and ..."
+        },
+        {
+          "candidate_id": "c-9a3d325fe0ef06af89ec",
+          "title": "What is Lean? | Lean Thinking - Lean Enterprise Institute",
+          "url": "https://www.lean.org/explore-lean/what-is-lean/",
+          "snippet": "Lean is both a way of thinking and practice that always starts with the customer to create needed value with fewer resources and less waste."
+        },
+        {
+          "candidate_id": "c-64a5ce84850552e060d8",
+          "title": "[Solved] What is the Lean concept and why is it important to study?",
+          "url": "https://www.coursehero.com/tutors-problems/Management/42403859-What-is-the-Lean-concept-and-why-is-it-important-to-study/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-e698aca6e4140fde0b51",
+          "title": "Why is Lean Important? 6 Ways Lean Leads to Success - KaiNexus Blog",
+          "url": "https://blog.kainexus.com/improvement-disciplines/lean/why-is-lean-important-6-ways-lean-leads-to-success",
+          "snippet": "Lean's purpose is to transform an organization's culture into one that values continuous improvement over the long term. Within a Lean framework ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-761096",
+      "query": "what is it called the thing that hold the tire",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-6bd5b739f169ceb963ef",
+          "title": "What is the car part behind the tire called?",
+          "url": "https://www.facebook.com/groups/142908915805754/posts/8147503168679582/",
+          "snippet": "For the people that know car parts. \n\nFirst picture shows the part like a black shield right behind the tire that protects the stuff behind it\nSecond ..."
+        },
+        {
+          "candidate_id": "c-e16487136b8447374c22",
+          "title": "Wheel stud",
+          "url": "https://en.wikipedia.org/wiki/Wheel_stud",
+          "snippet": "Wheel studs are the threaded fasteners that hold on the wheels of many automobiles. They are semi-permanently mounted directly to the vehicle hub,"
+        },
+        {
+          "candidate_id": "c-fe95a4891d7ed0ebf0ad",
+          "title": "What is the whole mechanism underneath the car ...",
+          "url": "https://www.reddit.com/r/AskAMechanic/comments/1n322ak/what_is_the_whole_mechanism_underneath_the_car/",
+          "snippet": "I’ve been learning on YouTube for a couple of years now but I feel unconfident working on anything beyond brakes and rotors.\n\nIs there a name or term ..."
+        },
+        {
+          "candidate_id": "c-78606fe4319cb35978d6",
+          "title": "What Are the Different Parts of a Tire?",
+          "url": "https://www.firestonecompleteautocare.com/blog/tires/what-are-different-parts-of-a-tire/",
+          "snippet": "Tire beads hold the tire to the rim, or the outer edge of the wheel. They're made of copper, brass, or bronze-plated high tensile steel wires ..."
+        },
+        {
+          "candidate_id": "c-b3f6ac64df4ad6a75ed8",
+          "title": "What are the bolts that hold a tire on called?",
+          "url": "https://www.quora.com/What-are-the-bolts-that-hold-a-tire-on-called",
+          "snippet": "What are the bolts that hold a tire on called?"
+        },
+        {
+          "candidate_id": "c-ebe04870eb7b20d48a5f",
+          "title": "The Basic Parts of a Car Wheel and Tire",
+          "url": "https://rnrtires.com/tips-guides/the-basic-parts-of-a-car-wheel-and-tire/",
+          "snippet": "If the tire is the skin, then the rim is the skeleton of the wheel assembly. The tire wraps around the rim, and it supports the tire, giving it ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1072513",
+      "query": "what is a gsep",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-c92e60289b2d4dd0a229",
+          "title": "Financial Aid",
+          "url": "https://www.gsep.org/en/get-involved/financial-aid.html",
+          "snippet": "GSEP Girl Scouts and Families, Girl Scouts is a safe, caring community where your girl is encouraged to explore, try new things, and build confidence at her ..."
+        },
+        {
+          "candidate_id": "c-26902ac70cd58c329f90",
+          "title": "Girl Scouts of Eastern Pennsylvania",
+          "url": "https://www.gsep.org/",
+          "snippet": "To ensure your Girl Scout is prepared, there are many ways you can shop for Girl Scout uniforms, recognitions, gifts and more."
+        },
+        {
+          "candidate_id": "c-be7b0b7e9d264c9b42bd",
+          "title": "Mission and Vision | Pepperdine University | GSEP",
+          "url": "https://gsep.pepperdine.edu/about/our-story/mission/",
+          "snippet": "The Pepperdine University Graduate School of Education and Psychology (GSEP) is an innovative learning community where faculty, staff, and students of diverse ..."
+        },
+        {
+          "candidate_id": "c-852f0234cd1fd60a6e06",
+          "title": "Graduate School of Education and Psychology | Pepperdine University",
+          "url": "https://www.pepperdine.edu/academics/schools/gsep/",
+          "snippet": "The Graduate School of Education and Psychology (GSEP) is dedicated to training skilled leaders, administrators, and practitioners of the highest level"
+        },
+        {
+          "candidate_id": "c-670feb027f7bc60ed225",
+          "title": "Q: What is a GSEP?",
+          "url": "https://www.ziprecruiter.com/e/What-is-a-GSEP-job",
+          "snippet": "A GSEP (Graduate Strategic Engagement Program) job is a role designed for recent graduates, often in engineering, business, or technology fields,"
+        },
+        {
+          "candidate_id": "c-c49c47d11a881f1fcaea",
+          "title": "Pepperdine GSEP (@peppgsep) · Malibu, CA - Instagram",
+          "url": "https://www.instagram.com/peppgsep/?hl=en",
+          "snippet": "Graduate School of Education and Psychology (GSEP) 🎓 academic excellence 💡 innovative leadership. From the International Space Station to entrepreneurship and ..."
+        },
+        {
+          "candidate_id": "c-2385034163d0218be048",
+          "title": "Gas System Enhancement Program (GSEP) - Gas Transition Allies",
+          "url": "https://www.gastransitionallies.org/gsep",
+          "snippet": "GSEP was created in 2014 to accelerate the replacement of leak-prone gas pipe owned and operated by the Commonwealth's six investor-owned gas utility companies."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-138266",
+      "query": "definition of solar wind",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-3a40253495312bd2bfff",
+          "title": "What is solar wind?",
+          "url": "https://www.qrg.northwestern.edu/projects/vss/docs/space-environment/3-what-is-solar-wind.html",
+          "snippet": "The solar wind is a stream of energized, charged particles, primarily electrons and protons, flowing outward from the Sun, through the solar system at speeds"
+        },
+        {
+          "candidate_id": "c-abc1a37e7dabf6a4b2af",
+          "title": "Solar wind: What is it and how does it affect Earth? - Space",
+          "url": "https://www.space.com/22215-solar-wind.html",
+          "snippet": "The solar wind is a continual stream of protons and electrons from the sun's outermost atmosphere — the corona. These charged particles breeze"
+        },
+        {
+          "candidate_id": "c-9ae740ce64a441592a4b",
+          "title": "Solar Wind",
+          "url": "https://www.jpl.nasa.gov/nmp/st5/SCIENCE/solarwind.html",
+          "snippet": "The solar wind is created by the outward expansion of plasma (a collection of charged particles) from the Sun's corona (outermost atmosphere)."
+        },
+        {
+          "candidate_id": "c-9be456f9237d7241b164",
+          "title": "What Is the Solar Wind? - NASA Science",
+          "url": "https://science.nasa.gov/sun/what-is-the-solar-wind/",
+          "snippet": "From the center of the solar system, rages a powerful wind. Sent by the Sun, this wind whips at speeds exceeding one million miles per hour ..."
+        },
+        {
+          "candidate_id": "c-0841102a968874c51e28",
+          "title": "Solar Wind | NOAA / NWS Space Weather Prediction Center",
+          "url": "http://www.spaceweather.gov/phenomena/solar-wind",
+          "snippet": "The solar wind continuously flows outward from the Sun and consists mainly of protons and electrons in a state known as a plasma."
+        },
+        {
+          "candidate_id": "c-d2ea291d2a1842969873",
+          "title": "Solar wind",
+          "url": "https://en.wikipedia.org/wiki/Solar_wind",
+          "snippet": "The solar wind is a stream of charged particles released from the Sun's outermost atmospheric layer, the corona. This plasma mostly consists of electrons,"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-983543",
+      "query": "where is goodland fl,",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-26b8ca31d9a938de45ba",
+          "title": "Day Trip Visit to Goodland, Florida",
+          "url": "https://www.mustdo.com/fl/naples-bonita-springs-marco-island-everglades/day-trips/visit-goodland-florida/",
+          "snippet": "Goodland, Florida is a small community off State Road 92 at the southeast corner of Goodland,"
+        },
+        {
+          "candidate_id": "c-4d6594da4e719c8765ce",
+          "title": "Goodland, Florida -- all six blocks of it. Founded in the 1800's ...",
+          "url": "https://www.travelersunitedplus.com/p/welcome-to-goodland-florida-all-six",
+          "snippet": "Welcome to Goodland, Florida -- all six blocks of it. Founded in the 1800's, sitting right outside a tiny harbor. Stan's Idle Hour in Goodland ..."
+        },
+        {
+          "candidate_id": "c-f3109a7dbe5515153641",
+          "title": "Goodland, FL, United States - Map & Directions",
+          "url": "https://maps.apple.com/place?auid=7498375763810386427",
+          "snippet": "View details about Goodland, FL, United States on Apple Maps. Address, driving directions, images, nearby attractions and more."
+        },
+        {
+          "candidate_id": "c-6126a0a9514bfd962fa2",
+          "title": "Goodland, FL Things to Do, Beaches & Family Vacation Tips",
+          "url": "https://www.emeraldcoastbyowner.com/blog/Goodland-FL-Family-Vacation-Travel-Guide",
+          "snippet": "Goodland is located in Collier County on the mainland side of Marco Island. minutes from Marco Island beaches and roughly 30 minutes south of ..."
+        },
+        {
+          "candidate_id": "c-f6ecf11fdeafd432352f",
+          "title": "Goodland, FL Map & Directions",
+          "url": "https://www.mapquest.com/us/florida/goodland-fl-282039552",
+          "snippet": "Goodland, FL, 34140. Goodland is a census-designated place in Collier County, Florida, located on the southeastern edge of Marco Island."
+        },
+        {
+          "candidate_id": "c-13be9711f8ec893c822a",
+          "title": "Goodland, FL: Restaurants, Things to Do, Boating",
+          "url": "https://www.govisitmarcoisland.com/goodland",
+          "snippet": "Just before the Stan Gober Memorial Bridge on San Marco Road lies the small fishing village of Goodland, a colorful coastal community full of Old Florida charm."
+        },
+        {
+          "candidate_id": "c-09a67b052a6dc66aa9b2",
+          "title": "Goodland, Florida",
+          "url": "https://en.wikipedia.org/wiki/Goodland,_Florida",
+          "snippet": "Collier County, Florida, United States. Located on the southeast portion of Marco Island, it is the closest community to Cape Romano, Goodland is located in ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-716641",
+      "query": "what is an open access university",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-7bc6c8f98cba5b5252f6",
+          "title": "LibGuides: Open Access Publishing : What is Open Access?",
+          "url": "https://guides.library.cornell.edu/openaccess",
+          "snippet": "Open access (OA) refers to freely available, digital, online information. Open access scholarly literature is free of charge"
+        },
+        {
+          "candidate_id": "c-9f3a19261dcb49976526",
+          "title": "Open access - Oxford Academic - Oxford University Press",
+          "url": "https://academic.oup.com/pages/open-research/open-access",
+          "snippet": "Open access (OA) is a key part of how Oxford University Press (OUP) supports our mission to achieve the widest possible dissemination of high-quality ..."
+        },
+        {
+          "candidate_id": "c-9403fa0ea344060f4887",
+          "title": "What is Open Access? - Scholarly Publishing - Research Guides",
+          "url": "https://libguides.und.edu/scholarly_publishing/openaccess",
+          "snippet": "\"open access\" refers to journal articles, textbooks, or class content that anyone can access from anywhere. In other words, it isn't kept behind a paywall, ..."
+        },
+        {
+          "candidate_id": "c-5e679aaf4cd5b00188a7",
+          "title": "Open Access: Home page",
+          "url": "https://www.openaccess.nl/en",
+          "snippet": "Open access is a publishing model for scholarly communication that makes research information available to readers at no cost,"
+        },
+        {
+          "candidate_id": "c-71f0d10a5f568bd8b798",
+          "title": "Scholarly Publishing: What is Open Access? - Guides",
+          "url": "https://guides.lib.uh.edu/c.php?g=1050509&p=11050636",
+          "snippet": "Open Access removes price and permission barriers, supporting the equitable and widespread dissemination of knowledge. Anyone can read, download ..."
+        },
+        {
+          "candidate_id": "c-892bcdf38a4b23cedb26",
+          "title": "Open Access Publishing - Research Guides - LibGuides",
+          "url": "https://jefflibraries.libguides.com/OpenAccess",
+          "snippet": "Open Access means that information is: (A) freely available, (B) published digitally online, (C) has few restrictions on its use or reproduction ..."
+        },
+        {
+          "candidate_id": "c-c798f68bee9446d1c3b4",
+          "title": "Why Publish Open Access? - Office of Scholarly Communication",
+          "url": "https://osc.universityofcalifornia.edu/for-authors/open-access/",
+          "snippet": "Open access scholarly publications are, as Peter Suber describes them, “digital, online, free of charge, and free of most copyright and licensing restrictions,”"
+        },
+        {
+          "candidate_id": "c-9ad732a26559c4071a75",
+          "title": "Open Access (OA) Resources Research Guide",
+          "url": "https://libguides.d.umn.edu/OA",
+          "snippet": "Open Access is the free, immediate, online availability of research articles combined with the rights to use these articles fully in the ..."
+        },
+        {
+          "candidate_id": "c-23e4bc623e08ccbe971d",
+          "title": "What is Open Access? - Research Guides - DePaul University",
+          "url": "https://libguides.depaul.edu/openaccess",
+          "snippet": "Open access (OA) refers to freely available, digital, online information. Open access scholarly literature is free of charge and often carries ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-405238",
+      "query": "is callahan an irish name",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a757d20cf9f7efe831a4",
+          "title": "Callahan Family History",
+          "url": "https://www.familysearch.org/en/surname?surname=callahan",
+          "snippet": "Irish (Munster): shortened Anglicized form of Gaelic Ó Ceallacháin 'descendant of Ceallachán', a diminutive of the personal name Ceallach, ..."
+        },
+        {
+          "candidate_id": "c-d968176403f8d51353c3",
+          "title": "What do you think of Callahan? : r/namenerds",
+          "url": "https://www.reddit.com/r/namenerds/comments/5zn46m/what_do_you_think_of_callahan/",
+          "snippet": "She is irish and all have irish spelled name. One boy is Ceallachain, which is pronounced callahan."
+        },
+        {
+          "candidate_id": "c-ae07faecb6153d76a797",
+          "title": "Callaghan Irish Surname: History, Origins & Heritage ...",
+          "url": "https://celticancestrygifts.com/blogs/news/callaghan-irish-surname-history-origins?srsltid=AfmBOoqyXxg-dUiDYguttA_rpAlBlzipZlPKoZ0dLO0ydxm1vCGTAK2o",
+          "snippet": "Callahan is the common Irish-American spelling. Callaghan is Irish — the anglicised Ó Ceallacháin — a Gaelic dynasty of County Cork in Munster. ..."
+        },
+        {
+          "candidate_id": "c-e480c820376e19b84066",
+          "title": "Callahan (surname)",
+          "url": "https://en.wikipedia.org/wiki/Callahan_(surname)",
+          "snippet": "Callahan is an Irish surname, anglicized from Ó Ceallacháin. known for his roles in Wild Wild West (1999) American Roman Catholic bishop"
+        },
+        {
+          "candidate_id": "c-354b8cdf211082ab2930",
+          "title": "Callahan Name History: Origins, Meaning & Popularity",
+          "url": "https://www.theirishrose.com/name-histories-coat-of-arms/callahan-name-history/?srsltid=AfmBOopD6r7FwRtibklJqr6ls1XrtLH-vibsYKBYlgHeXTxxyN0RgyYM",
+          "snippet": "Callahan is a well-known Irish surname. The Callahan name means descendent of Ceallachán. He was the Eóganachta King of Munster from AD 935 until 954."
+        },
+        {
+          "candidate_id": "c-370b5381be6014557ad3",
+          "title": "Callahan Name Origin History and Meaning of Symbols",
+          "url": "https://www.irishsurnames.com/cgi-bin/gallery.pl?name=callahan&capname=Callahan&letter=c",
+          "snippet": "The names Callahan and O'Callaghan in Irish are O'Ceallachain and were taken from Ceallachan, King of Munster in 952, who was once head of the sept."
+        },
+        {
+          "candidate_id": "c-224250f57fd5eb4faa33",
+          "title": "Callahan Name History: Origins, Meaning & Popularity",
+          "url": "https://www.theirishrose.com/name-histories-coat-of-arms/callahan-name-history/?srsltid=AfmBOor8VK40S6Y2-u0bAQ7jATDbpZrlvhXMAXBzpzzKfoSo2Naeh0Hi",
+          "snippet": "Callahan is a well-known Irish surname. The Callahan name means descendent of Ceallachán. He was the Eóganachta King of Munster from AD 935 until 954."
+        },
+        {
+          "candidate_id": "c-2e70fa141618447a2b5f",
+          "title": "Callahan - Baby Name Meaning, Origin and Popularity",
+          "url": "https://www.thebump.com/b/callahan-baby-name",
+          "snippet": "Callahan is a boy's name of Irish origin which has many meanings including \"bright-headed,\" \"strife,\" or \"contention.\" It is a derivative of the Gaelic surname ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-93823",
+      "query": "co-curricular vs extracurricular definition",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-c47443feba58112f9d73",
+          "title": "Co-Curricular Definition - The Glossary of Education Reform -",
+          "url": "https://www.edglossary.org/co-curricular/",
+          "snippet": "Co-curricular vs. Extracurricular ... Generally speaking, co-curricular activities are an extension of the formal learning experiences in a course ..."
+        },
+        {
+          "candidate_id": "c-7dce1bffb9e6d97bd011",
+          "title": "Extracurricular vs. Co-curricular - Texas A&M University",
+          "url": "https://sapar.tamu.edu/news/2019/01/02/extracurricular-vs-co-curricular/",
+          "snippet": "If you look at the prefix of extracurricular, extra-, it means outside or beyond. In the same vein, the co- in co-curricular means together, ..."
+        },
+        {
+          "candidate_id": "c-0d45c1e05363c8bb4fe6",
+          "title": "Co-Curricular and Extracurricular Programs Policy",
+          "url": "https://reference.carteret.edu/co-curricular-and-extracurricular-programs-policy",
+          "snippet": "co-curricular activities are an extension of the formal learning experience in a course or academic program, while extracurricular activities ..."
+        },
+        {
+          "candidate_id": "c-dea221b73a99d9cf346c",
+          "title": "Co-Curricular vs Extra-Curricular: Understanding the Key Differences",
+          "url": "https://www.darrowschool.org/admissions/admissions-blog/co-curricular-vs-extra-curricular-understanding-the-key-differences",
+          "snippet": "Co-curricular activities are designed to complement and enhance the academic curriculum, directly relating to what is taught in the classroom. ..."
+        },
+        {
+          "candidate_id": "c-0f8696cb34cc455177f5",
+          "title": "Co-Curricular vs Extracurricular: Small But Important Differences - Suitable",
+          "url": "https://www.suitable.co/knowledge-center/blog/co-curricular-vs-extracurricular-small-but-important-differences",
+          "snippet": "Co-curricular activities take place outside the classroom but enhance students' learning in meaningful ways. Extracurricular activities take place outside the ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-894610",
+      "query": "what side of the car should a car seat be on",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a88ffb5058776b52512c",
+          "title": "Where Should I Install My Car Seat?",
+          "url": "https://www.youtube.com/watch?v=8TsqpU2Wdqs",
+          "snippet": "The safest place for children is the backseat! Within the backseat, choose a location where you can get a proper installation and you can ..."
+        },
+        {
+          "candidate_id": "c-5c0f4342a770ec1727f9",
+          "title": "Where should I install my child's car seat? Which spot is safest?",
+          "url": "https://thecarseatlady.com/center-or-side/",
+          "snippet": "The center of the back seat is statistically the safest place in the car. sitting in the center are 43% safer than those sitting on the side. if putting the ..."
+        },
+        {
+          "candidate_id": "c-d92e819c114b9072aad4",
+          "title": "The Answers to Your Car Seat Safety Questions",
+          "url": "https://www.babylist.com/hello-baby/car-seat-safety-answers",
+          "snippet": "The rear-center is perceived to be the safest, as it is furthest from side impact on either side. Statistically there is no significant ..."
+        },
+        {
+          "candidate_id": "c-24a346f0a5de3547afea",
+          "title": "Any opinions on what side of the car to put a newborn's ...",
+          "url": "https://www.reddit.com/r/BabyBumps/comments/13i55tu/any_opinions_on_what_side_of_the_car_to_put_a/",
+          "snippet": "My mind automatically thought it should go behind the driver because “in the event of a crash, the driver always protects his side first.” Until I ..."
+        },
+        {
+          "candidate_id": "c-5e0c644826306ccf671c",
+          "title": "Best Place to Install a Car Seat in My Vehicle - Chicco",
+          "url": "https://www.chiccousa.com/baby-talk/where-should-i-install-my-car-seat-in-my-vehicle/?srsltid=AfmBOooULH4F5r7M42pOnCFhTzxEbV66d9I2w3lJeGEDz45MUQPVACd5",
+          "snippet": "The car seat should be installed in the rear seat of the vehicle. It should not move more than an inch side to or back and forth."
+        },
+        {
+          "candidate_id": "c-fcb498baff3f2a8383d0",
+          "title": "Best Place to Install a Car Seat in My Vehicle",
+          "url": "https://www.chiccousa.com/baby-talk/where-should-i-install-my-car-seat-in-my-vehicle/?srsltid=AfmBOooYfsBEPZPJJ-dVg-2doQkWhAH_Q7Gi9QKeviFa1aMxwd6a7pZe",
+          "snippet": "The car seat should be installed in the rear seat of the vehicle. It should not move more than an inch side to or back and forth."
+        },
+        {
+          "candidate_id": "c-26d96ac1305cb3ecaa7e",
+          "title": "How to Install a Rear-Facing Only Infant Car Seat - NHTSA",
+          "url": "https://www.nhtsa.gov/how-install-rear-facing-only-infant-car-seat",
+          "snippet": "Place the car seat base in the back seat of your vehicle. In a crash, the back seat is the safest place to be, and rear-facing car seats provide extra ..."
+        },
+        {
+          "candidate_id": "c-d0f9d176858f038289bc",
+          "title": "What is the safest place for an infant car seat? | Doona™",
+          "url": "https://www.doona.com/en-us/parenting-tips/the-safest-position-for-an-infant-car-seat?srsltid=AfmBOorJpTxPMRekqrfOYLAdmmE5py4GT6IZg2yAAHMpos1AegY6k-eJ",
+          "snippet": "When it comes to picking one side or another, many parents choose the rear passenger side – it's actually the most common placement of an infant ..."
+        },
+        {
+          "candidate_id": "c-a39893e9c787052bd610",
+          "title": "Where should I install my car seat in my vehicle? - Graco Baby",
+          "url": "https://help.gracobaby.com/s/article/Where-should-I-install-my-car-seat-in-my-vehicle",
+          "snippet": "According to crash statistics, the safest place for your child in any vehicle is the back seat. The center of the back seat can be the safest during a possible ..."
+        },
+        {
+          "candidate_id": "c-c9e3b0dd92e534965f59",
+          "title": "What is the safest place for an infant car seat?",
+          "url": "https://www.doona.com/en-us/parenting-tips/the-safest-position-for-an-infant-car-seat?srsltid=AfmBOordLcXXGXVI_hODUAjYEOVzhv6p5pWqiXf9Ev2BGEaO9pKQVee7",
+          "snippet": "When it comes to picking one side or another, many parents choose the rear passenger side – it's actually the most common placement of an infant ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-939104",
+      "query": "when did internet become popular",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-2cbc5f02b4a964967ceb",
+          "title": "History of the Internet",
+          "url": "https://en.wikipedia.org/wiki/History_of_the_Internet",
+          "snippet": "Several early packet-switched networks emerged in the 1970s which researched and provided data networking. Number of Internet hosts worldwide: 1969–2019 … ..."
+        },
+        {
+          "candidate_id": "c-a88029edfcb3dc26d250",
+          "title": "What year did the Internet become popular in the United ...",
+          "url": "https://www.quora.com/What-year-did-the-Internet-become-popular-in-the-United-States",
+          "snippet": "What year did the Internet become popular in the United States?"
+        },
+        {
+          "candidate_id": "c-93b70c80a7904be76865",
+          "title": "History of the internet: a timeline throughout the years",
+          "url": "https://www.uswitch.com/broadband/guides/broadband-history/",
+          "snippet": "By the end of the 2000s, the Internet was a staple in most people's lives. There was a computer in almost every home and hundreds in almost ..."
+        },
+        {
+          "candidate_id": "c-84aab9e99e5332618fbc",
+          "title": "Imagining the Internet's Quick Look at the Early History of ...",
+          "url": "https://www.elon.edu/u/imagining/time-capsule/early-90s/internet-history/",
+          "snippet": "In 1996, there were approximately 45 million people using the internet. By 1999, the number of worldwide internet users reached 150 million, and more than half ..."
+        },
+        {
+          "candidate_id": "c-082cab422f738667f1b1",
+          "title": "What's considered the rise the internet and when did it ...",
+          "url": "https://www.reddit.com/r/decadeology/comments/1fyoa4t/whats_considered_the_rise_the_internet_and_when/",
+          "snippet": "What decades?"
+        },
+        {
+          "candidate_id": "c-83e91898c238ae2d4df0",
+          "title": "A short history of the internet",
+          "url": "https://www.scienceandmediamuseum.org.uk/objects-and-stories/short-history-internet",
+          "snippet": "The enormous excitement surrounding the internet led to a massive boom in new technology shares between 1998 and 2000. This became known as the ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-449750",
+      "query": "meaning of the name elodie",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a8c04874851f1eefc2fd",
+          "title": "Elodie Name Meaning - BabyNameRoulette.ca",
+          "url": "https://www.babynameroulette.ca/elodie.html",
+          "snippet": "Elodie is of uncertain origin, possibly of Germanic roots derived of words 'al' and 'od' with the latter meaning \"abundance\" or \"wealth\"."
+        },
+        {
+          "candidate_id": "c-68315a6ddc48de5762ae",
+          "title": "Elodie - Baby Name Meaning, Origin and Popularity",
+          "url": "https://www.thebump.com/b/elodie-baby-name",
+          "snippet": "Elodie is a feminine name of French and English origins. It's a French form of the Gothic title Alodia, which means \"all riches\" or \"other wealth.\" !"
+        },
+        {
+          "candidate_id": "c-9e7af7dfbdd6ac31bb3b",
+          "title": "Thoughts on the name Elodie? : r/namenerds",
+          "url": "https://www.reddit.com/r/namenerds/comments/11745cz/thoughts_on_the_name_elodie/",
+          "snippet": "My wife and I are expecting a baby daughter this year and the name Elodie is currently the frontrunner candidate.\n\nMy wife is very certain that she loves ..."
+        },
+        {
+          "candidate_id": "c-1c9b7929a26d450a3eaf",
+          "title": "Another post about the name Elodie",
+          "url": "https://www.reddit.com/r/namenerds/comments/1mccd8g/another_post_about_the_name_elodie/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-531ef5e14d949feffb40",
+          "title": "Elodie: Name Meaning, Popularity and Info ...",
+          "url": "https://babynames.com/name/elodie",
+          "snippet": "The name Elodie is primarily a Female name of French origin that means Wealthy, Riches. The name Élodie is originally a French variation of the name Alodia, ..."
+        },
+        {
+          "candidate_id": "c-2b7faaca1ab078d07e81",
+          "title": "Élodie",
+          "url": "https://en.wikipedia.org/wiki/ELODIE",
+          "snippet": "Élodie is a French feminine given name, a variant of Alodia, possibly a Gothic name with elements Ala, perhaps meaning 'other' or 'all', and od, 'wealth, ..."
+        },
+        {
+          "candidate_id": "c-f557eb0b902b6ff28fcf",
+          "title": "Elodie - Baby Name Meaning, Origin, and Popularity for a Girl",
+          "url": "https://nameberry.com/b/girl-baby-name-elodie",
+          "snippet": "Elodie is a girl's name of French origin meaning \"foreign riches\". Elodie is the 310 ranked female name by popularity."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028098",
+      "query": "what islands have pine tree",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-aa25cef6c571bf0e6e83",
+          "title": "Pine Trees in Paradise - Connecting with Nature",
+          "url": "http://gvkarlsson.blogspot.com/2017/01/pine-trees-in-paradise.html",
+          "snippet": "Maine is known as the Pine Tree State, They are commonly called Norfolk Island Pines, though they are not really pines at all. trees native to a three-by-five- ..."
+        },
+        {
+          "candidate_id": "c-a286f0892bbd2c1e51c9",
+          "title": "Are there any other places besides New Caledonia where pine trees ...",
+          "url": "https://www.reddit.com/r/geography/comments/1iiiult/are_there_any_other_places_besides_new_caledonia/",
+          "snippet": "There are Australian pines (maybe colloquial name) all over the Marshall Islands. They were introduced. I didn't like them there because they ..."
+        },
+        {
+          "candidate_id": "c-a5d9ce62a174dfdd6fb0",
+          "title": "Torrey Pines (U.S. National Park Service)",
+          "url": "https://www.nps.gov/places/000/torrey-pines.htm",
+          "snippet": "It only grows naturally in two places. One is here on Santa Rosa Island and the other is near San Diego. Torrey pine distinct."
+        },
+        {
+          "candidate_id": "c-c335612438fb6da9a275",
+          "title": "Pine Tree - Islands Wiki - Fandom",
+          "url": "https://robloxislands.fandom.com/wiki/Pine_Tree",
+          "snippet": "The Pine Tree is a type of tree introduced upon the game's release. Pine trees are grown from pine saplings, which can be purchased from Cletus for 250 ..."
+        },
+        {
+          "candidate_id": "c-2381b4f4d45996a2c1d3",
+          "title": "Tree of the Month|The Canary Island Pine - Pasadena Now",
+          "url": "https://www.pasadenanow.com/weekendr/tree-of-the-monththe-canary-island-pine/",
+          "snippet": "The Canary Island pine is a member of the Pinaceae family and is native to Spain's Canary Islands in the Atlantic Ocean off the coast of Morocco ..."
+        },
+        {
+          "candidate_id": "c-25855a60f3e2fdd1f95b",
+          "title": "Plant Profile: Norfolk Island Pine Tree | Assiniboine Park Conservancy",
+          "url": "https://www.assiniboinepark.ca/stories/317/plant-profile-norfolk-island-pine-tree",
+          "snippet": "In the wild, it now primarily grows in its native islands, and the remaining strands are protected within the Norfolk Island National Park."
+        },
+        {
+          "candidate_id": "c-c543832e848fa8be3cc3",
+          "title": "The Bahamian Pine Forest — EcoTings Bahamas",
+          "url": "https://ecotingsbah.squarespace.com/ecoblog/blog-post-one-fhexe",
+          "snippet": "This ecosystem can only found on 4 Bahamian islands: Abaco, Grand Bahama, New Providence and Andros. The Caribbean Pine is a fast growing tree that can only ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-227317",
+      "query": "how does programmatic buying work",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-ec27d6a584f5144b4c63",
+          "title": "Programmatic Advertising - What It Is and How It Works",
+          "url": "https://advertising.amazon.com/en-gb/blog/programmatic-advertising",
+          "snippet": "Programmatic media buying uses an automated process to buy digital space for ads. Programmatic media buying also cuts down on wasted ad impressions by serving ..."
+        },
+        {
+          "candidate_id": "c-5afb32873d5549adb769",
+          "title": "What Is Programmatic Ad Buying and How Does It Work? - Coursera",
+          "url": "https://www.coursera.org/articles/programmatic-ad-buying",
+          "snippet": "Programmatic ad buying improves targeting, automates digital ad purchases, and uses real-time bidding to adjust prices for optimal campaign ..."
+        },
+        {
+          "candidate_id": "c-18563018db35190c5b1b",
+          "title": "What is programmatic media buying and programmatic marketing - Adjust",
+          "url": "https://www.adjust.com/glossary/programmatic-media-buying/",
+          "snippet": "Programmatic media buying utilizes data insights and algorithms to serve ads to the right user at the right time, and at the right price."
+        },
+        {
+          "candidate_id": "c-5cbaf3f78d1e653d2afb",
+          "title": "What is programmatic advertising? A guide for beginners - StackAdapt",
+          "url": "https://www.stackadapt.com/resources/blog/what-is-programmatic-advertising",
+          "snippet": "Programmatic advertising uses advertising technology and machine learning to buy, sell, and optimize digital ad placements."
+        },
+        {
+          "candidate_id": "c-5c6ea0f3864b2cf3a201",
+          "title": "ELI5: How does programmatic advertising work? : r/PPC",
+          "url": "https://www.reddit.com/r/PPC/comments/g79fwx/eli5_how_does_programmatic_advertising_work/",
+          "snippet": "I hear about programmatic all the time, but it's still an enigma to me.\n\nI understand it's digital advertising across multiple channels. Are there ..."
+        },
+        {
+          "candidate_id": "c-8b505a7415888e8cf9a9",
+          "title": "The Beginner's Guide to Programmatic Advertising",
+          "url": "https://digitalmarketinginstitute.com/blog/the-beginners-guide-to-programmatic-advertising",
+          "snippet": "programmatic buying uses algorithmic software to buy and sell online display space. A sophisticated way to place advertising, it uses traffic ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-583234",
+      "query": "what car is the vacca in real life",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-4488367311772a84a04f",
+          "title": "VACCA LAST CHANCE TO GET in GTA 5 Online - YouTube",
+          "url": "https://www.youtube.com/watch?v=sC-KWHgsBnU",
+          "snippet": "PEGASSI VACCA IN REAL LIFE: The design of the Pegassi Vacca is based on a real life Lamborghini Gallardo, McLaren MP4-12C. PEGASSI VACCA TOP ..."
+        },
+        {
+          "candidate_id": "c-6d0b7dc95a5d45e131cf",
+          "title": "Pegassi Vacca, the most \" meh \" super car? : r/gtaonline - Reddit",
+          "url": "https://www.reddit.com/r/gtaonline/comments/2qwttl/pegassi_vacca_the_most_meh_super_car/",
+          "snippet": "it's based off lamborghini. they are not 100% based on those real life manufacturers. The Vacca is definitely a drivers car in GTA."
+        },
+        {
+          "candidate_id": "c-2835918bf53cf148412b",
+          "title": "Pegassi Vacca | GTA 5 Online Vehicle Stats, Price, How To Get",
+          "url": "https://www.gtabase.com/grand-theft-auto-v/vehicles/pegassi-vacca",
+          "snippet": "Pegassi Vacca in Real Life: The design of the Pegassi Vacca is based on a real life Lamborghini Gallardo, McLaren MP4-12C. What is this ..."
+        },
+        {
+          "candidate_id": "c-670e5e299d58dbccdbca",
+          "title": "Mc ABLE | The Pegassi Vacca is a stylish supercar in GTA 5, inspired ...",
+          "url": "https://www.instagram.com/reel/DW_sy2SAlgl/",
+          "snippet": "... Vacca is a stylish supercar in GTA 5, inspired by real-life ... vehicles and rare car spawns. #GTA5 #GTAStoryMode #PegassiVacca #GTACars ..."
+        },
+        {
+          "candidate_id": "c-8efe67e91ace42721cdd",
+          "title": "Who else owns a Pegassi Vacca in GTA 5?",
+          "url": "https://www.facebook.com/groups/614075052098168/posts/3302023249969988/",
+          "snippet": "The Pegassi Vacca to me is still seen as one of the prettier Vanilla Lambos Rockstar has built, even if it is a base game car. \n\nSure, it might be ..."
+        },
+        {
+          "candidate_id": "c-f4f4cd255e670d194763",
+          "title": "GTA 5 - OG Vehicle Customization - Pegassi Vacca ...",
+          "url": "https://www.youtube.com/watch?v=Ol6bmGavjc4",
+          "snippet": "Pegassi Vacca Base Price - $240,000 Class - Super Drive-train - RWD Primarily Based On - Lamborghin Gallardo LP560-4 & McLaren MP4-12C GTA 5 - ..."
+        },
+        {
+          "candidate_id": "c-f6032c773a8ccce4759e",
+          "title": "Grand Theft Auto V - Vehicles in Real Life - GameFAQs",
+          "url": "https://gamefaqs.gamespot.com/boards/634491-grand-theft-auto-v/68679508",
+          "snippet": "- Pagassi Vacca - Lamborghini Gallardo (2003-2014), has some elements from the Lamborghini Aventador (2011-Present) and the McLaren MP4-12C ..."
+        },
+        {
+          "candidate_id": "c-9ab96b3e550ccae65bd5",
+          "title": "Vacca - GTA Wiki - Fandom",
+          "url": "https://gta.fandom.com/wiki/Vacca",
+          "snippet": "The Vacca's design is a mix between the 2008–2013 Lamborghini Gallardo and the McLaren MP4-12C with elements from the Lamborghini Aventador LP 700-4."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1072603",
+      "query": "what is a great dane and mastiff",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-a35f5983523750ee9a37",
+          "title": "GREAT DANE VS ENGLISH MASTIFF",
+          "url": "https://www.youtube.com/watch?v=LsZc0Y-WVH0",
+          "snippet": "GREAT DANE VS ENGLISH MASTIFF. Both these giant breeds, the English Mastiff and the Great Dane, have a number of similarities but also have ..."
+        },
+        {
+          "candidate_id": "c-c62f6fb31cf344b2a5e8",
+          "title": "Complete Guide to the Great Dane Mastiff Mix (Daniff)",
+          "url": "https://www.youtube.com/watch?v=Y42TzH3F-yk",
+          "snippet": "As a first-generation crossbreed, the offspring of the Mastiff and the Great Dane, the Great Dane Mastiff mix is the source of some controversy."
+        },
+        {
+          "candidate_id": "c-d87143072791970c9f23",
+          "title": "Great Dane vs Mastiff: What Are 8 Key Differences?",
+          "url": "https://a-z-animals.com/pets/dogs/dog-comparison/great-dane-vs-mastiff/",
+          "snippet": "A mastiff standing up is 28″ – 31″ tall, whereas Great Danes have a height of roughly 28″ – 32″, making them taller."
+        },
+        {
+          "candidate_id": "c-5d38bb81714ac3d59787",
+          "title": "mastiffs vs. great danes - Reddit",
+          "url": "https://www.reddit.com/r/Mastiff/comments/2z3i5p/mastiffs_vs_great_danes/",
+          "snippet": "Danes ARE cute pups, but so are mastiffs. Mastiffs may be lazier as a whole. I think Danes may be more sensitive, less stubborn. Mastiff jowls ..."
+        },
+        {
+          "candidate_id": "c-21a2912a61ac752fbe4e",
+          "title": "GREAT DANE: NOT a Mastiff",
+          "url": "https://greatdanegnosis.wordpress.com/2016/03/12/great-dane-not-a-mastiff/",
+          "snippet": "According to the Genetic Structure of the Purebred Domestic Dog analysis (which you can read here) the Great Dane is not a mastiff-type breed!"
+        },
+        {
+          "candidate_id": "c-ddbd4f007071a5321a72",
+          "title": "Great Dane - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Great_Dane",
+          "snippet": "The Great Dane is a German breed of large mastiff-sighthound, which descends from hunting dogs of the Middle Ages used to hunt bears, wild boar, and deer."
+        },
+        {
+          "candidate_id": "c-ec17fae8091306a8b71d",
+          "title": "Differences between English Mastiffs and Great Danes? - Facebook",
+          "url": "https://www.facebook.com/groups/1043696769991827/posts/1488951178799715/",
+          "snippet": "English Mastiffs have a more laid-back and protective nature, while Great Danes are often described as friendly and gentle. Both breeds require ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028131",
+      "query": "who has absolute monarchy",
+      "stratum": "answer_seeking_holdout_11",
+      "candidates": [
+        {
+          "candidate_id": "c-623662d99839151dc23b",
+          "title": "Modern Monarchies Around the World - ArcGIS StoryMaps",
+          "url": "https://storymaps.arcgis.com/stories/45aed6e0442d45ae97a13c0ba5380b94",
+          "snippet": "As of 1929, the Pope reigns as the absolute monarch of this small country, Pius XI being the first. Hondius, Jodocus and Gerhard Mercator. Fez ..."
+        },
+        {
+          "candidate_id": "c-ea438d856c4e950b0051",
+          "title": "Absolute monarchy - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Absolute_monarchy",
+          "snippet": "The number of absolute monarchies in the world varies but most datasets agree that Brunei, Eswatini, Oman, Qatar, and Saudi Arabia are absolute monarchies, ..."
+        },
+        {
+          "candidate_id": "c-eb7bc393523115d8a95f",
+          "title": "What Is an Absolute Monarchy? Definition and Examples",
+          "url": "https://www.thoughtco.com/absolute-monarchy-definition-and-examples-5111327",
+          "snippet": "the world's current absolute monarchies are Brunei, Eswatini, Oman, Saudi Arabia, Vatican City, and the seven territories of the United Arab"
+        },
+        {
+          "candidate_id": "c-adc97c4f521fc61d93d7",
+          "title": "Are there any absolute monarchies still around today? : r/monarchism",
+          "url": "https://www.reddit.com/r/monarchism/comments/mtg4kg/are_there_any_absolute_monarchies_still_around/",
+          "snippet": "Saudi Arabia , Oman, Brunei, Qatar, Eswatani , and the Vatican . So 3 middle eastern nations, 1 Indonesian, 1 African, and 1 European. 4 of the ..."
+        },
+        {
+          "candidate_id": "c-4a606e3f445520d22b7b",
+          "title": "Absolute Monarchy: Definition & Examples (Easy Explanation)",
+          "url": "https://www.youtube.com/watch?v=re_UmpxIO8s",
+          "snippet": "An absolute monarchy is a form of government where a single ruler, usually a king or queen, holds complete power."
+        },
+        {
+          "candidate_id": "c-579cd6ca65b74b49fc23",
+          "title": "(PDF) ABSOLUTE MONARCHY",
+          "url": "https://www.researchgate.net/publication/372936481_ABSOLUTE_MONARCHY",
+          "snippet": "The document explores the history and influence of absolute kingship, with a focus on the renowned French bishop and orator Jacques-Bénigne ..."
+        },
+        {
+          "candidate_id": "c-5cf680d51573037db5ae",
+          "title": "Video: Absolute Monarchy | Characteristics & Examples",
+          "url": "https://study.com/learn/lesson/video/absolute-monarchy-characteristics-examples.html",
+          "snippet": "In an absolute monarchy or absolutism, the authority of a state was in the hands of a singular king or queen. Claiming that their position was given by a higher ..."
+        }
+      ]
+    }
+  ]
+}

@@ -6,24 +6,35 @@
     clippy::needless_range_loop
 )]
 
-mod bench_quality;
+mod agent_cost;
 mod beir;
+mod bench_quality;
 mod dataset;
 mod dist_sim;
+mod election_polls_bench;
 mod embed;
+mod engine_probe;
 mod facts_bench;
 mod facts_dataset;
 mod facts_metrics;
+mod generalization_blind;
+mod generalization_capture;
+mod generalization_compare;
+mod generalization_market_capture;
 mod generator;
 mod image_gen;
+mod live_search_bench;
+mod market_compare_bench;
+mod market_latency_bench;
 mod metrics;
 mod msmarco;
-mod scaling;
+mod production_readiness_bench;
 mod scale_ingest;
+mod scaling;
 mod sealqa;
-mod agent_cost;
 mod seed;
 mod tuning;
+mod uncertainty_bench;
 
 use axum::{
     extract::{Json, State},
@@ -34,7 +45,7 @@ use clap::{Parser, Subcommand};
 use oi_embed::MockEmbedder;
 use oi_index::HybridIndex;
 use oi_types::traits::SearchIndex;
-use oi_types::{ContentChunk, ChunkMeta, EmbeddingPipeline, QueryFilters};
+use oi_types::{ChunkMeta, ContentChunk, EmbeddingPipeline, QueryFilters};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::Instant;
@@ -251,6 +262,444 @@ enum Command {
         #[arg(short, long, default_value = "gemini-flash-latest")]
         model: String,
     },
+    /// Validate OpenUncertainty cash ablation, guards, calibration, and throughput
+    Uncertainty {
+        /// Number of resolved synthetic claims used to learn the cash likelihood
+        #[arg(long, default_value_t = 20_000)]
+        train_cases: usize,
+
+        /// Number of held-out forward synthetic claims
+        #[arg(long, default_value_t = 20_000)]
+        eval_cases: usize,
+
+        /// Number of hot-path estimates used for throughput measurement
+        #[arg(long, default_value_t = 1_000_000)]
+        throughput_claims: usize,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+    },
+    /// Evaluate OpenUncertainty on a leakage-checked forward JSONL dataset
+    UncertaintyDataset {
+        /// Path to the versioned JSONL cohort
+        #[arg(short, long)]
+        dataset: String,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Deterministic cluster-bootstrap iterations for the Brier improvement interval
+        #[arg(long, default_value_t = 2_000)]
+        bootstrap_iterations: usize,
+    },
+    /// Replay a captured Google SERP and apply the election-poll trust policy
+    ElectionPolls {
+        /// Versioned Google SERP snapshot with auditable result judgments
+        #[arg(
+            short,
+            long,
+            default_value = "bench/fixtures/brazil-election-polls-google-2026-08-21.json"
+        )]
+        dataset: String,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+    },
+    /// Probe keyless search adapters over multiple live queries without mocks
+    EngineProbe {
+        /// Comma-separated adapters: bing,brave-html,duckduckgo,google,qwant,stract,wikipedia,yep
+        #[arg(
+            long,
+            default_value = "bing,brave-html,duckduckgo,google,qwant,stract,yep"
+        )]
+        engines: String,
+
+        /// Queries to probe; repeat this flag to build a representative set
+        #[arg(
+            long = "query",
+            default_values_t = vec![
+                "claude".to_string(),
+                "python online compiler".to_string(),
+                "pesquisa eleitoral presidente brasil hoje".to_string(),
+            ]
+        )]
+        queries: Vec<String>,
+
+        /// Maximum results requested from each adapter
+        #[arg(short = 'k', long, default_value_t = 5)]
+        limit: usize,
+
+        /// Serial rounds per provider; use multiple rounds to expose volatility
+        #[arg(long, default_value_t = 1)]
+        rounds: usize,
+
+        /// Simultaneous raw requests per provider (use production concurrency for capacity gates)
+        #[arg(long, default_value_t = 1)]
+        concurrency: usize,
+
+        /// Fail the probe unless at least this many adapters pass every query
+        #[arg(long, default_value_t = 2)]
+        min_healthy: usize,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Also persist the complete JSON report, including on a failed gate
+        #[arg(long)]
+        report_path: Option<String>,
+    },
+    /// Compare a dated market SERP snapshot with a real OpenSonarX live report
+    MarketCompare {
+        /// Versioned market candidate-set fixture
+        #[arg(
+            long,
+            default_value = "bench/fixtures/google-multi-intent-br-2026-08-22.json"
+        )]
+        fixture: String,
+
+        /// Complete JSON emitted by live-search --report-path
+        #[arg(long)]
+        live_report: String,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Also persist the complete JSON comparison report
+        #[arg(long)]
+        report_path: Option<String>,
+    },
+    /// Audit exploratory Google-browser and OpenSonarX-backend latency samples
+    MarketLatency {
+        /// Versioned raw latency fixture; the evaluator refuses a comparability claim
+        #[arg(
+            long,
+            default_value = "bench/fixtures/google-vs-opensonarx-latency-exploratory-2026-08-22.json"
+        )]
+        fixture: String,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Also persist the recalculated JSON report
+        #[arg(long)]
+        report_path: Option<String>,
+    },
+    /// Capture a sealed, unjudged, non-overlapping live-search holdout
+    GeneralizationCapture {
+        /// Query-only manifest with an auditable independent selection recipe
+        #[arg(
+            long,
+            default_value = "bench/fixtures/generalization-msmarco-holdout-v1.json"
+        )]
+        manifest: String,
+
+        /// Isolated persistent state directory for the real production path
+        #[arg(long)]
+        data_dir: String,
+
+        /// Override production discovery adapters
+        #[arg(long)]
+        engines: Option<String>,
+
+        /// Repetitions over the sealed manifest
+        #[arg(long, default_value_t = 1)]
+        passes: usize,
+
+        /// Maximum simultaneous searches sharing the production client
+        #[arg(long, default_value_t = 4)]
+        concurrency: usize,
+
+        /// Maximum results captured per query
+        #[arg(short = 'k', long, default_value_t = 5)]
+        top_k: usize,
+
+        /// Process the real crawl-on-query queue after every batch
+        #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
+        crawl: bool,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Persist the complete raw capture for later blind judging
+        #[arg(long)]
+        report_path: Option<String>,
+    },
+    /// Capture one raw live market engine against the identical sealed holdout
+    GeneralizationMarketCapture {
+        /// Frozen query-only manifest
+        #[arg(
+            long,
+            default_value = "bench/fixtures/generalization-msmarco-holdout-v1.json"
+        )]
+        manifest: String,
+
+        /// Credentialed or keyless market adapter to capture
+        #[arg(long, default_value = "serper")]
+        engine: String,
+
+        /// Maximum results captured per query
+        #[arg(short = 'k', long, default_value_t = 5)]
+        top_k: usize,
+
+        /// Maximum simultaneous requests to the market provider
+        #[arg(long, default_value_t = 4)]
+        concurrency: usize,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Persist the complete raw capture for later blind pooling
+        #[arg(long)]
+        report_path: Option<String>,
+    },
+    /// Pool frozen OpenSonarX and market slates without exposing system identity
+    GeneralizationBlindPool {
+        /// Frozen query-only manifest
+        #[arg(long)]
+        manifest: String,
+
+        /// Raw JSON emitted by generalization-capture
+        #[arg(long)]
+        opensonarx_report: String,
+
+        /// Raw JSON emitted by generalization-market-capture
+        #[arg(long)]
+        market_report: String,
+
+        /// Maximum results pooled from each system
+        #[arg(short = 'k', long, default_value_t = 5)]
+        top_k: usize,
+
+        /// Precommitted randomization nonce (at least 16 characters)
+        #[arg(long)]
+        blinding_nonce: String,
+
+        /// Public system-blind packet for the judge
+        #[arg(long)]
+        packet_path: String,
+
+        /// Private system/rank mapping; keep this away from the judge
+        #[arg(long)]
+        key_path: String,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+    },
+    /// Create a complete null-valued judgment form bound to a blind packet
+    GeneralizationBlindTemplate {
+        /// Immutable public blind packet
+        #[arg(long)]
+        packet: String,
+
+        /// Stable anonymous identifier for this judge
+        #[arg(long)]
+        judge_id: String,
+
+        /// Whether the judge is organizationally external to implementation
+        #[arg(long, default_value_t = false, action = clap::ArgAction::Set)]
+        external_to_implementation: bool,
+
+        /// Destination for the judgment form
+        #[arg(long)]
+        template_path: String,
+    },
+    /// Produce a system-blind diagnostic judgment with a real local Ollama model
+    GeneralizationBlindOllamaJudge {
+        /// Immutable public blind packet
+        #[arg(long)]
+        packet: String,
+
+        /// Installed Ollama generation model
+        #[arg(long, default_value = "gpt-oss:20b")]
+        model: String,
+
+        /// Ollama API origin
+        #[arg(long, default_value = "http://127.0.0.1:11434")]
+        base_url: String,
+
+        /// Simultaneous model requests
+        #[arg(long, default_value_t = 1)]
+        concurrency: usize,
+
+        /// Blind queries grouped into one model request
+        #[arg(long, default_value_t = 4)]
+        queries_per_request: usize,
+
+        /// Supported gpt-oss reasoning level: low, medium, or high
+        #[arg(long, default_value = "low")]
+        thinking: String,
+
+        /// Destination for complete diagnostic judgments
+        #[arg(long)]
+        judgments_path: String,
+    },
+    /// Score complete blind judgments and calculate paired confidence intervals
+    GeneralizationBlindScore {
+        /// Immutable public blind packet
+        #[arg(long)]
+        packet: String,
+
+        /// Private system/rank mapping produced with the packet
+        #[arg(long)]
+        key: String,
+
+        /// Complete judgments bound to the packet SHA-256; repeat for independent judges
+        #[arg(long, required = true)]
+        judgments: Vec<String>,
+
+        /// Deterministic query-cluster bootstrap iterations
+        #[arg(long, default_value_t = 10_000)]
+        bootstrap_iterations: usize,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Persist the complete scored report
+        #[arg(long)]
+        report_path: Option<String>,
+    },
+    /// Compare objective coverage of two sealed, still-unjudged holdout captures
+    GeneralizationCompare {
+        /// Frozen query-only manifest
+        #[arg(
+            long,
+            default_value = "bench/fixtures/generalization-msmarco-holdout-v1.json"
+        )]
+        manifest: String,
+
+        /// Raw JSON emitted by generalization-capture
+        #[arg(long)]
+        opensonarx_report: String,
+
+        /// Raw visible Google SERP capture for the identical manifest
+        #[arg(
+            long,
+            default_value = "bench/fixtures/google-generalization-msmarco-capture-v1.json"
+        )]
+        google_report: String,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Persist the objective comparison report
+        #[arg(long)]
+        report_path: Option<String>,
+    },
+    /// Aggregate live artifacts into an explicit production-readiness verdict
+    ProductionReadiness {
+        /// JSON emitted by engine-probe --report-path
+        #[arg(long)]
+        provider_report: String,
+
+        /// Fresh-index answered JSON emitted by live-search --report-path
+        #[arg(long)]
+        cold_report: String,
+
+        /// Reused-index multi-pass JSON emitted by live-search --report-path
+        #[arg(long)]
+        resident_report: String,
+
+        /// JSON emitted by market-compare --report-path
+        #[arg(long)]
+        market_report: String,
+
+        /// Minimum independently healthy discovery providers
+        #[arg(long, default_value_t = 2)]
+        min_healthy_providers: usize,
+
+        /// Maximum cold search p99 latency in milliseconds
+        #[arg(long, default_value_t = 10_000.0)]
+        max_cold_search_p99_ms: f64,
+
+        /// Maximum resident search p95 latency in milliseconds
+        #[arg(long, default_value_t = 2_000.0)]
+        max_resident_search_p95_ms: f64,
+
+        /// Maximum resident search p99 latency in milliseconds
+        #[arg(long, default_value_t = 4_000.0)]
+        max_resident_search_p99_ms: f64,
+
+        /// Minimum resident throughput at the benchmark concurrency
+        #[arg(long, default_value_t = 10.0)]
+        min_resident_qps: f64,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Also persist the aggregate JSON verdict
+        #[arg(long)]
+        report_path: Option<String>,
+    },
+    /// Run the real local+web+crawl+OpenUncertainty production path
+    LiveSearch {
+        /// Persistent isolated state directory for this evaluation
+        #[arg(long)]
+        data_dir: String,
+
+        /// Override production discovery adapters (for live failover/chaos runs)
+        #[arg(long)]
+        engines: Option<String>,
+
+        /// Number of passes over the multi-intent suite
+        #[arg(long, default_value_t = 1)]
+        passes: usize,
+
+        /// Maximum simultaneous production-path searches sharing one client
+        #[arg(long, default_value_t = 1)]
+        concurrency: usize,
+
+        /// Unmeasured, quality-gated suite passes used to warm model/query caches
+        #[arg(long, default_value_t = 0)]
+        warmup_passes: usize,
+
+        /// Exercise natural paraphrases/word-order variants instead of only the canonical query
+        #[arg(long, default_value_t = false)]
+        query_variants: bool,
+
+        /// Run one zero-based natural query variant (requires --case)
+        #[arg(long)]
+        query_variant: Option<usize>,
+
+        /// Maximum displayed results per query
+        #[arg(short = 'k', long, default_value_t = 5)]
+        top_k: usize,
+
+        /// Run only one named case (useful for iterative production debugging)
+        #[arg(long)]
+        case: Option<String>,
+
+        /// Process the real crawl-on-query queue after every search
+        #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
+        crawl: bool,
+
+        /// Run the retained-evidence answer path (includes synchronous hydration for claims)
+        #[arg(long, default_value_t = false)]
+        answer: bool,
+
+        /// Output format (table or json)
+        #[arg(short, long, default_value = "table")]
+        output: String,
+
+        /// Print aggregate metrics and failures without every passing request
+        #[arg(long, default_value_t = false)]
+        summary_only: bool,
+
+        /// Also persist the complete JSON report at this path
+        #[arg(long)]
+        report_path: Option<String>,
+    },
     /// Generate a benchmark dataset file
     Generate {
         /// Number of test cases to generate
@@ -389,7 +838,9 @@ fn get_embedder(pipeline_name: &str) -> Arc<dyn EmbeddingPipeline> {
             Arc::new(oi_embed::OllamaEmbedder::new(model).expect("Failed to connect to Ollama"))
         }
         other => {
-            eprintln!("Unknown pipeline: {other}. Available: mock, minilm, arctic-m, arctic-l, clip, ollama:<model>");
+            eprintln!(
+                "Unknown pipeline: {other}. Available: mock, minilm, arctic-m, arctic-l, clip, ollama:<model>"
+            );
             std::process::exit(1);
         }
     }
@@ -444,8 +895,8 @@ fn run_benchmark(cases: usize, pipeline_name: &str, output_format: &str, modalit
         doc_id: String,
         content: String,
         title: String,
-        embed_text: Option<String>,  // text to embed (None = image doc)
-        image_desc: Option<String>,  // image description (for image docs)
+        embed_text: Option<String>, // text to embed (None = image doc)
+        image_desc: Option<String>, // image description (for image docs)
     }
 
     let mut docs = Vec::new();
@@ -461,8 +912,16 @@ fn run_benchmark(cases: usize, pipeline_name: &str, output_format: &str, modalit
                     doc_id: doc.doc_id.clone(),
                     content: doc.content.clone(),
                     title: doc.title.clone(),
-                    embed_text: if embedder.supports_images() { None } else { Some(desc.clone()) },
-                    image_desc: if embedder.supports_images() { Some(desc.clone()) } else { None },
+                    embed_text: if embedder.supports_images() {
+                        None
+                    } else {
+                        Some(desc.clone())
+                    },
+                    image_desc: if embedder.supports_images() {
+                        Some(desc.clone())
+                    } else {
+                        None
+                    },
                 });
             } else {
                 docs.push(DocInfo {
@@ -478,18 +937,18 @@ fn run_benchmark(cases: usize, pipeline_name: &str, output_format: &str, modalit
 
     // Batch-embed all text docs in one pass (32 per batch to cap memory)
     let ingest_start = Instant::now();
-    let text_indices: Vec<usize> = docs.iter().enumerate()
+    let text_indices: Vec<usize> = docs
+        .iter()
+        .enumerate()
         .filter_map(|(i, d)| d.embed_text.as_ref().map(|_| i))
         .collect();
-    let text_contents: Vec<&str> = text_indices.iter()
+    let text_contents: Vec<&str> = text_indices
+        .iter()
         .map(|&i| docs[i].embed_text.as_deref().unwrap())
         .collect();
 
-    let text_embeddings = oi_embed::batch::embed_in_batches(
-        embedder.as_ref(),
-        &text_contents,
-        32,
-    ).unwrap_or_else(|_| vec![vec![]; text_contents.len()]);
+    let text_embeddings = oi_embed::batch::embed_in_batches(embedder.as_ref(), &text_contents, 32)
+        .unwrap_or_else(|_| vec![vec![]; text_contents.len()]);
 
     // Map text embeddings back to doc indices
     let mut embeddings: Vec<Option<Vec<f32>>> = vec![None; docs.len()];
@@ -513,7 +972,9 @@ fn run_benchmark(cases: usize, pipeline_name: &str, output_format: &str, modalit
     }
 
     // Build chunks
-    let all_chunks: Vec<ContentChunk> = docs.iter().enumerate()
+    let all_chunks: Vec<ContentChunk> = docs
+        .iter()
+        .enumerate()
         .map(|(i, doc)| ContentChunk {
             chunk_id: doc.doc_id.clone(),
             content: doc.content.clone(),
@@ -535,7 +996,11 @@ fn run_benchmark(cases: usize, pipeline_name: &str, output_format: &str, modalit
 
     index.ingest(&all_chunks).unwrap();
     let ingest_ms = ingest_start.elapsed().as_secs_f64() * 1000.0;
-    let docs_per_sec = if ingest_ms > 0.0 { all_chunks.len() as f64 / (ingest_ms / 1000.0) } else { 0.0 };
+    let docs_per_sec = if ingest_ms > 0.0 {
+        all_chunks.len() as f64 / (ingest_ms / 1000.0)
+    } else {
+        0.0
+    };
     tracing::info!(
         "Indexed {} unique documents (deduplicated from {} total) in {:.0}ms ({:.0} docs/sec)",
         all_chunks.len(),
@@ -560,9 +1025,7 @@ fn run_benchmark(cases: usize, pipeline_name: &str, output_format: &str, modalit
         } else {
             case.difficulty.to_string()
         };
-        let entry = results_by_diff
-            .entry(diff_key)
-            .or_default();
+        let entry = results_by_diff.entry(diff_key).or_default();
 
         entry.total += 1;
 
@@ -606,11 +1069,15 @@ fn run_benchmark(cases: usize, pipeline_name: &str, output_format: &str, modalit
             .relevant_docs
             .iter()
             .filter_map(|d| {
-                content_to_id.get(&d.content).map(|id| (id.clone(), d.relevance))
+                content_to_id
+                    .get(&d.content)
+                    .map(|id| (id.clone(), d.relevance))
             })
             .collect();
-        let relevance_refs: Vec<(&str, u8)> =
-            relevance_map.iter().map(|(s, r)| (s.as_str(), *r)).collect();
+        let relevance_refs: Vec<(&str, u8)> = relevance_map
+            .iter()
+            .map(|(s, r)| (s.as_str(), *r))
+            .collect();
 
         entry.recall_1 += metrics::recall_at_k(&relevant_refs, &retrieved_ids, 1);
         entry.recall_5 += metrics::recall_at_k(&relevant_refs, &retrieved_ids, 5);
@@ -698,18 +1165,12 @@ fn run_benchmark(cases: usize, pipeline_name: &str, output_format: &str, modalit
                 }
             }
 
-            println!(
-                "\nQuality gate false positive rate: {:.1}%",
-                fpr * 100.0
-            );
+            println!("\nQuality gate false positive rate: {:.1}%", fpr * 100.0);
             println!(
                 "\nLatency (end-to-end): p50={:.1}ms  p95={:.1}ms  p99={:.1}ms",
                 p50, p95, p99
             );
-            println!(
-                "  Embed:  p50={:.1}ms  p95={:.1}ms",
-                embed_p50, embed_p95
-            );
+            println!("  Embed:  p50={:.1}ms  p95={:.1}ms", embed_p50, embed_p95);
             println!(
                 "  Search: p50={:.1}ms  p95={:.1}ms\n",
                 search_p50, search_p95
@@ -835,7 +1296,14 @@ async fn main() {
             limit,
             semantic_weight,
         } => {
-            dist_sim::run_dist_sim(nodes, fanout, &distribution, &pipeline, limit, semantic_weight);
+            dist_sim::run_dist_sim(
+                nodes,
+                fanout,
+                &distribution,
+                &pipeline,
+                limit,
+                semantic_weight,
+            );
         }
         Command::Sweep { cases, pipeline } => {
             run_sweep_command(cases, &pipeline);
@@ -863,7 +1331,11 @@ async fn main() {
         } => {
             sealqa::run_sealqa(&pipeline, &output, semantic_weight, docs, rerank);
         }
-        Command::FactsBench { pipeline, output, skip_langs } => {
+        Command::FactsBench {
+            pipeline,
+            output,
+            skip_langs,
+        } => {
             let skip: Vec<String> = skip_langs
                 .unwrap_or_default()
                 .split(',')
@@ -880,6 +1352,300 @@ async fn main() {
             model,
         } => {
             agent_cost::run_agent_cost(&pipeline, &output, &backends, top_k, &model).await;
+        }
+        Command::Uncertainty {
+            train_cases,
+            eval_cases,
+            throughput_claims,
+            output,
+        } => {
+            uncertainty_bench::run_uncertainty_benchmark(
+                train_cases,
+                eval_cases,
+                throughput_claims,
+                &output,
+            );
+        }
+        Command::UncertaintyDataset {
+            dataset,
+            output,
+            bootstrap_iterations,
+        } => {
+            if let Err(error) =
+                uncertainty_bench::run_uncertainty_dataset(&dataset, &output, bootstrap_iterations)
+            {
+                eprintln!("uncertainty dataset evaluation failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::ElectionPolls { dataset, output } => {
+            if let Err(error) = election_polls_bench::run(&dataset, &output) {
+                eprintln!("election-polls benchmark failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::EngineProbe {
+            engines,
+            queries,
+            limit,
+            rounds,
+            concurrency,
+            min_healthy,
+            output,
+            report_path,
+        } => {
+            if let Err(error) = engine_probe::run(
+                &engines,
+                &queries,
+                limit,
+                rounds,
+                concurrency,
+                min_healthy,
+                &output,
+                report_path.as_deref(),
+            ) {
+                eprintln!("engine-probe failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::MarketCompare {
+            fixture,
+            live_report,
+            output,
+            report_path,
+        } => {
+            if let Err(error) =
+                market_compare_bench::run(&fixture, &live_report, &output, report_path.as_deref())
+            {
+                eprintln!("market-compare failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::MarketLatency {
+            fixture,
+            output,
+            report_path,
+        } => {
+            if let Err(error) = market_latency_bench::run(&fixture, &output, report_path.as_deref())
+            {
+                eprintln!("market-latency failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::GeneralizationCapture {
+            manifest,
+            data_dir,
+            engines,
+            passes,
+            concurrency,
+            top_k,
+            crawl,
+            output,
+            report_path,
+        } => {
+            if let Err(error) = generalization_capture::run(
+                &manifest,
+                &data_dir,
+                engines.as_deref(),
+                passes,
+                concurrency,
+                top_k,
+                crawl,
+                &output,
+                report_path.as_deref(),
+            ) {
+                eprintln!("generalization-capture failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::GeneralizationMarketCapture {
+            manifest,
+            engine,
+            top_k,
+            concurrency,
+            output,
+            report_path,
+        } => {
+            if let Err(error) = generalization_market_capture::run(
+                &manifest,
+                &engine,
+                top_k,
+                concurrency,
+                &output,
+                report_path.as_deref(),
+            ) {
+                eprintln!("generalization-market-capture failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::GeneralizationBlindPool {
+            manifest,
+            opensonarx_report,
+            market_report,
+            top_k,
+            blinding_nonce,
+            packet_path,
+            key_path,
+            output,
+        } => {
+            if let Err(error) = generalization_blind::create_pool(
+                &manifest,
+                &opensonarx_report,
+                &market_report,
+                top_k,
+                &blinding_nonce,
+                &packet_path,
+                &key_path,
+                &output,
+            ) {
+                eprintln!("generalization-blind-pool failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::GeneralizationBlindTemplate {
+            packet,
+            judge_id,
+            external_to_implementation,
+            template_path,
+        } => {
+            if let Err(error) = generalization_blind::create_judgment_template(
+                &packet,
+                &judge_id,
+                external_to_implementation,
+                &template_path,
+            ) {
+                eprintln!("generalization-blind-template failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::GeneralizationBlindOllamaJudge {
+            packet,
+            model,
+            base_url,
+            concurrency,
+            queries_per_request,
+            thinking,
+            judgments_path,
+        } => {
+            if let Err(error) = generalization_blind::judge_with_ollama(
+                &packet,
+                &model,
+                &base_url,
+                concurrency,
+                queries_per_request,
+                &thinking,
+                &judgments_path,
+            ) {
+                eprintln!("generalization-blind-ollama-judge failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::GeneralizationBlindScore {
+            packet,
+            key,
+            judgments,
+            bootstrap_iterations,
+            output,
+            report_path,
+        } => {
+            if let Err(error) = generalization_blind::score(
+                &packet,
+                &key,
+                &judgments,
+                bootstrap_iterations,
+                &output,
+                report_path.as_deref(),
+            ) {
+                eprintln!("generalization-blind-score failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::GeneralizationCompare {
+            manifest,
+            opensonarx_report,
+            google_report,
+            output,
+            report_path,
+        } => {
+            if let Err(error) = generalization_compare::run(
+                &manifest,
+                &opensonarx_report,
+                &google_report,
+                &output,
+                report_path.as_deref(),
+            ) {
+                eprintln!("generalization-compare failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::ProductionReadiness {
+            provider_report,
+            cold_report,
+            resident_report,
+            market_report,
+            min_healthy_providers,
+            max_cold_search_p99_ms,
+            max_resident_search_p95_ms,
+            max_resident_search_p99_ms,
+            min_resident_qps,
+            output,
+            report_path,
+        } => {
+            let thresholds = production_readiness_bench::Thresholds {
+                min_healthy_providers,
+                max_cold_search_p99_ms,
+                max_resident_search_p95_ms,
+                max_resident_search_p99_ms,
+                min_resident_qps,
+            };
+            if let Err(error) = production_readiness_bench::run(
+                &provider_report,
+                &cold_report,
+                &resident_report,
+                &market_report,
+                thresholds,
+                &output,
+                report_path.as_deref(),
+            ) {
+                eprintln!("production-readiness failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::LiveSearch {
+            data_dir,
+            engines,
+            passes,
+            concurrency,
+            warmup_passes,
+            query_variants,
+            query_variant,
+            top_k,
+            case,
+            crawl,
+            answer,
+            output,
+            summary_only,
+            report_path,
+        } => {
+            if let Err(error) = live_search_bench::run(
+                &data_dir,
+                engines.as_deref(),
+                passes,
+                concurrency,
+                warmup_passes,
+                query_variants,
+                query_variant,
+                top_k,
+                case.as_deref(),
+                crawl,
+                answer,
+                &output,
+                summary_only,
+                report_path.as_deref(),
+            ) {
+                eprintln!("live-search benchmark failed: {error}");
+                std::process::exit(2);
+            }
         }
         Command::Generate { cases, output } => {
             let dataset = generator::generate_text_dataset(cases);

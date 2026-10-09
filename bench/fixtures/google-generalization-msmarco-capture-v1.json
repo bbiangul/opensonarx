@@ -1,0 +1,1702 @@
+{
+  "schema_version": 1,
+  "experiment": "sealed-google-visible-serp-generalization-capture-v1",
+  "captured_at": "2026-08-22T23:41:27.916Z",
+  "engine": "Google Search",
+  "locale": "en",
+  "country": "US",
+  "personalization": "signed out; pws=0",
+  "manifest_name": "opensonarx-generalization-msmarco-heldout-v1",
+  "manifest_sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c",
+  "protocol": {
+    "query_order": "sealed manifest order",
+    "execution": "sequential in-app browser; 750 ms inter-query interval",
+    "result_surface": "first five visible a h3 link headings and their containing visible surface",
+    "latency": "wall time from before navigation through organic-ready or unusual-traffic detection; 5000 ms readiness ceiling",
+    "ai_overview": "presence detected from visible page text; answer correctness not judged during capture",
+    "failures": "unusual-traffic pages and incomplete organic slates remain in the sample"
+  },
+  "aggregate": {
+    "queries": 48,
+    "unusual_traffic": 0,
+    "nonempty_visible_result_slates": 48,
+    "five_result_slates": 47,
+    "ai_overview_visible": 26,
+    "latency_ms": {
+      "min": 352,
+      "p50": 447,
+      "p95": 603,
+      "p99": 881,
+      "max": 881
+    }
+  },
+  "judged_during_capture": false,
+  "cases": [
+    {
+      "id": "msmarco-755878",
+      "query": "what is hp system bios",
+      "wall_ms": 447,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Updating the BIOS (Basic Input Output System) (Windows)",
+          "url": "https://support.hp.com/us-en/document/ish_3894564-1633733-16",
+          "surface": "Updating the BIOS (Basic Input Output System) (Windows)\n\nHP\nhttps://support.hp.com › ish_3894564-1633733-16"
+        },
+        {
+          "title": "What exactly is Hp bios update? : r/spectrex360",
+          "url": "https://www.reddit.com/r/spectrex360/comments/hw6fhu/what_exactly_is_hp_bios_update/",
+          "surface": "What exactly is Hp bios update? : r/spectrex360\n\nReddit · r/spectrex360\n9 comments · 6 years ago"
+        },
+        {
+          "title": "My HP Windows laptop says it needs a BIOS update, what ...",
+          "url": "https://www.quora.com/My-HP-Windows-laptop-says-it-needs-a-BIOS-update-what-is-that-for",
+          "surface": "My HP Windows laptop says it needs a BIOS update, what ...\n\nQuora\n40+ answers · 5 years ago"
+        },
+        {
+          "title": "Updating the BIOS (Basic Input Output System) (Windows)",
+          "url": "https://support.hp.com/us-en/document/ish_4129273-2331498-16",
+          "surface": "Updating the BIOS (Basic Input Output System) (Windows)\n\nHP\nhttps://support.hp.com › ish_4129273-2331498-16"
+        },
+        {
+          "title": "BIOS Setup Utility information and menu options",
+          "url": "https://support.hp.com/us-en/document/ish_3912651-2318005-16",
+          "surface": "BIOS Setup Utility information and menu options\n\nHP\nhttps://support.hp.com › ish_3912651-2318005-16"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-44072",
+      "query": "average snowfall in chatsworth ga",
+      "wall_ms": 432,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Chatsworth Climate, Weather By Month, Average ...",
+          "url": "https://weatherspark.com/y/15685/Average-Weather-in-Chatsworth-Georgia-United-States-Year-Round",
+          "surface": "Chatsworth Climate, Weather By Month, Average ...\n\nWeather Spark\nhttps://weatherspark.com › United States › Georgia"
+        },
+        {
+          "title": "Chatsworth, Georgia, United States, Average Monthly ...",
+          "url": "https://myperfectweather.com/api/cityinfo/13213Cha/degF/Average-Weather-in-Chatsworth-Georgia-United-States-Year-Round",
+          "surface": "Chatsworth, Georgia, United States, Average Monthly ...\n\nmyPerfectWeather\nhttps://myperfectweather.com › api › cityinfo › degF"
+        },
+        {
+          "title": "Chatsworth, GA Climate",
+          "url": "https://www.bestplaces.net/climate/city/georgia/chatsworth",
+          "surface": "Chatsworth, GA Climate\n\nBestPlaces\nhttps://www.bestplaces.net › climate › city › georgia › c..."
+        },
+        {
+          "title": "Historical Weather Trends in Chatsworth, Georgia",
+          "url": "https://usdaproperties.com/states/GA/cities/Chatsworth/historical_weather_trends.cgi",
+          "surface": "Historical Weather Trends in Chatsworth, Georgia\n\nUSDA Properties\nhttps://usdaproperties.com › states › GA › cities › histor..."
+        },
+        {
+          "title": "CHATSWORTH, GEORGIA - Climate Summary",
+          "url": "https://wrcc.dri.edu/cgi-bin/cliMAIN.pl?ga1856",
+          "surface": "CHATSWORTH, GEORGIA - Climate Summary\n\nWRCC\nhttps://wrcc.dri.edu › cgi-bin › cliMAIN"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-577930",
+      "query": "what audience can you reach boosting post facebook",
+      "wall_ms": 455,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Boost a post from your Facebook Page | Meta Business ...",
+          "url": "https://www.facebook.com/business/help/347839548598012",
+          "surface": "Boost a post from your Facebook Page | Meta Business ...\n\nFacebook\nhttps://www.facebook.com › business › help"
+        },
+        {
+          "title": "The difference between boosted posts and Meta ads",
+          "url": "https://www.facebook.com/business/help/317083072148603",
+          "surface": "The difference between boosted posts and Meta ads\n\nFacebook\nhttps://www.facebook.com › business › help"
+        },
+        {
+          "title": "When you post on Facebook and it says boost post, does it ...",
+          "url": "https://www.facebook.com/groups/communitytheatreresourcegroup/posts/3659788887605444/",
+          "surface": "When you post on Facebook and it says boost post, does it ...\n\nFacebook · Community Theatre Resource Group\n20+ comments · 2 years ago"
+        },
+        {
+          "title": "What is a Facebook Boost Post",
+          "url": "https://sproutsocial.com/glossary/facebook-boost-post/",
+          "surface": "What is a Facebook Boost Post\n\nSprout Social\nhttps://sproutsocial.com › Sprout Blog › Glossary"
+        },
+        {
+          "title": "Benefits of Boosting Facebook Posts",
+          "url": "https://www.brandtastic1.com/blog/boosting-facebook-posts/",
+          "surface": "Benefits of Boosting Facebook Posts\n\nbrandtastic1.com\nhttps://www.brandtastic1.com › blog › boosting-facebo..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-88577",
+      "query": "causes of swelling in the feet and ankles",
+      "wall_ms": 524,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What Causes Swollen Ankles and Feet?",
+          "url": "https://www.webmd.com/a-to-z-guides/swollen-ankles-and-feet",
+          "surface": "What Causes Swollen Ankles and Feet?\n\nWebMD\nhttps://www.webmd.com › A to Z Guides › Reference"
+        },
+        {
+          "title": "Why Are My Legs, Feet or Ankles Swollen?",
+          "url": "https://www.nm.org/healthbeat/healthy-tips/why-are-my-legs-feet-ankles-swollen",
+          "surface": "Why Are My Legs, Feet or Ankles Swollen?\n\nNorthwestern Medicine\nhttps://www.nm.org › healthbeat › healthy-tips › why-a..."
+        },
+        {
+          "title": "Edema - Symptoms and causes",
+          "url": "https://www.mayoclinic.org/diseases-conditions/edema/symptoms-causes/syc-20366493",
+          "surface": "Edema - Symptoms and causes\n\nMayo Clinic\nhttps://www.mayoclinic.org › edema › syc-20366493"
+        },
+        {
+          "title": "Swollen Feet and Ankles: Causes & When to See a Doctor",
+          "url": "https://cls.health/blog/what-causes-swollen-feet-and-ankles-and-what-you-can-do",
+          "surface": "Swollen Feet and Ankles: Causes & When to See a Doctor\n\nCLS Health\nhttps://cls.health › Blog › Foot & Ankle"
+        },
+        {
+          "title": "Why Do Your Feet and Ankles Swell?",
+          "url": "https://www.doctorsunited.com/blog/why-do-your-feet-and-ankles-swell",
+          "surface": "Why Do Your Feet and Ankles Swell?\n\nDoctors United, Ardsley\nhttps://www.doctorsunited.com › blog › why-do-your-fe..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1022832",
+      "query": "what percent of blood plasma",
+      "wall_ms": 558,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What Is Plasma in Blood?",
+          "url": "https://my.clevelandclinic.org/health/body/22865-plasma",
+          "surface": "What Is Plasma in Blood?\n\nCleveland Clinic\nhttps://my.clevelandclinic.org › body › 22865-plasma"
+        },
+        {
+          "title": "What Is Plasma In Blood?",
+          "url": "https://www.redcrossblood.org/donate-blood/dlp/plasma-information.html",
+          "surface": "What Is Plasma In Blood?\n\nRed Cross Blood Donation\nhttps://www.redcrossblood.org › dlp › plasma-information"
+        },
+        {
+          "title": "Physiology, Blood Plasma - StatPearls - NCBI Bookshelf",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK531504/",
+          "surface": "Physiology, Blood Plasma - StatPearls - NCBI Bookshelf\n\nNational Institutes of Health (NIH) | (.gov)\nhttps://www.ncbi.nlm.nih.gov › books › NBK531504"
+        },
+        {
+          "title": "What Is Plasma & Why Is It Important?",
+          "url": "https://aboplasma.com/what-is-plasma-and-why-is-it-important/",
+          "surface": "What Is Plasma & Why Is It Important?\n\nABO Plasma\nhttps://aboplasma.com › Plasma Donation"
+        },
+        {
+          "title": "What percentage of blood is composed of plasma? - Pearson",
+          "url": "https://www.pearson.com/channels/anp/asset/14040322/what-percentage-of-blood-is-composed-of-plasm",
+          "surface": "What percentage of blood is composed of plasma? - Pearson\n\npearson.com\nhttps://www.pearson.com › channels › anp › asset › what..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-755907",
+      "query": "what is hpp header",
+      "wall_ms": 405,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": ".h vs .hpp vs .cpp : r/Cplusplus",
+          "url": "https://www.reddit.com/r/Cplusplus/comments/oiwu1d/h_vs_hpp_vs_cpp/",
+          "surface": ".h vs .hpp vs .cpp : r/Cplusplus\n\nReddit · r/Cplusplus\n20+ comments · 5 years ago"
+        },
+        {
+          "title": "h or *.hpp for your C++ headers / class definitions [closed]",
+          "url": "https://stackoverflow.com/questions/152555/h-or-hpp-for-your-c-headers-class-definitions",
+          "surface": "h or *.hpp for your C++ headers / class definitions [closed]\n\nStack Overflow\n20+ answers · 17 years ago"
+        },
+        {
+          "title": "HPP File Format - C++ Header File",
+          "url": "https://docs.fileformat.com/programming/hpp/",
+          "surface": "HPP File Format - C++ Header File\n\nFile Format Docs\nhttps://docs.fileformat.com › programming › hpp"
+        },
+        {
+          "title": "Header File Fundamentals and Best Practices in C++ - Medium",
+          "url": "https://ibrahimmansur4.medium.com/header-file-fundamentals-and-best-practices-in-c-98b1fe87dae0",
+          "surface": "Header File Fundamentals and Best Practices in C++ - Medium\n\nMedium · Ibrahim Bin Mansur\n1 year ago"
+        },
+        {
+          "title": "HPP – The C++ Header File",
+          "url": "https://www.online-convert.com/file-format/hpp",
+          "surface": "HPP – The C++ Header File\n\nOnline converter\nhttps://www.online-convert.com › file-format › hpp"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-933861",
+      "query": "what's the weather of qatar?",
+      "wall_ms": 398,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Doha, Doha, Qatar Weather Forecast",
+          "url": "https://www.accuweather.com/en/qa/doha/271669/weather-forecast/271669",
+          "surface": "Doha, Doha, Qatar Weather Forecast\n\nAccuWeather\nhttps://www.accuweather.com › doha › weather-forecast"
+        },
+        {
+          "title": "Qatar's Climate: Weather & Temperature Info",
+          "url": "https://visitqatar.com/intl-en/about-qatar/climate",
+          "surface": "Qatar's Climate: Weather & Temperature Info\n\nVisit Qatar\nhttps://visitqatar.com › intl-en › about-qatar › climate"
+        },
+        {
+          "title": "weather - Qatar Meteorology Department",
+          "url": "https://qweather.gov.qa/CAA/Index.aspx",
+          "surface": "weather - Qatar Meteorology Department\n\nqweather.gov.qa\nhttps://qweather.gov.qa › CAA › Index"
+        },
+        {
+          "title": "Doha - BBC Weather",
+          "url": "https://www.bbc.com/weather/290030",
+          "surface": "Doha - BBC Weather\n\nBBC\nhttps://www.bbc.com › weather"
+        },
+        {
+          "title": "Doha, Qatar 14 day weather forecast",
+          "url": "https://www.timeanddate.com/weather/qatar/doha/ext",
+          "surface": "Doha, Qatar 14 day weather forecast\n\nTime and Date\nhttps://www.timeanddate.com › Weather › Qatar › Doha"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-311067",
+      "query": "how much does a professional swimmer make",
+      "wall_ms": 453,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "How much do swimmers get paid : r/Swimming",
+          "url": "https://www.reddit.com/r/Swimming/comments/1bl8gjq/how_much_do_swimmers_get_paid/",
+          "surface": "How much do swimmers get paid : r/Swimming\n\nReddit · r/Swimming\n50+ comments · 2 years ago"
+        },
+        {
+          "title": "How Much Money Professional Swimmers Really Make",
+          "url": "https://blog.myswimpro.com/2021/01/29/how-much-money-olympic-swimmers-really-make/",
+          "surface": "How Much Money Professional Swimmers Really Make\n\nMySwimPro\nhttps://blog.myswimpro.com › 2021/01/29 › how-muc..."
+        },
+        {
+          "title": "How Much Money Do Professional Swimmers Make?",
+          "url": "https://www.youtube.com/watch?v=TwW6okzMuaY",
+          "surface": "How Much Money Do Professional Swimmers Make?\n\nYouTube · Fares Ksebati\n25.4K+ views · 5 years ago"
+        },
+        {
+          "title": "Olympic Swimmer Salary: Hourly Rate August 2026 USA",
+          "url": "https://www.ziprecruiter.com/Salaries/Olympic-Swimmer-Salary",
+          "surface": "Olympic Swimmer Salary: Hourly Rate August 2026 USA\n\nZipRecruiter\nhttps://www.ziprecruiter.com › Salaries › Olympic-Swi..."
+        },
+        {
+          "title": "Professional Swimmer Salaries: From Olympic Medals ...",
+          "url": "https://swimmirror.com/blog/professional-swimmer-salaries-from-olympic-medals-to-sponsorship-money/",
+          "surface": "Professional Swimmer Salaries: From Olympic Medals ...\n\nSwimMirror\nhttps://swimmirror.com › blog › professional-swimmer-..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1022907",
+      "query": "what part of the nervous system does adderall affect",
+      "wall_ms": 480,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Adderall Side Effects: Short- & Long-Term Effects on the Body",
+          "url": "https://www.healthline.com/health/adhd/adderall-effects-on-body",
+          "surface": "Adderall Side Effects: Short- & Long-Term Effects on the Body\n\nHealthline\nhttps://www.healthline.com › health › adhd › adderall-e..."
+        },
+        {
+          "title": "How Adderall Affects the Brain",
+          "url": "https://www.caron.org/blog/what-does-adderall-do-to-your-brain-it-depends",
+          "surface": "How Adderall Affects the Brain\n\nCaron Treatment Centers\nhttps://www.caron.org › Blog"
+        },
+        {
+          "title": "Potential Adverse Effects of Amphetamine Treatment on Brain ...",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2670101/",
+          "surface": "Potential Adverse Effects of Amphetamine Treatment on Brain ...\n\nPubMed Central (PMC) (.gov)\nhttps://pmc.ncbi.nlm.nih.gov › articles › PMC2670101"
+        },
+        {
+          "title": "You Asked: What does Adderall do to your body? - Vital Record",
+          "url": "https://vitalrecord.tamu.edu/you-asked-what-does-adderall-do-to-your-body/",
+          "surface": "You Asked: What does Adderall do to your body? - Vital Record\n\nTexas A&M\nhttps://vitalrecord.tamu.edu › you-asked-what-does-adde..."
+        },
+        {
+          "title": "Adderall Effects, Risks, and Dangers: Short and Long Term",
+          "url": "https://americanaddictioncenters.org/stimulants/amphetamine/adderall/long-term-effects",
+          "surface": "Adderall Effects, Risks, and Dangers: Short and Long Term\n\nAmerican Addiction Centers\nhttps://americanaddictioncenters.org › amphetamine › lo..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1022911",
+      "query": "what part of the integumentary system does scc",
+      "wall_ms": 386,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Squamous cell carcinoma of the skin - Symptoms and causes",
+          "url": "https://www.mayoclinic.org/diseases-conditions/squamous-cell-carcinoma/symptoms-causes/syc-20352480",
+          "surface": "Squamous cell carcinoma of the skin - Symptoms and causes\n\nMayo Clinic\nhttps://www.mayoclinic.org › syc-20352480"
+        },
+        {
+          "title": "Squamous Cell Carcinoma: What it is, Causes & Treatment",
+          "url": "https://my.clevelandclinic.org/health/diseases/17480-squamous-cell-carcinoma",
+          "surface": "Squamous Cell Carcinoma: What it is, Causes & Treatment\n\nCleveland Clinic\nhttps://my.clevelandclinic.org › health › diseases › 174..."
+        },
+        {
+          "title": "Squamous Cell Carcinoma: Early Signs, Risks & What to ...",
+          "url": "https://www.premiersurgicalnetwork.com/blog/squamous-cell-carcinoma",
+          "surface": "Squamous Cell Carcinoma: Early Signs, Risks & What to ...\n\nPremier Surgical Network\nhttps://www.premiersurgicalnetwork.com › blog › squam..."
+        },
+        {
+          "title": "Squamous Cell Skin Cancer",
+          "url": "https://www.uofmhealth.org/our-care/specialties-services/squamous-cell-skin-cancer",
+          "surface": "Squamous Cell Skin Cancer\n\nUniversity of Michigan Health\nhttps://www.uofmhealth.org › ... › Specialties & Services"
+        },
+        {
+          "title": "Squamous Cell Carcinoma (SCC)",
+          "url": "https://www.americanskin.org/resource/scc.php",
+          "surface": "Squamous Cell Carcinoma (SCC)\n\nAmerican Skin Association\nhttps://www.americanskin.org › resource › scc"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-933946",
+      "query": "what's the weight of a gallon of milk",
+      "wall_ms": 389,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Everybody knows how much a gallon of milk weighs",
+          "url": "https://www.reddit.com/r/ShitAmericansSay/comments/179xi95/everybody_knows_how_much_a_gallon_of_milk_weighs/",
+          "surface": "Everybody knows how much a gallon of milk weighs\n\nReddit · r/ShitAmericansSay\n220+ comments · 2 years ago"
+        },
+        {
+          "title": "Homesteader fact of the day 🥛👇 A gallon of milk weighs 8.6 ...",
+          "url": "https://www.facebook.com/NinnescahMade/videos/homesteader-fact-of-the-day-a-gallon-of-milk-weighs-86-pounds-and-i-pour-a-lot-o/1328375185450932/",
+          "surface": "Homesteader fact of the day 🥛👇 A gallon of milk weighs 8.6 ...\n\nFacebook · Ninnescah Made\n980+ reactions · 10 months ago"
+        },
+        {
+          "title": "How Much Does a Gallon of Milk Weigh?",
+          "url": "https://afoodloverskitchen.com/how-much-does-a-gallon-of-milk-weigh/",
+          "surface": "How Much Does a Gallon of Milk Weigh?\n\nA Food Lover's Kitchen\nhttps://afoodloverskitchen.com › Kitchen Tips"
+        },
+        {
+          "title": "How much does one gallon of milk weigh? | Organic Valley",
+          "url": "https://www.youtube.com/shorts/xPahpuuUBRI",
+          "surface": "How much does one gallon of milk weigh? | Organic Valley\n\nYouTube · Organic Valley\n383.6K+ views · 3 years ago"
+        },
+        {
+          "title": "Does a gallon of milk weigh the same as a gallon of water if ...",
+          "url": "https://www.quora.com/Does-a-gallon-of-milk-weigh-the-same-as-a-gallon-of-water-if-they-are-put-in-the-same-type-container",
+          "surface": "Does a gallon of milk weigh the same as a gallon of water if ...\n\nQuora\n50+ answers · 7 years ago"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-222158",
+      "query": "how do you find the mean on excel",
+      "wall_ms": 384,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Calculating Mean, Median and Mode in Excel",
+          "url": "https://www.ablebits.com/office-addins-blog/mean-median-mode-excel/",
+          "surface": "Calculating Mean, Median and Mode in Excel\n\nAblebits.com\nhttps://www.ablebits.com › ... › Excel › Average"
+        },
+        {
+          "title": "Calculating the Mean and Standard Deviation with Excel",
+          "url": "https://researchbasics.education.uconn.edu/calculatingmeanstandarddev/",
+          "surface": "Calculating the Mean and Standard Deviation with Excel\n\nEducational Research Basics by Del Siegle\nhttps://researchbasics.education.uconn.edu › calculating..."
+        },
+        {
+          "title": "MEDIAN function",
+          "url": "https://support.microsoft.com/en-us/excel/functions/median-function",
+          "surface": "MEDIAN function\n\nMicrosoft Support\nhttps://support.microsoft.com › en-us › excel › functions"
+        },
+        {
+          "title": "Calculating Mean, Median, Mode, & Standard Deviation in Excel",
+          "url": "https://www.youtube.com/watch?v=2rEhWFhSqnI",
+          "surface": "Calculating Mean, Median, Mode, & Standard Deviation in Excel\n\nYouTube · Dan Rott\n1.4M+ views · 13 years ago"
+        },
+        {
+          "title": "How To Calculate Mean in Excel in 4 Steps (Plus Its Uses)",
+          "url": "https://www.indeed.com/career-advice/career-development/how-to-calculate-mean-in-excel",
+          "surface": "How To Calculate Mean in Excel in 4 Steps (Plus Its Uses)\n\nIndeed\nhttps://www.indeed.com › ... › Career development"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-578100",
+      "query": "what axis is intellectual disability on",
+      "wall_ms": 397,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "The Multi-Axial System in the DSM-IV",
+          "url": "https://www.verywellmind.com/five-axes-of-the-dsm-iv-multi-axial-system-1067053",
+          "surface": "The Multi-Axial System in the DSM-IV\n\nVerywell Mind\nhttps://www.verywellmind.com › Psychology › Theories"
+        },
+        {
+          "title": "DSM-IV to DSM-5 Changes: Overview - NCBI",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK519711/",
+          "surface": "DSM-IV to DSM-5 Changes: Overview - NCBI\n\nNational Institutes of Health (NIH) | (.gov)\nhttps://www.ncbi.nlm.nih.gov › books › NBK519711"
+        },
+        {
+          "title": "IDD/MI Diagnosis",
+          "url": "https://thenadd.org/idd-mi-diagnosis/",
+          "surface": "IDD/MI Diagnosis\n\nThe NADD\nhttps://thenadd.org › idd-mi-diagnosis"
+        },
+        {
+          "title": "What is Intellectual Disability?",
+          "url": "https://www.psychiatry.org/patients-families/intellectual-disability/what-is-intellectual-disability",
+          "surface": "What is Intellectual Disability?\n\nPsychiatry.org\nhttps://www.psychiatry.org › patients-families › what-is..."
+        },
+        {
+          "title": "Intellectual disability is recorded on DSM - - 5 - ﻿Axis",
+          "url": "https://www.chegg.com/homework-help/questions-and-answers/intellectual-disability-recorded-dsm-5-axis-select-one--b-ii-c-iii-d-iv-e-axis-classificat-q178821985",
+          "surface": "Intellectual disability is recorded on DSM - - 5 - ﻿Axis\n\nChegg\nhttps://www.chegg.com › questions-and-answers › intelle..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1023025",
+      "query": "what part of florida is patrick air force base",
+      "wall_ms": 688,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 1,
+      "results": [
+        {
+          "title": "Patrick - U.S. Space Force Base",
+          "url": "https://www.spaceforce.com/bases/patrick-sfb",
+          "surface": "Patrick - U.S. Space Force Base\n\nspaceforce.com\nhttps://www.spaceforce.com › bases › patrick-sfb"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-667136",
+      "query": "what happens when catalytic converter is bad",
+      "wall_ms": 458,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "6 Signs of a Bad Catalytic Converter",
+          "url": "https://www.corsaperformance.com/blogs/news/signs-of-a-bad-catalytic-converter?srsltid=AfmBOoo-mjFD_-StIEgmcoSJFNTrqnWcN_WZeA2QrQuKppnZk98N9cJu",
+          "surface": "6 Signs of a Bad Catalytic Converter\n\nCorsa Performance\nhttps://www.corsaperformance.com › News"
+        },
+        {
+          "title": "What will happen if I dont replace my catalytic converter?",
+          "url": "https://www.reddit.com/r/MechanicAdvice/comments/16r1n67/what_will_happen_if_i_dont_replace_my_catalytic/",
+          "surface": "What will happen if I dont replace my catalytic converter?\n\nReddit · r/MechanicAdvice\n60+ comments · 2 years ago"
+        },
+        {
+          "title": "Signs of a Bad Catalytic Converter",
+          "url": "https://www.kemptonchevrolet.com/blog/2023/december/14/signs-of-a-bad-catalytic-converter.htm",
+          "surface": "Signs of a Bad Catalytic Converter\n\nKempton Chevrolet\nhttps://www.kemptonchevrolet.com › blog › december"
+        },
+        {
+          "title": "Should You Drive With a Bad Catalytic Converter? | Repairs",
+          "url": "https://www.mandalcdjr.com/should-you-drive-with-a-bad-catalytic-converter/",
+          "surface": "Should You Drive With a Bad Catalytic Converter? | Repairs\n\nMandal Chrysler Dodge Jeep Ram\nhttps://www.mandalcdjr.com › should-you-drive-with-a-..."
+        },
+        {
+          "title": "How a Bad Catalytic Converter Can Affect Your Car or Truck",
+          "url": "https://www.teamgillmanmazda.com/how-can-a-bad-catalytic-converter-affect-your-car-or-truck",
+          "surface": "How a Bad Catalytic Converter Can Affect Your Car or Truck\n\nTeam Gillman Mazda\nhttps://www.teamgillmanmazda.com › how-can-a-bad-ca..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-622658",
+      "query": "what do cpa's earn",
+      "wall_ms": 396,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "How much do CPA's get paid?",
+          "url": "https://www.reddit.com/r/CPA/comments/13wviii/how_much_do_cpas_get_paid/",
+          "surface": "How much do CPA's get paid?\n\nReddit · r/CPA\n50+ comments · 3 years ago"
+        },
+        {
+          "title": "What Is the CPA Salary? Insights for 2026",
+          "url": "https://www.becker.com/blog/career/cpa-salary-insights",
+          "surface": "What Is the CPA Salary? Insights for 2026\n\nBecker Professional Education\nhttps://www.becker.com › blog › career › cpa-salary-insi..."
+        },
+        {
+          "title": "CPA Salary Guide",
+          "url": "https://www.calcpa.org/become-a-cpa/cpa-salary-guide",
+          "surface": "CPA Salary Guide\n\nCalifornia Society of CPAs\nhttps://www.calcpa.org › become-a-cpa › cpa-salary-guide"
+        },
+        {
+          "title": "US Certified Public Accountant (CPA) Salary",
+          "url": "https://accounting.uworld.com/cpa-review/cpa-career/cpa-salary/",
+          "surface": "US Certified Public Accountant (CPA) Salary\n\nUWorld Accounting\nhttps://accounting.uworld.com › ... › About CPA"
+        },
+        {
+          "title": "CPA Salary",
+          "url": "https://www.accounting.com/careers/cpa/salary/",
+          "surface": "CPA Salary\n\nAccounting.com\nhttps://www.accounting.com › careers › cpa › salary"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-266760",
+      "query": "how long should i boil corn on the cob?",
+      "wall_ms": 603,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Is there a magic number for how long to boil corn on the cob",
+          "url": "https://www.reddit.com/r/easyrecipes/comments/16gw8je/is_there_a_magic_number_for_how_long_to_boil_corn/",
+          "surface": "Is there a magic number for how long to boil corn on the cob\n\nReddit · r/easyrecipes\n180+ comments · 2 years ago"
+        },
+        {
+          "title": "The Best Way to Boil Corn on the Cob for Juiciest Sweet ...",
+          "url": "https://www.facebook.com/natashaskitchen/posts/the-best-way-to-boil-corn-on-the-cob-for-juiciest-sweet-corn-recipe-in-comments/1574759900680505/",
+          "surface": "The Best Way to Boil Corn on the Cob for Juiciest Sweet ...\n\nFacebook · NatashasKitchen.com\n540+ reactions · 1 month ago"
+        },
+        {
+          "title": "How To Boil Corn On The Cob",
+          "url": "https://www.twopurplefigs.com/how-to-boil-corn-on-the-cob/",
+          "surface": "How To Boil Corn On The Cob\n\nTwo Purple Figs\nhttps://www.twopurplefigs.com › Recipes › Side Dishes"
+        },
+        {
+          "title": "How to Boil Corn on the Cob",
+          "url": "https://www.seriouseats.com/how-to-boil-corn-8678609",
+          "surface": "How to Boil Corn on the Cob\n\nSerious Eats\nhttps://www.seriouseats.com › ... › Vegetables › Corn"
+        },
+        {
+          "title": "How long do you cook Corn on the cob?",
+          "url": "https://www.friedas.com/how-long-do-you-cook-corn-on-the-cob/",
+          "surface": "How long do you cook Corn on the cob?\n\nFrieda's LLC\nhttps://www.friedas.com › how-long-do-you-cook-corn..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-88831",
+      "query": "causes of trigger finger in children",
+      "wall_ms": 401,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Presentation and aetiology of paediatric trigger finger - PMC",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8873964/",
+          "surface": "Presentation and aetiology of paediatric trigger finger - PMC\n\nPubMed Central (PMC) (.gov)\nhttps://pmc.ncbi.nlm.nih.gov › articles › PMC8873964"
+        },
+        {
+          "title": "Trigger Finger and Trigger Thumb",
+          "url": "https://www.chop.edu/conditions-diseases/trigger-finger-and-trigger-thumb",
+          "surface": "Trigger Finger and Trigger Thumb\n\nChildren's Hospital of Philadelphia\nhttps://www.chop.edu › conditions-diseases › trigger-fi..."
+        },
+        {
+          "title": "Trigger Finger/Thumb In Kids",
+          "url": "https://www.childrenscolorado.org/conditions-and-advice/conditions-and-symptoms/conditions/trigger-finger/",
+          "surface": "Trigger Finger/Thumb In Kids\n\nChildren's Hospital Colorado\nhttps://www.childrenscolorado.org › conditions › trigge..."
+        },
+        {
+          "title": "Trigger Finger and Thumb in Children is NOT the Same ...",
+          "url": "https://www.northerncoloradospineandsport.com/Injuries-Conditions/Pediatric/News-and-Research/Trigger-Finger-and-Thumb-in-Children-is-NOT-the-Same-Condition-as-in-Adults/a~5363/article.html",
+          "surface": "Trigger Finger and Thumb in Children is NOT the Same ...\n\nNorthern Colorado Spine And Sport\nhttps://www.northerncoloradospineandsport.com › article"
+        },
+        {
+          "title": "Pediatric Trigger Thumb (PTT)",
+          "url": "https://www.nationwidechildrens.org/conditions/pediatric-trigger-thumb",
+          "surface": "Pediatric Trigger Thumb (PTT)\n\nNationwide Children's Hospital\nhttps://www.nationwidechildrens.org › conditions › ped..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-800652",
+      "query": "what is subsidized vs unsubsidized",
+      "wall_ms": 476,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Subsidized and Unsubsidized Loans",
+          "url": "https://studentaid.gov/understand-aid/types/loans/subsidized-unsubsidized",
+          "surface": "Subsidized and Unsubsidized Loans\n\nFederal Student Aid (.gov)\nhttps://studentaid.gov › understand-aid › types › subsidiz..."
+        },
+        {
+          "title": "what does unsubsidized and subsidized mean and which ...",
+          "url": "https://www.reddit.com/r/StudentLoans/comments/1scc4jo/what_does_unsubsidized_and_subsidized_mean_and/",
+          "surface": "what does unsubsidized and subsidized mean and which ...\n\nReddit · r/StudentLoans\n30+ comments · 4 months ago"
+        },
+        {
+          "title": "The difference between subsidized and unsubsidized loans",
+          "url": "https://www.salliemae.com/resources/blog/unsubsidized-vs-subsidized-loans",
+          "surface": "The difference between subsidized and unsubsidized loans\n\nSallie Mae\nhttps://www.salliemae.com › resources › blog › unsubsi..."
+        },
+        {
+          "title": "Subsidized & Unsubsidized Loans",
+          "url": "https://www.ccsdetroit.edu/financial-aid/undergraduate-financial-aid/types-of-financial-aid/loan-programs/subsidized-unsubsidized-loans/",
+          "surface": "Subsidized & Unsubsidized Loans\n\nCollege for Creative Studies\nhttps://www.ccsdetroit.edu › ... › Loan Programs"
+        },
+        {
+          "title": "Subsidized vs Unsubsidized Loans: Key Differences",
+          "url": "https://onlinedegrees.nku.edu/programs/subsidized-vs-unsubsidized-loans/",
+          "surface": "Subsidized vs Unsubsidized Loans: Key Differences\n\nNorthern Kentucky University\nhttps://onlinedegrees.nku.edu › Programs"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-978605",
+      "query": "where is bradley, il",
+      "wall_ms": 405,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Bradley, IL Map & Directions",
+          "url": "https://www.mapquest.com/us/illinois/bradley-il-282039992",
+          "surface": "Bradley, IL Map & Directions\n\nMapQuest\nhttps://www.mapquest.com › United States › Illinois"
+        },
+        {
+          "title": "Village of Bradley, IL | Proud of Our Past, Focused on the Future!",
+          "url": "https://bradleyil.org/",
+          "surface": "Village of Bradley, IL | Proud of Our Past, Focused on the Future!\n\nVillage of Bradley, IL\nhttps://bradleyil.org"
+        },
+        {
+          "title": "Bradley, Illinois",
+          "url": "https://en.wikipedia.org/wiki/Bradley,_Illinois",
+          "surface": "Bradley, Illinois\n\nWikipedia\nhttps://en.wikipedia.org › wiki › Bradley,_Illinois"
+        },
+        {
+          "title": "Bradley, IL, United States - Map & Directions",
+          "url": "https://maps.apple.com/place?auid=1206484464466398978",
+          "surface": "Bradley, IL, United States - Map & Directions\n\nApple Maps\nhttps://maps.apple.com › place"
+        },
+        {
+          "title": "Village of Bradley | Bradley IL",
+          "url": "https://www.facebook.com/bradleyillinois/",
+          "surface": "Village of Bradley | Bradley IL\n\nFacebook · Village of Bradley\n7.4K+ followers"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-711682",
+      "query": "what is an analyzer in clinical laboratory scientist",
+      "wall_ms": 395,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Research and Clinical Analyzers and Instruments",
+          "url": "https://www.fishersci.com/us/en/browse/90220341/research-and-clinical-analyzers-and-instruments",
+          "surface": "Research and Clinical Analyzers and Instruments\n\nFisher Scientific\nhttps://www.fishersci.com › browse › research-and-clinic..."
+        },
+        {
+          "title": "6 Analyzers to Enhance Quality in Clinical Laboratories",
+          "url": "https://www.diamonddiagnostics.com/blog/six-analyzers-to-enhance-quality-in-clinical-laboratories",
+          "surface": "6 Analyzers to Enhance Quality in Clinical Laboratories\n\nDiamond Diagnostics\nhttps://www.diamonddiagnostics.com › blog › six-analy..."
+        },
+        {
+          "title": "Clinical Chemistry Analyzers and Assays",
+          "url": "https://www.beckmancoulter.com/en/products/chemistry",
+          "surface": "Clinical Chemistry Analyzers and Assays\n\nBeckman Coulter\nhttps://www.beckmancoulter.com › products › chemistry"
+        },
+        {
+          "title": "Clinical Chemistry Analyzer - an overview",
+          "url": "https://www.sciencedirect.com/topics/nursing-and-health-professions/clinical-chemistry-analyzer",
+          "surface": "Clinical Chemistry Analyzer - an overview\n\nScienceDirect.com\nhttps://www.sciencedirect.com › topics › clinical-chemist..."
+        },
+        {
+          "title": "What Do Medical Laboratory Scientists Do?",
+          "url": "https://www.bridgeport.edu/news/what-does-a-medical-laboratory-scientist-do/",
+          "surface": "What Do Medical Laboratory Scientists Do?\n\nUniversity of Bridgeport\nhttps://www.bridgeport.edu › news › what-does-a-medi..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1067587",
+      "query": "what is a situational purpose",
+      "wall_ms": 449,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Sustaining Meaningful Work in a Crisis: Adopting and ...",
+          "url": "https://journals.sagepub.com/doi/10.1177/0001839221994049",
+          "surface": "Sustaining Meaningful Work in a Crisis: Adopting and ...\n\nSage Journals\nhttps://journals.sagepub.com › doi"
+        },
+        {
+          "title": "Situational Leadership® | What Is ...",
+          "url": "https://situational.com/situational-leadership/",
+          "surface": "Situational Leadership® | What Is ...\n\nThe Center for Leadership Studies\nhttps://situational.com › situational-leadership"
+        },
+        {
+          "title": "Jiang (2021). Sustaining Meaningful Work in a Crisis",
+          "url": "https://asqblog.com/2021/10/08/jiang-2021-sustaining-meaningful-work-in-a-crisis-adopting-and-conveying-a-situational-purpose/",
+          "surface": "Jiang (2021). Sustaining Meaningful Work in a Crisis\n\nasqblog.com\nhttps://asqblog.com › 2021/10/08 › jiang-2021-sustaini..."
+        },
+        {
+          "title": "Sustaining meaningful work in a crisis: Adopting and ...",
+          "url": "https://psycnet.apa.org/record/2021-74918-007",
+          "surface": "Sustaining meaningful work in a crisis: Adopting and ...\n\nAPA PsycNET\nhttps://psycnet.apa.org › record"
+        },
+        {
+          "title": "Sustaining Meaningful Work in a Crisis: Adopting and ...",
+          "url": "https://www.researchgate.net/publication/349480096_Sustaining_Meaningful_Work_in_a_Crisis_Adopting_and_Conveying_a_Situational_Purpose",
+          "surface": "Sustaining Meaningful Work in a Crisis: Adopting and ...\n\nResearchGate\nhttps://www.researchgate.net › publication › 34948009..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-934134",
+      "query": "what's what caused the dark ages?",
+      "wall_ms": 401,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What was the real cause of The Dark Ages? : r/AskHistorians",
+          "url": "https://www.reddit.com/r/AskHistorians/comments/11uvb5/what_was_the_real_cause_of_the_dark_ages/",
+          "surface": "What was the real cause of The Dark Ages? : r/AskHistorians\n\nReddit · r/AskHistorians\n20+ comments · 13 years ago"
+        },
+        {
+          "title": "Dark Ages (historiography)",
+          "url": "https://en.wikipedia.org/wiki/Dark_Ages_(historiography)",
+          "surface": "Dark Ages (historiography)\n\nWikipedia\nhttps://en.wikipedia.org › wiki › Dark_Ages_(historiogr..."
+        },
+        {
+          "title": "Dark Ages in Europe",
+          "url": "https://www.historyhit.com/why-were-the-early-middle-ages-called-the-dark-ages/",
+          "surface": "Dark Ages in Europe\n\nHistory Hit\nhttps://www.historyhit.com › why-were-the-early-middl..."
+        },
+        {
+          "title": "6 Reasons the Dark Ages Weren't So Dark",
+          "url": "https://www.history.com/articles/6-reasons-the-dark-ages-werent-so-dark",
+          "surface": "6 Reasons the Dark Ages Weren't So Dark\n\nHistory.com\nhttps://www.history.com › Articles"
+        },
+        {
+          "title": "Dark Ages (historiography) | History | Research Starters",
+          "url": "https://www.ebsco.com/research-starters/history/dark-ages-historiography",
+          "surface": "Dark Ages (historiography) | History | Research Starters\n\nEBSCO\nhttps://www.ebsco.com › research-starters › dark-ages-h..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1023111",
+      "query": "which way should solar panels face in the winter",
+      "wall_ms": 411,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What's the Best Angle for Solar Panels?",
+          "url": "https://www.energysage.com/solar/solar-panel-performance-orientation-angle/",
+          "surface": "What's the Best Angle for Solar Panels?\n\nEnergySage\nhttps://www.energysage.com › Home solar"
+        },
+        {
+          "title": "Solar Panel Angle: Easy North America Guide",
+          "url": "https://www.ecoflow.com/us/blog/solar-panel-angle-north-america",
+          "surface": "Solar Panel Angle: Easy North America Guide\n\nEcoFlow\nhttps://www.ecoflow.com › blog › solar-panel-angle-no..."
+        },
+        {
+          "title": "Do solar panels need to be slanted at an angle or can they ...",
+          "url": "https://www.reddit.com/r/solar/comments/13ancxu/do_solar_panels_need_to_be_slanted_at_an_angle_or/",
+          "surface": "Do solar panels need to be slanted at an angle or can they ...\n\nReddit · r/solar\n70+ comments · 3 years ago"
+        },
+        {
+          "title": "What Is The Best Angle For Mounting Solar Panels?",
+          "url": "https://nyssf.com/what-is-the-best-angle-for-mounting-solar-panels/",
+          "surface": "What Is The Best Angle For Mounting Solar Panels?\n\nNew York State Solar Farm\nhttps://nyssf.com › what-is-the-best-angle-for-mounting..."
+        },
+        {
+          "title": "Best Direction for Solar Panels: South, East or West?",
+          "url": "https://www.trinitysolar.com/learning/what-direction-should-solar-panels-face",
+          "surface": "Best Direction for Solar Panels: South, East or West?\n\nTrinity Solar\nhttps://www.trinitysolar.com › learning › what-direction-..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-489257",
+      "query": "rigorous testing definition",
+      "wall_ms": 352,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "RIGOROUS TESTING definition in American English",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/rigorous-testing",
+          "surface": "RIGOROUS TESTING definition in American English\n\nCollins Dictionary\nhttps://www.collinsdictionary.com › dictionary › rigoro..."
+        },
+        {
+          "title": "RIGOROUS TEST collocation | meaning and examples of use",
+          "url": "https://dictionary.cambridge.org/us/example/english/rigorous-test",
+          "surface": "RIGOROUS TEST collocation | meaning and examples of use\n\nCambridge Dictionary\nhttps://dictionary.cambridge.org › example › english"
+        },
+        {
+          "title": "Twenty-one Parameters for Rigorous, Robust, and ...",
+          "url": "https://www.geeksandnerds.com/wp-content/uploads/2019/08/R3-ITEA-Journal-Jun15.pdf",
+          "surface": "Twenty-one Parameters for Rigorous, Robust, and ...\n\nGaN Corporation\nhttps://www.geeksandnerds.com › 2019/08 › R3-I...\nPDF"
+        },
+        {
+          "title": "RIGOROUS Definition & Meaning",
+          "url": "https://www.dictionary.com/browse/rigorous",
+          "surface": "RIGOROUS Definition & Meaning\n\nDictionary.com\nhttps://www.dictionary.com › browse › rigorous"
+        },
+        {
+          "title": "RIGOROUS TEST definition in American English",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/rigorous-test",
+          "surface": "RIGOROUS TEST definition in American English\n\nCollins Dictionary\nhttps://www.collinsdictionary.com › dictionary › rigoro..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-622725",
+      "query": "what do decomposers and scavengers",
+      "wall_ms": 402,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Decomposers and Scavengers",
+          "url": "https://natureworks.nhpbs.org/episode/decomposers-and-scavengers/",
+          "surface": "Decomposers and Scavengers\n\nnhpbs\nhttps://natureworks.nhpbs.org › episode › decomposers..."
+        },
+        {
+          "title": "What is a decomposer?",
+          "url": "https://www.qrg.northwestern.edu/projects/MarsSim/SimHTML/info/whats-a-decomposer.html",
+          "surface": "What is a decomposer?\n\nQualitative Reasoning Group\nhttps://www.qrg.northwestern.edu › SimHTML › info"
+        },
+        {
+          "title": "What is the difference between scavengers and ...",
+          "url": "https://www.ck12.org/flexi/life-science/energy-flow/what-is-the-difference-between-scavengers-and-decomposers/",
+          "surface": "What is the difference between scavengers and ...\n\nCK-12 Foundation\nhttps://www.ck12.org › ... › Life Science › Energy Flow"
+        },
+        {
+          "title": "What is the difference between scavengers and ...",
+          "url": "https://www.quora.com/What-is-the-difference-between-scavengers-and-decomposers",
+          "surface": "What is the difference between scavengers and ...\n\nQuora\n50+ answers · 10 years ago"
+        },
+        {
+          "title": "Scavengers, Detritivores, and Decomposers Explained",
+          "url": "https://quizlet.com/674639515/scavengers-detritivores-and-decomposers-explained-flash-cards/",
+          "surface": "Scavengers, Detritivores, and Decomposers Explained\n\nQuizlet\nhttps://quizlet.com › scavengers-detritivores-and-decom..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-711710",
+      "query": "what is an anemic",
+      "wall_ms": 419,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Anemia - Symptoms and causes",
+          "url": "https://www.mayoclinic.org/diseases-conditions/anemia/symptoms-causes/syc-20351360",
+          "surface": "Anemia - Symptoms and causes\n\nMayo Clinic\nhttps://www.mayoclinic.org › anemia › syc-20351360"
+        },
+        {
+          "title": "Anemia: Symptoms, Causes & Treatment",
+          "url": "https://my.clevelandclinic.org/health/diseases/3929-anemia",
+          "surface": "Anemia: Symptoms, Causes & Treatment\n\nCleveland Clinic\nhttps://my.clevelandclinic.org › diseases › 3929-anemia"
+        },
+        {
+          "title": "Anemia - Hematology.org",
+          "url": "https://www.hematology.org/education/patients/anemia",
+          "surface": "Anemia - Hematology.org\n\nAmerican Society of Hematology\nhttps://www.hematology.org › education › patients › ane..."
+        },
+        {
+          "title": "What Is Anemia?",
+          "url": "https://newsinhealth.nih.gov/2025/04/what-anemia",
+          "surface": "What Is Anemia?\n\nNIH News in Health (.gov)\nhttps://newsinhealth.nih.gov › 2025/04 › what-anemia"
+        },
+        {
+          "title": "Anaemia",
+          "url": "https://www.who.int/news-room/fact-sheets/detail/anaemia",
+          "surface": "Anaemia\n\nWorld Health Organization (WHO)\nhttps://www.who.int › Newsroom › Fact sheets › Detail"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-622734",
+      "query": "what do demographers study and predict",
+      "wall_ms": 473,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What do demographers study?",
+          "url": "https://demography.psu.edu/what-do-demographers-study/",
+          "surface": "What do demographers study?\n\nThe Pennsylvania State University\nhttps://demography.psu.edu › what-do-demographers-stu..."
+        },
+        {
+          "title": "What do demographers study? A. How groups of people ...",
+          "url": "https://brainly.com/question/26986107",
+          "surface": "What do demographers study? A. How groups of people ...\n\nBrainly\nhttps://brainly.com › History › College"
+        },
+        {
+          "title": "Others still ask, what do Demographers do? Anyone to ...",
+          "url": "https://www.facebook.com/TheDemographer/posts/others-still-ask-what-do-demographers-do-anyone-to-help-explain-what-demographer/3156694514469526/",
+          "surface": "Others still ask, what do Demographers do? Anyone to ...\n\nFacebook · The Demographer\n10+ reactions · 6 years ago"
+        },
+        {
+          "title": "Demography",
+          "url": "https://en.wikipedia.org/wiki/Demography",
+          "surface": "Demography\n\nWikipedia\nhttps://en.wikipedia.org › wiki › Demography"
+        },
+        {
+          "title": "Solved: What do demographers study? A. How groups of ...",
+          "url": "https://www.gauthmath.com/solution/1832724224344098/Question-5-of-10-What-do-demographers-study-A-How-groups-of-people-are-all-total",
+          "surface": "Solved: What do demographers study? A. How groups of ...\n\nGauth\nhttps://www.gauthmath.com › ... › Social Science"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-444790",
+      "query": "makeover cost",
+      "wall_ms": 387,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Mommy Makeover Cost Denton, TX - Lewisville, TX",
+          "url": "https://www.breastandplasticsurgery.com/services/mommy-makeover/cost/",
+          "surface": "Mommy Makeover Cost Denton, TX - Lewisville, TX\n\nPlastic Surgeon in Denton, TX\nhttps://www.breastandplasticsurgery.com › services › cost"
+        },
+        {
+          "title": "Mommy Makeover Cost",
+          "url": "https://www.plasticsurgery.org/cosmetic-procedures/mommy-makeover/cost",
+          "surface": "Mommy Makeover Cost\n\nAmerican Society of Plastic Surgeons\nhttps://www.plasticsurgery.org › cosmetic-procedures"
+        },
+        {
+          "title": "How Much Is a Mommy Makeover? Factors Affecting Its Cost",
+          "url": "https://www.caloaesthetics.com/blog/how-much-is-a-mommy-makeover-factors-affecting-its-cost/",
+          "surface": "How Much Is a Mommy Makeover? Factors Affecting Its Cost\n\nCaloAesthetics\nhttps://www.caloaesthetics.com › blog › how-much-is-a..."
+        },
+        {
+          "title": "How Much Does A Mommy Makeover Cost In Maryland?",
+          "url": "https://www.atcosmetics.com/plastic-surgery/mommy-makeover/cost/",
+          "surface": "How Much Does A Mommy Makeover Cost In Maryland?\n\natcosmetics.com\nhttps://www.atcosmetics.com › plastic-surgery › cost"
+        },
+        {
+          "title": "Mommy Makeover Cost and Procedure Guide",
+          "url": "https://www.carecredit.com/well-u/health-wellness/mommy-makeover/",
+          "surface": "Mommy Makeover Cost and Procedure Guide\n\nCareCredit\nhttps://www.carecredit.com › well-u › health-wellness"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-400311",
+      "query": "is a lower ph level better in drinking water",
+      "wall_ms": 396,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Ask the Doctors - Is water with a high pH safe to drink?",
+          "url": "https://www.uclahealth.org/news/article/ask-the-doctors-is-water-with-a-high-ph-safe-to-drink",
+          "surface": "Ask the Doctors - Is water with a high pH safe to drink?\n\nUCLA Health\nhttps://www.uclahealth.org › news › article › ask-the-do..."
+        },
+        {
+          "title": "What Does Low pH Mean? Is It Safe for My Household?",
+          "url": "https://www.watercare.com/about-us/blog/41738-what-does-low-ph-mean-is-it-safe-for-my-household.html",
+          "surface": "What Does Low pH Mean? Is It Safe for My Household?\n\nwatercare.com\nhttps://www.watercare.com › About Us › Blog"
+        },
+        {
+          "title": "pH of Drinking Water: Acceptable Levels and More",
+          "url": "https://www.healthline.com/health/ph-of-drinking-water",
+          "surface": "pH of Drinking Water: Acceptable Levels and More\n\nHealthline\nhttps://www.healthline.com › health › ph-of-drinking-w..."
+        },
+        {
+          "title": "pH | US EPA",
+          "url": "https://www.epa.gov/caddis/ph",
+          "surface": "pH | US EPA\n\nU.S. Environmental Protection Agency (.gov)\nhttps://www.epa.gov › caddis › ph"
+        },
+        {
+          "title": "The effect of drinking water pH on the human gut microbiota ...",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6226457/",
+          "surface": "The effect of drinking water pH on the human gut microbiota ...\n\nPubMed Central (PMC) (.gov)\nhttps://pmc.ncbi.nlm.nih.gov › articles › PMC6226457"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1067640",
+      "query": "what is a signal transduction pathway example",
+      "wall_ms": 467,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Signal transduction pathway | Cell signaling (article)",
+          "url": "https://www.khanacademy.org/science/biology/cell-signaling/mechanisms-of-cell-signaling/a/intracellular-signal-transduction",
+          "surface": "Signal transduction pathway | Cell signaling (article)\n\nKhan Academy\nhttps://www.khanacademy.org › science › biology › int..."
+        },
+        {
+          "title": "Signal Transduction Pathways",
+          "url": "https://www.youtube.com/watch?v=qOVkedxDqQo",
+          "surface": "Signal Transduction Pathways\n\nYouTube · Bozeman Science\n1.9M+ views · 15 years ago"
+        },
+        {
+          "title": "Signal Transduction",
+          "url": "https://bio.libretexts.org/Learning_Objects/Worksheets/Biology_Tutorials/Signal_Transduction",
+          "surface": "Signal Transduction\n\nBiology LibreTexts\nhttps://bio.libretexts.org › ... › Biology Tutorials"
+        },
+        {
+          "title": "Example of a signal transduction pathway (video)",
+          "url": "https://www.khanacademy.org/science/biology/cell-signaling/mechanisms-of-cell-signaling/v/example-of-signal-transduction-pathway",
+          "surface": "Example of a signal transduction pathway (video)\n\nKhan Academy · Khan Academy\nhttps://www.khanacademy.org · Nov 17, 2015"
+        },
+        {
+          "title": "Pathways of Intracellular Signal Transduction - The Cell - NCBI",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK9870/",
+          "surface": "Pathways of Intracellular Signal Transduction - The Cell - NCBI\n\nNational Institutes of Health (NIH) | (.gov)\nhttps://www.ncbi.nlm.nih.gov › books › NBK9870"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1067659",
+      "query": "what is a seller's contribution",
+      "wall_ms": 405,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What Are Seller Concessions?",
+          "url": "https://www.nar.realtor/closing/seller-concession",
+          "surface": "What Are Seller Concessions?\n\nNational Association of REALTORS®\nhttps://www.nar.realtor › closing › seller-concession"
+        },
+        {
+          "title": "A guide to seller concessions",
+          "url": "https://www.rocketmortgage.com/learn/seller-concessions",
+          "surface": "A guide to seller concessions\n\nRocket Mortgage\nhttps://www.rocketmortgage.com › learn › seller-conces..."
+        },
+        {
+          "title": "What is the VA Seller Concession Rule?",
+          "url": "https://www.veteransunited.com/futurehomeowners/what-is-the-va-seller-concession-rule/",
+          "surface": "What is the VA Seller Concession Rule?\n\nVeterans United Home Loans\nhttps://www.veteransunited.com › ... › Home Purchase"
+        },
+        {
+          "title": "Understanding Seller Concessions: What They Really ...",
+          "url": "https://www.thepreferredrealty.com/blog/article/understanding-seller-concessions-what-they-really-mean-for-buyers-and-sellers/",
+          "surface": "Understanding Seller Concessions: What They Really ...\n\nBerkshire Hathaway HomeServices The Preferred Realty\nhttps://www.thepreferredrealty.com › blog › article › u..."
+        },
+        {
+          "title": "Seller Concessions: What Buyers and Sellers Should Know",
+          "url": "https://www.zillow.com/learn/seller-concessions/",
+          "surface": "Seller Concessions: What Buyers and Sellers Should Know\n\nZillow\nhttps://www.zillow.com › learn › seller-concessions"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-711759",
+      "query": "what is an ankle dislocation",
+      "wall_ms": 524,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Ankle Dislocation - URMC.Rochester.edu",
+          "url": "https://www.urmc.rochester.edu/encyclopedia/content?contenttypeid=134&contentid=504",
+          "surface": "Ankle Dislocation - URMC.Rochester.edu\n\nUniversity of Rochester\nhttps://www.urmc.rochester.edu › Encyclopedia"
+        },
+        {
+          "title": "Ankle Dislocation - StatPearls - NCBI Bookshelf - NIH",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK554610/",
+          "surface": "Ankle Dislocation - StatPearls - NCBI Bookshelf - NIH\n\nNational Institutes of Health (NIH) | (.gov)\nhttps://www.ncbi.nlm.nih.gov › books › NBK554610"
+        },
+        {
+          "title": "Ankle Dislocation Treatment Salt Lake City & Ogden, UT",
+          "url": "https://www.utahorthopaedics.com/conditions/ankle-dislocation/",
+          "surface": "Ankle Dislocation Treatment Salt Lake City & Ogden, UT\n\nUtah Orthopaedics\nhttps://www.utahorthopaedics.com › conditions › ankle..."
+        },
+        {
+          "title": "Ankle Dislocation Management in the ED",
+          "url": "https://emedicine.medscape.com/article/823087-overview",
+          "surface": "Ankle Dislocation Management in the ED\n\nMedscape\nhttps://emedicine.medscape.com › 823087-overview"
+        },
+        {
+          "title": "How To Reduce an Ankle Dislocation - Injuries; Poisoning",
+          "url": "https://www.merckmanuals.com/professional/injuries-poisoning/how-to-reduce-dislocations-and-subluxations/how-to-reduce-an-ankle-dislocation",
+          "surface": "How To Reduce an Ankle Dislocation - Injuries; Poisoning\n\nMerck Manuals\nhttps://www.merckmanuals.com › injuries-poisoning › h..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-934223",
+      "query": "what's your favorite pet",
+      "wall_ms": 525,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What is your favorite animal and why : r/CasualConversation",
+          "url": "https://www.reddit.com/r/CasualConversation/comments/1bwh7no/what_is_your_favorite_animal_and_why/",
+          "surface": "What is your favorite animal and why : r/CasualConversation\n\nReddit · r/CasualConversation\n120+ comments · 2 years ago"
+        },
+        {
+          "title": "America's Favorite Pet",
+          "url": "https://americasfavpet.com/",
+          "surface": "America's Favorite Pet\n\nAmerica's Favorite Pet\nhttps://americasfavpet.com"
+        },
+        {
+          "title": "What is your favorite animal?",
+          "url": "https://engnovate.com/ugc-ielts-speaking-topics/what-is-your-favorite-animal-66607a7e3d589/",
+          "surface": "What is your favorite animal?\n\nEngnovate\nhttps://engnovate.com › ugc-ielts-speaking-topics › wha..."
+        },
+        {
+          "title": "Which animal is your favorite?",
+          "url": "https://www.highlightskids.com/jokes/quiz/which-animal-is-your-favorite",
+          "surface": "Which animal is your favorite?\n\nHighlights Kids\nhttps://www.highlightskids.com › jokes › quiz › which-a..."
+        },
+        {
+          "title": "What is your favorit pet? and why so?",
+          "url": "https://www.facebook.com/groups/791737518130378/posts/1924777258159726/",
+          "surface": "What is your favorit pet? and why so?\n\nFacebook · Jago Bahasa Inggris\n9 comments · 4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-934235",
+      "query": "what's your favourite place",
+      "wall_ms": 602,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What Your Favorite Place • 50+ reels on ...",
+          "url": "https://www.instagram.com/popular/what-your-favorite-place/?hl=en",
+          "surface": "What Your Favorite Place • 50+ reels on ...\n\nInstagram\nhttps://www.instagram.com › popular › what-your-favo..."
+        },
+        {
+          "title": "🪐🍀🪧 Someone asked me, What's your favorite place? I ...",
+          "url": "https://www.facebook.com/Mindsetspower/posts/-someone-asked-mewhats-your-favorite-placei-repliedi-dont-have-a-favorite-place-/1280335084103354/",
+          "surface": "🪐🍀🪧 Someone asked me, What's your favorite place? I ...\n\nFacebook · Mindsets\n240+ reactions · 1 year ago"
+        },
+        {
+          "title": "What is your favorite place?",
+          "url": "https://www.quora.com/What-is-your-favorite-place",
+          "surface": "What is your favorite place?\n\nQuora\n180+ answers · 12 years ago"
+        },
+        {
+          "title": "What is the difference between 'What is your favorite place' ...",
+          "url": "https://www.quora.com/What-is-the-difference-between-What-is-your-favorite-place-and-Which-is-your-favourite-place",
+          "surface": "What is the difference between 'What is your favorite place' ...\n\nQuora\n30+ answers · 2 years ago"
+        },
+        {
+          "title": "“What is your favourite place?”. And why I can't ...",
+          "url": "https://medium.com/picturethis/what-is-your-favourite-place-9b3d12f91a70",
+          "surface": "“What is your favourite place?”. And why I can't ...\n\nMedium · Vanessa Brown\n220+ likes · 3 years ago"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-266920",
+      "query": "how long should i slow cook ribs",
+      "wall_ms": 881,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Slow Cooker Ribs",
+          "url": "https://tastesbetterfromscratch.com/slow-cooker-ribs/",
+          "surface": "Slow Cooker Ribs\n\nTastes Better From Scratch\nhttps://tastesbetterfromscratch.com › Main Dish"
+        },
+        {
+          "title": "Crock Pot Ribs",
+          "url": "https://www.spendwithpennies.com/crock-pot-ribs/",
+          "surface": "Crock Pot Ribs\n\nSpend With Pennies\nhttps://www.spendwithpennies.com › ... › Slow Cooker"
+        },
+        {
+          "title": "Slow Cooked BBQ Ribs. 8 hours on low and the meat is ...",
+          "url": "https://www.reddit.com/r/slowcooking/comments/7wk07f/slow_cooked_bbq_ribs_8_hours_on_low_and_the_meat/",
+          "surface": "Slow Cooked BBQ Ribs. 8 hours on low and the meat is ...\n\nReddit · r/slowcooking\n40+ comments · 8 years ago"
+        },
+        {
+          "title": "Slow Cooker Pork Ribs",
+          "url": "https://krollskorner.com/techniques/slow-cooker/slow-cooker-pork-ribs/",
+          "surface": "Slow Cooker Pork Ribs\n\nKroll's Korner\nhttps://krollskorner.com › Techniques › Slow Cooker"
+        },
+        {
+          "title": "How Long to Cook Ribs in the Crock Pot",
+          "url": "https://thrivinghomeblog.com/how-long-to-cook-ribs-in-the-crock-pot/",
+          "surface": "How Long to Cook Ribs in the Crock Pot\n\nThriving Home\nhttps://thrivinghomeblog.com › Recipe Index"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-711803",
+      "query": "what is an annuity for dummies",
+      "wall_ms": 547,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Annuities For Dummies Cheat Sheet",
+          "url": "https://www.dummies.com/article/business-careers-money/personal-finance/insurance/annuities/annuities-for-dummies-cheat-sheet-208928/",
+          "surface": "Annuities For Dummies Cheat Sheet\n\nDummies\nhttps://www.dummies.com › personal-finance › insurance"
+        },
+        {
+          "title": "Guide to Annuities: What They Are and How They Work",
+          "url": "https://www.investopedia.com/terms/a/annuity.asp",
+          "surface": "Guide to Annuities: What They Are and How They Work\n\nInvestopedia\nhttps://www.investopedia.com › ... › Annuities"
+        },
+        {
+          "title": "Learn how annuities work",
+          "url": "https://www.insurance.wa.gov/insurance-resources/annuities/learn-how-annuities-work",
+          "surface": "Learn how annuities work\n\n| Office of the Insurance Commissioner (.gov)\nhttps://www.insurance.wa.gov › insurance-resources › le..."
+        },
+        {
+          "title": "Annuities What Seniors Need to Know",
+          "url": "https://www.insurance.ca.gov/0150-seniors/0600informationguides/seniorannuitiesguide.cfm",
+          "surface": "Annuities What Seniors Need to Know\n\nDepartment of Insurance (.gov)\nhttps://www.insurance.ca.gov › seniorannuitiesguide"
+        },
+        {
+          "title": "What is an annuity? Understanding the basics",
+          "url": "https://www.ameriprise.com/financial-goals-priorities/retirement/what-are-annuities",
+          "surface": "What is an annuity? Understanding the basics\n\nAmeriprise Financial\nhttps://www.ameriprise.com › what-are-annuities"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-711811",
+      "query": "what is an anoscopy for",
+      "wall_ms": 383,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Anoscopy: What to Expect",
+          "url": "https://my.clevelandclinic.org/health/treatments/24993-anoscopy",
+          "surface": "Anoscopy: What to Expect\n\nCleveland Clinic\nhttps://my.clevelandclinic.org › health › 24993-anoscopy"
+        },
+        {
+          "title": "Anoscopy explained: Purpose, process and results",
+          "url": "https://www.mdanderson.org/cancerwise/anoscopy-explained--purpose--process-and-results.h00-159777234.html",
+          "surface": "Anoscopy explained: Purpose, process and results\n\nUT MD Anderson\nhttps://www.mdanderson.org › ... › 2025 › 06"
+        },
+        {
+          "title": "Anoscopy and High-Resolution Anoscopy",
+          "url": "https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/anoscopy-high-resolution-anoscopy",
+          "surface": "Anoscopy and High-Resolution Anoscopy\n\nJohns Hopkins Medicine\nhttps://www.hopkinsmedicine.org › health › anoscopy-hi..."
+        },
+        {
+          "title": "What Is an Anoscopy Procedure Used to Diagnose?",
+          "url": "https://uniospecialtycare.com/resources/what-is-an-anoscopy-procedure-used-to-diagnose/",
+          "surface": "What Is an Anoscopy Procedure Used to Diagnose?\n\nUnio Specialty Care\nhttps://uniospecialtycare.com › resources › what-is-an-a..."
+        },
+        {
+          "title": "Anoscopy: MedlinePlus Medical Test",
+          "url": "https://medlineplus.gov/lab-tests/anoscopy/",
+          "surface": "Anoscopy: MedlinePlus Medical Test\n\nMedlinePlus (.gov)\nhttps://medlineplus.gov › Medical Tests"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-2",
+      "query": " Androgen receptor define",
+      "wall_ms": 513,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Definition of androgen receptor",
+          "url": "https://www.cancer.gov/publications/dictionaries/cancer-terms/def/androgen-receptor",
+          "surface": "Definition of androgen receptor\n\nNational Cancer Institute (.gov)\nhttps://www.cancer.gov › cancer-terms › def › androge..."
+        },
+        {
+          "title": "Androgen Receptor Structure, Function and Biology - PMC - NIH",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4810760/",
+          "surface": "Androgen Receptor Structure, Function and Biology - PMC - NIH\n\nPubMed Central (PMC) (.gov)\nhttps://pmc.ncbi.nlm.nih.gov › articles › PMC4810760"
+        },
+        {
+          "title": "Androgen receptor",
+          "url": "https://en.wikipedia.org/wiki/Androgen_receptor",
+          "surface": "Androgen receptor\n\nWikipedia\nhttps://en.wikipedia.org › wiki › Androgen_receptor"
+        },
+        {
+          "title": "Androgen receptor: structure, role in prostate cancer and ...",
+          "url": "https://www.nature.com/articles/aps201418",
+          "surface": "Androgen receptor: structure, role in prostate cancer and ...\n\nNature\nhttps://www.nature.com › ... › reviews"
+        },
+        {
+          "title": "Androgen Receptor - an overview",
+          "url": "https://www.sciencedirect.com/topics/medicine-and-dentistry/androgen-receptor",
+          "surface": "Androgen Receptor - an overview\n\nScienceDirect.com\nhttps://www.sciencedirect.com › medicine-and-dentistry"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-489374",
+      "query": "risperdal m tab side effects",
+      "wall_ms": 436,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Risperidone (oral route) - Side effects & dosage",
+          "url": "https://www.mayoclinic.org/drugs-supplements/risperidone-oral-route/description/drg-20067189",
+          "surface": "Risperidone (oral route) - Side effects & dosage\n\nMayo Clinic\nhttps://www.mayoclinic.org › description › drg-20067189"
+        },
+        {
+          "title": "Risperdal M-Tab: Indications, Side Effects, Warnings",
+          "url": "https://www.drugs.com/cdi/risperdal-m-tab.html",
+          "surface": "Risperdal M-Tab: Indications, Side Effects, Warnings\n\nDrugs.com\nhttps://www.drugs.com › Consumer"
+        },
+        {
+          "title": "risperidone tablet, orally disintegrating RISPERDAL - DailyMed",
+          "url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7e117c7e-02fc-4343-92a1-230061dfc5e0",
+          "surface": "risperidone tablet, orally disintegrating RISPERDAL - DailyMed\n\nDailyMed (.gov)\nhttps://dailymed.nlm.nih.gov › dailymed › drugInfo"
+        },
+        {
+          "title": "Risperdal M-Tab Ratings & Reviews by Doctors",
+          "url": "https://www.sermo.com/drug-ratings/risperdal-m-tab",
+          "surface": "Risperdal M-Tab Ratings & Reviews by Doctors\n\nSermo\nhttps://www.sermo.com › drug-ratings › risperdal-m-tab"
+        },
+        {
+          "title": "Risperdal M-TAB 3 mg disintegrating tablet",
+          "url": "https://healthy.kaiserpermanente.org/health-wellness/drug-encyclopedia/drug.risperdal-m-tab-3-mg-disintegrating-tablet.476713",
+          "surface": "Risperdal M-TAB 3 mg disintegrating tablet\n\nKaiser Permanente\nhttps://healthy.kaiserpermanente.org › drug-encyclopedia"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-800792",
+      "query": "what is sucrose used for",
+      "wall_ms": 397,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Sucrose",
+          "url": "https://en.wikipedia.org/wiki/Sucrose",
+          "surface": "Sucrose\n\nWikipedia\nhttps://en.wikipedia.org › wiki › Sucrose"
+        },
+        {
+          "title": "What is Sucrose? - IFIC",
+          "url": "https://ific.org/resources/articles/what-is-sucrose/",
+          "surface": "What is Sucrose? - IFIC\n\nIFIC - International Food Information Council\nhttps://ific.org › resources › articles › what-is-sucrose"
+        },
+        {
+          "title": "Sucrose vs Glucose vs Fructose: What's the Difference?",
+          "url": "https://www.healthline.com/nutrition/sucrose-glucose-fructose",
+          "surface": "Sucrose vs Glucose vs Fructose: What's the Difference?\n\nHealthline\nhttps://www.healthline.com › nutrition › sucrose-glucos..."
+        },
+        {
+          "title": "Sucrose",
+          "url": "https://carbsfuel.com/blogs/ingredients/sucrose?srsltid=AfmBOopJ8Fd8v01-OVMJ_rfvIOBqROuFXgsi7k3U6eGK5LKEMWf3_3-m",
+          "surface": "Sucrose\n\nCarbs Fuel\nhttps://carbsfuel.com › blogs › ingredients › sucrose"
+        },
+        {
+          "title": "Sucrose - an overview | ScienceDirect Topics",
+          "url": "https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/sucrose",
+          "surface": "Sucrose - an overview | ScienceDirect Topics\n\nScienceDirect.com\nhttps://www.sciencedirect.com › topics › sucrose"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1067724",
+      "query": "what is a sea stack",
+      "wall_ms": 532,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Stack (geology)",
+          "url": "https://en.wikipedia.org/wiki/Stack_(geology)",
+          "surface": "Stack (geology)\n\nWikipedia\nhttps://en.wikipedia.org › wiki › Stack_(geology)"
+        },
+        {
+          "title": "What is a Sea Stack? Formation, Locations & Examples",
+          "url": "https://www.travelhx.com/en-us/stories/what-is-a-sea-stack/",
+          "surface": "What is a Sea Stack? Formation, Locations & Examples\n\nHX Expeditions\nhttps://www.travelhx.com › Stories › What Is A Sea Stack"
+        },
+        {
+          "title": "Erosion of a Sea Stack Over 100 Years",
+          "url": "https://www.usgs.gov/centers/pacific-coastal-and-marine-science-center/erosion-sea-stack-over-100-years",
+          "surface": "Erosion of a Sea Stack Over 100 Years\n\nUSGS (.gov)\nhttps://www.usgs.gov › centers › erosion-sea-stack-over-..."
+        },
+        {
+          "title": "How far off shore can a sea stack form? : r/geology",
+          "url": "https://www.reddit.com/r/geology/comments/1eektnh/how_far_off_shore_can_a_sea_stack_form/",
+          "surface": "How far off shore can a sea stack form? : r/geology\n\nReddit · r/geology\n4 comments · 2 years ago"
+        },
+        {
+          "title": "Sea Stacks",
+          "url": "https://mikeschaffnerphotography.com/sea-stacks/",
+          "surface": "Sea Stacks\n\nMike Schaffner Photography\nhttps://mikeschaffnerphotography.com › sea-stacks"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-578362",
+      "query": "what bands are thrash metal",
+      "wall_ms": 489,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "List of thrash metal bands",
+          "url": "https://en.wikipedia.org/wiki/List_of_thrash_metal_bands",
+          "surface": "List of thrash metal bands\n\nWikipedia\nhttps://en.wikipedia.org › wiki › List_of_thrash_metal_..."
+        },
+        {
+          "title": "What are some essential thrash bands? : r/thrashmetal",
+          "url": "https://www.reddit.com/r/thrashmetal/comments/17cnn43/what_are_some_essential_thrash_bands/",
+          "surface": "What are some essential thrash bands? : r/thrashmetal\n\nReddit · r/thrashmetal\n130+ comments · 2 years ago"
+        },
+        {
+          "title": "30 best thrash metal bands - the ultimate countdown",
+          "url": "https://deathdoom.com/blog/best-of/30-best-thrash-metal-bands-the-ultimate-countdown/",
+          "surface": "30 best thrash metal bands - the ultimate countdown\n\ndeathdoom.com\nhttps://deathdoom.com › Deathdoom.com metal blog"
+        },
+        {
+          "title": "Top 10 Thrash Metal Bands",
+          "url": "https://www.teenink.com/opinion/movies_music_tv/article/706653/Top-10-Thrash-Metal-Bands",
+          "surface": "Top 10 Thrash Metal Bands\n\nTeen Ink\nhttps://www.teenink.com › movies_music_tv › article"
+        },
+        {
+          "title": "My Top 50 Thrash Metal Bands",
+          "url": "https://rateyourmusic.com/list/PeyoteWereWolf/my_top_50_thrash_metal_bands/",
+          "surface": "My Top 50 Thrash Metal Bands\n\nRate Your Music\nhttps://rateyourmusic.com › list › PeyoteWereWolf › m..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-845304",
+      "query": "what is the salary for the mayor of york pa",
+      "wall_ms": 368,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Mayor Salary in York, PA: Hourly Rate (August, 2026)",
+          "url": "https://www.ziprecruiter.com/Salaries/Mayor-Salary-in-York,PA",
+          "surface": "Mayor Salary in York, PA: Hourly Rate (August, 2026)\n\nZipRecruiter\nhttps://www.ziprecruiter.com › ... › Mayor Salary"
+        },
+        {
+          "title": "City Mayor Salary in York, PA (July 01, 2026)",
+          "url": "https://www.salary.com/research/salary/hiring/city-mayor-salary/york-pa",
+          "surface": "City Mayor Salary in York, PA (July 01, 2026)\n\nSalary.com\nhttps://www.salary.com › research › salary › hiring › yor..."
+        },
+        {
+          "title": "§ 1-201. Salary of the Mayor.",
+          "url": "https://codelibrary.amlegal.com/codes/yoe/latest/yoeb_pa/0-0-0-271",
+          "surface": "§ 1-201. Salary of the Mayor.\n\nAmerican Legal Publishing Code Library\nhttps://codelibrary.amlegal.com › yoe › latest › yoeb_pa"
+        },
+        {
+          "title": "York City Council debates pay raise for York's top directors",
+          "url": "https://www.ydr.com/story/news/2017/11/30/york-city-council-debates-pay-raises-directors/908889001/",
+          "surface": "York City Council debates pay raise for York's top directors\n\nYork Daily Record\nhttps://www.ydr.com › story › news › 2017/11/30 › yo..."
+        },
+        {
+          "title": "York council approves 20% salary increases for some ...",
+          "url": "https://www.abc27.com/news/york-council-approves-20-salary-increases-for-some-leaders/",
+          "surface": "York council approves 20% salary increases for some ...\n\nABC27\nhttps://www.abc27.com › news › york-council-approve..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-711840",
+      "query": "what is an antelopes baby called",
+      "wall_ms": 511,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "Is there a link between baby animals which have their ...",
+          "url": "https://www.reddit.com/r/etymology/comments/i6470b/is_there_a_link_between_baby_animals_which_have/",
+          "surface": "Is there a link between baby animals which have their ...\n\nReddit · r/etymology\n3 comments · 6 years ago"
+        },
+        {
+          "title": "Baby Animal Names",
+          "url": "https://zooborns.com/baby-animal-names/",
+          "surface": "Baby Animal Names\n\nZooBorns\nhttps://zooborns.com › baby-animal-names"
+        },
+        {
+          "title": "Baby Animal Names: A Complete List of Common Terms",
+          "url": "https://www.yourdictionary.com/articles/baby-animal-names",
+          "surface": "Baby Animal Names: A Complete List of Common Terms\n\nYourDictionary\nhttps://www.yourdictionary.com › Vocabulary › Glossaries"
+        },
+        {
+          "title": "Antelope Facts: Lesson for Kids",
+          "url": "https://study.com/academy/lesson/antelope-facts-lesson-for-kids.html",
+          "surface": "Antelope Facts: Lesson for Kids\n\nStudy.com\nhttps://study.com › Science Courses › Biology for Kids"
+        },
+        {
+          "title": "How about some more baby time! Newborn pronghorn ...",
+          "url": "https://www.instagram.com/p/DW0EZPVjH6h/",
+          "surface": "How about some more baby time! Newborn pronghorn ...\n\nInstagram · imagesbycat\n8 likes · 4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1067764",
+      "query": "what is a sales cycle process?",
+      "wall_ms": 531,
+      "unusual_traffic": false,
+      "ai_overview_visible": true,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "What Is a Sales Cycle? 7 Critical Stages",
+          "url": "https://www.salesforce.com/sales/what-is-a-sales-cycle/",
+          "surface": "What Is a Sales Cycle? 7 Critical Stages\n\nSalesforce\nhttps://www.salesforce.com › sales › what-is-a-sales-cycle"
+        },
+        {
+          "title": "Sales Cycle – Definition, FAQs & How ...",
+          "url": "https://www.hubspot.com/glossary/sales-cycle",
+          "surface": "Sales Cycle – Definition, FAQs & How ...\n\nHubSpot\nhttps://www.hubspot.com › glossary › sales-cycle"
+        },
+        {
+          "title": "Sales cycles: 7 stages and best practices explained",
+          "url": "https://www.zendesk.com/blog/sales/sales-process/sales-cycle/",
+          "surface": "Sales cycles: 7 stages and best practices explained\n\nZendesk\nhttps://www.zendesk.com › Blog › Sales › Sales process"
+        },
+        {
+          "title": "Mastering the Sales Cycle: Definition, Stages, and Tips",
+          "url": "https://www.rainsalestraining.com/blog/mastering-the-sales-cycle",
+          "surface": "Mastering the Sales Cycle: Definition, Stages, and Tips\n\nRAIN Group Sales Training\nhttps://www.rainsalestraining.com › blog › mastering-th..."
+        },
+        {
+          "title": "What Is the Sales Cycle? | KnowledgeCity",
+          "url": "https://www.youtube.com/watch?v=OsXJBcStqAs",
+          "surface": "What Is the Sales Cycle? | KnowledgeCity\n\nYouTube · KnowledgeCity\n1.2K+ views · 1 year ago"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-667373",
+      "query": "what happens when stop drinking alcohol",
+      "wall_ms": 457,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "National Helpline for Mental Health, Drug, Alcohol Issues",
+          "url": "https://www.samhsa.gov/find-help/helplines/national-helpline",
+          "surface": "National Helpline for Mental Health, Drug, Alcohol Issues\n\nSAMHSA (.gov)\nhttps://www.samhsa.gov › ... › Helplines"
+        },
+        {
+          "title": "What Happens In The First Year After You Stop Drinking?",
+          "url": "https://www.addictioncenter.com/community/first-year-after-you-stop-drinking/",
+          "surface": "What Happens In The First Year After You Stop Drinking?\n\nAddiction Center\nhttps://www.addictioncenter.com › community › first-y..."
+        },
+        {
+          "title": "Benefits of giving up alcohol for a month",
+          "url": "https://www.priorygroup.com/blog/benefits-of-giving-up-alcohol-for-a-month",
+          "surface": "Benefits of giving up alcohol for a month\n\nPriory\nhttps://www.priorygroup.com › Blog"
+        },
+        {
+          "title": "12 Things That Happen When You Quit Drinking",
+          "url": "https://www.webmd.com/mental-health/addiction/ss/slideshow-quit-alcohol-effects",
+          "surface": "12 Things That Happen When You Quit Drinking\n\nWebMD\nhttps://www.webmd.com › ... › Slideshows"
+        },
+        {
+          "title": "Benefits of Quitting Alcohol for a Month or More",
+          "url": "https://integrishealth.org/resources/on-your-health/2024/april/benefits-of-quitting-alcohol-for-a-month-or-more",
+          "surface": "Benefits of Quitting Alcohol for a Month or More\n\nINTEGRIS Health\nhttps://integrishealth.org › on-your-health › april › ben..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1067772",
+      "query": "what is a sabbatical policy for nonprofit",
+      "wall_ms": 450,
+      "unusual_traffic": false,
+      "ai_overview_visible": false,
+      "visible_result_count": 5,
+      "results": [
+        {
+          "title": "The Case for Sabbaticals in the Nonprofit Sector",
+          "url": "https://www.nonprofitadvancement.org/2025/07/21/the-case-for-sabbaticals-in-the-nonprofit-sector/",
+          "surface": "The Case for Sabbaticals in the Nonprofit Sector\n\nThe Center for Nonprofit Advancement\nhttps://www.nonprofitadvancement.org › 2025/07/21"
+        },
+        {
+          "title": "Sabbaticals : r/nonprofit",
+          "url": "https://www.reddit.com/r/nonprofit/comments/1ici487/sabbaticals/",
+          "surface": "Sabbaticals : r/nonprofit\n\nReddit · r/nonprofit\n8 comments · 1 year ago"
+        },
+        {
+          "title": "Sabbaticals for Nonprofits Are a Must",
+          "url": "https://www.nonprofitfixer.com/nonprofit-fixer-blog/nonprofit-sabbatical-policy",
+          "surface": "Sabbaticals for Nonprofits Are a Must\n\nThe Nonprofit Fixer\nhttps://www.nonprofitfixer.com › nonprofit-fixer-blog"
+        },
+        {
+          "title": "Why Every Nonprofit Should Offer Sabbaticals (And How ...",
+          "url": "https://www.forbes.com/councils/forbesnonprofitcouncil/2023/11/28/why-every-nonprofit-should-offer-sabbaticals-and-how-to-make-it-happen/",
+          "surface": "Why Every Nonprofit Should Offer Sabbaticals (And How ...\n\nForbes\nhttps://www.forbes.com › Leadership"
+        },
+        {
+          "title": "Sabbatical Leave Policy",
+          "url": "https://piccolo-seabass-yr3w.squarespace.com/s/LM-Sabbatical-Leave-Policy.pdf",
+          "surface": "Sabbatical Leave Policy\n\nSquarespace\nhttps://piccolo-seabass-yr3w.squarespace.com › L...\nPDF"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Visible browser capture is not a Google API response and may omit non-h3 product, map, video, knowledge-panel, or interactive surfaces.",
+    "AI Overview presence is recorded, but its factual correctness is not judged in this raw artifact.",
+    "The paired OpenSonarX capture measures backend search time, so latency remains non-comparable until both products are measured at the same user-visible boundary.",
+    "MS MARCO answer-seeking English queries are one stratum, not a general web-traffic distribution."
+  ]
+}

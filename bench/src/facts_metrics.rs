@@ -255,8 +255,7 @@ pub fn aggregate_results(results: &[DocResult]) -> FactsBenchmarkResult {
         })
         .collect();
 
-    let avg_extraction_time_ms =
-        results.iter().map(|r| r.extraction_time_ms).sum::<f64>() / n;
+    let avg_extraction_time_ms = results.iter().map(|r| r.extraction_time_ms).sum::<f64>() / n;
 
     FactsBenchmarkResult {
         overall_ner,

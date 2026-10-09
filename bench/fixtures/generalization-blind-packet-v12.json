@@ -1,0 +1,2511 @@
+{
+  "experiment": "blind-pooled-search-quality-packet-v1",
+  "created_at_unix_ms": 1787456591783,
+  "manifest_name": "opensonarx-generalization-msmarco-heldout-v12",
+  "manifest_sha256": "39a84da622a5e2eab219c71862fa76eed73e58e133da971bf7210e292aa0978e",
+  "opensonarx_capture_sha256": "fd44b680568e6f1c0e82c927e58578e7b1e1f777caf8fc124d97b763b45b8328",
+  "market_capture_sha256": "e84e7ab3960631e43ef17159f55ca3fe04a4bbf34c5d79b82f0d89e92c784f43",
+  "top_k_per_system": 5,
+  "blinding_nonce_commitment": "c607ea5664de1036c239df1ce6bf088b10d0a78cbe3d18ac4e667dfaa01a9109",
+  "system_identity_present": false,
+  "rubric": {
+    "relevance": {
+      "0": "unrelated or cannot help answer the query",
+      "1": "topically related but weak or indirect",
+      "2": "materially useful for the user's likely intent",
+      "3": "directly satisfies the likely intent"
+    },
+    "query_relative_authority": {
+      "0": "unknown, inappropriate, or clearly unreliable for this claim",
+      "1": "secondary source with limited accountability or expertise",
+      "2": "credible expert, institution, or well-supported reference",
+      "3": "primary, official, or best-available authority for this query"
+    },
+    "direct_answer_support": {
+      "0": "title/snippet does not support a usable answer",
+      "1": "partially supports an answer or requires material qualification",
+      "2": "directly supports a clear answer with appropriate context"
+    },
+    "severe_error": "true only for a materially false, deceptive, wrong-entity, or dangerously stale result",
+    "unsafe_reliance": "true when relying on this result could cause material harm given the query stakes",
+    "judge_confidence": {
+      "0": "low; insufficient context or expertise",
+      "1": "moderate",
+      "2": "high"
+    }
+  },
+  "queries": [
+    {
+      "id": "msmarco-405330",
+      "query": "is candida injection for warts fda approved?",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-9cf3eb0deb748bcfa597",
+          "title": "Efficacy of Intralesional Candida Injection in the Treatment of ...",
+          "url": "https://medicaljournalssweden.se/actadv/article/view/40819/48035",
+          "snippet": "Candida injections might be as effective as other available treatments. Overall, Candida injections might be a good option for treating warts."
+        },
+        {
+          "candidate_id": "c-e381c4ab1706a266ae3c",
+          "title": "Randomized Phase IIa Trial of Purified Candida Antigen for Common Warts",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12033141/",
+          "snippet": "... (FDA) standards. In this study, patients with warts received one of three doses of a pure, FDA-approved version of C. albicans: (1) 0.3 mL ..."
+        },
+        {
+          "candidate_id": "c-cb67ebac8769eb03a1bc",
+          "title": "Candida Antigen for Warts | Children's Wisconsin",
+          "url": "https://childrenswi.org/teaching-sheet/dermatology/candida-antigen-for-warts",
+          "snippet": "Candida antigen is a yeast extract that can be used to treat warts and molluscum. It does not cause yeast infections. Most people have been exposed to yeast at ..."
+        },
+        {
+          "candidate_id": "c-246ea7728daafa56b0fb",
+          "title": "Study With Candida Antigen for Treatment of Warts - ClinicalTrials.gov",
+          "url": "https://clinicaltrials.gov/study/NCT00569231",
+          "snippet": "The use of recall antigens for treating warts is not yet Food and Drug Administration (FDA) approved. Injection of Candida antigen works on warts."
+        },
+        {
+          "candidate_id": "c-e20c6a41354889a5941a",
+          "title": "Blog | Candida Injections for Warts | Austin and Kyle Dermatologist",
+          "url": "https://www.puredermtx.com/post/candida-injections-for-warts-using-your-immune-system-to-treat-stubborn-warts",
+          "snippet": "Candida antigen injections stimulate the immune system to recognize and attack the virus causing the wart. Research has found that ..."
+        },
+        {
+          "candidate_id": "c-2bf1dcdd7dab7fcdeeeb",
+          "title": "[PDF] Package Insert - CANDIN - FDA",
+          "url": "https://www.fda.gov/media/97965/download",
+          "snippet": "Initial U.S. Approval: 1995 WARNING. CANDIN® is a skin test antigen to assess cellular hypersensitivity to Candida albicans. • The product should not be used ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-49435",
+      "query": "beard define",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-cb07bc750533a49a4063",
+          "title": "BEARD | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/beard",
+          "snippet": "to face, meet, or deal with an unpleasant or frightening person in a brave or determined way: With a nervous swallow he bearded the formidable- ..."
+        },
+        {
+          "candidate_id": "c-fe140ef62c984d0ac879",
+          "title": "Beard",
+          "url": "https://en.wikipedia.org/wiki/Beard",
+          "snippet": "Beard ... A beard is the hair that grows on the jaw, chin, upper lip, lower lip, cheeks, and neck of humans and some non-human …"
+        },
+        {
+          "candidate_id": "c-10e3e59b1aa1cedd4479",
+          "title": "Beard | meaning of Beard",
+          "url": "https://www.youtube.com/watch?v=JBZfQIkITIw",
+          "snippet": "What is BEARD meaning? ---------- Susan Miller (2021, December 10.) Beard meaning www.language.foundation © 2021 Proficiency in English ..."
+        },
+        {
+          "candidate_id": "c-abf7125ba4c0d8f7dca6",
+          "title": "BEARD Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/beard",
+          "snippet": "The meaning of BEARD is the hair that grows on a man&#39;s face often excluding the mustache. 2 : a hairy or bristly appendage or tuft"
+        },
+        {
+          "candidate_id": "c-efc68d5822717f0fc381",
+          "title": "BEARD Definition & Meaning",
+          "url": "https://www.dictionary.com/browse/beard",
+          "snippet": "BEARD definition: a thick growth of hair on the face, especially on an adult man, often including a mustache. See examples of beard used in a sentence."
+        },
+        {
+          "candidate_id": "c-6d2059b28e0b8d77156d",
+          "title": "BEARD definition in American English",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/beard",
+          "snippet": "A man's beard is the hair that grows on his chin and cheeks. He's decided to grow a beard. Synonyms: whiskers, bristles, stubble, goatee ..."
+        },
+        {
+          "candidate_id": "c-910ceebe86df09d0615d",
+          "title": "Beard (companion)",
+          "url": "https://en.wikipedia.org/wiki/Beard_(companion)",
+          "snippet": "Beard is a slang term, originating in the United States, which refers to a person who is used, knowingly or unknowingly, as a date, romantic partner"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-4947",
+      "query": "Ludacris Net Worth",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-e2df5f984e770f69de03",
+          "title": "Ludacris Net Worth",
+          "url": "https://ceocolumn.com/blog/ludacris-net-worth/",
+          "snippet": "Nov 22, 2025"
+        },
+        {
+          "candidate_id": "c-97e960f4aa06f41a9ef8",
+          "title": "Ludacris Net Worth in 2026: How He Built $40 Million # ...",
+          "url": "https://www.instagram.com/p/Db9BoqLjpp-/",
+          "snippet": "Ludacris says his 25+ year music career has earned him more money than acting, including his roles in the Fast & Furious franchise. He also ..."
+        },
+        {
+          "candidate_id": "c-14b1314125ac53822bad",
+          "title": "Ludacris",
+          "url": "https://en.wikipedia.org/wiki/Ludacris",
+          "snippet": "Christopher Brian Bridges (born September 11, 1977), known professionally as Ludacris is an American rapper and actor. Born in Champaign, Illinois, Ludacris ..."
+        },
+        {
+          "candidate_id": "c-e57d6a11fb9c632a8992",
+          "title": "Ludacris Net Worth 2025: How Much Money Does He Make?",
+          "url": "https://www.yahoo.com/entertainment/articles/ludacris-net-worth-2025-much-041846850.html",
+          "snippet": "Ludacris has an estimated net worth of $40 million in 2025. His net worth consists of earnings from music sales, live performances, and acting ..."
+        },
+        {
+          "candidate_id": "c-a0f2c8e88a46da1ed7a5",
+          "title": "How Ludacris Stacked $40 Million in Net Worth and ...",
+          "url": "https://blavity.com/entertainment/ludacris-net-worth",
+          "snippet": "According to Celebrity Net Worth, Ludacris is said to have taken in between $8 million to $16 million annually since 2007, with a total nest egg ..."
+        },
+        {
+          "candidate_id": "c-01d20764ef114a9b6622",
+          "title": "Ludacris Net Worth in 2026",
+          "url": "https://www.alux.com/networth/ludacris/",
+          "snippet": "Ludacris is an American hip hop recording artist and actor and his current net worth is $30 million."
+        },
+        {
+          "candidate_id": "c-d5703dbe8668a6c663f8",
+          "title": "Ludacris Net Worth",
+          "url": "https://www.celebritynetworth.com/richest-celebrities/richest-rappers/ludacris-net-worth/",
+          "snippet": "Ludacris is an Award-winning rapper and actor who has a net worth of $40 million. Christopher \"Ludacris\" Bridges has quietly built one of the most ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028179",
+      "query": "what is?!.the population of el salvador",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-c4267a1302748cd83fb7",
+          "title": "10 Facts You May Not Know About El Salvador",
+          "url": "https://childrenshungerfund.org/blog/10-facts-you-may-not-know-about-el-salvador/",
+          "snippet": "Most densely populated country in the Americas. With a population of about 6.5 million people, that's still 300,000 more people than the ..."
+        },
+        {
+          "candidate_id": "c-aef42dbe7e4a331e6a96",
+          "title": "El Salvador: Salvadoran Population in the Washington, DC ...",
+          "url": "https://iir.gmu.edu/immigrant-stories-overview/el-salvador/el-salvador-salvadoran-population-in-the-washington-dc-and-baltimore-md-metro-areas",
+          "snippet": "There are approximately 208,800 Salvadoran immigrants* living in the Washington, DC and Baltimore, MD metro areas."
+        },
+        {
+          "candidate_id": "c-eea34cbda1b0728d9faa",
+          "title": "El Salvador (01/08) - State.gov",
+          "url": "https://2009-2017.state.gov/outofdate/bgn/elsalvador/99301.htm",
+          "snippet": "Population (2007 est.): 5.8 million. El Salvador's population numbers about 5.8 million. The capital city of San Salvador has about 2.2 million people; an ..."
+        },
+        {
+          "candidate_id": "c-2fd67c69312e2a75c7e0",
+          "title": "Demographics of El Salvador",
+          "url": "https://en.wikipedia.org/wiki/Demographics_of_El_Salvador",
+          "snippet": "El Salvador's population numbers 6.03 million. Ethnically, 86.3% of Salvadorans are mixed (mixed Native Salvadoran and European (mostly Spanish) origin)."
+        },
+        {
+          "candidate_id": "c-8e20b25e4735b4dce83d",
+          "title": "El Salvador",
+          "url": "https://en.wikipedia.org/wiki/El_Salvador",
+          "snippet": "As of 2024, El Salvador's population was estimated at approximately 6 million inhabitants. El Salvador's population was 6,314,167 in 2021,"
+        },
+        {
+          "candidate_id": "c-3130b3822a59b9f7ce5e",
+          "title": "Population Clock - El Salvador",
+          "url": "https://www.census.gov/popclock/world/es",
+          "snippet": "El Salvador Demographic data as of July 1, 2026, Population 6.4M People per sq. km 306.7 Males per 100 females 91.4 Children per woman 1.4"
+        },
+        {
+          "candidate_id": "c-ea505723ee2f80cc1ade",
+          "title": "El Salvador Population (2026)",
+          "url": "https://www.worldometers.info/world-population/el-salvador-population/",
+          "snippet": "The current population of El Salvador is 6,396,354 as of Saturday, August 22, 2026, El Salvador 2026 population is estimated at 6,391,253 people at mid-year."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-850236",
+      "query": "what is the temperature in in in pleasanton usa?",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-155114216304ba491e69",
+          "title": "Pleasanton, CA Weather Forecast",
+          "url": "https://www.accuweather.com/en/us/pleasanton/94566/weather-forecast/337204",
+          "snippet": "Sunshine and a few clouds Hi: 89° Tonight: Clear to partly cloudy Lo: 56° Current Weather 9:26 AM 64°F Sunny RealFeel® 73° Looking Ahead Very warm tomorrow"
+        },
+        {
+          "candidate_id": "c-398948cde811fcea051d",
+          "title": "Pleasanton - BBC Weather",
+          "url": "https://www.bbc.com/weather/5383777",
+          "snippet": "Temperature 22° Celsius22°Temperature 72° Fahrenheit72°. Average wind speed 5 Miles per hour, West North Westerly5Average wind speed 9 Kilometres per hour ..."
+        },
+        {
+          "candidate_id": "c-2a1c9f5b07534801478f",
+          "title": "Pleasanton, California, USA 14 day weather forecast - Time and Date",
+          "url": "https://www.timeanddate.com/weather/usa/pleasanton/ext",
+          "snippet": "2 Week Extended Forecast in Pleasanton, California, USA ; 86 / 56 °F · Afternoon clouds. 84 °F ..."
+        },
+        {
+          "candidate_id": "c-87b453665cf8b5d31189",
+          "title": "Pleasanton, CA Weather Forecast | Local Weather Updates for ...",
+          "url": "https://www.foxweather.com/local-weather/california/pleasanton",
+          "snippet": "Tonight Sat 8/22 58° Lowest Temperature Partly. Tomorrow Sun 8/23 91° Highest Temperature Partly / Cloudy 6% sunshine. High 91F."
+        },
+        {
+          "candidate_id": "c-686453366aa25a8e4c49",
+          "title": "Pleasanton, CA Weather Conditions",
+          "url": "https://www.wunderground.com/weather/us/ca/pleasanton",
+          "snippet": "Partly to mostly cloudy. Low 58F. Winds WNW at 5 to 10 mph."
+        },
+        {
+          "candidate_id": "c-dab44230ef02d6872fec",
+          "title": "7-Day Forecast 37.66N 121.86W",
+          "url": "https://forecast.weather.gov/zipcity.php?inputstring=Pleasanton,CA",
+          "snippet": "Clear 79°F 26°C. This Afternoon: Sunny, with a high near 86. Tonight: Partly cloudy, with a low around 58."
+        },
+        {
+          "candidate_id": "c-ee20f60d11bc7ac37d77",
+          "title": "10-Day Weather Forecast for Pleasanton, California",
+          "url": "https://weather.com/us/california/city/pleasanton/tenday",
+          "snippet": "Daily Forecast ; Tonight · 85 ; Sat 22 · 86 ; Sun 23 · 88 ; Mon 24 · 83 ; Tue 25 · 85 ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-983708",
+      "query": "where is graycliff cigars based",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-c1c3e5f3cc6599dcc750",
+          "title": "Graycliff Cigar Company - All You SHOULD Know Before ...",
+          "url": "https://www.tripadvisor.com/Attraction_Review-g147416-d2037802-Reviews-Graycliff_Cigar_Company-Nassau_New_Providence_Island_Bahamas.html",
+          "snippet": "The Graycliff Cigar Company began production in January 1997 in Nassau, The Bahamas. Highly recommend this location as you walk through Nassau. Based on Viator ..."
+        },
+        {
+          "candidate_id": "c-d94a9070a26acc07efb1",
+          "title": "Graycliff Cigars",
+          "url": "https://www.cigarsinternational.com/category/big-list-of-brands/graycliff-cigars/",
+          "snippet": "Born in a small factory in the Bahamas with one roller, Graycliff cigars has now landed themselves on the map as an award-winning cigar company,"
+        },
+        {
+          "candidate_id": "c-f71e649a0d6aba83b273",
+          "title": "Graycliff Cigar Company",
+          "url": "https://www.bahamas.com/vendor/graycliff-cigar-company",
+          "snippet": "Visitors to The Graycliff Cigar Company in Nassau, Bahamas, Tel: (242) 302 - 9150 Email: cigars@graycliff.com Baillou Hill Rd. & West Hill Street"
+        },
+        {
+          "candidate_id": "c-a5599997512717638e0c",
+          "title": "Graycliff Cigar Company",
+          "url": "https://www.graycliff.com/graycliff-cigar-company/",
+          "snippet": "Graycliff Hotel & Restaurant West Hill Street P. O. Box N10246 Nassau, NP, Bahamas Location Reservations"
+        },
+        {
+          "candidate_id": "c-e2f4c3345362a5f9b1f8",
+          "title": "Exploring the Legacy of Graycliff Cigars: A Taste ...",
+          "url": "https://mycigarpack.com/blogs/mcp-blog/exploring-the-legacy-of-graycliff-cigars-a-taste-of-bahamian-excellence",
+          "snippet": "Born in the heart of the Bahamas, these cigars … from Costa Rica, Nicaragua, and Honduras. Ecuador - Filler: Costa Rica, Nicaragua, Honduras"
+        },
+        {
+          "candidate_id": "c-9f582a7182e6c8db7671",
+          "title": "The Ultimate Guide to Graycliff Cigars",
+          "url": "https://www.elementvape.com/blog/post/the-ultimate-guide-to-graycliff-cigars",
+          "snippet": "Produced in Nassau, Bahamas, at the historic Graycliff Hotel — a luxury destination with roots dating back to the 18th century"
+        },
+        {
+          "candidate_id": "c-636d696f7c834b7bb8d6",
+          "title": "A $20 Nassau",
+          "url": "http://www.cigaraficionado.com/article/a-20-nassau-7038",
+          "snippet": "An old Cuban master and an Italian Entrepreneur make Graycliff cigars in the Bahamas | Cigar Aficionado."
+        },
+        {
+          "candidate_id": "c-4d7966df48a7b30f7b68",
+          "title": "I'm a little confused. I thought Graycliff cigars are made in ...",
+          "url": "https://www.reddit.com/r/cigars/comments/1fys1qg/im_a_little_confused_i_thought_graycliff_cigars/",
+          "snippet": "Graycliff is also a licensed brand and those cigars are made mostly in General owned factories in Honduras and Nicaragua."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-494346",
+      "query": "secura personal cleanser",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-395be045c28bc40f0f2e",
+          "title": "Smith & Nephew 5459430300 Secura Total Body Foam Cleanser, 8.5 oz ...",
+          "url": "https://www.amazon.com/Secura-Total-Cleanser-Dispenser-Nephew/dp/B00TUPBJQ0",
+          "snippet": "Secura Total Body Foam Cleanser, 8.5 oz. Typical price: $8.05$8.05"
+        },
+        {
+          "candidate_id": "c-04be656c13b900592e7d",
+          "title": "Secura Personal Cleanser Alternatives Compared",
+          "url": "https://www.drugs.com/compare/secura-personal-cleanser",
+          "snippet": "Secura Personal Cleanser (emollients) Prescription and OTC Prescribed for Ichthyosis, Pruritus, Dry Skin. average rating of 9.3 out of 10"
+        },
+        {
+          "candidate_id": "c-03b2a96849cf20f23c8e",
+          "title": "Secura Personal Cleanser [59430400] 8 oz",
+          "url": "https://www.walmart.com/ip/Secura-Personal-Cleanser-59430400-8-oz/794595735",
+          "snippet": "Secura Personal Cleanser is an antimicrobial skin cleanser, for perineum and body, aids in removal of urine and feces or other foreign material."
+        },
+        {
+          "candidate_id": "c-a7e5ef3ba531810ac735",
+          "title": "Secura Personal Cleanser 8 fl oz. Bottle - Medcare Supplies",
+          "url": "https://medcaresupplies.net/product/secura-personal-cleanser-8-fl-oz-bottle/",
+          "snippet": "Bottle $6.32 Secura personal cleanser, 8 fluid ounce bottle. We are dedicated to providing top-quality medical supplies."
+        },
+        {
+          "candidate_id": "c-b03d13204f503b80c4d7",
+          "title": "[PDF] Safety Data Sheet SECURA™ Personal Cleanser 1. Identification",
+          "url": "https://smith-nephew.stylelabs.cloud/api/public/content/515c880967d94c1fac6ea040224d4063?v=d6e262a7&download=true",
+          "snippet": "Use good personal hygiene practices. Wash hands before eating, drinking, smoking or using toilet. Promptly remove soiled clothing and wash thoroughly before ..."
+        },
+        {
+          "candidate_id": "c-75580d31f2f66c5f0a29",
+          "title": "SECURA Family | Smith+Nephew Global",
+          "url": "https://www.smith-nephew.com/en/health-care-professionals/products/advanced-wound-management/secura-family",
+          "snippet": "Personal Cleanser Everyday cleansing for the perineum and body, featuring a pH-balanced2 formulation for cleansing and moisturising the skin."
+        },
+        {
+          "candidate_id": "c-61a87c815c0292c00cdb",
+          "title": "SECURA* Personal Cleanser | Wound & Skin Care Product | Antimicrobial",
+          "url": "https://www.woundsource.com/product/secura-personal-cleanser",
+          "snippet": "Personal Cleanser is an antimicrobial, no-rinse, one-step skin cleanser which emulsifies zinc oxide, stool, and blood. Contains 0.13% benzethonium chloride"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-583325",
+      "query": "what care must you give vinyl siding",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-a17a56129c5f40a2dafc",
+          "title": "Just bought a house with vinyl siding. How do you properly maintain it?",
+          "url": "https://www.reddit.com/r/homeowners/comments/1n0ad1p/just_bought_a_house_with_vinyl_siding_how_do_you/",
+          "snippet": "Powerwash it occasionally if needed for mildew ago. Pay special attention to corners, I use Wet And Forget to clean it off."
+        },
+        {
+          "candidate_id": "c-5ee89e5bf67c2f6ef745",
+          "title": "How to Clean Vinyl Siding - CertainTeed",
+          "url": "https://www.certainteed.com/inspiration/how-tos/how-clean-vinyl-siding",
+          "snippet": "For general dirtiness all you'll need is a bucket of soapy water – dish soap or common laundry detergent work well, a soft bristle brush and a garden hose."
+        },
+        {
+          "candidate_id": "c-4a8c07c135e1cb429ff2",
+          "title": "5 Tips on What to Avoid When Caring for Your Vinyl Siding - Blog",
+          "url": "https://www.mittensiding.com/blog/5-tips-on-what-to-avoid-when-caring-for-your-vinyl-siding",
+          "snippet": "1. Avoid Painting · 2. Stay Away from Harsh Chemicals · 3. Don't Use Abrasive Cleaning Tools · 4. If you must Power Wash, Keep it Level · 5. Keep Your BBQ at a ..."
+        },
+        {
+          "candidate_id": "c-dac15aa245e69c6940b4",
+          "title": "Vinyl Siding Care & Maintenance - Norandex",
+          "url": "https://www.norandex.com/resources/homeowners/vinyl-siding-resources/vinyl-siding-care-maintenance/",
+          "snippet": "Wash using a soft cloth or ordinary long-handled soft bristle brush. Clean gently to avoid surface abrasion. After cleaning, rinse area with water. motor oil, ..."
+        },
+        {
+          "candidate_id": "c-50fd0616128e6daa778b",
+          "title": "Easy Maintenance for Lasting Beauty - Vinyl Siding Institute",
+          "url": "https://polymericexteriors.org/polymeric-exterior-products/siding/cleaning-and-maintenance/",
+          "snippet": "Unlike other exterior cladding, vinyl siding only requires periodic cleaning with mild soap and water from a garden hose. Maintenance Comparison. See how low- ..."
+        },
+        {
+          "candidate_id": "c-0239f7c0d302bfe244fd",
+          "title": "Vinyl Siding Maintenance - YouTube",
+          "url": "https://www.youtube.com/watch?v=rLIvnTjTAno",
+          "snippet": "The vinyl siding on your house is *almost* maintenance free, but there are a few things you need to look out for, check on, and attend to ..."
+        },
+        {
+          "candidate_id": "c-793be38016da7c15c705",
+          "title": "How to Take Care of Your Vinyl Siding - HANSONS",
+          "url": "https://hansons.com/blog/taking-care-of-your-vinyl-siding/",
+          "snippet": "It's best to begin with a watery white vinegar solution to remove mild mildew and mold marks. it's best to use a commercial siding cleaner or diluted ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-583369",
+      "query": "what carnival ships have havana",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-1f44c365a8ff816f1fb3",
+          "title": "Carnival Horizon | Cruise Ships",
+          "url": "https://www.carnival.com/cruise-ships/carnival-horizon",
+          "snippet": "Amenities exclusive to Havana staterooms and suites: Exclusive access to Havana Pool area; Havana-branded bathrobes and towels for use during the cruise. Plus ..."
+        },
+        {
+          "candidate_id": "c-ab102043bd0e073825a0",
+          "title": "Review: Carnival Havana Staterooms and Retreat",
+          "url": "https://cruiseradio.net/review-carnival-havana-cabins-retreat/",
+          "snippet": "Staying in the Havana cabins aboard the Carnival Horizon may not be cheap, Carnival first introduced this area on the Vista, bar, pool, two hot ..."
+        },
+        {
+          "candidate_id": "c-7a408be009b8080dd3af",
+          "title": "Havana Bar | Cuban Cocktails & Coffee",
+          "url": "https://www.carnival.com/onboard/havana-bar",
+          "snippet": "AVAILABLE ON: Carnival Celebration Current. Carnival Horizon Current. Carnival Jubilee Current"
+        },
+        {
+          "candidate_id": "c-81a7486c0bbe01d2049d",
+          "title": "Which ships have the Havana area? - Carnival Cruise Lines",
+          "url": "https://boards.cruisecritic.com/topic/3027218-which-ships-have-the-havana-area/",
+          "snippet": "Agree with above posters, the Vista/Horizon/Panorama have the best Havana area. I won't book it on MG/Jubilee/Celebration."
+        },
+        {
+          "candidate_id": "c-29d1b7fa3103fefabaec",
+          "title": "Pros and Cons of Booking A Havana Cabana Room on ...",
+          "url": "https://travelwithsara.com/2019/02/08/the-pros-and-cons-of-booking-a-havana-cabana-room-on-the-carnival-vista/",
+          "snippet": "The Carnival Vista is the flagship of Carnival Cruise Line's popular Vista Class ships. in the Havana area. The Carnival Vista is a ship that ..."
+        },
+        {
+          "candidate_id": "c-d29bb154fd274a4bf5d3",
+          "title": "Which Carnival ship has the best Havana Balcony rooms?",
+          "url": "https://www.facebook.com/groups/CarnivalCruiseLines/posts/7204676769569428/",
+          "snippet": "I’m interested in booking a Havana Balcony room. Which ship has the best rooms/pool/bar and why?"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-138492",
+      "query": "definition of subdural hematoma",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-aa01445d735d1e2f1fe3",
+          "title": "Subdural Hematoma: Background, Pathophysiology, Etiology",
+          "url": "https://emedicine.medscape.com/article/1137207-overview",
+          "snippet": "A subdural hematoma (SDH) is a collection of blood below the inner layer of the dura but external to the brain and arachnoid membrane (see ..."
+        },
+        {
+          "candidate_id": "c-dbf14874f37a634cd2a5",
+          "title": "Subdural hematoma | Health Encyclopedia",
+          "url": "https://quality.healthfinder.fl.gov/health-encyclopedia/HIE/1/000713",
+          "snippet": "A subdural hematoma is a collection of blood between the covering of the brain (dura) and the surface of the brain."
+        },
+        {
+          "candidate_id": "c-a1852301b745288dcad9",
+          "title": "Subdural Hematoma - StatPearls - NCBI Bookshelf - NIH",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK532970/",
+          "snippet": "by L Pierre · 2023 · Cited by 58 — Subdural hematoma represents a serious intracranial injury resulting from bleeding between the dura mater and the brain, commonly caused by ..."
+        },
+        {
+          "candidate_id": "c-a823e793e15c919daab6",
+          "title": "Acute Subdural Hematomas - Neurosurgery - UCLA Health",
+          "url": "https://www.uclahealth.org/medical-services/neurosurgery/conditions-treated/acute-subdural-hematomas",
+          "snippet": "An acute subdural hematoma (SDH) is a clot of blood that develops between the surface of the brain and the dura mater, the brain's tough outer covering, usually ..."
+        },
+        {
+          "candidate_id": "c-71da85274ea344eb3eaf",
+          "title": "Subdural Hematoma: What It Is, Causes, Symptoms & Treatment",
+          "url": "https://my.clevelandclinic.org/health/diseases/21183-subdural-hematoma",
+          "snippet": "A subdural hematoma is a type of bleeding near your brain that can happen after a head injury. Symptoms include headache, nausea"
+        },
+        {
+          "candidate_id": "c-1acf13bef8cd1c527309",
+          "title": "Subdural Hematoma - Harvard Health",
+          "url": "https://www.health.harvard.edu/brain-health/subdural-hematoma-a-to-z",
+          "snippet": "A subdural hematoma occurs when a blood vessel near the surface of the brain bursts. Blood builds up between the brain and the brain's tough ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-672352",
+      "query": "what is 5th century bce",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-7f348b0da81a97cfc029",
+          "title": "Understanding BC/AD and BCE/CE - HIS111/112",
+          "url": "https://researchguides.cpcc.edu/his111-112/world-timeline",
+          "snippet": "For example, the 5th century BCE was the period of time that lasted from the years 500 BCE to 401 BCE."
+        },
+        {
+          "candidate_id": "c-7ff8b4567b219156c795",
+          "title": "Timeline: 5th century BCE - Oxford Reference",
+          "url": "https://www.oxfordreference.com/display/10.1093/acref/9780191735394.timeline.0001",
+          "snippet": "Timeline: 5th century BCE · In the last joint campaign by Sparta and Athens the strategically important city of Byzantium is liberated from Persian rule."
+        },
+        {
+          "candidate_id": "c-ed175a6d6b553c9a69ac",
+          "title": "What does 'early fifth century B.C.' mean? Is it closer to the fourth or to ...",
+          "url": "https://www.quora.com/What-does-early-fifth-century-B-C-mean-Is-it-closer-to-the-fourth-or-to-the-sixth-century",
+          "snippet": "BCE: 500 to 480 (approx), the first years of the time period from 500 to 401. Early 5th century means 500, 480 BC etc."
+        },
+        {
+          "candidate_id": "c-52d91f97f9caf74e4c64",
+          "title": "5th century BC Facts for Kids",
+          "url": "https://kids.kiddle.co/5th_century_BC",
+          "snippet": "The 5th century BC was a very important time in history. It started in 500 BC and ended in 401 BC. During this century, ancient Greece became very strong and ..."
+        },
+        {
+          "candidate_id": "c-366aba0e8a1628c94cd0",
+          "title": "The 5th Century BCE: Major Events, Prominent People, and a ...",
+          "url": "https://elle-richards.com/the-5th-century-bce-major-events-prominent-people-and-a-hypothetical-day-in-the-life/",
+          "snippet": "5th century BCE, a pivotal era in ancient history, spanned the years from 500 BCE to 401 BCE. This century was marked by significant events"
+        },
+        {
+          "candidate_id": "c-42395e7e53b9538be144",
+          "title": "Question about the 5th Century B.C. : r/history - Reddit",
+          "url": "https://www.reddit.com/r/history/comments/al5775/question_about_the_5th_century_bc/",
+          "snippet": "Athens wants control of Samos. Samos is in a conflict with Miletius. Samos has secretly been allying with Sparta, the upcoming enemy of Athens."
+        },
+        {
+          "candidate_id": "c-1bb4d6f7e74a2b31f94f",
+          "title": "5th century BC - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/5th_century_BC",
+          "snippet": "The 5th century BC started the first day of 500 BC and ended the last day of 401 BC. The Parthenon in Athens, a symbol of Ancient Greece and Western Philosophy."
+        },
+        {
+          "candidate_id": "c-147bd81645dc0bc0ec5d",
+          "title": "The 5th century BCE!! - YouTube",
+          "url": "https://www.youtube.com/shorts/6KoUXYFleyI",
+          "snippet": "The 5th century BCE!! ... This content isn't available. Skip video."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1072750",
+      "query": "city of richmond ky population",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-a4f3efe01c0c6d53988c",
+          "title": "Moving to Richmond, KY - Livability.com",
+          "url": "https://livability.com/ky/richmond/",
+          "snippet": "Richmond, KY has a population of 36444. income in Richmond, KY is $48,719 and the median home value is $216,748. Total Population 36,444 Average Commute 18 min"
+        },
+        {
+          "candidate_id": "c-cf84e545a275ba3f831a",
+          "title": "Richmond, KY",
+          "url": "https://richmondky.gov/",
+          "snippet": "The population is 41,724 and is the state's seventh-largest city. Richmond takes pride in being the home place of a \"Prime Minister\" to Russia and five ..."
+        },
+        {
+          "candidate_id": "c-a7c2eb80c09652d97996",
+          "title": "Richmond city, Kentucky - U.S. Census Bureau QuickFacts",
+          "url": "https://www.census.gov/quickfacts/fact/table/richmondcitykentucky/PST045225",
+          "snippet": "Population estimates, July 1, 2025, (V2025).. 40,663 ; Population estimates base, April 1, 2020, (V2025).. 35,164 ; Population, percent change - April 1 ..."
+        },
+        {
+          "candidate_id": "c-d36a911b0ff1e8e995f8",
+          "title": "Richmond, Kentucky - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Richmond,_Kentucky",
+          "snippet": "The population was 34,585 as of the 2020 census, making it the state's seventh-largest city. It is the principal city of the Richmond–Berea micropolitan area, ..."
+        },
+        {
+          "candidate_id": "c-1ffb753faff8c7c4af39",
+          "title": "Richmond, Kentucky Population 2026",
+          "url": "https://worldpopulationreview.com/us-cities/kentucky/richmond",
+          "snippet": "Richmond has a 2026 population of 41,732. It is also the county seat of Madison County. Richmond is currently growing at a rate of 2.63% annually and its ..."
+        },
+        {
+          "candidate_id": "c-ae4ed14fbed48d3f8087",
+          "title": "Richmond, KY | Data USA",
+          "url": "https://datausa.io/profile/geo/richmond-ky",
+          "snippet": "Richmond, KY is home to a population of 37.1k people, from which 97.7% are citizens. As of 2024, 3.61% of Richmond, KY residents were born outside of the ..."
+        },
+        {
+          "candidate_id": "c-0223fcebc70d7990774d",
+          "title": "Our History - Richmond, KY",
+          "url": "https://richmondky.gov/government/our_history.php",
+          "snippet": "The population in Richmond, KY was 33,533 in 2015. Richmond is the third-largest city in the Bluegrass region (after Louisville and Lexington) and the state's ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-850361",
+      "query": "what is the temperature in washington",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-e7988dad4019c617dc4c",
+          "title": "Washington, DC Weather Forecast",
+          "url": "https://www.accuweather.com/en/us/washington/20006/weather-forecast/327659",
+          "snippet": "Lo: 68° Current Weather 6:30 PM 77°F Cloudy RealFeel® 79° Looking Ahead Thunderstorms, some heavy, this evening"
+        },
+        {
+          "candidate_id": "c-f583fe95b7720d675da6",
+          "title": "Washington DC Weather | wusa9.com",
+          "url": "https://www.wusa9.com/weather",
+          "snippet": "Hourly Temperatures · 1 PM. Sunny. 82°. 3% · 2 PM. Sunny. 83°. 0% · 3 PM. Sunny. 83°. 0% · 4 PM. Sunny. 84°. 0% · 5 PM. Sunny. 84°. 0% · 6 PM. Sunny. 83°. 0% · 7 PM."
+        },
+        {
+          "candidate_id": "c-89f8195e9c4286cd67d1",
+          "title": "Weather Forecast and Conditions for Washington, District of Columbia",
+          "url": "https://weather.com/us/district-of-columbia/city/washington/today",
+          "snippet": "Partly Cloudy. Feels Like. 81°. HHigh. 91°. LLow. 65°. Chance of Rain. 15%. 0 in. Today's Outlook. Tonight's low temperature will be a little cooler than last ..."
+        },
+        {
+          "candidate_id": "c-3122d4581a0ac5679f40",
+          "title": "DC, Maryland, Virginia weather forecast - NBC4 Washington",
+          "url": "https://www.nbcwashington.com/weather/",
+          "snippet": "Washington, DC 75° Mostly Cloudy Feels like75° Humidity82% Precip0.04% High around 85F. Tue Mostly Sunny High Temperature84oLow Temperature68o"
+        },
+        {
+          "candidate_id": "c-ab14f48f74e2f1142fd3",
+          "title": "10-Day Weather Forecast for Washington, District ...",
+          "url": "https://weather.com/us/district-of-columbia/city/washington/tenday",
+          "snippet": "Partly Cloudy 72° 92°. Strong Storms 67° 90°. Cloudy 70° 81°. Scattered Thunderstorms 68° 81°. Showers 63° 85°"
+        },
+        {
+          "candidate_id": "c-b3cfc7f3047b7f2eb294",
+          "title": "Current Weather - Washington, DC",
+          "url": "https://www.accuweather.com/en/us/washington/20006/current-weather/327659",
+          "snippet": "The current RealFeel® Temperature is 77° (Pleasant) based on observed conditions including 86% humidity, 90% cloud cover, a UV index of 0, and winds of 2 mph."
+        },
+        {
+          "candidate_id": "c-1c9058a794b850294223",
+          "title": "Washington, DC Weather Conditions",
+          "url": "https://www.wunderground.com/weather/us/dc/washington",
+          "snippet": "Thunderstorms, some heavy this evening, then periods of rain late. Low 67F. Winds SSW at 5 to 10 mph. Chance of rain 100%. icon."
+        },
+        {
+          "candidate_id": "c-f94e0dd48dd841185c4e",
+          "title": "Washington, DC Current Weather",
+          "url": "https://www.theweathernetwork.com/en/city/us/district-of-columbia/washington/current",
+          "snippet": "What is the current temperature in Washington? 26°. What is the “feels like” temperature in Washington? 26°. What is the high and low temperature today in ..."
+        },
+        {
+          "candidate_id": "c-a1e38e933cfe218fdf39",
+          "title": "Washington DC - BBC Weather",
+          "url": "https://www.bbc.com/weather/4140963",
+          "snippet": "Temperature 25° Celsius25°Temperature 77° Fahrenheit77°. Average wind speed 5 Miles per hour, Northerly5Average wind speed 9 Kilometres per hour, Northerly9."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-761388",
+      "query": "what is it called when you flex a muscle",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-ded204f4b1eee12336b4",
+          "title": "What muscle do you use to flex? - Quora",
+          "url": "https://www.quora.com/What-muscle-do-you-use-to-flex",
+          "snippet": "Flexing them will result in very minimal strength increases. Flexing your muscle is the same as contracting them. also known as the concentric ..."
+        },
+        {
+          "candidate_id": "c-673b292ba3ceb95d9c26",
+          "title": "Flexing Muscles: What Are the Benefits and Can It Build Strength?",
+          "url": "https://www.healthline.com/health/exercise-fitness/flexing-muscles",
+          "snippet": "Muscle flexing is more accurately known as muscle contraction, because when you flex your muscles, you're creating tension that's temporarily ..."
+        },
+        {
+          "candidate_id": "c-9119609db5e3cdfceac8",
+          "title": "Can flexing your muscles make them stronger? - Vinmec",
+          "url": "https://www.vinmec.com/eng/blog/can-flexing-your-muscles-make-them-stronger-en",
+          "snippet": "Flexing or contracting muscles is not only a common pose in bodybuilding competitions but also a workout method that can enhance muscle ..."
+        },
+        {
+          "candidate_id": "c-35969f220be094306f9f",
+          "title": "What Actually Happens When You Flex - YouTube",
+          "url": "https://www.youtube.com/shorts/CeR9awyrvzA",
+          "snippet": "Search \"how to flex muscles\". @Howzog. Subscribe. What Actually Happens When You Flex. 5.6K. 31. Share. Video unavailable."
+        },
+        {
+          "candidate_id": "c-e166dab292c88d83fb3f",
+          "title": "What to Know About Flexing Muscles - Fitness & Exercise - WebMD",
+          "url": "https://www.webmd.com/fitness-exercise/what-to-know-about-flexing-muscles",
+          "snippet": "Flex Your Muscles Using PMR. If you flex your muscles by using progressive muscle relaxation, or PMR, you may be able to treat anxiety, insomnia, and migraines."
+        },
+        {
+          "candidate_id": "c-21d55ac2586d7448c0c4",
+          "title": "Meaning of flex your muscles in English - Cambridge Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/flex-muscles",
+          "snippet": "flex your muscles. collocation. If you flex your muscles, you tighten them, especially to make them look large: He flexed his muscles so that everyone could ..."
+        },
+        {
+          "candidate_id": "c-c65f8adbb8114e005ae7",
+          "title": "The science behind flexing your muscles - Freeletics",
+          "url": "https://www.freeletics.com/en/blog/posts/flex-muscle-science/",
+          "snippet": "Muscle contraction is a complex process that begins with electrical signals from the nervous system. When you decide to move a muscle, your ..."
+        },
+        {
+          "candidate_id": "c-aae701c03580edb98c1b",
+          "title": "ELI5 How are we able to flex muscles without moving the associated limb?",
+          "url": "https://www.reddit.com/r/explainlikeimfive/comments/17h4cdd/eli5_how_are_we_able_to_flex_muscles_without/",
+          "snippet": "Flexing muscles using your brain alone is possible through a mental technique called \" neuromuscular activation \" or \"mental imagery.\" Athletes ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-183046",
+      "query": "excel what is a pivot table",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-1ddbcc0a565a4258cad2",
+          "title": "Introduction Excel PivotTable",
+          "url": "https://www.w3schools.com/excel/excel_table_pivot_intro.php",
+          "snippet": "PivotTable is a functionality in Excel which helps you organize and analyze data. It lets you add and remove values, perform calculations, and to filter and ..."
+        },
+        {
+          "candidate_id": "c-123c2aa4a4a05125fc0d",
+          "title": "Excel PivotTables Made Easy: A Beginner's Guide",
+          "url": "https://www.evalacademy.com/articles/a-beginners-guide-to-pivot-tables",
+          "snippet": "PivotTables let you go from rows and columns of raw data to results in just a few clicks (see the table below). Creating meaningful data ..."
+        },
+        {
+          "candidate_id": "c-425e8fe4d3b06938bb50",
+          "title": "Pivot table",
+          "url": "https://en.wikipedia.org/wiki/Pivot_table",
+          "snippet": "A pivot table is a table of values which are aggregations of groups of individual values from a more extensive table within one or more discrete categories."
+        },
+        {
+          "candidate_id": "c-e646bce08197e4265021",
+          "title": "The 6 Benefits of Using a Pivot Table in Excel",
+          "url": "https://www.lorman.com/resources/the-6-benefits-of-using-a-pivot-table-in-excel-17423?srsltid=AfmBOoplitaKWvaA6CSqoWnTTWahy33unJqLpmQrw0N_n6WXmLjvooL4",
+          "snippet": "A pivot table is a feature in Microsoft Excel which is used to summarize and store data in a single table. It consists of rows, columns, data fields, and pages,"
+        },
+        {
+          "candidate_id": "c-62beb1ce4895b956d6a7",
+          "title": "Create a PivotTable to analyze worksheet data",
+          "url": "https://support.microsoft.com/en-us/excel/get-started/create-a-pivottable-to-analyze-worksheet-data",
+          "snippet": "A PivotTable is a powerful tool to calculate, summarize, and analyze data that lets you see comparisons, patterns, and trends in your data."
+        },
+        {
+          "candidate_id": "c-86a55aa45c0fc3b94f50",
+          "title": "Pivot Tables in Excel",
+          "url": "https://www.excel-easy.com/data-analysis/pivot-tables.html",
+          "snippet": "Pivot tables are one of Excel's most powerful features. A pivot table allows you to extract the significance from a large, detailed data set."
+        },
+        {
+          "candidate_id": "c-021d2d4a4f24a1226ea3",
+          "title": "Can someone explain pivot tables to me like I'm 12? : r/excel",
+          "url": "https://www.reddit.com/r/excel/comments/pkc04/can_someone_explain_pivot_tables_to_me_like_im_12/",
+          "snippet": "The pivot table allows you to select and filter categories of rows and columns in the worksheet, and then group, summarize and calculate them ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-672429",
+      "query": "what is ?synthetic oil",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-694dd5fe63e85a4fa977",
+          "title": "Should You Use Synthetic Oil in Your Car? - Consumer Reports",
+          "url": "https://www.consumerreports.org/cars/car-maintenance/should-you-use-synthetic-oil-in-your-car-a9220487946/",
+          "snippet": "synthetic oil is chemically modified petroleum that's produced at a factory. Most new cars use synthetic oil,"
+        },
+        {
+          "candidate_id": "c-755bf157bab9a2688c6b",
+          "title": "WHAT IS SYNTHETIC OIL AND HOW OFTEN SHOULD I CHANGE IT?",
+          "url": "https://www.abeloffgmc.com/what-is-synthetic-oil-and-how-often-should-i-change-it/",
+          "snippet": "Synthetic oil is an artificial lubricant that was designed to reduce friction and wear of internal combustion engines, as well as replace ..."
+        },
+        {
+          "candidate_id": "c-40938b0ba764850788aa",
+          "title": "Synthetic oil vs. conventional oil | Mobil™",
+          "url": "https://www.mobil.com/en/lubricants/for-personal-vehicles/auto-care/all-about-oil/learn-about-motor-oil/synthetic-oil-vs-conventional-oil",
+          "snippet": "Synthetics use higher quality base oils … full synthetic oils provide better engine performance and protection than conventional and synthetic blend motor oils."
+        },
+        {
+          "candidate_id": "c-cc26490c896557b2b07f",
+          "title": "What is Synthetic Oil? - Mercedes-Benz of Scarborough",
+          "url": "https://www.mbofscarborough.com/what-is-synthetic-oil-scarborough-me/",
+          "snippet": "It is a man-made lubricant that consists of artificial chemical compounds. They are created from chemically modified materials with a distilled crude oil base."
+        },
+        {
+          "candidate_id": "c-3cc6f0356e62e5d00821",
+          "title": "Synthetic oil - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Synthetic_oil",
+          "snippet": "Synthetic oil is a lubricant consisting of chemical compounds that are artificially modified or synthesised. Synthetic oil is used as a substitute for petroleum ..."
+        },
+        {
+          "candidate_id": "c-65427697373437a4af23",
+          "title": "Synthetic Oil: What Consumers Need to Know - Machinery Lubrication",
+          "url": "https://www.machinerylubrication.com/synthetic-oil-31800",
+          "snippet": "Synthetic oil is a lubricant made up of artificially made chemical compounds; these compounds are made by breaking down and then rebuilding petroleum molecules."
+        },
+        {
+          "candidate_id": "c-9af3a2902fd7d4dfdae5",
+          "title": "ELI5: What does synthetic oil do for my car that regular oil does not? - Reddit",
+          "url": "https://www.reddit.com/r/explainlikeimfive/comments/12b3wzc/eli5_what_does_synthetic_oil_do_for_my_car_that/",
+          "snippet": "Synthetic oil is basically like very refined regular oil...since it's artificially made they have very tight control over exactly what's in it ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-672433",
+      "query": "what is A1C levels",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-30925f6e1931cc52eb70",
+          "title": "Understanding Your A1C Level and How It Can Help ...",
+          "url": "https://www.diabetesfreesc.org/news/understanding-your-a1c-level-and-how-it-can-help-manage-diabetes",
+          "snippet": "A1C tests measure the percentage of all your hemoglobin that has sugar attached. A higher value means a higher average blood sugar level. In ..."
+        },
+        {
+          "candidate_id": "c-20106681064dac6d0f87",
+          "title": "A1C: What It Is, Test, Levels & Chart - Cleveland Clinic",
+          "url": "https://my.clevelandclinic.org/health/diagnostics/9731-a1c",
+          "snippet": "An A1C test measures the average amount of sugar in your blood over the past three months. Providers use it to diagnose diabetes and monitor ..."
+        },
+        {
+          "candidate_id": "c-5e6b64bca26456944565",
+          "title": "What Is A1c? - Cigna",
+          "url": "https://www.cigna.com/knowledge-center/hw/what-is-a1c-uq1181abc",
+          "snippet": "The normal A1c is less than 5.7%. You have a higher risk for diabetes if your A1c is 5.7% to 6.4%. If your level is 6.5% or higher, you have diabetes."
+        },
+        {
+          "candidate_id": "c-7563362d618815b299fb",
+          "title": "Is Your A1c Higher Than Normal? Here's What You Can Do.",
+          "url": "https://careaccess.com/resources-and-stories/health-resources/is-your-a1c-higher-than-normal",
+          "snippet": "Typically, an A1c level of 6.5% or higher indicates diabetes, while a level between 5.7% and 6.4% suggests prediabetes. However, these ranges may vary slightly ..."
+        },
+        {
+          "candidate_id": "c-0c786eea83164b29d188",
+          "title": "The A1C Test & Diabetes - NIDDK",
+          "url": "https://www.niddk.nih.gov/health-information/diagnostic-tests/a1c-test",
+          "snippet": "A normal A1C level is below 5.7 percent. A1C Level Normal below 5.7 percent Prediabetes 5.7 to 6.4 percent Diabetes 6.5 percent or above"
+        },
+        {
+          "candidate_id": "c-b2c244f9c2e2e9436710",
+          "title": "A1C Test for Diabetes and Prediabetes",
+          "url": "https://www.cdc.gov/diabetes/diabetes-testing/prediabetes-a1c-test.html",
+          "snippet": "The A1C test measures your average blood sugar levels over the past 3 months. For most people with diabetes, the A1C goal is 7% or less. some ..."
+        },
+        {
+          "candidate_id": "c-521436bc6736b06a6abb",
+          "title": "Understanding A1C: What It Measures and Why It Matters",
+          "url": "https://diabetes.org/about-diabetes/a1c",
+          "snippet": "The A1C test gives you a picture of your average blood glucose level over the past 2 to 3 months. This lets you understand your levels over a longer period of ..."
+        },
+        {
+          "candidate_id": "c-7d1389ed31c9a4565a2d",
+          "title": "Understanding Your A1C",
+          "url": "https://professional.diabetes.org/sites/default/files/media/ada-factsheet-understandingyoura1ctest.pdf",
+          "snippet": "The A1C is a blood test that tells you what your average blood sugar (blood glucose) levels have been for the past two to three …"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-805900",
+      "query": "what is the average cost of a home in santa rosa california",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-4a8e2e3fd225a9ebd314",
+          "title": "Santa Rosa, CA Housing Market & Rental trends - Realtor.com",
+          "url": "https://www.realtor.com/local/market/california/sonoma-county/santa-rosa",
+          "snippet": "Santa Rosa's median listing price sits at $872K, and the median rent is $3.0K per month. The current median listing price is $872K"
+        },
+        {
+          "candidate_id": "c-8d632972170c0c06240f",
+          "title": "Santa Rosa, CA Housing Market: 2026 Home Prices & Trends | Zillow",
+          "url": "https://www.zillow.com/home-values/26967/santa-rosa-ca/",
+          "snippet": "The average home value in Santa Rosa, CA is $715976, down 1.0% over the past year. Median Sale Price: $726,583"
+        },
+        {
+          "candidate_id": "c-e598b2e28dd8aaf0bb22",
+          "title": "Santa Rosa, CA Homes for Sale & Real Estate",
+          "url": "https://www.homes.com/santa-rosa-ca/",
+          "snippet": "median price at $1,705,000, median prices of $306,500 for one-bedroom units and $397,000 for two-bedroom units. The median townhome price sits at ..."
+        },
+        {
+          "candidate_id": "c-955f407711683769b438",
+          "title": "Discover Your Home's Value in Santa Rosa, CA - Rhonda Alderman",
+          "url": "https://rhondaalderman.net/blog/whats-my-home-value-in-santa-rosa-ca",
+          "snippet": "According to Realtor.com, the average price of a home listed in Santa Rosa, California, in April 2022 is $ 749,000. This is an increase of 11 percent from the ..."
+        },
+        {
+          "candidate_id": "c-9ab0f3468f9568f73077",
+          "title": "Cost of Living in Santa Rosa 2026 | Housing, Utilities & more",
+          "url": "https://www.janaadamshomes.com/blog/cost-of-living-santa-rosa/",
+          "snippet": "As of mid-2026, median home prices in Santa Rosa are sitting right around $720,000 to $750,000. That is the true middle of the market right now."
+        },
+        {
+          "candidate_id": "c-ddcab37ca3518c0e20a9",
+          "title": "Santa Rosa Housing Market Trends - Redfin",
+          "url": "https://www.redfin.com/city/17911/CA/Santa-Rosa/housing-market",
+          "snippet": "The average Santa Rosa house price was $719K last month, The median sale price of a home in Santa Rosa was $729K over the last 3 months, down 1.8% since the ..."
+        },
+        {
+          "candidate_id": "c-ecf4dae99569f02cda0c",
+          "title": "Santa Rosa, CA Homes for Sale & Real Estate - Realtor.com",
+          "url": "https://www.realtor.com/realestateandhomes-search/Santa-Rosa_CA",
+          "snippet": "The median listing price is $725000. Homes for sale in Santa Rosa, CA have a median listing home price of $725,000. On Average the houses for sale in Santa ..."
+        },
+        {
+          "candidate_id": "c-d4cff1a2d900123aba1a",
+          "title": "Santa Rosa| Real Estate and Market Trends - FortuneBuilders",
+          "url": "https://www.fortunebuilders.com/p/santa-rosa-real-estate-and-market-trends/",
+          "snippet": "The median sales price of a non-distressed home in Santa Rosa is $437,000. The median sales price of a foreclosure home, on the other hand, is $390,000,"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-272047",
+      "query": "how long to roast whole.chicken",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-43894162a6068d27e3ad",
+          "title": "Time To Roast Whole Chicken",
+          "url": "https://kitchprep.com/time-to-roast-whole-chicken/",
+          "snippet": "Time To Roast Whole Chicken By Weight If you roast at 350°F, a good working rule is about 20 to 25 minutes per pound for an …"
+        },
+        {
+          "candidate_id": "c-608c83adbb67e9c2fec7",
+          "title": "Juicy Roasted Chicken Recipe",
+          "url": "https://www.allrecipes.com/recipe/83557/juicy-roasted-chicken/",
+          "snippet": "Bake prepped chicken uncovered until no longer pink at the bone and the juices run clear, about 50 to 60 minutes. Roasted Chicken Sides. Looking ..."
+        },
+        {
+          "candidate_id": "c-14c2831f42a098619aaa",
+          "title": "How Long To Roast Whole Chicken",
+          "url": "https://cookrita.com/how-long-to-roast-whole-chicken-at-any-temperature/",
+          "snippet": "Aug 14, 2026"
+        },
+        {
+          "candidate_id": "c-f7c6af3b2d722b4a7f26",
+          "title": "You Just Have To Know How To Roast a Chicken",
+          "url": "https://www.idratherbemeryl.com/home/2017/2/7/you-just-have-to-know-how-to-roast-a-chicken",
+          "snippet": "You can always roast a whole chicken for 15–20 minutes per pound. Somewhere between 2 1⁄2 and 3 hrs Active Time: 20 min. The rule of thumb"
+        },
+        {
+          "candidate_id": "c-a8b60b9c49291640c291",
+          "title": "How to Roast",
+          "url": "https://www.yellowblissroad.com/roast-chicken-whole-roasted-chicken/",
+          "snippet": "Mar 4, 2026"
+        },
+        {
+          "candidate_id": "c-b91d22718c4532eeaf25",
+          "title": "How Long to Roast",
+          "url": "https://bradleysfinediner.com/fresh-meat/poultry/chicken/how-long-do-you-roast-a-whole-chicken-at-350/",
+          "snippet": "Sep 20, 2025"
+        },
+        {
+          "candidate_id": "c-7331d56e45a06f8bfe8e",
+          "title": "Whole roast chicken temp/time : r/Cooking",
+          "url": "https://www.reddit.com/r/Cooking/comments/1cxoluv/whole_roast_chicken_temptime/",
+          "snippet": "I start my chicken at 425° for 10 minutes to get a crispy skin, then turn it down to 350° for 20 minutes per pound."
+        },
+        {
+          "candidate_id": "c-e541887d143d9f9a1c97",
+          "title": "Whole Chicken in the Oven, 5 Ways",
+          "url": "https://www.perdue.com/the-table-blog/entertaining/holidays/whole-chicken-in-the-oven-5-ways",
+          "snippet": "Cook time: 25 minutes per pound. Ex. 4-lb. whole chicken will cook in two hours. Note: If you stuff the chicken, add an additional 20 minutes to the cooking ..."
+        },
+        {
+          "candidate_id": "c-036d9b2852fdf25dd132",
+          "title": "How to Cook a Whole Chicken",
+          "url": "https://www.bhg.com/recipes/how-to/handling-meat/cook-whole-chicken/",
+          "snippet": "Jul 28, 2026"
+        },
+        {
+          "candidate_id": "c-bd11ce02058bddc005c7",
+          "title": "Best Damn Oven Roasted Whole Chicken",
+          "url": "https://recipeteacher.com/best-damn-oven-roasted-whole-chicken/",
+          "snippet": "Start by roasting it at 450°F for 20-30 minutes to get that golden, crispy skin. Then, lower the oven temperature to 350°F and continue ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-761425",
+      "query": "what is it called when you make up illnesses",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-a3e652b0774b967724ef",
+          "title": "Someone Who Wants to Be Sick for Attention | Factitious Disorder ...",
+          "url": "https://www.bridgestorecovery.com/blog/when-someone-is-faking-illness-for-attention-how-can-you-help-them-get-treatment-for-factitious-disorder/",
+          "snippet": "Someone with factitious disorder seeks attention through perceived physical distress. They may fake their own illness, sometimes going to great ..."
+        },
+        {
+          "candidate_id": "c-86b466887985c16648e0",
+          "title": "Can Flexing Muscles Make You Physically and Mentally Healthier?",
+          "url": "https://www.webmd.com/fitness-exercise/what-to-know-about-flexing-muscles",
+          "snippet": "Can Flexing Muscles Make You Physically and Mentally Healthier? Written by WebMD Editorial Contributor Medically Reviewed by Ross Brakeville, DPT on July 20, 2025 Flexing your muscles isn’t just abo..."
+        },
+        {
+          "candidate_id": "c-1331af87ea0d4c22f795",
+          "title": "Factitious disorder - Symptoms and causes - Mayo Clinic",
+          "url": "https://www.mayoclinic.org/diseases-conditions/factitious-disorder/symptoms-causes/syc-20356028",
+          "snippet": "Factitious disorder, previously called Munchausen syndrome, is a serious mental health condition in which people deceive others by pretending ..."
+        },
+        {
+          "candidate_id": "c-a0599bc27f2c29ee6844",
+          "title": "Munchausen syndrome mimicking psychiatric disease with ... - PMC",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3029875/",
+          "snippet": "Munchausen syndrome is a disorder in which patients intentionally produce symptoms mimicking physical or psychiatric illnesses with the aim ..."
+        },
+        {
+          "candidate_id": "c-fd617547b629eaf1e4df",
+          "title": "Munchausen syndrome | Better Health Channel",
+          "url": "https://www.betterhealth.vic.gov.au/health/conditionsandtreatments/munchausen-syndrome",
+          "snippet": "Munchausen syndrome by proxy (MBP) is the old term for a form of abuse where a person either fakes or produces symptoms in someone else, usually their child."
+        },
+        {
+          "candidate_id": "c-acd6b5bde27be114bad4",
+          "title": "Homepage - Called",
+          "url": "https://called.app/",
+          "snippet": "Called gives you a clear picture of engagement and relationships so you can shepherd intentionally. Instead of reacting to problems, …"
+        },
+        {
+          "candidate_id": "c-3e6580f089f35a4adef3",
+          "title": "Munchausen syndrome - NHS inform",
+          "url": "https://www.nhsinform.scot/illnesses-and-conditions/mental-health/munchausen-syndrome/",
+          "snippet": "Munchausen syndrome is a rare psychological condition. It means someone pretends to be ill. They might also self-harm to cause or worsen illness ..."
+        },
+        {
+          "candidate_id": "c-7c959200e0a46f6a31ae",
+          "title": "Overview - Munchausen syndrome - NHS",
+          "url": "https://www.nhs.uk/mental-health/conditions/munchausen-syndrome/overview/",
+          "snippet": "Munchausen syndrome is a psychological condition where someone pretends to be ill or deliberately produces symptoms of illness in themselves."
+        },
+        {
+          "candidate_id": "c-8d054c95a254f7166d0e",
+          "title": "Factitious Disorder Imposed on Self (Munchausen Syndrome)",
+          "url": "https://my.clevelandclinic.org/health/diseases/9833-munchausen-syndrome-factitious-disorder-imposed-on-self",
+          "snippet": "Factitious disorder imposed on self, formerly known as Munchausen syndrome, happens when you falsify, create and/or exaggerate having symptoms ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-272075",
+      "query": "how long to saute potatoes",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-537445d3dee89638245c",
+          "title": "Sautéed Potatoes with Garlic",
+          "url": "https://www.kitchensanctuary.com/sauteed-potatoes-with-garlic/",
+          "snippet": "These sautéed potatoes take around 30 minutes. for a further 5 minutes, until golden brown. cook on high, turning often until very lightly ..."
+        },
+        {
+          "candidate_id": "c-e4a70236ae1f5f1aac18",
+          "title": "The BEST Crispy Sautéed Potatoes",
+          "url": "https://www.youtube.com/watch?v=OWeCRhQhz3s",
+          "snippet": "Making crispy sautéed potatoes. In this recipe video, we'll show you how to make crispy fried potatoes in a pan. it's a cooking essential !"
+        },
+        {
+          "candidate_id": "c-68e0d9c7b00a1939d279",
+          "title": "Truly Crispy Sautéed Potatoes {15 Minutes}",
+          "url": "https://thebigmansworld.com/sauteed-potatoes/",
+          "snippet": "Cover the pan and cook for 10 minutes or until they are golden on the base side. Cook uncovered for another 5 minutes or until golden brown."
+        },
+        {
+          "candidate_id": "c-aadcd6530b9f8037f5d2",
+          "title": "Crispy Sautéed Diced Potatoes Recipe - Creations by Kara",
+          "url": "https://www.creationsbykara.com/sauteed-diced-potatoes/",
+          "snippet": "20-24 minutes in the skillet. You may need to turn the heat down to medium if they start to brown before they are tender in the middle. If you ..."
+        },
+        {
+          "candidate_id": "c-5ea97bcbcb6db288dd4b",
+          "title": "Long",
+          "url": "https://en.m.wikipedia.org/wiki/Long",
+          "snippet": "This disambiguation page lists articles associated with the title Long. If an internal link incorrectly led you here, you may wish to …"
+        },
+        {
+          "candidate_id": "c-f6a0540fc339f2218cf7",
+          "title": "Crispy Skillet-Fried Potatoes Recipe (No Baking or Boiling)",
+          "url": "https://www.thekitchn.com/fried-potatoes-recipe-23085178",
+          "snippet": "It takes about 20 minutes for the potatoes to be tender … cook undisturbed until the potatoes are tender and the bottoms are golden brown, 10 to 20 minutes."
+        },
+        {
+          "candidate_id": "c-f094a7c50a24401ca6c9",
+          "title": "These Sautéed Potatoes are so simple to make and a ... - Facebook",
+          "url": "https://www.facebook.com/bbritnellblog/videos/these-saut%C3%A9ed-potatoes-are-so-simple-to-make-and-a-long-time-family-favorite-in-/7997532480349510/",
+          "snippet": "Cook for about 15 minutes, flipping halfway. I like to spoon the rosemary butter mixture on top of the potatoes a few times while they're ..."
+        },
+        {
+          "candidate_id": "c-cf35456b801c6d566551",
+          "title": "The Fundamentals of Sautéed Potatoes - Catfish Out of Water",
+          "url": "https://catfishoutofwater.com/the-fundamentals-of-sauteed-potatoes/",
+          "snippet": "It only takes about 15 minutes to cook. They take 15 minutes to. Cook covered for about 15-20 minutes, or until tender and lightly browned. ..."
+        },
+        {
+          "candidate_id": "c-8b39ee3d4ff21987fb8f",
+          "title": "How to cook perfect sauteed potatoes | Food - The Guardian",
+          "url": "https://www.theguardian.com/lifeandstyle/wordofmouth/2013/jan/17/how-to-cook-perfect-sauteed-potatoes",
+          "snippet": "Put the potato in a pan of well-salted cold water and bring to the boil. Simmer for about 15 minutes (depending on size) until just tender."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-227591",
+      "query": "how does society affect the individual",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-8c5557de60442145b27e",
+          "title": "How does society personally affect you and in the same way, how do ...",
+          "url": "https://www.quora.com/How-does-society-personally-affect-you-and-in-the-same-way-how-do-you-affect-society",
+          "snippet": "How does society personally affect you and in the same way, how do you affect society? · They can inspire people with their talent, hard work, ..."
+        },
+        {
+          "candidate_id": "c-28f84090a5f77b19f847",
+          "title": "Relation between Individual and Society",
+          "url": "https://file.scirp.org/Html/8-1760197_49227.htm",
+          "snippet": "Society moulds our attitudes, beliefs, morals, ideals and thereby moulds individual personality. With the course of living and with the process of socialization ..."
+        },
+        {
+          "candidate_id": "c-614adea8434ecabee81d",
+          "title": "Society's Influence on Personal Development | PDF - Scribd",
+          "url": "https://www.scribd.com/presentation/718704179/How-Does-society-influence-our-development-as-persons",
+          "snippet": "Society influences individuals in various ways such as through norms, laws, social roles, and institutions. It shapes culture, values and behavior."
+        },
+        {
+          "candidate_id": "c-9668245856280d4b199c",
+          "title": "How Does Society Influence One's Behavior? - The Decision Lab",
+          "url": "https://thedecisionlab.com/insights/consumer-insights/impact-social-components-human-behaviour",
+          "snippet": "It is clear that social components, such as peer pressure have an outsized impact on our individual behaviors."
+        },
+        {
+          "candidate_id": "c-a0672b13fce4d3758c90",
+          "title": "The Individual and Society - Facing History & Ourselves",
+          "url": "https://www.facinghistory.org/resource-library/individual-society",
+          "snippet": "This is how the society we live in influences our choices. But our choices can also influence others and ultimately help shape our society."
+        },
+        {
+          "candidate_id": "c-ed6bde4b985ee0dde283",
+          "title": "How can an individual shape the society?",
+          "url": "https://www.researchgate.net/post/How_can_an_individual_shape_the_society",
+          "snippet": "I wonder if there are studies of how an individual can shape collective behaviour and to what extent. What I mean is the opposite of social influence ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1072874",
+      "query": "what is a good answer to the question what is your biggest strength",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-74e6f89b01fddbe758fe",
+          "title": "What are Your Greatest Strengths - 3 Mistakes to Avoid!",
+          "url": "https://www.youtube.com/watch?v=jSjOO0ekQ20",
+          "snippet": "Action-oriented/entrepreneurial · Attentive/detail-oriented · Collaborative · Committed/dedicated · Creative · Determined · Disciplined/focused ..."
+        },
+        {
+          "candidate_id": "c-357889a10d85221e7429",
+          "title": "What Are Your Strengths (and Weaknesses)",
+          "url": "https://www.biginterview.com/resources/what-are-your-strengths",
+          "snippet": "Your strengths are your top skills — the things you do well. To truly stand out, use the STAR method (Situation, Task, Action, Result) to ..."
+        },
+        {
+          "candidate_id": "c-69b886b8749a7b19368e",
+          "title": "How to ACTUALLY answer \"what are your strengths and ...",
+          "url": "https://www.reddit.com/r/recruitinghell/comments/xn0dla/how_to_actually_answer_what_are_your_strengths/",
+          "snippet": "I see a lot of boilerplate answers like \"think about what you're good at and what you could improve on blah blah\". No, I literally just answers for this ..."
+        },
+        {
+          "candidate_id": "c-97456a8abaffd55446c3",
+          "title": "10 Examples of Strengths and Weaknesses for Job ...",
+          "url": "https://www.coursera.org/articles/strengths-and-weaknesses-interview",
+          "snippet": "Answering \"What's your greatest strength?\" or some variation of that question is a chance to highlight what makes you a great fit for the role."
+        },
+        {
+          "candidate_id": "c-2852b067080a135d92f5",
+          "title": "How to Answer “What's Your Greatest Strength?” (Plus ...",
+          "url": "https://www.themuse.com/advice/3-smart-strategies-for-answering-whats-your-greatest-strength",
+          "snippet": "“My greatest strength is probably my ability to build strong relationships with my clients. I love meeting and getting to know new people so I ..."
+        },
+        {
+          "candidate_id": "c-9726d28b709acd387408",
+          "title": "Interview Question: What Is Your Greatest Strength?",
+          "url": "https://www.indeed.com/career-advice/interviewing/interview-question-what-is-your-greatest-strength",
+          "snippet": "Crafting a good response requires strategy. Your answer is ideally honest, specific, and tied to the job. Be authentic and relevant Sincerity ..."
+        },
+        {
+          "candidate_id": "c-4684d42e52864845d651",
+          "title": "How to Answer “What Are Your Strengths and Weaknesses?”",
+          "url": "https://hbr.org/2023/05/how-to-answer-what-are-your-strengths-and-weaknesses",
+          "snippet": "At the top of the list: “Tell me about yourself,” “Why do you want to work here?” and “What are your greatest strengths and weaknesses?”"
+        },
+        {
+          "candidate_id": "c-299e18e0f963b5d792f4",
+          "title": "WHAT ARE YOUR GREATEST STRENGTHS? (Best Answer to ...",
+          "url": "https://www.youtube.com/shorts/YcI-VNbCiyE",
+          "snippet": "I would say my greatest strengths are being hardworking and a really nice person."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-138629",
+      "query": "definition of taking minutes",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-10953a0b965cbb73ecd8",
+          "title": "Meeting minutes vs. notes: definitions and examples",
+          "url": "https://uk.indeed.com/career-advice/career-development/minutes-vs-notes",
+          "snippet": "Meeting minutes are official, detailed records of staff or organizational meetings, often assigned to a minute taker."
+        },
+        {
+          "candidate_id": "c-51feff68fa59b44494fd",
+          "title": "Minutes 101: Minute Taking Essentials",
+          "url": "https://www.boardbook.org/resources/minutes-101-minute-taking-essentials",
+          "snippet": "Meeting minutes are the written record of what transpired during a meeting. They are an official document, a blueprint for action, and a guidepost for future ..."
+        },
+        {
+          "candidate_id": "c-53af88eda9590c29edc6",
+          "title": "Everything You Need to Know About Taking Meeting Minutes",
+          "url": "https://go.verbit.ai/blog/everything-you-need-to-know-about-taking-minutes-of-a-meeting/",
+          "snippet": "Meeting minutes are a historical documents that record key discussion points, decisions and actions. Unlike a transcript, which is a word-for-word record, ..."
+        },
+        {
+          "candidate_id": "c-4371c88be01883a1d130",
+          "title": "What is the Meaning of Meeting Minutes?",
+          "url": "https://www.guidebook.com/glossary/what-is-meaning-of-meeting-minutes",
+          "snippet": "Meeting minutes are the official written record that captures key decisions, action items, and discussions from any meeting, turning conversations into ..."
+        },
+        {
+          "candidate_id": "c-f8b59e943d9d47cb7cd7",
+          "title": "Meeting Minutes - Definition, How to Record, Template",
+          "url": "https://corporatefinanceinstitute.com/resources/management/meeting-minutes/",
+          "snippet": "Meeting minutes are notes that are recorded during a meeting. They highlight the key issues that are discussed, motions proposed or voted on, ..."
+        },
+        {
+          "candidate_id": "c-add907f6474b94070aac",
+          "title": "Minutes",
+          "url": "https://en.wikipedia.org/wiki/Minutes",
+          "snippet": "Minutes also known as minutes of meeting, protocols or, informally, notes, are the instant written record of a meeting or hearing."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-138640",
+      "query": "definition of tangible property",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-7b76daf2a543f30b8bd0",
+          "title": "TANGIBLE PROPERTY - The Law Dictionary",
+          "url": "https://thelawdictionary.org/tangible-property/",
+          "snippet": "Definition and Citations: Property which may be touched; such as is perceptible to the senses; corporeal property, whether real or personal."
+        },
+        {
+          "candidate_id": "c-2d1ff7e74b6c12bab994",
+          "title": "tangible personal property | Wex - Law.Cornell.Edu",
+          "url": "https://www.law.cornell.edu/wex/tangible_personal_property",
+          "snippet": "Tangible personal property is mainly a tax term which is used to describe personal property that can be felt or touched, and can be physically relocated."
+        },
+        {
+          "candidate_id": "c-b1d4141269699a16f872",
+          "title": "Tangible Property | Legal Glossary - Barnes Walker",
+          "url": "https://barneswalker.com/legal-glossary/t/tangible-property/",
+          "snippet": "Tangible property refers to physical items that can be touched, seen, and measured, such as land, buildings, machinery, vehicles, and personal belongings."
+        },
+        {
+          "candidate_id": "c-68baa210ed651de2fd22",
+          "title": "What is tangible personal property? - Illinois Department of Revenue",
+          "url": "https://tax.illinois.gov/questionsandanswers/answer.164.html",
+          "snippet": "“Tangible personal property” exists physically (i.e., you can touch it) and can be used or consumed. Clothing, vehicles, jewelry, and business equipment"
+        },
+        {
+          "candidate_id": "c-b7738825d263955bd99c",
+          "title": "Tangible Personal Property: Definition, Examples, and Tax ...",
+          "url": "https://www.recostseg.com/post/what-is-tangible-personal-property-a-guide-for-real-estate-investors",
+          "snippet": "Tangible personal property refers to physical assets that you can touch and move, as opposed to real property, which includes land and buildings."
+        },
+        {
+          "candidate_id": "c-262c4000a5a1ca1a38aa",
+          "title": "Tangible vs. Intangible Property",
+          "url": "https://www.brmmlaw.com/blog/2024/august/tangible-vs-intangible-property/",
+          "snippet": "“tangible assets” are physical items that you can see and touch, such as vehicles, art, furniture, clothing, electronics, firearms, and even ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-850450",
+      "query": "what is the temperature on earth",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-0f58285495d351fcd9b1",
+          "title": "Temperature - Understanding Global Change - UC Berkeley",
+          "url": "https://ugc.berkeley.edu/background-content/temperature/",
+          "snippet": "Temperature is the measure of the average heat or thermal energy in a substance. Air and water temperatures are primarily determined by the amount of sunlight"
+        },
+        {
+          "candidate_id": "c-ad9a89d6fb0aa846f876",
+          "title": "Temperature Forecast Map - Zoom Earth",
+          "url": "https://zoom.earth/maps/temperature/",
+          "snippet": "Interactive temperature map. Shows global forecasted temperatures. Red spots show the approximate locations of very high temperature detected by satellite."
+        },
+        {
+          "candidate_id": "c-2a26437c4d09bcc59b58",
+          "title": "Temperature of the Earth - Energy Education",
+          "url": "https://energyeducation.ca/encyclopedia/Temperature_of_the_Earth",
+          "snippet": "NASA has reported that the average temperature of the earth is 15°C. [3] However, extreme temperatures are still possible on Earth."
+        },
+        {
+          "candidate_id": "c-3830bf7f538c089e16bd",
+          "title": "Global Temperature Report for 2025 - Berkeley Earth",
+          "url": "https://berkeleyearth.org/global-temperature-report-for-2025/",
+          "snippet": "In Berkeley Earth's analysis the global mean temperature in 2025 is estimated to have been 1.44 ± 0.09 °C (2.60 ± 0.17 °F) above the average ..."
+        },
+        {
+          "candidate_id": "c-eaeed290d06a36664ff0",
+          "title": "What is the average temperature on Earth? - Space",
+          "url": "https://www.space.com/17816-earth-temperature.html",
+          "snippet": "The average surface temperature on Earth is approximately 59 degrees Fahrenheit (15 degrees Celsius), according to NASA."
+        },
+        {
+          "candidate_id": "c-4144fb4ab73785628107",
+          "title": "Solar System Temperatures - NASA Science",
+          "url": "https://science.nasa.gov/resource/solar-system-temperatures/",
+          "snippet": "Mercury: 333°F (167°C) · Venus: 867°F (464°C) · Earth: 59°F (15°C) · Mars: Minus 85°F (-65°C) · Jupiter: Minus 166°F (-110°C) · Saturn: Minus 220°F ..."
+        },
+        {
+          "candidate_id": "c-5f1e32f80f3a0d428537",
+          "title": "Climate change: global temperature | NOAA Climate.gov",
+          "url": "https://www.climate.gov/news-features/understanding-climate/climate-change-global-temperature",
+          "snippet": "Earth's temperature has risen by an average of 0.11° Fahrenheit (0.06° Celsius) per decade since 1850, or about 2° F in total."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-227637",
+      "query": "how does spicy food affect testosterone",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-7b4209ad3783f8874f0b",
+          "title": "testosterone predicts laboratory eating behavior of spicy food",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/25462592/",
+          "snippet": "This study suggests that behavioral preference for spicy food among men is related to endogenous testosterone levels."
+        },
+        {
+          "candidate_id": "c-9efbc71be7630eea0515",
+          "title": "Testosterone predicts laboratory eating behavior of spicy ...",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S0031938414005940",
+          "snippet": "by L Bègue · 2015 · Cited by 61 — Testosterone is related with the quantity of hot sauce participants consumed. This study suggests that behavioral preference for spicy food among men is ..."
+        },
+        {
+          "candidate_id": "c-eb3dcba58aa33252f5ca",
+          "title": "Men Who Love Spicy Food Have More Testosterone",
+          "url": "https://www.reddit.com/r/science/comments/2pgja3/men_who_love_spicy_food_have_more_testosterone/",
+          "snippet": "Getting leaner does improve testosterone over time, so I'd say probably yes, spicy food is good for testosterone levels."
+        },
+        {
+          "candidate_id": "c-658094da0e636d2e47ac",
+          "title": "Interaction of smoking and spicy habits modifies the risk ... - PMC",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11291414/",
+          "snippet": "by X Li · 2024 · Cited by 2 — A high spicy food intake frequency was associated with psychological factor and lower testosterone levels in non-smokers."
+        },
+        {
+          "candidate_id": "c-d2216a9996ba90f7ae44",
+          "title": "Men Who Love Spicy Food Have More Testosterone",
+          "url": "https://time.com/3633813/spicy-food-testosterone/",
+          "snippet": "Researchers saw a clear correlation between higher hot sauce usage and higher levels of testosterone levels found in the saliva of the men. In ..."
+        },
+        {
+          "candidate_id": "c-ffe78ad3c3d078f0607a",
+          "title": "Men who love spicy food have higher testosterone levels",
+          "url": "https://abc7ny.com/health-testosterone-food-spicy/438117/",
+          "snippet": "According to a French study titled \"Some Like It Hot\", men with high testosterone levels tend to love spicy food more than men with lower levels"
+        },
+        {
+          "candidate_id": "c-abcf3411bf1764449199",
+          "title": "Did anyone else become more tolerant of spicy food when they started T?",
+          "url": "https://www.reddit.com/r/ftm/comments/eprrmr/did_anyone_else_become_more_tolerant_of_spicy/",
+          "snippet": ""
+        }
+      ]
+    },
+    {
+      "id": "msmarco-450093",
+      "query": "meaning of the name rumah",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-0641297073314808753d",
+          "title": "Meaning of Rumah, Information about First Name Rumah, Biblical Origin ...",
+          "url": "https://harryhoot.com.au/babynames//Biblical-babynames/boys/Rumah.html",
+          "snippet": "Rumah means Exalted, sublime, rejected. Meaning of Rumah: Exalted, sublime, rejected. Rumah Origin: Biblical. Rumah means Exalted, sublime, rejected."
+        },
+        {
+          "candidate_id": "c-1b2031cdfc8557995ab5",
+          "title": "Rumah Name Meaning - Prokerala",
+          "url": "https://www.prokerala.com/kids/baby-names/rumah-49922.html",
+          "snippet": "Rumah Ruling Planet Neptune Positive Nature A very talented speaker Negative Traits Cannot be trusted very often Lucky Colours White, light blue and green. Fun ..."
+        },
+        {
+          "candidate_id": "c-f95cc49c9260102a4828",
+          "title": "Rumah Meaning - Bible Definition and References - Bible Study Tools",
+          "url": "https://www.biblestudytools.com/dictionary/rumah/",
+          "snippet": "\"Easton's Bible Dictionary\". . Hitchcock's Bible Names Dictionary - Rumah. Rumah [N] [E] [S]. exalted; sublime; rejected. Hitchcock's Dictionary of Bible Names."
+        },
+        {
+          "candidate_id": "c-083e9878b82be128fbcc",
+          "title": "Meaning of the name Rumah",
+          "url": "https://www.wisdomlib.org/names/rumah",
+          "snippet": "The name \"Rumah\" is of Indonesian origin, meaning \"house\" or \"home.\" It carries connotations of shelter, family, and belonging, symbolizing a ..."
+        },
+        {
+          "candidate_id": "c-4c00ab0881da0d674e2b",
+          "title": "Rumah - Girls Name",
+          "url": "https://www.baby-girls-names.co.uk/girls-name-rumah",
+          "snippet": "The name Rumah comes from the Biblical origin and is a predominantly female name. The meaning of Rumah is 'Exalted, sublime, rejected."
+        },
+        {
+          "candidate_id": "c-09623c6bd908186357b2",
+          "title": "The amazing name Rumah: meaning and etymology - Abarim Publications",
+          "url": "https://www.abarim-publications.com/Meaning/Rumah.html",
+          "snippet": "Meaning: High Place; Etymology: From the verb רום (rum), to be high. Related names: • Via רום (rum): Abiram, Abram, Adoniram, Ahiram, Amram, ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-628056",
+      "query": "what does a 2005 pro crappie 175 bass tracker weigh",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-d323b3b75c2034276d72",
+          "title": "PRO TEAM 175 Crappie Edition | 17ft. 7in. Mod V Bass Boat",
+          "url": "https://www.trackerboats.com/bass/pro-team-175-crappie-edition.html",
+          "snippet": "Person Weight 254.01 kg 560 lbs. Average Dry Weight 439.98 kg 970 lbs. Average Package Weight 977.49 kg 2155 lbs."
+        },
+        {
+          "candidate_id": "c-dcc85a304fd532fc812c",
+          "title": "2026 TRACKER PRO TEAM 175 CRAPPIE EDITION w/ 60 ELPT ...",
+          "url": "https://www.basspro.com/p/2026-tracker-pro-team-175-crappie-edition-w--60-elpt-fourstroke-mercury-fourstroke",
+          "snippet": "Max. Person, Motor & Gear Weight, 1090 lbs. 494.42 kg ; Interior Depth, 18.5'', 46.99 cm ; Transom Height, 22.25'', 56.515 cm ; Deadrise At Bow, 16 degrees."
+        },
+        {
+          "candidate_id": "c-d23f57fb3530bcaccfad",
+          "title": "Common problems with 2005 bass tracker pro crappie 175?",
+          "url": "https://www.facebook.com/groups/237917324090093/posts/1587183972496748/",
+          "snippet": "Bought a 2005 bass tracker pro crappie 175 today. Anyone else have one of these? Any common problems?"
+        },
+        {
+          "candidate_id": "c-ec3506ea2cde1c005b7e",
+          "title": "2005 bass tracker pro crappie 175- restored and completed",
+          "url": "https://www.youtube.com/watch?v=mUFFoS3v2G8",
+          "snippet": "2005 bass tracker pro crappie 175- restored ..."
+        },
+        {
+          "candidate_id": "c-d119d7f4240315576d64",
+          "title": "2005 Tracker Marine PRO CRAPPIE 175(**) Specs - JD Power",
+          "url": "https://www.jdpower.com/boats/2005/tracker-marine/pro-crappie-175__/10229179/specs",
+          "snippet": "Marine PRO CRAPPIE 175(**) Length 17' Net Weight Lbs 894. Check the history of this 2005 Tracker Marine. Marine PRO CRAPPIE 175(**)"
+        },
+        {
+          "candidate_id": "c-0e8eb18da840e7d800ae",
+          "title": "2005 Bass Tracker Pro Crappie 175 Front deck extension! Pt. 2 - YouTube",
+          "url": "https://www.youtube.com/watch?v=eGbl8b1bcEk",
+          "snippet": "Part 2 on the 2005 bass tracker pro crappie 175 front deck extension, was alot of work but well worth it! Any questions please feel free to ..."
+        },
+        {
+          "candidate_id": "c-acd10d80e8a3361e746d",
+          "title": "Tracker Pro Crappie 175 - Crappie.com",
+          "url": "https://www.crappie.com/crappie/main-crappie-fishing-forum/94769-tracker-pro-crappie-175-a/",
+          "snippet": "Solid boat with enough room for 2 or 3 and can get up in shallow water well. Stable for a light boat.:ThumbsUp"
+        },
+        {
+          "candidate_id": "c-6f8f8785e5d113baa342",
+          "title": "Tracker Pro Crappie 175 boats for sale - Boat Trader",
+          "url": "https://www.boattrader.com/boats/make-tracker/model-pro-crappie-175/",
+          "snippet": "A powerboat built by Tracker, the Pro crappie 175 is a bass vessel. Tracker Pro crappie 175 boats are typically used for freshwater-fishing, overnight-cruising ..."
+        },
+        {
+          "candidate_id": "c-e97d13019c4f06b52547",
+          "title": "Tracker Pro Crappie 175 2005 Boat Specs",
+          "url": "https://www.boats.za.net/tracker/pro-crappie-175/tracker-pro-crappie-175-2005",
+          "snippet": "Weight - Detail 894 lbs Weight - kg 405.51 Weight - lbs. Weight 1,470 lbs. (approx.)"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-183201",
+      "query": "excuse vs recuse definition",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-6cd65a66a71c6bee4eb9",
+          "title": "RECUSE Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/recuse",
+          "snippet": "The meaning of RECUSE is to disqualify (oneself) as judge in a particular case; broadly : to remove (oneself) from participation to avoid"
+        },
+        {
+          "candidate_id": "c-3c8e6f72044fbd2ffebc",
+          "title": "What's the difference between 'recuse' and 'excuse'?",
+          "url": "https://www.quora.com/Whats-the-difference-between-recuse-and-excuse",
+          "snippet": "What's the difference between \"recuse\" and \"excuse\"?"
+        },
+        {
+          "candidate_id": "c-6ec6ee5d6240602d396c",
+          "title": "How to Use Recuse vs excuse Correctly",
+          "url": "https://grammarist.com/usage/recuse-vs-excuse/",
+          "snippet": "Recuse means to disqualify someone from a legal duty because that person is prejudiced or has a conflict of interest. Excuse means to release someone from a ..."
+        },
+        {
+          "candidate_id": "c-ca999d9ed178b93485c4",
+          "title": "Dictionary helps excuse confusion about recuse",
+          "url": "https://www.oklahoman.com/story/news/2003/12/16/dictionary-helps-excuse-confusion-about-recuse/62011031007/",
+          "snippet": "Some folks say recuse means \"to disqualify oneself.\" Since \"oneself\" is part of the meaning of \"recuse,\" it's redundant to say \"recuse himself,\" ..."
+        },
+        {
+          "candidate_id": "c-0283de4859803690e64f",
+          "title": "What's the difference between recuse and excuse?",
+          "url": "https://www.facebook.com/groups/waywordradio/posts/10155103338148584/",
+          "snippet": "To recuse oneself means to remove oneself due to conflict of interest, while to excuse means to justify or free from blame."
+        },
+        {
+          "candidate_id": "c-e69bfb304933f788979f",
+          "title": "RECUSE Definition & Meaning",
+          "url": "https://www.dictionary.com/browse/recuse",
+          "snippet": "Recuse most commonly means to withdraw from being in the position of judging a case or presiding over an investigation so as to avoid any partiality or bias."
+        },
+        {
+          "candidate_id": "c-3576f212af6c45aa25e3",
+          "title": "Editor's Corner: Recuse vs. Excuse",
+          "url": "https://episystechpubs.com/2017/08/15/editors-corner-recuse-vs-excuse/",
+          "snippet": "Recuse means to disqualify someone from a legal duty ... Excuse also means to forgive someone for a transgression or minimize the blame."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-628085",
+      "query": "what does a Project manager do",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-75ff4d93a93f93130d06",
+          "title": "What does a project manager do?",
+          "url": "https://www.apm.org.uk/jobs-and-careers/career-path/what-does-a-project-manager-do/",
+          "snippet": "The project manager is responsible for day-to-day management of the project and must be competent in managing the six aspects of a project, i.e. scope, schedule ..."
+        },
+        {
+          "candidate_id": "c-6997f9251b9697210c9a",
+          "title": "What is a Project Manager? Roles, skills, & Career Path",
+          "url": "https://www.atlassian.com/work-management/project-management/project-manager",
+          "snippet": "A project manager is a professional who leads teams, plans projects, manages resources, and ensures goals are met on time and within budget."
+        },
+        {
+          "candidate_id": "c-6db0e2e91849afa4e32b",
+          "title": "What Does a Project Manager Do?",
+          "url": "https://pe.gatech.edu/blog/industry-trends/what-does-a-project-manager-do",
+          "snippet": "A project manager (PM) is responsible for planning, executing, and overseeing projects from start to finish — ensuring they are completed on ..."
+        },
+        {
+          "candidate_id": "c-9c8a96094add59ffc674",
+          "title": "What Does a Project Manager Do [THE ROLE OF THE PM]",
+          "url": "https://www.youtube.com/watch?v=gu-z9EbIZ5k",
+          "snippet": "Your job as a project manager is to motivate your team."
+        },
+        {
+          "candidate_id": "c-d5b03da35ea311c10c06",
+          "title": "What Does a Project Manager Do?",
+          "url": "https://www.snhu.edu/about-us/newsroom/business/what-does-a-project-manager-do",
+          "snippet": "Project managers are the people who coordinate and oversee the entire process of a project from start to finish, making sure the project is ..."
+        },
+        {
+          "candidate_id": "c-cc765c175027c231c564",
+          "title": "What is a Project Manager & What Do They Do?",
+          "url": "https://www.pmi.org/about/what-is-a-project-manager",
+          "snippet": "Project Managers are organized, goal-oriented professionals who use innovation, creativity, and collaboration to lead projects that make an impact."
+        },
+        {
+          "candidate_id": "c-ebe67b5106cde0acbd1d",
+          "title": "ELI5: What is a project manager and what do they do?",
+          "url": "https://www.reddit.com/r/explainlikeimfive/comments/1b07ugc/eli5_what_is_a_project_manager_and_what_do_they_do/",
+          "snippet": "A good project manager assembles all resources needed to complete a task, and deploys them as and when needed. A project manager is an enabler."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-405660",
+      "query": "is catecholamine a steroid",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-e1b6062f93616874251d",
+          "title": "Catecholamine Tests",
+          "url": "https://medlineplus.gov/lab-tests/catecholamine-tests/",
+          "snippet": "Catecholamines are a group of hormones made by your adrenal glands, two small glands located above your kidneys. Hormones act as chemical ..."
+        },
+        {
+          "candidate_id": "c-c283200bd6271e315064",
+          "title": "The effects of physiological doses of corticosteroid on ...",
+          "url": "https://www.sciencedirect.com/science/article/pii/0022395668900381",
+          "snippet": "by EP Noble · 1968 · Cited by 4 — The effects of physiological doses of corticosteroid on catecholamine metabolism … synthetic glucocorticoid dexamethasone. The results show that dexamethasone ..."
+        },
+        {
+          "candidate_id": "c-10adfe042f107287e4bf",
+          "title": "Catecholamines (Dopamine, Norepinephrine, Epinephrine)",
+          "url": "https://openbooks.lib.msu.edu/introneuroscience1/chapter/neurotransmitter-synthesis-storage-and-receptors-catecholamines/",
+          "snippet": "Sex Steroid Hormones. Catecholamines are a class of neurotransmitters. Epinephrine, also called adrenaline, is a catecholamine, but it is often considered a ..."
+        },
+        {
+          "candidate_id": "c-a1dc1c17363c61e8d9d3",
+          "title": "Catecholamines",
+          "url": "https://stacks.cdc.gov/view/cdc/200416",
+          "snippet": "by S Othumpangat · 2014 · Cited by 3 — Catecholamines are endogenous neurotransmitters or hormones. Dopamine and norepinephrine are in the monoamine class. Catecholamines are synthesized in the ..."
+        },
+        {
+          "candidate_id": "c-30154a540be610d8adc5",
+          "title": "Catecholamine",
+          "url": "https://en.wikipedia.org/wiki/Catecholamine",
+          "snippet": "Catechol A catecholamine (/ ˌkætəˈkoʊləmiːn /; abbreviated CA), most typically a 3,4-dihydroxyphenethylamine, is a monoamine …"
+        },
+        {
+          "candidate_id": "c-b3b5bc1c01a1930837f2",
+          "title": "Glucocorticoids increase catecholamine synthesis ... - PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/6401799/",
+          "snippet": "by AS Tischler · 1983 · Cited by 174 — Glucocorticoids also increase the content of stored catecholamines in the cells. steroids increase the storage of catecholamines in a releasable pool;"
+        },
+        {
+          "candidate_id": "c-bcc6cf0c784b034cb670",
+          "title": "Catecholamine",
+          "url": "https://www.sciencedirect.com/topics/biochemistry-genetics-and-molecular-biology/catecholamine",
+          "snippet": "Catecholamine is the name of a group of compounds that contain a catechol nucleus and an amine group, they are dopamine, …"
+        },
+        {
+          "candidate_id": "c-4e19a2dc5c2d8d1de780",
+          "title": "Physiology, Catecholamines - StatPearls - NCBI Bookshelf - NIH",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK507716/",
+          "snippet": "by B Khalil · 2024 · Cited by 50 — Catecholamines are a class of molecules that act as neurotransmitters and hormones in various body regions."
+        },
+        {
+          "candidate_id": "c-a3968035eb58e88af11a",
+          "title": "Catecholamines: What are they, and how do they function?",
+          "url": "https://www.medicalnewstoday.com/articles/catecholamines",
+          "snippet": "Catecholamines are hormones that the body releases in response to physical and emotional stress. Learn more about their functions and levels here."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1072988",
+      "query": "what is a gis?",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-7148152463e526dfeac6",
+          "title": "What is a geographic information system (GIS)? - USGS.gov",
+          "url": "https://www.usgs.gov/faqs/what-a-geographic-information-system-gis",
+          "snippet": "A Geographic Information System (GIS) is a computer system that analyzes and displays geographically referenced information. It uses data that is attached ..."
+        },
+        {
+          "candidate_id": "c-eff11d6cef6bc6d71427",
+          "title": "Mapping and Geographic Information Systems (GIS): What is GIS?",
+          "url": "https://researchguides.library.wisc.edu/gis",
+          "snippet": "A geographic information system (GIS) is a system designed to capture, store, manipulate, analyze, manage, and present all types of ..."
+        },
+        {
+          "candidate_id": "c-2a9c711e6a9c12696c0c",
+          "title": "What is GIS? | Geographic Information System Mapping Technology - Esri",
+          "url": "https://www.esri.com/en-us/what-is-gis/overview",
+          "snippet": "GIS is a technology that is used to create, manage, analyze, and map all types of data. GIS connects data to a map, integrating location data"
+        },
+        {
+          "candidate_id": "c-4b71ccbb1ef4122eb02d",
+          "title": "What Is GIS? A Guide to Geographic Information Systems - YouTube",
+          "url": "https://www.youtube.com/watch?v=Hau_ZCmN8eU",
+          "snippet": "What is GIS? https://gisgeography.com/what-is-gis/ US Maps - https://usmaps.com/ Esri Mapping Software - https://www.esri.com/ US County ..."
+        },
+        {
+          "candidate_id": "c-43ac06cda4f20d9f549f",
+          "title": "What is GIS?",
+          "url": "https://www.youtube.com/watch?v=WpoSofhf9Y0",
+          "snippet": "Geospatial Information Systems (GIS) is a unique problem-solving technology with remarkable impact. GIS is the First step of Economic ..."
+        },
+        {
+          "candidate_id": "c-fb92543667829dc91932",
+          "title": "Can someone explain to me what exactly is GIS? - Reddit",
+          "url": "https://www.reddit.com/r/gis/comments/ykgrzt/can_someone_explain_to_me_what_exactly_is_gis/",
+          "snippet": "it stands for Geographical Information System. A fancy database that stores graphical spatial geometry and associated attributes connected to ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-850555",
+      "query": "what is the term dark horse",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-3c0019c821b9d1b139f3",
+          "title": "Dark Horse Candidate: Origin of the Political Term",
+          "url": "https://www.thoughtco.com/dark-horse-candidate-1773307",
+          "snippet": "A dark horse candidate was a term coined in the 19th century to refer to a candidate nominated after multiple ballots at a political party's ..."
+        },
+        {
+          "candidate_id": "c-676ce0bd498f9f17560b",
+          "title": "Dark horse",
+          "url": "https://en.wikipedia.org/wiki/Dark_horse",
+          "snippet": "A dark horse is a previously lesser-known person, team or other entity that emerges to prominence in a situation, especially in a competition involving ..."
+        },
+        {
+          "candidate_id": "c-f707df32baace7177e1c",
+          "title": "DARK HORSE Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/dark%20horse",
+          "snippet": "The meaning of DARK HORSE is a usually little known contender (such as a racehorse) that makes an unexpectedly good showing. How to use dark ..."
+        },
+        {
+          "candidate_id": "c-64f0b9ce444cd9f17eda",
+          "title": "Why Is It Called a 'Dark Horse'?",
+          "url": "https://wordsmarts.com/dark-horse/",
+          "snippet": "As defined by Merriam-Webster, “dark horse” means “a usually little-known contender (such as a racehorse) that makes an unexpectedly good showing.” This takes ..."
+        },
+        {
+          "candidate_id": "c-f517fe387c9e2c0ef727",
+          "title": "Dark Horse Meaning, Definition and Origins : r/idiomsite",
+          "url": "https://www.reddit.com/r/idiomsite/comments/1rdf6ui/dark_horse_meaning_definition_and_origins/",
+          "snippet": "The idiom \"dark horse\" refers to a person, team, candidate, or competitor who is relatively unknown, underestimated, or overlooked at first,"
+        },
+        {
+          "candidate_id": "c-e22fffed061caf1f3b92",
+          "title": "Dark Horse",
+          "url": "https://www.annenbergclassroom.org/glossary_term/dark-horse/",
+          "snippet": "A dark horse candidate is one whose nomination or victory is unexpected. Several U.S. presidents were dark horses, beginning with James K. Polk in 1844."
+        },
+        {
+          "candidate_id": "c-2d315e953bbc75e8c081",
+          "title": "DARK HORSE | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/dark-horse",
+          "snippet": "a person who keeps their interests and ideas secret, especially someone who has a surprising ability or skill: Anna's such a dark horse - I had no idea ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028538",
+      "query": "what is xinput",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-3f425d6d92e44995c98d",
+          "title": "What is the difference between directinput and xinput : r/pcgaming",
+          "url": "https://www.reddit.com/r/pcgaming/comments/4zlbrx/what_is_the_difference_between_directinput_and/",
+          "snippet": "XInput is newer and. XInput has the advantage that you don't have to rebind your controller because the layout is automatically correct."
+        },
+        {
+          "candidate_id": "c-e99ecf8c5f571529cc4f",
+          "title": "What is Xinput? (Co-thread) :: Razer Zone - Steam Community",
+          "url": "https://steamcommunity.com/groups/razerzone/discussions/0/558746745860659739/",
+          "snippet": "Xinput is an API (Application Programming Interface; software that dictates how games use other software, in this case a controller's ..."
+        },
+        {
+          "candidate_id": "c-bb36dda3dfa3fc751570",
+          "title": "Comparison of XInput and DirectInput features - Win32 apps",
+          "url": "https://learn.microsoft.com/en-us/windows/win32/xinput/xinput-and-directinput",
+          "snippet": "XInput enables applications to receive input from the XUSB controllers. The APIs are available through the DirectX SDK, and the driver is ..."
+        },
+        {
+          "candidate_id": "c-7df5ba9a497ca9bc7286",
+          "title": "Understanding DirectInput and XInput - Controllers - PowerA",
+          "url": "https://www.powera.com/blog/controllers/understanding-directInput-vs-xinput/?srsltid=AfmBOopZoet8_VqNVy_GsxMdvQCpJ1TRvKXk8ix6X0vDWFPT5UZG0Hd-",
+          "snippet": "XInput is a newer API that specifically supports XBOX controllers and is the standard for modern gaming controllers on Windows PCs. It provides ..."
+        },
+        {
+          "candidate_id": "c-3872c97107a45e6148b8",
+          "title": "Getting Started With XInput in Windows applications - Win32 apps",
+          "url": "https://learn.microsoft.com/en-us/windows/win32/xinput/getting-started-with-xinput",
+          "snippet": "XInput enables Windows applications to process controller interactions (including controller rumble effects and voice input and output)."
+        },
+        {
+          "candidate_id": "c-9ea76216502f11c7412b",
+          "title": "DirectInput",
+          "url": "https://en.wikipedia.org/wiki/DirectInput",
+          "snippet": "DirectInput and XInput provide benefits over normal Win32 input events: they enable an application to retrieve data from input devices even when the application ..."
+        },
+        {
+          "candidate_id": "c-0eb96f44fd396e7d702c",
+          "title": "Understanding DirectInput XInput",
+          "url": "https://www.powera.com/support/pc-product-support/understanding-directinput-xinput/?srsltid=AfmBOoome6lhLQYJ9wWDPnV1N7y6Brp3j6Ryfw3iRRN5WyLrtES_ycOW",
+          "snippet": "The terms “DirectInput” and “XInput” refer to two different APIs (Application Programming Interfaces) used for handling game controller input on Windows ..."
+        },
+        {
+          "candidate_id": "c-13f80a2ab216554be292",
+          "title": "X-input vs D-input | What's the difference? What is Xinput and ...",
+          "url": "https://www.youtube.com/watch?v=ZornNwufpI0",
+          "snippet": "Ye gamepads me X-input aur Direct input jaise options kyu diye gaye hai aur kya hota hai iss se? Inn sab swaal ke jawab milege iss video me ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-49802",
+      "query": "belizean cuisine",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-699864631ff25dbc5e36",
+          "title": "What is a belizean dish everyone must try?",
+          "url": "https://www.reddit.com/r/Belize/comments/17o2q9h/what_is_a_belizean_dish_everyone_must_try/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-e1da9b140a618782fe35",
+          "title": "My Guide to the Food of Belize: A Delicious Introduction",
+          "url": "https://www.sanpedroscoop.com/2025/06/guide-to-belizean-food-of-belize.html",
+          "snippet": "Belizean cuisine? it's a blend of food inspired by the Yucatan region of Mexico, by the Caribbean and the fresh seafood (particularly conch) ..."
+        },
+        {
+          "candidate_id": "c-974b94595b74997a9cfa",
+          "title": "Belizean cuisine",
+          "url": "https://en.wikipedia.org/wiki/Belizean_cuisine",
+          "snippet": "Popular dishes · Ceviche · Fry jack · Johnnycake · Conch fritter · Dukunu · Bile up · Tamales · Curry chicken · Rice and beans - rice stewed with beans and ..."
+        },
+        {
+          "candidate_id": "c-2f752ddf3cc291cd654a",
+          "title": "What are traditional Belize food dishes?",
+          "url": "https://www.facebook.com/groups/belizevacation/posts/27080995441586878/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-ee3aa36fc95eb81c0c2a",
+          "title": "An Overview of Belizean Cuisine and Food Culture",
+          "url": "https://www.cocoplumcay.com/belizean-cuisine-and-food-culture/",
+          "snippet": "A mix of Mexican, Caribbean, African and Mayan culinary influences, Belize foods have their own personalities based on old recipes and new ways of preparing ..."
+        },
+        {
+          "candidate_id": "c-86bc735a4ec2bfbbd943",
+          "title": "Some Classic Dishes from Belize",
+          "url": "https://ambergriscaye.com/forum/ubbthreads.php/topics/467117/some-classic-dishes-from-belize.html",
+          "snippet": ""
+        }
+      ]
+    },
+    {
+      "id": "msmarco-138793",
+      "query": "definition of the paleo diet",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-8fe176a09890019bfbcc",
+          "title": "The Paleo Diet: Pros and Cons According to NUNM",
+          "url": "https://nunm.edu/2019/04/paleo-diet/",
+          "snippet": "Contrary to popular belief, the Paleo Diet is plant-centered. It includes plenty of vegetables, and unprocessed meat, the wilder the better."
+        },
+        {
+          "candidate_id": "c-2d98b0c4ae8ce373f812",
+          "title": "The Paleo Diet",
+          "url": "https://nutrition.ucdavis.edu/outreach/nutr-health-info-sheets/pro-paleo-diet",
+          "snippet": "The Paleo diet, also referred to as the Paleolithic diet, emphasizes an increased consumption of lean meat, fish, shellfish, fruit, vegetables, eggs, nuts, and ..."
+        },
+        {
+          "candidate_id": "c-ae48f690085a28ed62bd",
+          "title": "Paleo diet: What is it and why is it so popular?",
+          "url": "https://www.mayoclinic.org/healthy-lifestyle/nutrition-and-healthy-eating/in-depth/paleo-diet/art-20111182",
+          "snippet": "A paleo diet is an eating plan based on foods humans might have eaten during the Paleolithic Era. A modern paleo diet includes fruits, vegetables, lean meats, ..."
+        },
+        {
+          "candidate_id": "c-7dd61ddb312fa6412e1a",
+          "title": "Paleo-Friendly Diet for Beginners",
+          "url": "https://www.wholefoodsmarket.com/special-diets/paleo/what-is-paleo",
+          "snippet": "Paleo-friendly eating, also known as a Paleolithic diet, is all about keeping food simple and as unrefined as possible — think foods that were available by ..."
+        },
+        {
+          "candidate_id": "c-d33962879b043f293e89",
+          "title": "The Paleo Diet: The Strong and Healthy Diet",
+          "url": "https://thepaleodiet.com/",
+          "snippet": "The Paleo Diet, founded by Dr. Loren Cordain, is a way of eating that nurtures people who are naturally healthy and strong."
+        },
+        {
+          "candidate_id": "c-642f7b2f0cd4f4811008",
+          "title": "A Beginner's Guide to the Paleo Diet, Plus Recipe Ideas",
+          "url": "https://www.healthline.com/nutrition/paleo-diet-meal-plan-and-menu",
+          "snippet": "The paleo diet mimics ancestral eating with whole meats, produce, nuts, and seeds. It may support weight loss and lower risk factors for lifestyle diseases."
+        },
+        {
+          "candidate_id": "c-01959f35aaef3643bb95",
+          "title": "Paleolithic Diet - StatPearls - NCBI Bookshelf - NIH",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK482457/",
+          "snippet": "by SF Daley · 2025 · Cited by 53 — The Paleo diet, which emphasizes whole, unprocessed foods while excluding grains, dairy products, legumes, and processed foods, has been advocated for its ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028555",
+      "query": "who internship glassdoor",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-882d8fc214d18c1bca1c",
+          "title": "World Health Organization Intern Reviews | Glassdoor",
+          "url": "https://www.glassdoor.com/Reviews/World-Health-Organization-Intern-Reviews-EI_IE11724.0,25_KO26,32.htm",
+          "snippet": "Intern employees have rated World Health Organization with 3.0 out of 5 stars, based on 18 company reviews on Glassdoor."
+        },
+        {
+          "candidate_id": "c-d2436a99fcd5a50a53a2",
+          "title": "World Health Organization - WHO Internship Program - Glassdoor",
+          "url": "https://www.glassdoor.sg/Reviews/Employee-Review-World-Health-Organization-E11724-RVW100453004.htm",
+          "snippet": "Pros - Paid internship - 1650 CHF - Great location Cons - Difficulty finding an accommodation - Difficult to land a return offer"
+        },
+        {
+          "candidate_id": "c-aa53beb8103f83cb97bc",
+          "title": "World Health Organization \"internship\" Reviews - Glassdoor",
+          "url": "https://www.glassdoor.com/Reviews/World-Health-Organization-internship-Reviews-EI_IE11724.0,25_KH26,36.htm",
+          "snippet": "Many employees appreciate the meaningful work and diverse culture at WHO, Great internship but unpaid Intern. Cons Unpaid for 40 hours/week. Great exposure on ..."
+        },
+        {
+          "candidate_id": "c-04c8feb82764b979418a",
+          "title": "28,280 Intern jobs in United States | Glassdoor",
+          "url": "https://www.glassdoor.com/Job/intern-jobs-SRCH_KO0,6.htm",
+          "snippet": "Search Intern jobs. Get the right Intern job with company ratings & salaries. 28280 open jobs for Intern."
+        },
+        {
+          "candidate_id": "c-56e2c02e3fd1eaa9fb68",
+          "title": "Glassdoor Intern Reviews",
+          "url": "https://www.glassdoor.com/Reviews/Glassdoor-Intern-Reviews-EI_IE100431.0,9_KO10,16.htm",
+          "snippet": "6 Glassdoor reviews. A free inside look at company reviews and salaries posted anonymously by employees."
+        },
+        {
+          "candidate_id": "c-241b7d5f4fd851634adb",
+          "title": "Internship",
+          "url": "https://careers.georgia.gov/internship",
+          "snippet": "Unlock your potential with our internship programs! Regardless of whether you’re an undergraduate or a graduate student, interested …"
+        },
+        {
+          "candidate_id": "c-2b4c47955635e544bdb8",
+          "title": "6803 Summer internship jobs in United States",
+          "url": "https://www.glassdoor.com/Job/summer-internship-jobs-SRCH_KO0,17.htm",
+          "snippet": "6803 open jobs for Summer internship. Minimum of sophomore standing in Computer Science, Engineering, or a related field. $55K - $88K (Glassdoor est.)"
+        },
+        {
+          "candidate_id": "c-11d6e32b1f0a3132a0cf",
+          "title": "Students - Jobs, Salaries, Interviews, and Career Advice",
+          "url": "https://www.glassdoor.com/Students/index.htm",
+          "snippet": "Get student career advice and find internships and entry-level jobs. See what it's really like to work at top companies."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-761627",
+      "query": "what is it when your battery loses t charge",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-3687f8ddbdc0a4efd0a6",
+          "title": "7 Reasons Your Car Battery Draining Overnight & How to Fix It?",
+          "url": "https://www.youtube.com/watch?v=W2CqUP9lw2A",
+          "snippet": "In this video I've highlighted the most common reasons your battery might keep dying and whether a completely dead battery can even be recharged."
+        },
+        {
+          "candidate_id": "c-046186686bd98dc940cc",
+          "title": "Why do batteries lose charge when they're not being used?",
+          "url": "https://www.reddit.com/r/explainlikeimfive/comments/y4x02w/eli5_why_do_batteries_lose_charge_when_theyre_not/",
+          "snippet": "When batteries self discharge at a measurable rate it usually means the battery was manufactured poorly and has a leakage path internally."
+        },
+        {
+          "candidate_id": "c-055ca5fad66f36508b16",
+          "title": "Why is my car's battery draining and ways to prevent it? (2025 update)",
+          "url": "https://www.autotrader.co.uk/content/advice/why-is-my-car-battery-draining-ways-to-prevent-it",
+          "snippet": "Most common reasons your car's battery is draining quickly · 1. You didn't turn your car off properly · 2. You have a parasitic drain · 3. There's ..."
+        },
+        {
+          "candidate_id": "c-4ed3a55d9261f2c27361",
+          "title": "8 Things That Can Drain Your Car Battery",
+          "url": "https://www.firestonecompleteautocare.com/blog/batteries/things-that-drain-car-battery/",
+          "snippet": "3. Your Battery Connections Are Loose or Corroded. · 4. It's Extremely Hot or Cold Outside. · 5. The Battery Isn't Charging While You Drive (Bad ..."
+        },
+        {
+          "candidate_id": "c-1940de9570d2a9e9cb77",
+          "title": "What causes a car battery to drain? | Kia British Dominica",
+          "url": "https://www.kia.com/dm/discover-kia/ask/what-causes-a-car-battery-to-drain.html",
+          "snippet": "Defective charging system - A car battery drains quickly if something called the alternator on your charging system fails to push out enough voltage, ideally ..."
+        },
+        {
+          "candidate_id": "c-ca121b9b76eda6523917",
+          "title": "The real reasons your car battery keeps dying | Les Schwab",
+          "url": "https://www.lesschwab.com/article/batteries/reasons-your-car-battery-keeps-dying.html",
+          "snippet": "Loose or corroded connections. A loose connection can damage the battery and/or drain it. Check your battery cables often for corrosion. bad or ..."
+        },
+        {
+          "candidate_id": "c-f8cb1da4e3be8fa4a605",
+          "title": "What causes a new battery to lose charge quickly? - Facebook",
+          "url": "https://www.facebook.com/groups/456246109988161/posts/662456849367085/",
+          "snippet": "The most possible problem might be that the battery does not have enough charge. A fault with the alternator, A faulty battery that is not ..."
+        },
+        {
+          "candidate_id": "c-aa4e92e4e0c690c591b7",
+          "title": "Why do car batteries lose their charge when not in use? ...",
+          "url": "https://www.quora.com/Why-do-car-batteries-lose-their-charge-when-not-in-use-How-can-this-issue-be-fixed",
+          "snippet": "Why do car batteries lose their charge when not in use? How can this issue be fixed?"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-984075",
+      "query": "where is hamvir's rest in skyrim",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-98470d181354589414c3",
+          "title": "Hamvir's Rest - Skyrim Wiki - Fandom",
+          "url": "https://skyrim.fandom.com/wiki/Hamvir%27s_Rest",
+          "snippet": "Hamvir's Rest is a Nordic dwelling located north-west of Whiterun, next to Dustman's Cairn."
+        },
+        {
+          "candidate_id": "c-23362dbab0e1f31ad811",
+          "title": "Hamvir's Rest",
+          "url": "https://elderscrolls.fandom.com/wiki/Hamvir%27s_Rest",
+          "snippet": "Hamvir's Rest is an above-ground tomb located at the foot of the south side of the mountain range between Whiterun and Hjaalmarch, northwest of Dustman's Cairn."
+        },
+        {
+          "candidate_id": "c-9744d85b23e4e11277e4",
+          "title": "Skyrim:Hamvir's Rest",
+          "url": "https://en.uesp.net/wiki/Skyrim:Hamvir%27s_Rest",
+          "snippet": "Hamvir's Rest is a small outdoor graveyard and Nordic ruin northwest of Whiterun. The graveyard is just north of Dustman's Cairn."
+        },
+        {
+          "candidate_id": "c-57c57dd5e49f98f7a386",
+          "title": "Skyrim:Hamvir's Rest - UESP Wiki - The Unofficial Elder Scrolls Pages",
+          "url": "https://en.m.uesp.net/wiki/Skyrim:Hamvir's_Rest",
+          "snippet": "Hamvir's Rest is a small outdoor graveyard and Nordic ruin northwest of Whiterun. The graveyard is just north of Dustman's Cairn."
+        },
+        {
+          "candidate_id": "c-3b02c787d32f9865ba32",
+          "title": "Guide To Hamvir's Rest in Skyrim",
+          "url": "https://www.youtube.com/watch?v=tcXgZhPLdKc",
+          "snippet": "Hamvir's Rest is an above-ground tomb located at the foot of the south side of the mountain range between Whiterun and Hjaalmarch, northwest of ..."
+        },
+        {
+          "candidate_id": "c-f63bfd114422e00c2f74",
+          "title": "WHAT THE HELL IS THAT?? : r/skyrim",
+          "url": "https://www.reddit.com/r/skyrim/comments/y43adu/what_the_hell_is_that/",
+          "snippet": "His final resting place is Hamvir's rest in the plains of Whiterun. You then have a Draugr and master chest and some skeletons to take care ..."
+        },
+        {
+          "candidate_id": "c-f5354c3b290d066c4ff4",
+          "title": "Hamvir's Rest - The Elder Scrolls V: Skyrim Guide - IGN",
+          "url": "https://www.ign.com/wikis/the-elder-scrolls-5-skyrim/Hamvir%27s_Rest",
+          "snippet": "Hamvir's Rest is a ruin located in Central Skyrim. You can find it by traveling Northwest of Whiterun. Loot."
+        },
+        {
+          "candidate_id": "c-a21e451a7ecefa1fcfec",
+          "title": "Guide To Hamvir's Rest in Skyrim | Thomas Xplores More - Facebook",
+          "url": "https://www.facebook.com/ThomasXploresMore/videos/guide-to-hamvirs-rest-in-skyrim/1571845220202138/",
+          "snippet": "So let's have a little look as to where Hamvir's rest is. It's right beside Dustman's Kern. A vital place in the companion's quest line. Not too ..."
+        },
+        {
+          "candidate_id": "c-a0afef666fe6e2251b98",
+          "title": "Hamvir's Rest - The Skyrim Archaeological Survey",
+          "url": "https://skyrimarchaeologicalsurvey.wordpress.com/2020/03/06/hamvirs-rest/",
+          "snippet": "Hamvir's Rest is an above-ground tomb located at the foot of the south side of the mountain range between Whiterun and Hjaalmarch, northwest of ..."
+        },
+        {
+          "candidate_id": "c-c5adbe0756a458dd3c3d",
+          "title": "Unexplored Skyrim: Hamvir's Rest",
+          "url": "https://www.youtube.com/watch?v=D7z6bNMhnqc",
+          "snippet": "In this episode we are stopping at Hamvir's Rest. This location has some connections to Sleepy Hollow, even featuring a headless horseman."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-583686",
+      "query": "what cause an itch in inside corner of eye",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-46b964b99a1bc1ebdd78",
+          "title": "Itchy Eyelids: Causes, Treatments & Prevention - Southwest Eye Institute",
+          "url": "https://southwesteye.com/blog/itchy-eyelids-causes-treatments-prevention/",
+          "snippet": "Anterior blepharitis causes red, itchy eyelids and crusty lashes when bacteria alter meibum composition."
+        },
+        {
+          "candidate_id": "c-c6eb2ba8bb306313f386",
+          "title": "Itchy eyes - causes, treatment and self-help - Healthdirect",
+          "url": "https://www.healthdirect.gov.au/itchy-eyes",
+          "snippet": "The most common cause of itchy eyes is an allergy. Your eyes may start to itch if you are near pollen or animal fur. Other things can also trigger itchy eyes ..."
+        },
+        {
+          "candidate_id": "c-b80ed8459436f238b6bb",
+          "title": "How To Stop the Corner of Your Eye From Itching - Pair Eyewear",
+          "url": "https://paireyewear.com/blogs/news/how-to-stop-the-corner-of-my-eye-from-itching?srsltid=AfmBOorZ1-DN8sz8BslCsYv1iFONboL8WpaF2NeI-APsbGlA7EPfOqTl",
+          "snippet": "Mold, pollen, dust mites, and pet dander are some of the most common allergens — they're also key offenders when it comes to itchy eyes."
+        },
+        {
+          "candidate_id": "c-fc5e4c026bdd120da78d",
+          "title": "Insatiable Eye Itching | Mayo Clinic Connect",
+          "url": "https://connect.mayoclinic.org/discussion/insatiable-eye-itching/",
+          "snippet": "I get an incredible itching sensation in the inner corner of my eye, usually occurs in the left one and occasionally in the right."
+        },
+        {
+          "candidate_id": "c-53f91cec95a8ab4e1a93",
+          "title": "Itchy Eyes in Corner Causes, Remedies and Medical Treatments",
+          "url": "https://www.healthline.com/health/itchy-eyes-in-corner",
+          "snippet": "Causes of itching in the corner of the eye · Dry eyes · Allergies · Meibomian gland dysfunction · Blepharitis · Dacryocystitis · Pink eye · Broken ..."
+        },
+        {
+          "candidate_id": "c-347fe251d46e3c89a159",
+          "title": "Itching in corner of eye: Symptoms, causes, and treatments",
+          "url": "https://www.medicalnewstoday.com/articles/itching-in-corner-of-eye",
+          "snippet": "The main causes of itching in the corner of the eyes are bacterial and viral infections. In some instances, parts of the eye may stop working properly and no ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-405737",
+      "query": "is cefepime a cephalosporin",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-9ade3859736d54ecfe92",
+          "title": "Cefepime Injection: MedlinePlus Drug Information",
+          "url": "https://medlineplus.gov/druginfo/meds/a698021.html",
+          "snippet": "Cefepime injection is in a class of medications called cephalosporin antibiotics. It works by killing bacteria. Antibiotics such as cefepime ..."
+        },
+        {
+          "candidate_id": "c-9fb54d5c55697dcad0ae",
+          "title": "Cefepime - an overview | ScienceDirect Topics",
+          "url": "https://www.sciencedirect.com/topics/pharmacology-toxicology-and-pharmaceutical-science/cefepime",
+          "snippet": "Cefepime is a fourth-generation cephalosporin. Although it has a broader spectrum than other cephalosporins, the use has been limited in veterinary medicine."
+        },
+        {
+          "candidate_id": "c-e23a7462bca1444f6444",
+          "title": "Safety of cefepime: A new extended-spectrum parenteral ...",
+          "url": "https://www.amjmed.com/article/S0002-9343(96)00110-6/fulltext",
+          "snippet": "by HC Neu · 1996 · Cited by 134 — cefepime, a new extended-spectrum, fourth-generation cephalosporin used to treat mild-to-severe bacterial infections, with that of ceftazidime."
+        },
+        {
+          "candidate_id": "c-3386eedae25dc2b06dc9",
+          "title": "Cefepime: a fourth-generation parenteral cephalosporin - PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/8968455/",
+          "snippet": "Cefepime is an extended-spectrum parenteral cephalosporin antibiotic active in vitro against a broad spectrum of gram-positive and gram-negative aerobic ..."
+        },
+        {
+          "candidate_id": "c-726a350bae63e06425b0",
+          "title": "Cefepime: Uses, Interactions, Mechanism of Action",
+          "url": "https://go.drugbank.com/drugs/DB01413",
+          "snippet": "Cefepime is a fourth-generation cephalosporin antibiotic used in the treatment of infections caused by susceptible bacteria, such as pneumonia, urinary tract ..."
+        },
+        {
+          "candidate_id": "c-7645a652eccdff892c7c",
+          "title": "Clinical Pharmacokinetics and Pharmacodynamics of Cefepime",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9345683/",
+          "snippet": "Cefepime is a broad-spectrum fourth-generation cephalosporin with activity against Gram-positive and Gram-negative pathogens. It …"
+        },
+        {
+          "candidate_id": "c-924baf36b2eb0475121e",
+          "title": "Pharmacology Review: Newer Antibiotics: Cefepime",
+          "url": "https://publications.aap.org/neoreviews/article/5/9/e382/88570/Pharmacology-ReviewNewer-Antibiotics-Cefepime",
+          "snippet": "Cefepime is the only fourth-generation cephalosporin licensed for use in the United States. It is being used increasingly for treatment of ..."
+        },
+        {
+          "candidate_id": "c-ab9ccb3304c3d377d0a8",
+          "title": "Cefepime (injection route) - Side effects & uses",
+          "url": "https://www.mayoclinic.org/drugs-supplements/cefepime-injection-route/description/drg-20073408",
+          "snippet": "It belongs to the class of medicines known as cephalosporin antibiotics. It works by killing bacteria or preventing their growth."
+        },
+        {
+          "candidate_id": "c-9cad06700428b12ee6ec",
+          "title": "Cefepime - StatPearls - NCBI Bookshelf - NIH",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK542232/",
+          "snippet": "by A O'Connor · 2024 · Cited by 17 — Cefepime hydrochloride is a fourth-generation cephalosporin that belongs to a class of antibiotics known as beta-lactams."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-494730",
+      "query": "semi monthly pay schedule",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-e289f97b80b0add05718",
+          "title": "Semi Monthly Pay Schedule - Empxtrack",
+          "url": "https://empxtrack.com/hr-glossary/semi-monthly-pay/",
+          "snippet": "The semi monthly pay refers to a pay schedule where employees are paid their salaries twice a month. This results in 24 pay periods each year."
+        },
+        {
+          "candidate_id": "c-080d1f3ff2037792e60d",
+          "title": "Semi Monthly vs Bi Weekly Payroll: 2026 Guide - Juicebox",
+          "url": "https://juicebox.ai/blog/semi-monthly-vs-bi-weekly",
+          "snippet": "With semi-monthly, you get 24 paychecks per year, paid on two specific dates each month, like the 15th and the 30th."
+        },
+        {
+          "candidate_id": "c-2215c34f9a66a4689bf9",
+          "title": "Confused on Pay Date for semi-monthly : r/personalfinance",
+          "url": "https://www.reddit.com/r/personalfinance/comments/18paffy/confused_on_pay_date_for_semimonthly/",
+          "snippet": "Usually the pay periods for semi monthly are 1st-15th and then 16th-end of month. It is common for the pay dates to be the 20th (for 1st-15th) ..."
+        },
+        {
+          "candidate_id": "c-b526f24f4f30a3dd2ef4",
+          "title": "What is a Semi-Monthly Pay Period? | Definition & Meaning - OnPay",
+          "url": "https://onpay.com/glossary/semi-monthly-pay-period/",
+          "snippet": "Semi-monthly is a pay schedule in which employees receive their wages or salary twice per month. This results in 24 paychecks per year. In most ..."
+        },
+        {
+          "candidate_id": "c-70b5921d52cf63d46abc",
+          "title": "2026 Semimonthly Payroll Calendar - Campus Offices",
+          "url": "https://campus.collegeforcreativestudies.edu/business-services/2026-semimonthly-payroll-calendar/",
+          "snippet": "2026 Semimonthly Payroll Calendar. This calendar applies to all salary employees. Work Schedules are due within 3 business days after the completion of the pay ..."
+        },
+        {
+          "candidate_id": "c-c19e0cb2b06745a37f46",
+          "title": "Semi-Monthly Pay Schedule: A Guide for Employers - FrankCrum",
+          "url": "https://www.frankcrum.com/blog/semi-monthly-pay",
+          "snippet": "A semi-monthly pay schedule means employees are paid twice each calendar month, for a total of 24 pay periods per year."
+        },
+        {
+          "candidate_id": "c-2f4241ca65ad118ddd25",
+          "title": "2026 Payroll Calendar | How Many Pay Periods in a Year",
+          "url": "https://www.adp.com/resources/articles-and-insights/articles/p/payroll-calendar.aspx",
+          "snippet": "Semimonthly pay Employers who choose this schedule can either pay their employees on the first and 15th of the month or on the 16th and last day of the month."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028598",
+      "query": "what is wondershare filmora",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-297a5bfac300ac71457a",
+          "title": "Wondershare, Filmora and company thoughts - Reddit",
+          "url": "https://www.reddit.com/r/Filmora/comments/1g3xpgy/wondershare_filmora_and_company_thoughts/",
+          "snippet": "They are a money extortion company that creates somewhat useful software on the side. But their mission objective is to extract a bunch of money ..."
+        },
+        {
+          "candidate_id": "c-edeb380d4b3800370def",
+          "title": "Wondershare Filmora - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Wondershare_Filmora",
+          "snippet": "Filmora (or simply Filmora) is a paid video editing application made by the Chinese company Wondershare. It can either be downloaded or used fully online."
+        },
+        {
+          "candidate_id": "c-4aa232c7b8d71e59d270",
+          "title": "Wondershare Filmora Reviews 2026: Pricing, Features & More - SelectHub",
+          "url": "https://www.selecthub.com/p/video-editing-software/wondershare-filmora/",
+          "snippet": "Wondershare Filmora is a versatile video editing software designed to cater to both novice and experienced users. It offers a comprehensive suite of tools"
+        },
+        {
+          "candidate_id": "c-0f7dd853a21aa7fd6ef4",
+          "title": "How do you use Wondershare Filmora? - Epidemic Sound",
+          "url": "https://www.epidemicsound.com/blog/what-is-wondershare-filmora/",
+          "snippet": "Wondershare Filmora is a free video editing software that's perfect for both beginners and experienced editors. It can be used for personal and ..."
+        },
+        {
+          "candidate_id": "c-48de4a0de3d6d7ecf32e",
+          "title": "Wondershare Filmora Review: Pricing, Features, and More! - Wyzowl",
+          "url": "https://wyzowl.com/wondershare-filmora-review/",
+          "snippet": "Wondershare Filmora is a popular video editing software that anyone can use to create and edit videos. Whether you're a beginner or a seasoned ..."
+        },
+        {
+          "candidate_id": "c-06d7486667b33d72f631",
+          "title": "[Official] Wondershare Filmora: Edit Video as a Pro",
+          "url": "https://filmora.wondershare.com/",
+          "snippet": "Filmora is an all-in-one video editing software for desktop and mobile. Easily create professional videos with intuitive tools, AI-powered features, ..."
+        },
+        {
+          "candidate_id": "c-0805a438948ff811225f",
+          "title": "Wondershare Filmora For Beginners | Everything You NEED to ...",
+          "url": "https://www.youtube.com/watch?v=qmEneH1c-Y4",
+          "snippet": "This beginner-friendly tutorial covers everything you need to know to get started with Filmora — from importing your clips to editing, adding ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028608",
+      "query": "what is wireless wifi",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-2622f9d4022f52fc8c08",
+          "title": "What is Wi-Fi? | Definition, Meaning & Explanation",
+          "url": "https://www.verizon.com/articles/internet-essentials/wifi-definiton/",
+          "snippet": "Wi-Fi is a crucial wireless technology that connects devices like smartphones, computers, and smart TVs to the internet by transmitting ..."
+        },
+        {
+          "candidate_id": "c-99059af0f3b5763fbee7",
+          "title": "What Is a Wireless Network? Types of Wireless Network",
+          "url": "https://www.fortinet.com/resources/cyberglossary/wireless-network",
+          "snippet": "A wireless network, whether PAN, LAN, MAN, or WAN, helps users connect wirelessly with your network, the internet, and each other."
+        },
+        {
+          "candidate_id": "c-9103c37e7a0f52e154f1",
+          "title": "What Is Wi-Fi? - Definition and Types",
+          "url": "https://www.cisco.com/site/us/en/learn/topics/networking/what-is-wi-fi.html",
+          "snippet": "Wi-Fi is a wireless technology that allows laptops and desktop computers, mobile devices like smart phones and wearables, and other equipment"
+        },
+        {
+          "candidate_id": "c-628e4154a2bdc2885e58",
+          "title": "Wireless 5G Home Internet vs. WiFi: What's the difference?",
+          "url": "https://www.earthlink.net/blog/difference-between-wifi-wireless-internet/",
+          "snippet": "Wi-Fi is not the internet itself; it's your home's local network that distributes internet connectivity to your devices wirelessly."
+        },
+        {
+          "candidate_id": "c-d717c80c584a97e335ea",
+          "title": "What is WiFi and how do I get it?",
+          "url": "https://www.xfinity.com/support/articles/what-is-wifi",
+          "snippet": "A wireless or WiFi network uses a radio frequency signal instead of wires to connect your devices - such as computers, printers and smartphones - to the ..."
+        },
+        {
+          "candidate_id": "c-1ba08ff210158fef346d",
+          "title": "WiFi vs. Wireless Home Internet: What's the Difference?",
+          "url": "https://www.youtube.com/watch?v=ooVicwTFQsE",
+          "snippet": "Wi-Fi is the pipe that distributes your wireless home internet to devices but it doesn't produce speed. It just delivers it."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-316803",
+      "query": "how much does it cost to rewire electricity in a home?",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-d77ae04596cfc9e2e0a5",
+          "title": "How Much Does It Cost to Rewire a Home - Elliot Services",
+          "url": "https://elliotservices.com/news/home-rewire-cost/",
+          "snippet": "Most homeowners spend between $6,000 and $12,000 for a full rewiring job. with an average charge of $4 to $10 per square foot."
+        },
+        {
+          "candidate_id": "c-94a37aa4c82b7eb58d59",
+          "title": "Cost of rewiring a house: 10 Essential Facts & Savings 2025",
+          "url": "https://www.aaastl.com/blog/cost-of-rewiring-a-house",
+          "snippet": "The cost of rewiring a house typically ranges from $2,000 to $20,000, with most homeowners paying around $10,000 for a complete rewire."
+        },
+        {
+          "candidate_id": "c-db23c4f40d5897866f11",
+          "title": "Is $22000 an appropriate price to rewire a house?",
+          "url": "https://www.reddit.com/r/electrical/comments/164cyfe/is_22000_an_appropriate_price_to_rewire_a_house/",
+          "snippet": "1461 sq ft home. A friend told me that was too much. Is it ?"
+        },
+        {
+          "candidate_id": "c-f2653d957e42812843c0",
+          "title": "How much does it cost to rewire a 1500 sq. ft. house? - Quora",
+          "url": "https://www.quora.com/How-much-does-it-cost-to-rewire-a-1500-sq-ft-house",
+          "snippet": "Rewiring a 1500 sq. ft. house usually costs between $6,000 and $12,000, depending on the complexity and local rates. around $3000 to $4000 in ..."
+        },
+        {
+          "candidate_id": "c-8f5bb78cf7d80ae4ee91",
+          "title": "How much should someone expect to pay to completely rewire a 1700 sq ...",
+          "url": "https://www.facebook.com/groups/328680931393796/posts/1674635366798339/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-855fdcca44de5579126e",
+          "title": "Average cost to completely rewire a '60's home incl new panel?",
+          "url": "https://www.reddit.com/r/homeowners/comments/12ow42u/average_cost_to_completely_rewire_a_60s_home_incl/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-6a1159e5714ffbcd8a86",
+          "title": "How Much Does It Cost to Rewire a House? (Homeowner's Guide)",
+          "url": "https://genzryan.com/blog/cost-to-rewire-a-house/",
+          "snippet": "On average, the cost to rewire a house ranges from $8,000 to $15,000, but this can increase or decrease based on several key factors."
+        },
+        {
+          "candidate_id": "c-542dccebfa07ece73817",
+          "title": "Cost To Rewire A House [2026 Data] | Angi",
+          "url": "https://www.angi.com/articles/how-much-does-it-cost-rewire-house.htm",
+          "snippet": "Professional house rewiring costs between $603 and $2,596 for a typical 2,500-square-foot home, covering your materials and labor combined."
+        },
+        {
+          "candidate_id": "c-05ae96642126ad29de8e",
+          "title": "How Much Does It Cost to Rewire a House? - SoFi",
+          "url": "https://www.sofi.com/learn/content/cost-to-rewire-house/",
+          "snippet": "Rewiring costs for a house typically range from $6 to $10 per square foot. • A 1,300-square-foot house may cost between $7,800 and $13,000 to ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-539278",
+      "query": "war guilt clause effect",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-aead587bab53d54ec66d",
+          "title": "The The War Guilt Clause and the Rise of Adolf Hitler",
+          "url": "https://eu-opensci.org/index.php/ejsocial/article/view/18068",
+          "snippet": "the War Guilt Clause led Germany into an economic and social turmoil, which in turn paved the path for the rise of radical extremists like Adolf Hitler."
+        },
+        {
+          "candidate_id": "c-01575bfc6737a3f57c88",
+          "title": "War Guilt Clause - Holocaust Education Map",
+          "url": "https://teachholocaust.org/lesson/war-guilt-clause/",
+          "snippet": "As part of the Treaty of Versailles, Germany was forced to sign the War Guilt Clause, taking full responsibility for starting World War I. Germans bitterly ..."
+        },
+        {
+          "candidate_id": "c-e333c1e3706cf242b828",
+          "title": "The Treaty of Versailles",
+          "url": "https://www.theholocaustexplained.org/the-nazi-rise-to-power/the-effects-of-the-first-world-war-on-germany/the-treaty-of-versailles/",
+          "snippet": "Under clause 231, the 'War Guilt Clause', Germany had to accept complete responsibility for the war. Germany lost 13% of its land and 12% of its population ..."
+        },
+        {
+          "candidate_id": "c-bd7404e390e38d3c8e9e",
+          "title": "Article 231",
+          "url": "https://history.state.gov/historicaldocuments/frus1919Parisv13/ch17subch1",
+          "snippet": "The German Government, having identified for itself a clause which imputed “war guilt” to them, confirmed the identification by its note of June 22, 1919"
+        },
+        {
+          "candidate_id": "c-8a964d67c22f57382d76",
+          "title": "Aspects Of The War Guilt Clause: What It Tells | Doughboy Foundation",
+          "url": "https://doughboy.org/aspects-of-the-war-guilt-clause-what-it-tells/",
+          "snippet": "This clause held Germany accountable for the damages caused during the war and helped justify the harsh reparations imposed upon it. War Guilt ..."
+        },
+        {
+          "candidate_id": "c-4c816c7a17877e0e8995",
+          "title": "How the Treaty of Versailles and German Guilt Led to World War II",
+          "url": "https://www.history.com/articles/treaty-of-versailles-world-war-ii-german-guilt-effects",
+          "snippet": "Some of the harsh terms included reparations, loss of territory, military restrictions and the War Guilt Clause. The war guilt clause was more ..."
+        },
+        {
+          "candidate_id": "c-e40ef8cd88032a217494",
+          "title": "What if the Treaty of Versailles didn't have the German War ...",
+          "url": "https://www.reddit.com/r/HistoryWhatIf/comments/1fnsr20/what_if_the_treaty_of_versailles_didnt_have_the/",
+          "snippet": "I jut think that it is highly ironic that based on what you read and hear online, and even in American text books, we often learn something along the ..."
+        },
+        {
+          "candidate_id": "c-220a69c01f1b79cef0f2",
+          "title": "Treaty of Versailles Presented to German Delegation",
+          "url": "https://encyclopedia.ushmm.org/content/en/timeline-event/holocaust/before-1933/treaty-of-versailles-presented-to-german-delegation",
+          "snippet": "Article 231, commonly known as the \"War Guilt Clause,\" which forced the German nation to accept complete responsibility for initiating World War I."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028652",
+      "query": "who invented corn flakes",
+      "stratum": "answer_seeking_holdout_12",
+      "candidates": [
+        {
+          "candidate_id": "c-2b2ef8d0ae942958f67d",
+          "title": "The Disturbing Origins of Kellogg's Corn Flakes",
+          "url": "https://www.youtube.com/watch?v=cmNhAqQIUMk",
+          "snippet": "Kellogg's cornflakes were invented to stop people from pleasuring themselves."
+        },
+        {
+          "candidate_id": "c-51f5fbe9698eca6c1da5",
+          "title": "The Strange Story Behind Your Breakfast Cereal",
+          "url": "https://daily.jstor.org/the-strange-backstory-behind-your-breakfast-cereal/",
+          "snippet": "Kellogg's Corn Flakes were originally created by a doctor who believed bland food would reduce people's urge to masturbate."
+        },
+        {
+          "candidate_id": "c-d8856e838b0c8f524c76",
+          "title": "NIHF Inductee John Kellogg, Who Invented Corn Flakes",
+          "url": "https://www.invent.org/inductees/john-h-kellogg",
+          "snippet": "John H. Kellogg invented Corn Flakes®, the first dry, flaked breakfast cereal. Corn Flakes became the most popular dry breakfast cereal in the ..."
+        },
+        {
+          "candidate_id": "c-b11b0daf8056f28b0de1",
+          "title": "John Harvey Kellogg",
+          "url": "https://en.wikipedia.org/wiki/John_Harvey_Kellogg",
+          "snippet": "Kellogg's brother, Will Keith Kellogg, is best known today for the invention of the breakfast cereal corn flakes."
+        },
+        {
+          "candidate_id": "c-1420883ef7c9d573602c",
+          "title": "TIL that John Harvey Kellogg, the inventor of Corn Flakes ... - Reddit",
+          "url": "https://www.reddit.com/r/todayilearned/comments/ulh4ts/til_that_john_harvey_kellogg_the_inventor_of_corn/",
+          "snippet": "Dr. John Harvey Kellogg, the co-inventor of corn flakes, was one of the early adopters of peanut butter as a nutritious food. In 1895, he ..."
+        },
+        {
+          "candidate_id": "c-5c25b43bc6a3a5f24d67",
+          "title": "The History Of Corn Flakes Is Even Worse Than You Knew",
+          "url": "https://www.thetakeout.com/kelloggs-corn-flakes-history-as-anti-sexual-cereal-1848612151/",
+          "snippet": "The History Of Corn Flakes Is Even Worse Than You Knew to young girls to deter masturbatory urges. With these practices in mind, Kellogg's claim to the invention of bland-ass cereal seems just a bit i..."
+        },
+        {
+          "candidate_id": "c-60b49fe161471f4ebb37",
+          "title": "Did you know Kellogg's Corn Flakes were invented by accident? In 1898 ...",
+          "url": "https://www.instagram.com/reel/DSC5etakgb9/?hl=en",
+          "snippet": "In 1898, Dr. John Harvey Kellogg was trying to make a healthy breakfast for the patients at his spa. One day, a batch of wheat dough was left ..."
+        },
+        {
+          "candidate_id": "c-877418fcbfcdef236b15",
+          "title": "The Surprising Reason Why Dr. John Harvey Kellogg Invented Corn Flakes",
+          "url": "https://www.forbes.com/sites/priceonomics/2016/05/17/the-surprising-reason-why-dr-john-harvey-kellogg-invented-corn-flakes/",
+          "snippet": "Dr. John Harvey Kellogg, the inventor of corn flakes, his invention of corn flakes was part of his health movement that he called “biological ..."
+        }
+      ]
+    }
+  ]
+}

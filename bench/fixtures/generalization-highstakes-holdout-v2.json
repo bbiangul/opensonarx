@@ -1,0 +1,528 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-highstakes-heldout-v2",
+  "sealed_at": "2026-08-23T00:29:41Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "candidate_cue_regex": "symptom|disease|medicine|medication|drug|side effect|doctor|hospital|health|cancer|blood|pain|syndrome|treatment|infection|pregnan|allerg|autoimmune|surgery|diagnos|vaccine|therapy|stroke|heart|kidney|liver|diabetes|depression|anxiety|disorder|tax|loan|mortgage|credit|insurance|annuity|salary|bankruptcy|interest rate|retirement|investment|pension|debt|legal|law|lawsuit|court|eviction|custody|divorce|criminal|regulated|regulation|rights|attorney|benefits",
+    "permutation": "score=(query_id*48271+20260823) mod 2147483647; ascending numeric",
+    "selected_tsv_schema": "source_id TAB query LF",
+    "selected_tsv_sha256": "41e7a3bb3935a8d835180a64d3e7dda69c4c42c1cbbfafb2598fa98e22953dc9",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true,
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v4.json",
+        "sha256": "87521c1797a79539dcc2d90f7f374259dc3c0425cfbb74ca3c844d741bdb8c67"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v5.json",
+        "sha256": "ac49568636f830aad1d1979c73e82578d26e67eb9f9f9676401995be4fcd5b7a"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "id": "msmarco-hs2-224626",
+      "query": "how does Electroconvulsive therapy treat ocd",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "224626",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-491585",
+      "query": "salary for insurance agen",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "491585",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-1069983",
+      "query": "what is a muscle infection called",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069983",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-1070131",
+      "query": "what is a mortgage derivative security",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1070131",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-892224",
+      "query": "what salary does comcast pay for an administrative assistant",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "892224",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-1025801",
+      "query": "what law schools did justice anthony kennedy graduate from",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025801",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-1070412",
+      "query": "why is health communications",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1070412",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-91711",
+      "query": "child psychiatrist salary 2016",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "91711",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-91722",
+      "query": "child support legal definition of",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "91722",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-447797",
+      "query": "meaning of faint of heart",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "447797",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-47513",
+      "query": "average winter temperature in kent co. delaware",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "47513",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-225499",
+      "query": "how does apa cite laws internally",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "225499",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-403454",
+      "query": "is atenolol used for anxiety",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "403454",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-848478",
+      "query": "what is the state tax rate for orange county ca",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "848478",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-626232",
+      "query": "what do you call full term pregnancy",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "626232",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-537301",
+      "query": "virginia corporate income tax due date",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "537301",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-92509",
+      "query": "circadian rhythm disorders symptoms",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "92509",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-270521",
+      "query": "how long to fast blood test",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "270521",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-226132",
+      "query": "how does environment affect health",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "226132",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-1027373",
+      "query": "what kind of doctor specializes in rehabilitation",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1027373",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-849561",
+      "query": "what is the symptoms of pleurisy",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "849561",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-627323",
+      "query": "what doctors have expertise in hashimoto's disease",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "627323",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-760817",
+      "query": "what is irs individual taxpayer identification number (itin)",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "760817",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-1027812",
+      "query": "what kind of cancer does patrick have",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1027812",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-4696",
+      "query": "Is the Louisiana sales tax 4.75",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "4696",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-1072500",
+      "query": "what is a guaranteed general fund investment",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1072500",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-405310",
+      "query": "is cancer of the liver a primary cancer",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "405310",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-939473",
+      "query": "when did legalization of marijuana take place in the u.s",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "939473",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-583611",
+      "query": "what category of drug is steroids",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "583611",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-850557",
+      "query": "what is the term divorce mean",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "850557",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-583766",
+      "query": "what cause elevated liver enzymes",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "583766",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-49943",
+      "query": "benefit administrative systems insurance",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "49943",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-227968",
+      "query": "how does the doctor check your prostate?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "227968",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-583916",
+      "query": "what cause pain on your right side",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "583916",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-495018",
+      "query": "serious injury legal definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "495018",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-495082",
+      "query": "service definition health and social care",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "495082",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-183723",
+      "query": "explain how urinary tract infections cause both hematuria and pyuria",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "183723",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-806574",
+      "query": "what is the average monthly car insurance estimate",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "806574",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-450681",
+      "query": "means disease of the chest is",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "450681",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-1029030",
+      "query": "what is utah law on non compete",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1029030",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-717763",
+      "query": "what is anaphylaxis symptoms",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "717763",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-450854",
+      "query": "media liability insurance definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "450854",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-50498",
+      "query": "benefits of coconut oil for gout",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "50498",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-851425",
+      "query": "what is the tn sales tax on groceries",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "851425",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-228738",
+      "query": "how does your cervix change during pregnancy",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "228738",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-718112",
+      "query": "what is annual salary",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "718112",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-50833",
+      "query": "benefits of green tea and cinnamon",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "50833",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    },
+    {
+      "id": "msmarco-hs2-50891",
+      "query": "benefits of hydrogenated water",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "50891",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate_v2"
+    }
+  ]
+}

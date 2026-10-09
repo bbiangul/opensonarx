@@ -1,0 +1,511 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v2",
+  "sealed_at": "2026-08-23T00:00:00Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      }
+    ],
+    "selected_tsv_sha256": "f1021cad478ed3b2482255776bd039ad722900dfd16f23313e138d4ff6ee3a6d",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true
+  },
+  "queries": [
+    {
+      "id": "msmarco-622893",
+      "query": "what do electrical relays do?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "622893",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-978802",
+      "query": "where is browerville mn",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "978802",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-267012",
+      "query": "how long should i wait to handle my ball python after feeding",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "267012",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-1067826",
+      "query": "what is a router meaning",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1067826",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-311540",
+      "query": "how much does a spectacled bear weigh",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "311540",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-1023363",
+      "query": "which zion entrance to angel landing",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1023363",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-489513",
+      "query": "rna primase definition biology",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "489513",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-89143",
+      "query": "causes stomach bloating women",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "89143",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-44686",
+      "query": "average temp in hana hi",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "44686",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-800987",
+      "query": "what is sunchoke",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "800987",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-445094",
+      "query": "manicure nails clear gel cost",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "445094",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-667535",
+      "query": "what happens when you consume excessive turmeric powder",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "667535",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-400631",
+      "query": "is a physician assistant a bachelors program",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "400631",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-267187",
+      "query": "how long should one hold bank statements?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "267187",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-578607",
+      "query": "what beach is close to disneyland california",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "578607",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-801059",
+      "query": "what is superior and inferior in the body",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "801059",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-1067990",
+      "query": "why does stomach feel crampy?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1067990",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-400692",
+      "query": "is a presynaptic neuron is stimulated",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "400692",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-400696",
+      "query": "is a procedure considered a medical error",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "400696",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-979054",
+      "query": "where is caba",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "979054",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-178325",
+      "query": "effect of salt on water boiling point",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "178325",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-979133",
+      "query": "where is calcium absorbed in the body",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "979133",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-267341",
+      "query": "how long should you allow a calf to nurse",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "267341",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-578783",
+      "query": "what benefits does disney company offer",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "578783",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-89418",
+      "query": "cedar chips outside for dog pee area",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "89418",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-623281",
+      "query": "what do hand therapists do",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "623281",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-489858",
+      "query": "ron hiw net worth",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "489858",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-133977",
+      "query": "definition of dignity for kids",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "133977",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-222954",
+      "query": "how do you lower hardness in pool water?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "222954",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-178468",
+      "query": "effects hot stone has on the circulatory system",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "178468",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-845790",
+      "query": "what is the sarkeys foundation",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "845790",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-934795",
+      "query": "whats the price per square foot to.build a church",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "934795",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-134014",
+      "query": "definition of discourse analysis pdf",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "134014",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-1023782",
+      "query": "who are davos",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1023782",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-489931",
+      "query": "room and pillar definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "489931",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-1068276",
+      "query": "what is a rebuttal expert witness",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1068276",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-1068290",
+      "query": "what is a realpolitik",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1068290",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-667932",
+      "query": "what happens with your lips get sunburned",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "667932",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-1023838",
+      "query": "who are harrison ford's children",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1023838",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-445494",
+      "query": "mario batali net worth",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "445494",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-845888",
+      "query": "what is the science of mapmaking called",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "845888",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-845892",
+      "query": "what is the science of studying the past cultures through objects",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "845892",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-1023850",
+      "query": "who are in the eagles",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1023850",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-89610",
+      "query": "cells bio definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "89610",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-45125",
+      "query": "average temperature in carlsbad nm",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "45125",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-267566",
+      "query": "how long should you rinse your eyes in a safety eye wash",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "267566",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-934889",
+      "query": "wheat germ oil skin benefits",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "934889",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    },
+    {
+      "id": "msmarco-756949",
+      "query": "what is iboss",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "756949",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_2"
+    }
+  ]
+}

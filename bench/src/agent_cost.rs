@@ -1,23 +1,23 @@
 use oi_crawl::extractor::html_to_markdown;
 use oi_crawl::Distiller;
-use oi_index::{HybridConfig, HybridIndex};
-use oi_types::traits::{CrawlPipeline, SearchIndex};
-use oi_types::{EmbeddingPipeline, QueryFilters};
 #[cfg(feature = "reranker")]
 use oi_embed::OnnxReranker;
+use oi_index::{HybridConfig, HybridIndex};
+use oi_types::traits::{CrawlPipeline, SearchIndex};
 #[cfg(feature = "reranker")]
 use oi_types::Reranker;
+use oi_types::{EmbeddingPipeline, QueryFilters};
 use serde::Serialize;
 use std::sync::Arc;
 use std::time::Instant;
 
 // ── Cost constants (USD per token / per call) ──────────────────────────────
 
-const GEMINI_INPUT_COST_PER_TOKEN: f64 = 0.30 / 1_000_000.0;  // $0.30 per 1M tokens
+const GEMINI_INPUT_COST_PER_TOKEN: f64 = 0.30 / 1_000_000.0; // $0.30 per 1M tokens
 const GEMINI_OUTPUT_COST_PER_TOKEN: f64 = 2.50 / 1_000_000.0; // $2.50 per 1M tokens
-const SERPER_COST_PER_SEARCH: f64 = 0.001;   // ~$1 per 1K searches
-const EXA_COST_PER_SEARCH: f64 = 0.005;      // $5 per 1K searches (includes results)
-const TAVILY_COST_PER_SEARCH: f64 = 0.008;   // 1 credit = $0.008 per basic search
+const SERPER_COST_PER_SEARCH: f64 = 0.001; // ~$1 per 1K searches
+const EXA_COST_PER_SEARCH: f64 = 0.005; // $5 per 1K searches (includes results)
+const TAVILY_COST_PER_SEARCH: f64 = 0.008; // 1 credit = $0.008 per basic search
 
 // ── Data structures ────────────────────────────────────────────────────────
 
@@ -100,7 +100,11 @@ struct BackendAggregate {
 
 // ── Gemini API client ──────────────────────────────────────────────────────
 
-fn call_gemini(api_key: &str, prompt: &str, model: &str) -> Result<(String, TokenBreakdown), String> {
+fn call_gemini(
+    api_key: &str,
+    prompt: &str,
+    model: &str,
+) -> Result<(String, TokenBreakdown), String> {
     let url = format!(
         "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent?key={}",
         model, api_key
@@ -122,7 +126,11 @@ fn call_gemini(api_key: &str, prompt: &str, model: &str) -> Result<(String, Toke
     for attempt in 0..=3 {
         if attempt > 0 {
             let delay = std::time::Duration::from_secs(5 * attempt as u64);
-            tracing::info!("Gemini 429, backing off {:?} (attempt {}/3)", delay, attempt);
+            tracing::info!(
+                "Gemini 429, backing off {:?} (attempt {}/3)",
+                delay,
+                attempt
+            );
             std::thread::sleep(delay);
         }
         match agent
@@ -233,9 +241,21 @@ fn search_serper_raw(api_key: &str, query: &str, top_k: usize) -> Vec<SerperHit>
         .iter()
         .take(top_k)
         .map(|r| SerperHit {
-            url: r.get("link").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            title: r.get("title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            snippet: r.get("snippet").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            url: r
+                .get("link")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            title: r
+                .get("title")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            snippet: r
+                .get("snippet")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
         })
         .collect()
 }
@@ -265,13 +285,7 @@ fn fetch_url_content(url: &str) -> Option<String> {
             .build(),
     );
 
-    let html_bytes = agent
-        .get(url)
-        .call()
-        .ok()?
-        .body_mut()
-        .read_to_vec()
-        .ok()?;
+    let html_bytes = agent.get(url).call().ok()?.body_mut().read_to_vec().ok()?;
 
     let html = String::from_utf8_lossy(&html_bytes);
     let extracted = html_to_markdown(&html);
@@ -402,9 +416,21 @@ fn search_tavily(api_key: &str, query: &str, top_k: usize) -> Vec<SearchContext>
         .iter()
         .take(top_k)
         .map(|r| SearchContext {
-            url: r.get("url").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            title: r.get("title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-            content: r.get("content").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+            url: r
+                .get("url")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            title: r
+                .get("title")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
+            content: r
+                .get("content")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_string(),
         })
         .collect()
 }
@@ -534,307 +560,606 @@ The answer should cover concepts related to: {keywords_hint}
 fn build_questions() -> Vec<AgentQuestion> {
     vec![
         // ── Rust questions (25) ──
-        q("r01", "rust", "How do you convert a Vec<u8> to a String in Rust?",
-          &["from_utf8"],
-          &["https://doc.rust-lang.org/std/string/struct.String.html",
-            "https://doc.rust-lang.org/std/str/fn.from_utf8.html",
-            "https://doc.rust-lang.org/rust-by-example/std/str.html",
-            "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8"]),
-        q("r02", "rust", "What is the difference between &str and String in Rust?",
-          &["owned", "borrowed", "heap"],
-          &["https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
-            "https://doc.rust-lang.org/book/ch04-03-slices.html",
-            "https://doc.rust-lang.org/std/string/struct.String.html",
-            "https://doc.rust-lang.org/rust-by-example/std/str.html",
-            "https://doc.rust-lang.org/std/primitive.str.html"]),
-        q("r03", "rust", "How do you handle errors with the Result type in Rust?",
-          &["Ok", "Err", "unwrap", "match"],
-          &["https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html",
-            "https://doc.rust-lang.org/std/result/enum.Result.html",
-            "https://doc.rust-lang.org/rust-by-example/error/result.html",
-            "https://doc.rust-lang.org/book/ch09-00-error-handling.html"]),
-        q("r04", "rust", "How do you create a new thread in Rust?",
-          &["thread::spawn", "spawn"],
-          &["https://doc.rust-lang.org/book/ch16-01-threads.html",
-            "https://doc.rust-lang.org/std/thread/fn.spawn.html",
-            "https://doc.rust-lang.org/rust-by-example/std_misc/threads.html",
-            "https://doc.rust-lang.org/std/thread/index.html"]),
-        q("r05", "rust", "What is the purpose of the Option type in Rust?",
-          &["Some", "None", "null"],
-          &["https://doc.rust-lang.org/std/option/enum.Option.html",
-            "https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html",
-            "https://doc.rust-lang.org/rust-by-example/std/option.html",
-            "https://doc.rust-lang.org/book/ch06-02-match.html"]),
-        q("r06", "rust", "How do you implement a trait for a struct in Rust?",
-          &["impl", "for"],
-          &["https://doc.rust-lang.org/book/ch10-02-traits.html",
-            "https://doc.rust-lang.org/rust-by-example/trait.html",
-            "https://doc.rust-lang.org/rust-by-example/trait/impl_trait.html",
-            "https://doc.rust-lang.org/reference/items/implementations.html"]),
-        q("r07", "rust", "How do you read a file to a string in Rust?",
-          &["read_to_string", "fs::read"],
-          &["https://doc.rust-lang.org/std/fs/fn.read_to_string.html",
-            "https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html",
-            "https://doc.rust-lang.org/rust-by-example/std_misc/file/open.html",
-            "https://doc.rust-lang.org/std/fs/struct.File.html"]),
-        q("r08", "rust", "What is the borrow checker in Rust?",
-          &["ownership", "reference", "lifetime", "borrow"],
-          &["https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html",
-            "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
-            "https://doc.rust-lang.org/rust-by-example/scope/borrow.html",
-            "https://doc.rust-lang.org/book/ch04-03-slices.html",
-            "https://doc.rust-lang.org/rust-by-example/scope/borrow/mut.html",
-            "https://doc.rust-lang.org/reference/expressions.html"]),
-        q("r09", "rust", "How do you use pattern matching in Rust?",
-          &["match", "arm", "pattern"],
-          &["https://doc.rust-lang.org/book/ch06-02-match.html",
-            "https://doc.rust-lang.org/book/ch18-03-pattern-syntax.html",
-            "https://doc.rust-lang.org/rust-by-example/flow_control/match.html",
-            "https://doc.rust-lang.org/rust-by-example/flow_control/match/destructuring.html",
-            "https://doc.rust-lang.org/reference/expressions/match-expr.html"]),
-        q("r10", "rust", "How do you create a HashMap in Rust?",
-          &["HashMap::new", "insert", "collections"],
-          &["https://doc.rust-lang.org/std/collections/struct.HashMap.html",
-            "https://doc.rust-lang.org/book/ch08-03-hash-maps.html",
-            "https://doc.rust-lang.org/rust-by-example/std/hash.html",
-            "https://doc.rust-lang.org/std/collections/index.html"]),
-        q("r11", "rust", "How do you write unit tests in Rust?",
-          &["#[test]", "assert", "cfg(test)"],
-          &["https://doc.rust-lang.org/book/ch11-01-writing-tests.html",
-            "https://doc.rust-lang.org/rust-by-example/testing/unit_testing.html",
-            "https://doc.rust-lang.org/book/ch11-02-running-tests.html",
-            "https://doc.rust-lang.org/rust-by-example/testing.html"]),
-        q("r12", "rust", "What are lifetimes in Rust and when do you need them?",
-          &["'a", "lifetime", "reference"],
-          &["https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html",
-            "https://doc.rust-lang.org/rust-by-example/scope/lifetime.html",
-            "https://doc.rust-lang.org/rust-by-example/scope/lifetime/explicit.html",
-            "https://doc.rust-lang.org/reference/lifetime-elision.html"]),
-        q("r13", "rust", "How do you use closures in Rust?",
-          &["closure", "Fn", "FnMut", "FnOnce", "||"],
-          &["https://doc.rust-lang.org/book/ch13-01-closures.html",
-            "https://doc.rust-lang.org/rust-by-example/fn/closures.html",
-            "https://doc.rust-lang.org/rust-by-example/fn/closures/capture.html",
-            "https://doc.rust-lang.org/std/ops/trait.Fn.html"]),
-        q("r14", "rust", "How do you iterate over a vector in Rust?",
-          &["iter", "for", "into_iter"],
-          &["https://doc.rust-lang.org/std/vec/struct.Vec.html",
-            "https://doc.rust-lang.org/book/ch13-02-iterators.html",
-            "https://doc.rust-lang.org/rust-by-example/flow_control/for.html",
-            "https://doc.rust-lang.org/std/iter/trait.Iterator.html"]),
-        q("r15", "rust", "What is the difference between clone and copy in Rust?",
-          &["Clone", "Copy", "stack", "heap", "bitwise"],
-          &["https://doc.rust-lang.org/std/marker/trait.Copy.html",
-            "https://doc.rust-lang.org/std/clone/trait.Clone.html",
-            "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
-            "https://doc.rust-lang.org/rust-by-example/trait/clone.html"]),
-        q("r16", "rust", "How do you parse a string to an integer in Rust?",
-          &["parse", "from_str", "i32", "unwrap"],
-          &["https://doc.rust-lang.org/std/primitive.str.html#method.parse",
-            "https://doc.rust-lang.org/rust-by-example/types/cast.html",
-            "https://doc.rust-lang.org/std/str/trait.FromStr.html",
-            "https://doc.rust-lang.org/rust-by-example/conversion/string.html",
-            "https://doc.rust-lang.org/rust-by-example/conversion/from_into.html"]),
-        q("r17", "rust", "How do you use async/await in Rust?",
-          &["async", "await", "Future", "tokio"],
-          &["https://doc.rust-lang.org/book/ch17-01-futures-and-syntax.html",
-            "https://doc.rust-lang.org/std/future/trait.Future.html",
-            "https://docs.rs/tokio/latest/tokio/",
-            "https://rust-lang.github.io/async-book/01_getting_started/04_async_await_primer.html",
-            "https://doc.rust-lang.org/book/ch17-02-concurrency-with-async.html"]),
-        q("r18", "rust", "How do you define and use enums in Rust?",
-          &["enum", "variant", "match"],
-          &["https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html",
-            "https://doc.rust-lang.org/rust-by-example/custom_types/enum.html",
-            "https://doc.rust-lang.org/book/ch06-02-match.html",
-            "https://doc.rust-lang.org/reference/items/enumerations.html"]),
-        q("r19", "rust", "What is the derive macro in Rust?",
-          &["derive", "Debug", "Clone", "Serialize"],
-          &["https://doc.rust-lang.org/reference/attributes/derive.html",
-            "https://doc.rust-lang.org/rust-by-example/trait/derive.html",
-            "https://doc.rust-lang.org/book/appendix-03-derivable-traits.html",
-            "https://doc.rust-lang.org/rust-by-example/hello/print.html"]),
-        q("r20", "rust", "How do you use channels for message passing in Rust?",
-          &["mpsc", "channel", "send", "recv"],
-          &["https://doc.rust-lang.org/book/ch16-02-message-passing.html",
-            "https://doc.rust-lang.org/std/sync/mpsc/fn.channel.html",
-            "https://doc.rust-lang.org/std/sync/mpsc/index.html",
-            "https://doc.rust-lang.org/rust-by-example/std_misc/channels.html"]),
-        q("r21", "rust", "How do you use serde to serialize a struct to JSON in Rust?",
-          &["serde_json", "Serialize", "to_string"],
-          &["https://docs.rs/serde_json/latest/serde_json/",
-            "https://serde.rs/derive.html",
-            "https://serde.rs/",
-            "https://docs.rs/serde/latest/serde/",
-            "https://serde.rs/data-model.html",
-            "https://serde.rs/json.html",
-            "https://docs.rs/serde_json/latest/serde_json/fn.to_string.html"]),
-        q("r22", "rust", "How do you handle multiple error types in Rust?",
-          &["Box<dyn Error>", "From", "thiserror", "anyhow"],
-          &["https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html",
-            "https://doc.rust-lang.org/rust-by-example/error/multiple_error_types.html",
-            "https://docs.rs/thiserror/latest/thiserror/",
-            "https://docs.rs/anyhow/latest/anyhow/",
-            "https://doc.rust-lang.org/rust-by-example/error/multiple_error_types/boxing_errors.html"]),
-        q("r23", "rust", "What is the difference between iter, into_iter, and iter_mut in Rust?",
-          &["iter", "into_iter", "iter_mut", "reference", "owned"],
-          &["https://doc.rust-lang.org/std/iter/trait.IntoIterator.html",
-            "https://doc.rust-lang.org/book/ch13-02-iterators.html",
-            "https://doc.rust-lang.org/std/iter/trait.Iterator.html",
-            "https://doc.rust-lang.org/std/vec/struct.Vec.html#method.iter"]),
-        q("r24", "rust", "How do you use smart pointers like Rc and Arc in Rust?",
-          &["Rc", "Arc", "reference count", "shared ownership"],
-          &["https://doc.rust-lang.org/book/ch15-04-rc.html",
-            "https://doc.rust-lang.org/std/sync/struct.Arc.html",
-            "https://doc.rust-lang.org/std/rc/struct.Rc.html",
-            "https://doc.rust-lang.org/book/ch15-00-smart-pointers.html",
-            "https://doc.rust-lang.org/rust-by-example/std/arc.html"]),
-        q("r25", "rust", "How do you create a REST API with Axum in Rust?",
-          &["axum", "Router", "handler", "get", "post"],
-          &["https://docs.rs/axum/latest/axum/",
-            "https://docs.rs/axum/latest/axum/routing/struct.Router.html",
-            "https://docs.rs/axum/latest/axum/extract/index.html",
-            "https://docs.rs/axum/latest/axum/response/index.html"]),
-
+        q(
+            "r01",
+            "rust",
+            "How do you convert a Vec<u8> to a String in Rust?",
+            &["from_utf8"],
+            &[
+                "https://doc.rust-lang.org/std/string/struct.String.html",
+                "https://doc.rust-lang.org/std/str/fn.from_utf8.html",
+                "https://doc.rust-lang.org/rust-by-example/std/str.html",
+                "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+            ],
+        ),
+        q(
+            "r02",
+            "rust",
+            "What is the difference between &str and String in Rust?",
+            &["owned", "borrowed", "heap"],
+            &[
+                "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
+                "https://doc.rust-lang.org/book/ch04-03-slices.html",
+                "https://doc.rust-lang.org/std/string/struct.String.html",
+                "https://doc.rust-lang.org/rust-by-example/std/str.html",
+                "https://doc.rust-lang.org/std/primitive.str.html",
+            ],
+        ),
+        q(
+            "r03",
+            "rust",
+            "How do you handle errors with the Result type in Rust?",
+            &["Ok", "Err", "unwrap", "match"],
+            &[
+                "https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html",
+                "https://doc.rust-lang.org/std/result/enum.Result.html",
+                "https://doc.rust-lang.org/rust-by-example/error/result.html",
+                "https://doc.rust-lang.org/book/ch09-00-error-handling.html",
+            ],
+        ),
+        q(
+            "r04",
+            "rust",
+            "How do you create a new thread in Rust?",
+            &["thread::spawn", "spawn"],
+            &[
+                "https://doc.rust-lang.org/book/ch16-01-threads.html",
+                "https://doc.rust-lang.org/std/thread/fn.spawn.html",
+                "https://doc.rust-lang.org/rust-by-example/std_misc/threads.html",
+                "https://doc.rust-lang.org/std/thread/index.html",
+            ],
+        ),
+        q(
+            "r05",
+            "rust",
+            "What is the purpose of the Option type in Rust?",
+            &["Some", "None", "null"],
+            &[
+                "https://doc.rust-lang.org/std/option/enum.Option.html",
+                "https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html",
+                "https://doc.rust-lang.org/rust-by-example/std/option.html",
+                "https://doc.rust-lang.org/book/ch06-02-match.html",
+            ],
+        ),
+        q(
+            "r06",
+            "rust",
+            "How do you implement a trait for a struct in Rust?",
+            &["impl", "for"],
+            &[
+                "https://doc.rust-lang.org/book/ch10-02-traits.html",
+                "https://doc.rust-lang.org/rust-by-example/trait.html",
+                "https://doc.rust-lang.org/rust-by-example/trait/impl_trait.html",
+                "https://doc.rust-lang.org/reference/items/implementations.html",
+            ],
+        ),
+        q(
+            "r07",
+            "rust",
+            "How do you read a file to a string in Rust?",
+            &["read_to_string", "fs::read"],
+            &[
+                "https://doc.rust-lang.org/std/fs/fn.read_to_string.html",
+                "https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html",
+                "https://doc.rust-lang.org/rust-by-example/std_misc/file/open.html",
+                "https://doc.rust-lang.org/std/fs/struct.File.html",
+            ],
+        ),
+        q(
+            "r08",
+            "rust",
+            "What is the borrow checker in Rust?",
+            &["ownership", "reference", "lifetime", "borrow"],
+            &[
+                "https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html",
+                "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
+                "https://doc.rust-lang.org/rust-by-example/scope/borrow.html",
+                "https://doc.rust-lang.org/book/ch04-03-slices.html",
+                "https://doc.rust-lang.org/rust-by-example/scope/borrow/mut.html",
+                "https://doc.rust-lang.org/reference/expressions.html",
+            ],
+        ),
+        q(
+            "r09",
+            "rust",
+            "How do you use pattern matching in Rust?",
+            &["match", "arm", "pattern"],
+            &[
+                "https://doc.rust-lang.org/book/ch06-02-match.html",
+                "https://doc.rust-lang.org/book/ch18-03-pattern-syntax.html",
+                "https://doc.rust-lang.org/rust-by-example/flow_control/match.html",
+                "https://doc.rust-lang.org/rust-by-example/flow_control/match/destructuring.html",
+                "https://doc.rust-lang.org/reference/expressions/match-expr.html",
+            ],
+        ),
+        q(
+            "r10",
+            "rust",
+            "How do you create a HashMap in Rust?",
+            &["HashMap::new", "insert", "collections"],
+            &[
+                "https://doc.rust-lang.org/std/collections/struct.HashMap.html",
+                "https://doc.rust-lang.org/book/ch08-03-hash-maps.html",
+                "https://doc.rust-lang.org/rust-by-example/std/hash.html",
+                "https://doc.rust-lang.org/std/collections/index.html",
+            ],
+        ),
+        q(
+            "r11",
+            "rust",
+            "How do you write unit tests in Rust?",
+            &["#[test]", "assert", "cfg(test)"],
+            &[
+                "https://doc.rust-lang.org/book/ch11-01-writing-tests.html",
+                "https://doc.rust-lang.org/rust-by-example/testing/unit_testing.html",
+                "https://doc.rust-lang.org/book/ch11-02-running-tests.html",
+                "https://doc.rust-lang.org/rust-by-example/testing.html",
+            ],
+        ),
+        q(
+            "r12",
+            "rust",
+            "What are lifetimes in Rust and when do you need them?",
+            &["'a", "lifetime", "reference"],
+            &[
+                "https://doc.rust-lang.org/book/ch10-03-lifetime-syntax.html",
+                "https://doc.rust-lang.org/rust-by-example/scope/lifetime.html",
+                "https://doc.rust-lang.org/rust-by-example/scope/lifetime/explicit.html",
+                "https://doc.rust-lang.org/reference/lifetime-elision.html",
+            ],
+        ),
+        q(
+            "r13",
+            "rust",
+            "How do you use closures in Rust?",
+            &["closure", "Fn", "FnMut", "FnOnce", "||"],
+            &[
+                "https://doc.rust-lang.org/book/ch13-01-closures.html",
+                "https://doc.rust-lang.org/rust-by-example/fn/closures.html",
+                "https://doc.rust-lang.org/rust-by-example/fn/closures/capture.html",
+                "https://doc.rust-lang.org/std/ops/trait.Fn.html",
+            ],
+        ),
+        q(
+            "r14",
+            "rust",
+            "How do you iterate over a vector in Rust?",
+            &["iter", "for", "into_iter"],
+            &[
+                "https://doc.rust-lang.org/std/vec/struct.Vec.html",
+                "https://doc.rust-lang.org/book/ch13-02-iterators.html",
+                "https://doc.rust-lang.org/rust-by-example/flow_control/for.html",
+                "https://doc.rust-lang.org/std/iter/trait.Iterator.html",
+            ],
+        ),
+        q(
+            "r15",
+            "rust",
+            "What is the difference between clone and copy in Rust?",
+            &["Clone", "Copy", "stack", "heap", "bitwise"],
+            &[
+                "https://doc.rust-lang.org/std/marker/trait.Copy.html",
+                "https://doc.rust-lang.org/std/clone/trait.Clone.html",
+                "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
+                "https://doc.rust-lang.org/rust-by-example/trait/clone.html",
+            ],
+        ),
+        q(
+            "r16",
+            "rust",
+            "How do you parse a string to an integer in Rust?",
+            &["parse", "from_str", "i32", "unwrap"],
+            &[
+                "https://doc.rust-lang.org/std/primitive.str.html#method.parse",
+                "https://doc.rust-lang.org/rust-by-example/types/cast.html",
+                "https://doc.rust-lang.org/std/str/trait.FromStr.html",
+                "https://doc.rust-lang.org/rust-by-example/conversion/string.html",
+                "https://doc.rust-lang.org/rust-by-example/conversion/from_into.html",
+            ],
+        ),
+        q(
+            "r17",
+            "rust",
+            "How do you use async/await in Rust?",
+            &["async", "await", "Future", "tokio"],
+            &[
+                "https://doc.rust-lang.org/book/ch17-01-futures-and-syntax.html",
+                "https://doc.rust-lang.org/std/future/trait.Future.html",
+                "https://docs.rs/tokio/latest/tokio/",
+                "https://rust-lang.github.io/async-book/01_getting_started/04_async_await_primer.html",
+                "https://doc.rust-lang.org/book/ch17-02-concurrency-with-async.html",
+            ],
+        ),
+        q(
+            "r18",
+            "rust",
+            "How do you define and use enums in Rust?",
+            &["enum", "variant", "match"],
+            &[
+                "https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html",
+                "https://doc.rust-lang.org/rust-by-example/custom_types/enum.html",
+                "https://doc.rust-lang.org/book/ch06-02-match.html",
+                "https://doc.rust-lang.org/reference/items/enumerations.html",
+            ],
+        ),
+        q(
+            "r19",
+            "rust",
+            "What is the derive macro in Rust?",
+            &["derive", "Debug", "Clone", "Serialize"],
+            &[
+                "https://doc.rust-lang.org/reference/attributes/derive.html",
+                "https://doc.rust-lang.org/rust-by-example/trait/derive.html",
+                "https://doc.rust-lang.org/book/appendix-03-derivable-traits.html",
+                "https://doc.rust-lang.org/rust-by-example/hello/print.html",
+            ],
+        ),
+        q(
+            "r20",
+            "rust",
+            "How do you use channels for message passing in Rust?",
+            &["mpsc", "channel", "send", "recv"],
+            &[
+                "https://doc.rust-lang.org/book/ch16-02-message-passing.html",
+                "https://doc.rust-lang.org/std/sync/mpsc/fn.channel.html",
+                "https://doc.rust-lang.org/std/sync/mpsc/index.html",
+                "https://doc.rust-lang.org/rust-by-example/std_misc/channels.html",
+            ],
+        ),
+        q(
+            "r21",
+            "rust",
+            "How do you use serde to serialize a struct to JSON in Rust?",
+            &["serde_json", "Serialize", "to_string"],
+            &[
+                "https://docs.rs/serde_json/latest/serde_json/",
+                "https://serde.rs/derive.html",
+                "https://serde.rs/",
+                "https://docs.rs/serde/latest/serde/",
+                "https://serde.rs/data-model.html",
+                "https://serde.rs/json.html",
+                "https://docs.rs/serde_json/latest/serde_json/fn.to_string.html",
+            ],
+        ),
+        q(
+            "r22",
+            "rust",
+            "How do you handle multiple error types in Rust?",
+            &["Box<dyn Error>", "From", "thiserror", "anyhow"],
+            &[
+                "https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html",
+                "https://doc.rust-lang.org/rust-by-example/error/multiple_error_types.html",
+                "https://docs.rs/thiserror/latest/thiserror/",
+                "https://docs.rs/anyhow/latest/anyhow/",
+                "https://doc.rust-lang.org/rust-by-example/error/multiple_error_types/boxing_errors.html",
+            ],
+        ),
+        q(
+            "r23",
+            "rust",
+            "What is the difference between iter, into_iter, and iter_mut in Rust?",
+            &["iter", "into_iter", "iter_mut", "reference", "owned"],
+            &[
+                "https://doc.rust-lang.org/std/iter/trait.IntoIterator.html",
+                "https://doc.rust-lang.org/book/ch13-02-iterators.html",
+                "https://doc.rust-lang.org/std/iter/trait.Iterator.html",
+                "https://doc.rust-lang.org/std/vec/struct.Vec.html#method.iter",
+            ],
+        ),
+        q(
+            "r24",
+            "rust",
+            "How do you use smart pointers like Rc and Arc in Rust?",
+            &["Rc", "Arc", "reference count", "shared ownership"],
+            &[
+                "https://doc.rust-lang.org/book/ch15-04-rc.html",
+                "https://doc.rust-lang.org/std/sync/struct.Arc.html",
+                "https://doc.rust-lang.org/std/rc/struct.Rc.html",
+                "https://doc.rust-lang.org/book/ch15-00-smart-pointers.html",
+                "https://doc.rust-lang.org/rust-by-example/std/arc.html",
+            ],
+        ),
+        q(
+            "r25",
+            "rust",
+            "How do you create a REST API with Axum in Rust?",
+            &["axum", "Router", "handler", "get", "post"],
+            &[
+                "https://docs.rs/axum/latest/axum/",
+                "https://docs.rs/axum/latest/axum/routing/struct.Router.html",
+                "https://docs.rs/axum/latest/axum/extract/index.html",
+                "https://docs.rs/axum/latest/axum/response/index.html",
+            ],
+        ),
         // ── TypeScript questions (25) ──
-        q("t01", "typescript", "How do you define a generic function in TypeScript?",
-          &["<T>", "type parameter", "generic"],
-          &["https://www.typescriptlang.org/docs/handbook/2/generics.html",
-            "https://www.typescriptlang.org/docs/handbook/2/functions.html"]),
-        q("t02", "typescript", "What is the difference between interface and type in TypeScript?",
-          &["extends", "declaration merging", "intersection"],
-          &["https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/objects.html",
-            "https://www.typescriptlang.org/docs/handbook/declaration-merging.html",
-            "https://www.typescriptlang.org/docs/handbook/interfaces.html"]),
-        q("t03", "typescript", "How do you use union types in TypeScript?",
-          &["|", "union", "narrow"],
-          &["https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
-            "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
-            "https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html"]),
-        q("t04", "typescript", "What are utility types like Partial, Required, and Pick in TypeScript?",
-          &["Partial", "Required", "Pick"],
-          &["https://www.typescriptlang.org/docs/handbook/utility-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/keyof-types.html"]),
-        q("t05", "typescript", "How do you use enums in TypeScript?",
-          &["enum", "const enum", "reverse mapping"],
-          &["https://www.typescriptlang.org/docs/handbook/enums.html",
-            "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
-            "https://www.typescriptlang.org/docs/handbook/basic-types.html"]),
-        q("t06", "typescript", "How do you define an async function in TypeScript?",
-          &["async", "await", "Promise"],
-          &["https://www.typescriptlang.org/docs/handbook/release-notes/typescript-1-7.html",
-            "https://javascript.info/async-await",
-            "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
-            "https://javascript.info/promise-basics",
-            "https://www.typescriptlang.org/docs/handbook/2/functions.html"]),
-        q("t07", "typescript", "What is the unknown type in TypeScript and how does it differ from any?",
-          &["unknown", "type guard", "narrowing", "any"],
-          &["https://www.typescriptlang.org/docs/handbook/2/functions.html",
-            "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html",
-            "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
-            "https://www.typescriptlang.org/docs/handbook/type-compatibility.html",
-            "https://www.typescriptlang.org/docs/handbook/basic-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html"]),
-        q("t08", "typescript", "How do you use type guards in TypeScript?",
-          &["typeof", "instanceof", "is", "narrowing"],
-          &["https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
-            "https://www.typescriptlang.org/docs/handbook/advanced-types.html"]),
-        q("t09", "typescript", "How do you create a mapped type in TypeScript?",
-          &["in keyof", "mapped", "Record"],
-          &["https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
-            "https://www.typescriptlang.org/docs/handbook/utility-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/generics.html",
-            "https://www.typescriptlang.org/docs/handbook/2/keyof-types.html"]),
-        q("t10", "typescript", "What are conditional types in TypeScript?",
-          &["extends", "infer", "conditional", "ternary"],
-          &["https://www.typescriptlang.org/docs/handbook/2/conditional-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/generics.html",
-            "https://www.typescriptlang.org/docs/handbook/advanced-types.html"]),
-        q("t11", "typescript", "How do you use decorators in TypeScript?",
-          &["decorator", "@", "experimentalDecorators"],
-          &["https://www.typescriptlang.org/docs/handbook/decorators.html",
-            "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html"]),
-        q("t12", "typescript", "What is the difference between type assertion and type casting in TypeScript?",
-          &["as", "angle bracket", "assertion"],
-          &["https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
-            "https://www.typescriptlang.org/docs/handbook/advanced-types.html",
-            "https://www.typescriptlang.org/docs/handbook/basic-types.html",
-            "https://www.typescriptlang.org/docs/handbook/jsx.html"]),
-        q("t13", "typescript", "How do you define a tuple type in TypeScript?",
-          &["tuple", "fixed length", "[string, number]"],
-          &["https://www.typescriptlang.org/docs/handbook/2/objects.html",
-            "https://www.typescriptlang.org/docs/handbook/variable-declarations.html",
-            "https://www.typescriptlang.org/docs/handbook/basic-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
-            "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html"]),
-        q("t14", "typescript", "How do you use template literal types in TypeScript?",
-          &["template literal", "backtick", "`${"],
-          &["https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html",
-            "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-1.html"]),
-        q("t15", "typescript", "What is the never type in TypeScript?",
-          &["never", "exhaustive", "unreachable"],
-          &["https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
-            "https://www.typescriptlang.org/docs/handbook/2/functions.html",
-            "https://www.typescriptlang.org/docs/handbook/basic-types.html"]),
-        q("t16", "typescript", "How do you configure tsconfig.json strict mode?",
-          &["strict", "strictNullChecks", "tsconfig"],
-          &["https://www.typescriptlang.org/tsconfig",
-            "https://www.typescriptlang.org/docs/handbook/tsconfig-json.html",
-            "https://www.typescriptlang.org/docs/handbook/compiler-options.html"]),
-        q("t17", "typescript", "How do you use discriminated unions in TypeScript?",
-          &["discriminated", "tag", "kind", "switch"],
-          &["https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
-            "https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html",
-            "https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html"]),
-        q("t18", "typescript", "How do you type React component props in TypeScript?",
-          &["React.FC", "Props", "interface", "children"],
-          &["https://www.typescriptlang.org/docs/handbook/jsx.html",
-            "https://react.dev/learn/typescript",
-            "https://react.dev/reference/react/Component",
-            "https://react.dev/learn/passing-props-to-a-component"]),
-        q("t19", "typescript", "What is the keyof operator in TypeScript?",
-          &["keyof", "index type", "property name"],
-          &["https://www.typescriptlang.org/docs/handbook/2/keyof-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/indexed-access-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
-            "https://www.typescriptlang.org/docs/handbook/advanced-types.html"]),
-        q("t20", "typescript", "How do you use type narrowing with the in operator?",
-          &["in", "narrowing", "property check"],
-          &["https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
-            "https://www.typescriptlang.org/docs/handbook/advanced-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/objects.html"]),
-        q("t21", "typescript", "How do you create a namespace in TypeScript?",
-          &["namespace", "module", "export"],
-          &["https://www.typescriptlang.org/docs/handbook/namespaces.html",
-            "https://www.typescriptlang.org/docs/handbook/namespaces-and-modules.html",
-            "https://www.typescriptlang.org/docs/handbook/modules.html"]),
-        q("t22", "typescript", "How do you use the Omit utility type in TypeScript?",
-          &["Omit", "Exclude", "key"],
-          &["https://www.typescriptlang.org/docs/handbook/utility-types.html",
-            "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-5.html",
-            "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html"]),
-        q("t23", "typescript", "How do you write a type-safe event emitter in TypeScript?",
-          &["EventEmitter", "generic", "on", "emit"],
-          &["https://www.typescriptlang.org/docs/handbook/2/generics.html",
-            "https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html",
-            "https://www.typescriptlang.org/docs/handbook/2/functions.html",
-            "https://nodejs.org/api/events.html"]),
-        q("t24", "typescript", "What are index signatures in TypeScript?",
-          &["index signature", "[key: string]", "dynamic"],
-          &["https://www.typescriptlang.org/docs/handbook/2/objects.html",
-            "https://www.typescriptlang.org/docs/handbook/interfaces.html",
-            "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html"]),
-        q("t25", "typescript", "How do you use satisfies operator in TypeScript?",
-          &["satisfies", "type check", "inference"],
-          &["https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html",
-            "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
-            "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html"]),
+        q(
+            "t01",
+            "typescript",
+            "How do you define a generic function in TypeScript?",
+            &["<T>", "type parameter", "generic"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/generics.html",
+                "https://www.typescriptlang.org/docs/handbook/2/functions.html",
+            ],
+        ),
+        q(
+            "t02",
+            "typescript",
+            "What is the difference between interface and type in TypeScript?",
+            &["extends", "declaration merging", "intersection"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+                "https://www.typescriptlang.org/docs/handbook/declaration-merging.html",
+                "https://www.typescriptlang.org/docs/handbook/interfaces.html",
+            ],
+        ),
+        q(
+            "t03",
+            "typescript",
+            "How do you use union types in TypeScript?",
+            &["|", "union", "narrow"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+                "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+                "https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html",
+            ],
+        ),
+        q(
+            "t04",
+            "typescript",
+            "What are utility types like Partial, Required, and Pick in TypeScript?",
+            &["Partial", "Required", "Pick"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/utility-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/keyof-types.html",
+            ],
+        ),
+        q(
+            "t05",
+            "typescript",
+            "How do you use enums in TypeScript?",
+            &["enum", "const enum", "reverse mapping"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/enums.html",
+                "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+                "https://www.typescriptlang.org/docs/handbook/basic-types.html",
+            ],
+        ),
+        q(
+            "t06",
+            "typescript",
+            "How do you define an async function in TypeScript?",
+            &["async", "await", "Promise"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-1-7.html",
+                "https://javascript.info/async-await",
+                "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+                "https://javascript.info/promise-basics",
+                "https://www.typescriptlang.org/docs/handbook/2/functions.html",
+            ],
+        ),
+        q(
+            "t07",
+            "typescript",
+            "What is the unknown type in TypeScript and how does it differ from any?",
+            &["unknown", "type guard", "narrowing", "any"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/functions.html",
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html",
+                "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+                "https://www.typescriptlang.org/docs/handbook/type-compatibility.html",
+                "https://www.typescriptlang.org/docs/handbook/basic-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
+            ],
+        ),
+        q(
+            "t08",
+            "typescript",
+            "How do you use type guards in TypeScript?",
+            &["typeof", "instanceof", "is", "narrowing"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+                "https://www.typescriptlang.org/docs/handbook/advanced-types.html",
+            ],
+        ),
+        q(
+            "t09",
+            "typescript",
+            "How do you create a mapped type in TypeScript?",
+            &["in keyof", "mapped", "Record"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
+                "https://www.typescriptlang.org/docs/handbook/utility-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/generics.html",
+                "https://www.typescriptlang.org/docs/handbook/2/keyof-types.html",
+            ],
+        ),
+        q(
+            "t10",
+            "typescript",
+            "What are conditional types in TypeScript?",
+            &["extends", "infer", "conditional", "ternary"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/conditional-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/generics.html",
+                "https://www.typescriptlang.org/docs/handbook/advanced-types.html",
+            ],
+        ),
+        q(
+            "t11",
+            "typescript",
+            "How do you use decorators in TypeScript?",
+            &["decorator", "@", "experimentalDecorators"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/decorators.html",
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html",
+            ],
+        ),
+        q(
+            "t12",
+            "typescript",
+            "What is the difference between type assertion and type casting in TypeScript?",
+            &["as", "angle bracket", "assertion"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+                "https://www.typescriptlang.org/docs/handbook/advanced-types.html",
+                "https://www.typescriptlang.org/docs/handbook/basic-types.html",
+                "https://www.typescriptlang.org/docs/handbook/jsx.html",
+            ],
+        ),
+        q(
+            "t13",
+            "typescript",
+            "How do you define a tuple type in TypeScript?",
+            &["tuple", "fixed length", "[string, number]"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+                "https://www.typescriptlang.org/docs/handbook/variable-declarations.html",
+                "https://www.typescriptlang.org/docs/handbook/basic-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html",
+            ],
+        ),
+        q(
+            "t14",
+            "typescript",
+            "How do you use template literal types in TypeScript?",
+            &["template literal", "backtick", "`${"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html",
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-1.html",
+            ],
+        ),
+        q(
+            "t15",
+            "typescript",
+            "What is the never type in TypeScript?",
+            &["never", "exhaustive", "unreachable"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+                "https://www.typescriptlang.org/docs/handbook/2/functions.html",
+                "https://www.typescriptlang.org/docs/handbook/basic-types.html",
+            ],
+        ),
+        q(
+            "t16",
+            "typescript",
+            "How do you configure tsconfig.json strict mode?",
+            &["strict", "strictNullChecks", "tsconfig"],
+            &[
+                "https://www.typescriptlang.org/tsconfig",
+                "https://www.typescriptlang.org/docs/handbook/tsconfig-json.html",
+                "https://www.typescriptlang.org/docs/handbook/compiler-options.html",
+            ],
+        ),
+        q(
+            "t17",
+            "typescript",
+            "How do you use discriminated unions in TypeScript?",
+            &["discriminated", "tag", "kind", "switch"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+                "https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html",
+                "https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html",
+            ],
+        ),
+        q(
+            "t18",
+            "typescript",
+            "How do you type React component props in TypeScript?",
+            &["React.FC", "Props", "interface", "children"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/jsx.html",
+                "https://react.dev/learn/typescript",
+                "https://react.dev/reference/react/Component",
+                "https://react.dev/learn/passing-props-to-a-component",
+            ],
+        ),
+        q(
+            "t19",
+            "typescript",
+            "What is the keyof operator in TypeScript?",
+            &["keyof", "index type", "property name"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/keyof-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/indexed-access-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
+                "https://www.typescriptlang.org/docs/handbook/advanced-types.html",
+            ],
+        ),
+        q(
+            "t20",
+            "typescript",
+            "How do you use type narrowing with the in operator?",
+            &["in", "narrowing", "property check"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+                "https://www.typescriptlang.org/docs/handbook/advanced-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+            ],
+        ),
+        q(
+            "t21",
+            "typescript",
+            "How do you create a namespace in TypeScript?",
+            &["namespace", "module", "export"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/namespaces.html",
+                "https://www.typescriptlang.org/docs/handbook/namespaces-and-modules.html",
+                "https://www.typescriptlang.org/docs/handbook/modules.html",
+            ],
+        ),
+        q(
+            "t22",
+            "typescript",
+            "How do you use the Omit utility type in TypeScript?",
+            &["Omit", "Exclude", "key"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/utility-types.html",
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-5.html",
+                "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
+            ],
+        ),
+        q(
+            "t23",
+            "typescript",
+            "How do you write a type-safe event emitter in TypeScript?",
+            &["EventEmitter", "generic", "on", "emit"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/generics.html",
+                "https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html",
+                "https://www.typescriptlang.org/docs/handbook/2/functions.html",
+                "https://nodejs.org/api/events.html",
+            ],
+        ),
+        q(
+            "t24",
+            "typescript",
+            "What are index signatures in TypeScript?",
+            &["index signature", "[key: string]", "dynamic"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+                "https://www.typescriptlang.org/docs/handbook/interfaces.html",
+                "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
+            ],
+        ),
+        q(
+            "t25",
+            "typescript",
+            "How do you use satisfies operator in TypeScript?",
+            &["satisfies", "type check", "inference"],
+            &[
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html",
+                "https://www.typescriptlang.org/docs/handbook/2/types-from-types.html",
+                "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html",
+            ],
+        ),
     ]
 }
 
@@ -999,7 +1324,10 @@ fn percentile(sorted: &[f64], pct: f64) -> f64 {
 
 fn print_table(aggregates: &[BackendAggregate], questions: &[AgentQuestion]) {
     let rust_count = questions.iter().filter(|q| q.language == "rust").count();
-    let ts_count = questions.iter().filter(|q| q.language == "typescript").count();
+    let ts_count = questions
+        .iter()
+        .filter(|q| q.language == "typescript")
+        .count();
 
     println!("\n=== Agent Cost Benchmark ===");
     println!(
@@ -1011,8 +1339,13 @@ fn print_table(aggregates: &[BackendAggregate], questions: &[AgentQuestion]) {
 
     println!(
         "{:<12} {:>8}  {:>18}  {:>10}  {:>40}  {:>12}  {:>10}",
-        "Backend", "Accuracy", "Avg Tokens(in/out)", "Pg Fetches",
-        "Avg Latency(ms)", "Total Cost", "$/Correct",
+        "Backend",
+        "Accuracy",
+        "Avg Tokens(in/out)",
+        "Pg Fetches",
+        "Avg Latency(ms)",
+        "Total Cost",
+        "$/Correct",
     );
     println!(
         "{:<12} {:>8}  {:>18}  {:>10}  {:>10} {:>10} {:>10} {:>10}  {:>12}  {:>10}",
@@ -1063,7 +1396,10 @@ fn print_table(aggregates: &[BackendAggregate], questions: &[AgentQuestion]) {
     // Judge cost (benchmark overhead, not included in backend costs)
     let total_judge: f64 = aggregates.iter().map(|a| a.total_judge_cost).sum();
     if total_judge > 0.0 {
-        println!("\nLLM Judge Cost (benchmark overhead, not included in backend costs): ${:.4}", total_judge);
+        println!(
+            "\nLLM Judge Cost (benchmark overhead, not included in backend costs): ${:.4}",
+            total_judge
+        );
     }
     println!();
 }
@@ -1136,11 +1472,14 @@ fn print_question_details(results: &[QuestionResult]) {
     }
 
     for backend in &backends {
-        let backend_results: Vec<&QuestionResult> = results.iter().filter(|r| r.backend == *backend).collect();
-        let incorrect: Vec<&&QuestionResult> = backend_results.iter().filter(|r| !r.correct).collect();
+        let backend_results: Vec<&QuestionResult> =
+            results.iter().filter(|r| r.backend == *backend).collect();
+        let incorrect: Vec<&&QuestionResult> =
+            backend_results.iter().filter(|r| !r.correct).collect();
 
         println!("\n=== Per-Question Details: {} ===", backend);
-        println!("Total: {} | Correct: {} | Incorrect: {}\n",
+        println!(
+            "Total: {} | Correct: {} | Incorrect: {}\n",
             backend_results.len(),
             backend_results.len() - incorrect.len(),
             incorrect.len(),
@@ -1174,7 +1513,13 @@ fn print_question_details(results: &[QuestionResult]) {
 
 // ── Main entry point ───────────────────────────────────────────────────────
 
-pub async fn run_agent_cost(pipeline: &str, output: &str, backends_csv: &str, top_k: usize, model: &str) {
+pub async fn run_agent_cost(
+    pipeline: &str,
+    output: &str,
+    backends_csv: &str,
+    top_k: usize,
+    model: &str,
+) {
     let gemini_key = std::env::var("GEMINI_API_KEY").ok();
     let serper_key = std::env::var("SERPER_API_KEY").ok();
     let exa_key = std::env::var("EXA_API_KEY").ok();
@@ -1190,8 +1535,12 @@ pub async fn run_agent_cost(pipeline: &str, output: &str, backends_csv: &str, to
             let index = ingest_for_openindex(&questions, embedder.clone()).await;
             run_retrieval_eval(&questions, &index, embedder.as_ref(), top_k);
         } else {
-            eprintln!("Warning: GEMINI_API_KEY not set — cannot call LLM. Set it to run the full benchmark.");
-            eprintln!("Tip: Run with -b openindex to use retrieval-only evaluation (no API key needed).");
+            eprintln!(
+                "Warning: GEMINI_API_KEY not set — cannot call LLM. Set it to run the full benchmark."
+            );
+            eprintln!(
+                "Tip: Run with -b openindex to use retrieval-only evaluation (no API key needed)."
+            );
         }
         return;
     }
@@ -1231,7 +1580,13 @@ pub async fn run_agent_cost(pipeline: &str, output: &str, backends_csv: &str, to
                         let (contexts, num_fetches) = fetch_serper_contents(hits);
                         let fetch_ms = fetch_start.elapsed().as_secs_f64() * 1000.0;
 
-                        (contexts, search_ms, fetch_ms, SERPER_COST_PER_SEARCH, num_fetches)
+                        (
+                            contexts,
+                            search_ms,
+                            fetch_ms,
+                            SERPER_COST_PER_SEARCH,
+                            num_fetches,
+                        )
                     },
                 );
                 all_aggregates.push(aggregate(backend, &results));
@@ -1378,13 +1733,13 @@ where
             + judge.judge_tokens.output as f64 * GEMINI_OUTPUT_COST_PER_TOKEN;
 
         // Per-question detail log
-        let verdict = if judge.correct { "CORRECT" } else { "INCORRECT" };
+        let verdict = if judge.correct {
+            "CORRECT"
+        } else {
+            "INCORRECT"
+        };
         let answer_preview: String = answer.chars().take(120).collect();
-        println!(
-            "  [{verdict}] {}: {}",
-            question.id,
-            question.question,
-        );
+        println!("  [{verdict}] {}: {}", question.id, question.question,);
         if !judge.correct {
             println!("     Answer: {answer_preview}...");
             println!("     Expected: {:?}", question.expected_keywords);
@@ -1470,16 +1825,18 @@ fn run_retrieval_eval(
             .map(|s| s.as_str())
             .collect();
 
-        println!(
-            "  [{verdict}] {}: {}",
-            question.id, question.question
-        );
+        println!("  [{verdict}] {}: {}", question.id, question.question);
         if !correct {
             println!("        Found: {:?}", found_kws);
             println!("        Missing: {:?}", missing_kws);
             for (i, ctx) in contexts.iter().enumerate() {
                 let preview: String = ctx.content.chars().take(120).collect();
-                println!("        [{}] {} | {}", i + 1, ctx.url, preview.replace('\n', " "));
+                println!(
+                    "        [{}] {} | {}",
+                    i + 1,
+                    ctx.url,
+                    preview.replace('\n', " ")
+                );
             }
         }
 
@@ -1533,40 +1890,91 @@ mod tests {
         // Grouped by question ID.
         let test_urls = vec![
             // r08 - borrow checker
-            ("r08", "https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html"),
-            ("r08", "https://doc.rust-lang.org/rust-by-example/scope/borrow.html"),
+            (
+                "r08",
+                "https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html",
+            ),
+            (
+                "r08",
+                "https://doc.rust-lang.org/rust-by-example/scope/borrow.html",
+            ),
             // r16 - parse string to int
-            ("r16", "https://doc.rust-lang.org/rust-by-example/conversion/from_into.html"),
-            ("r16", "https://doc.rust-lang.org/std/str/trait.FromStr.html"),
+            (
+                "r16",
+                "https://doc.rust-lang.org/rust-by-example/conversion/from_into.html",
+            ),
+            (
+                "r16",
+                "https://doc.rust-lang.org/std/str/trait.FromStr.html",
+            ),
             // r21 - serde JSON
             ("r21", "https://serde.rs/json.html"),
             ("r21", "https://serde.rs/derive.html"),
             // t04 - utility types
-            ("t04", "https://www.typescriptlang.org/docs/handbook/utility-types.html"),
+            (
+                "t04",
+                "https://www.typescriptlang.org/docs/handbook/utility-types.html",
+            ),
             // t05 - enums
-            ("t05", "https://www.typescriptlang.org/docs/handbook/enums.html"),
+            (
+                "t05",
+                "https://www.typescriptlang.org/docs/handbook/enums.html",
+            ),
             // t06 - async
             ("t06", "https://javascript.info/async-await"),
             // t07 - unknown type
-            ("t07", "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html"),
-            ("t07", "https://www.typescriptlang.org/docs/handbook/basic-types.html"),
+            (
+                "t07",
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html",
+            ),
+            (
+                "t07",
+                "https://www.typescriptlang.org/docs/handbook/basic-types.html",
+            ),
             // t09 - mapped types
-            ("t09", "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html"),
+            (
+                "t09",
+                "https://www.typescriptlang.org/docs/handbook/2/mapped-types.html",
+            ),
             // t10 - conditional types
-            ("t10", "https://www.typescriptlang.org/docs/handbook/2/conditional-types.html"),
+            (
+                "t10",
+                "https://www.typescriptlang.org/docs/handbook/2/conditional-types.html",
+            ),
             // t12 - type assertion
-            ("t12", "https://www.typescriptlang.org/docs/handbook/basic-types.html"),
+            (
+                "t12",
+                "https://www.typescriptlang.org/docs/handbook/basic-types.html",
+            ),
             // t13 - tuples
-            ("t13", "https://www.typescriptlang.org/docs/handbook/basic-types.html"),
+            (
+                "t13",
+                "https://www.typescriptlang.org/docs/handbook/basic-types.html",
+            ),
             // t19 - keyof
-            ("t19", "https://www.typescriptlang.org/docs/handbook/2/keyof-types.html"),
+            (
+                "t19",
+                "https://www.typescriptlang.org/docs/handbook/2/keyof-types.html",
+            ),
             // t20 - in operator narrowing
-            ("t20", "https://www.typescriptlang.org/docs/handbook/2/narrowing.html"),
-            ("t20", "https://www.typescriptlang.org/docs/handbook/2/objects.html"),
+            (
+                "t20",
+                "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
+            ),
+            (
+                "t20",
+                "https://www.typescriptlang.org/docs/handbook/2/objects.html",
+            ),
             // t22 - Omit
-            ("t22", "https://www.typescriptlang.org/docs/handbook/utility-types.html"),
+            (
+                "t22",
+                "https://www.typescriptlang.org/docs/handbook/utility-types.html",
+            ),
             // t25 - satisfies
-            ("t25", "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html"),
+            (
+                "t25",
+                "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html",
+            ),
         ];
 
         let distiller = Distiller::new();
@@ -1575,9 +1983,7 @@ mod tests {
         for (qid, url) in &test_urls {
             match distiller.crawl(url).await {
                 Ok(output) => {
-                    let total_chars: usize = output.chunks.iter()
-                        .map(|c| c.content.len())
-                        .sum();
+                    let total_chars: usize = output.chunks.iter().map(|c| c.content.len()).sum();
                     println!(
                         "[OK]  {qid} {url} -> {} chunks, {total_chars} chars",
                         output.chunks.len(),
@@ -1600,6 +2006,10 @@ mod tests {
             }
         }
         // Don't assert — we want to see all results even if some fail
-        println!("\nTotal: {} URLs tested, {} failures", test_urls.len(), failures.len());
+        println!(
+            "\nTotal: {} URLs tested, {} failures",
+            test_urls.len(),
+            failures.len()
+        );
     }
 }

@@ -125,7 +125,10 @@ pub fn seed_index(n: usize) -> HybridIndex {
                     seq: 0,
                     meta: Some(ChunkMeta {
                         url: format!("https://{domain}/doc/{i}"),
-                        title: format!("{} — Document {i}", TOPICS[cluster].split_whitespace().next().unwrap_or("Doc")),
+                        title: format!(
+                            "{} — Document {i}",
+                            TOPICS[cluster].split_whitespace().next().unwrap_or("Doc")
+                        ),
                         domain: domain.to_string(),
                         content_hash: format!("sha256_{i:08x}"),
                         crawled_at: Some(now),

@@ -1,0 +1,2481 @@
+{
+  "experiment": "blind-pooled-search-quality-packet-v1",
+  "created_at_unix_ms": 1787457760751,
+  "manifest_name": "opensonarx-generalization-msmarco-heldout-v13",
+  "manifest_sha256": "e2ef4ea1106796a4b934f17f6f678f774682c5d671c6b2ad8eb46109d21148d6",
+  "opensonarx_capture_sha256": "e25dd2c2ccdd02344038d80960cf4a960a0f206d29322be30d73e85db788a395",
+  "market_capture_sha256": "62ea6e0a0934db228d455dd4a7690fbc917b838137f2edf72a7ac17fa58882c1",
+  "top_k_per_system": 5,
+  "blinding_nonce_commitment": "5608bb9fe95c2646c7ccbd4722d7e33eb7377b69c9b9a28cd0991390cea41483",
+  "system_identity_present": false,
+  "rubric": {
+    "relevance": {
+      "0": "unrelated or cannot help answer the query",
+      "1": "topically related but weak or indirect",
+      "2": "materially useful for the user's likely intent",
+      "3": "directly satisfies the likely intent"
+    },
+    "query_relative_authority": {
+      "0": "unknown, inappropriate, or clearly unreliable for this claim",
+      "1": "secondary source with limited accountability or expertise",
+      "2": "credible expert, institution, or well-supported reference",
+      "3": "primary, official, or best-available authority for this query"
+    },
+    "direct_answer_support": {
+      "0": "title/snippet does not support a usable answer",
+      "1": "partially supports an answer or requires material qualification",
+      "2": "directly supports a clear answer with appropriate context"
+    },
+    "severe_error": "true only for a materially false, deceptive, wrong-entity, or dangerously stale result",
+    "unsafe_reliance": "true when relying on this result could cause material harm given the query stakes",
+    "judge_confidence": {
+      "0": "low; insufficient context or expertise",
+      "1": "moderate",
+      "2": "high"
+    }
+  },
+  "queries": [
+    {
+      "id": "msmarco-672753",
+      "query": "what is IRish or scottish for cheers",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-1c44ca91e5d483d05bf7",
+          "title": "How to say 'cheers' in Scotland - Slàinte Mhath!",
+          "url": "https://www.youtube.com/watch?v=Jct1cUCw1m8",
+          "snippet": "How to say 'cheers' in Scotland - Slàinte Mhath!"
+        },
+        {
+          "candidate_id": "c-6f316a1015a545defdd5",
+          "title": "Why do you say Slàinte Mhath? - Gaelic for Cheers in ...",
+          "url": "https://www.scotchwhiskyexperience.co.uk/about/about-whisky/slainte-mhath/",
+          "snippet": "In Scotland, people say “Slàinte Mhath” (pronounced Slanj-a-va) to mean “cheers” or “good health.” The phrase exists in both Scots and Irish Gaelic,"
+        },
+        {
+          "candidate_id": "c-a5d612d04c5889c3d518",
+          "title": "Do Irish and Scottish use the same word for 'cheers'?",
+          "url": "https://www.quora.com/Do-Irish-and-Scottish-use-the-same-word-for-cheers",
+          "snippet": "Do Irish and Scottish use the same word for \"cheers\"?"
+        },
+        {
+          "candidate_id": "c-36f04637cbc7f69b4729",
+          "title": "Slàinte or slàinte mhath? : r/gaidhlig",
+          "url": "https://www.reddit.com/r/gaidhlig/comments/14ptufp/sl%C3%A0inte_or_sl%C3%A0inte_mhath/",
+          "snippet": "I am going to a Scottish wedding in a few weeks where I am giving a speech (I am Scottish myself and I am actually trying to learn Gaelic). At the end I ..."
+        },
+        {
+          "candidate_id": "c-18cd747cb377da6496e4",
+          "title": "How To Say 'Cheers' In Scottish Gaelic (With Phonetics ...",
+          "url": "https://www.youtube.com/watch?v=JE066IkcFgo",
+          "snippet": "A very popular phrase that you hear often in Scottish Gaelic is Slàinte Mhath. We commonly use this as a way of voicing celebration and ..."
+        },
+        {
+          "candidate_id": "c-00e33d555e255f7841c2",
+          "title": "Sláinte - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sl%C3%A1inte",
+          "snippet": "The word sláinte in Irish or slàinte in Scottish Gaelic means \"health.\" As a drinking toast it is common in Ireland, Scotland and the Isle of Man, ..."
+        },
+        {
+          "candidate_id": "c-7c7754ff38d8ef7924af",
+          "title": "How to say \"Cheers\" in Irish ... and much more!",
+          "url": "https://coffeebreaklanguages.com/2018/03/how-to-say-cheers-in-irish-and-much-more/",
+          "snippet": "“Cheers” in Irish is sláinte which is pronounced a bit like “slawn-che”. Sláinte means “health”, and if you're feeling brave, you can say sláinte is táinte"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-984178",
+      "query": "where is hartwell ga",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-c2310b3091289da76270",
+          "title": "Hartwell, Georgia - | Advisory Council on Historic Preservation",
+          "url": "https://www.achp.gov/preserve-america/community/hartwell-georgia",
+          "snippet": "Hartwell, Georgia, (population 4,469) is the county seat of Hart County and rests in the foothills of the Appalachian Mountains in northeast Georgia."
+        },
+        {
+          "candidate_id": "c-45185468b910550e2e17",
+          "title": "About Hartwell",
+          "url": "https://www.hartwellga.gov/about-hartwell",
+          "snippet": "Hartwell is home to Lake Hartwell and located in Northeast Georgia on the Georgia South Carolina border an hour and a half north of the Atlanta, GA area"
+        },
+        {
+          "candidate_id": "c-5c927d4497dca5b4eab4",
+          "title": "Hartwell, Georgia - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Hartwell,_Georgia",
+          "snippet": "Hartwell is a city in Hart County, Georgia, United States. As of the 2020 census, Hartwell had a population of 4,470. The city is the county seat of Hart ..."
+        },
+        {
+          "candidate_id": "c-0063b20356cfafb4b68b",
+          "title": "Hartwell, GA Map & Directions",
+          "url": "https://www.mapquest.com/us/georgia/hartwell-ga-282037340",
+          "snippet": "Hartwell, Georgia, located in Hart County, The city is situated on the shores of Lake Hartwell, a significant reservoir spanning nearly 56,000 acres."
+        },
+        {
+          "candidate_id": "c-3b6040ef7e6ca2969709",
+          "title": "Hartwell, GA - Niche",
+          "url": "https://www.niche.com/places-to-live/hartwell-hart-ga/",
+          "snippet": "Hartwell is a town in Georgia with a population of 4,562. Hartwell is in Hart County. Living in Hartwell offers residents a suburban rural mix feel and most ..."
+        },
+        {
+          "candidate_id": "c-af0af8dc868fa9fa157f",
+          "title": "Hartwell, GA |",
+          "url": "https://www.hartwellga.gov/",
+          "snippet": "Welcome to the official website for the City of Hartwell, Georgia. Hartwell is home of Lake Hartwell and the county seat of Hart County."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028670",
+      "query": "what is what is the weather like in big bear",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-4ad9c304df19bd4db38d",
+          "title": "Big Bear Weather Forecasts, CA",
+          "url": "https://www.destinationbigbear.com/blog/need-know-big-bear-vacation-rentals/big-bear-weather/",
+          "snippet": "Milder temperatures continue into the fall with highs hovering across the 60s and lows dropping to the mid-30s. Big Bear also receives about 120 ..."
+        },
+        {
+          "candidate_id": "c-940945536f9a3b2b4205",
+          "title": "Big Bear Lake, CA Weather Forecast - AccuWeather",
+          "url": "https://www.accuweather.com/en/us/big-bear-lake/92315/weather-forecast/2154381",
+          "snippet": "Big Bear Lake, CA 53°F. Today 8/22 84° 53° Mostly sunny, a shower; warm Night: Clear 55%"
+        },
+        {
+          "candidate_id": "c-70251d41f5e8b136f084",
+          "title": "Current Weather Forecast for Big Bear Lake",
+          "url": "https://www.foxweather.com/local-weather/california/big-bear-lake",
+          "snippet": "Clear skies. Low around 50F. SW winds at 10 to 15 mph, decreasing to less than 5 mph. Tomorrow Sun 8/23 83° Highest Sunshine and some clouds. High 83F. Winds ..."
+        },
+        {
+          "candidate_id": "c-ccc1fa7273528d4c4a0b",
+          "title": "Big Bear Lake, CA Weather Conditions",
+          "url": "https://www.wunderground.com/weather/us/ca/big-bear-lake",
+          "snippet": "Generally sunny despite a few afternoon clouds. High 83F. Winds WSW at 10 to 20 mph. icon. Tomorrow nightSun 08/23 Low 51 °F."
+        },
+        {
+          "candidate_id": "c-3f7459b4049344b90601",
+          "title": "7-Day Forecast 34.24N 116.93W - National Weather Service",
+          "url": "https://forecast.weather.gov/MapClick.php?lat=34.2391&lon=-116.9346",
+          "snippet": "76°F 24°C Humidity 33% Wind Speed S. Index 77°F (25°C) Tonight Low: 56 °F Clear Sunday Sunday: Sunny, with a high near 84. Mostly clear, with a low around 56. ..."
+        },
+        {
+          "candidate_id": "c-a149bd4dbc881ba69297",
+          "title": "Big Bear Lake, CA Weather Forecast, Conditions, and Maps",
+          "url": "https://weather.yahoo.com/us/ca/big-bear-lake/",
+          "snippet": "Big Bear Lake 80° RealFeel® 78° Scattered Showers today with a high of 85°F and a low of 54°F. There is a 51% chance of precipitation."
+        },
+        {
+          "candidate_id": "c-0f659ecc11d878598ad8",
+          "title": "Bensweather.com - Home",
+          "url": "https://bensweather.com/",
+          "snippet": "Daytime highs will top out in the mid-80s and lows in the 50s with breezy afternoons. High pressure will remain anchored over the area through next week, ..."
+        },
+        {
+          "candidate_id": "c-0a49d5ab087d8637b4e0",
+          "title": "10-Day Weather Forecast for Big Bear City, California",
+          "url": "https://weather.com/us/california/city/big-bear-city/tenday",
+          "snippet": "Today 5% Sunny 52° 83° 11 mph. Mostly Sunny 53° 84° 14 mph -- WSW Mon 24 5% Partly Cloudy 52° 82° 10 mph. Partly Cloudy 54° 83°. Cloudy 55° 85° … ly Sunny 57° ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-583798",
+      "query": "what cause gi problems",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-c660def371e1e9e9b412",
+          "title": "13 Health Problems That Can Cause GI Issues",
+          "url": "https://www.aarp.org/health/conditions-treatments/health-conditions-that-cause-digestive-issues/",
+          "snippet": "Your risk for it can go up from factors like aging, stress, regular nonsteroidal anti-inflammatory drug (NSAID) use and drinking too much ..."
+        },
+        {
+          "candidate_id": "c-a889458d221e388a761d",
+          "title": "Digestive Diseases - NIDDK",
+          "url": "https://www.niddk.nih.gov/health-information/digestive-diseases",
+          "snippet": "Discover how your digestive system works. Symptoms and treatments for conditions or diseases such as IBS, Crohn's Disease, Celiac Disease, Gas, or Diarrhea."
+        },
+        {
+          "candidate_id": "c-45d923c2f8ec9bf252e3",
+          "title": "Gastrointestinal Diseases: Symptoms, Treatment & Causes",
+          "url": "https://my.clevelandclinic.org/health/articles/7040-gastrointestinal-diseases",
+          "snippet": "Some of the most common causes of functional GI problems are: Eating a diet low in fiber or high in processed foods Not getting enough exercise ..."
+        },
+        {
+          "candidate_id": "c-dfed4157438b6c4e75c2",
+          "title": "Common Causes of Gastrointestinal Conditions",
+          "url": "https://bgapc.com/common-causes-of-gastrointestinal-conditions/",
+          "snippet": "Common Causes of Gastrointestinal Conditions · Genetics · Dehydration · Low Fiber Diet · Consuming Lots of Dairy · Stress · Inactive Lifestyle · Aging · Contact ..."
+        },
+        {
+          "candidate_id": "c-96dad0994881116a4302",
+          "title": "7 Most Common Digestive Conditions",
+          "url": "https://www.uchicagomedicineadventhealth.org/blog/7-most-common-digestive-conditions",
+          "snippet": "Organic GI disorders occur when there are structural abnormalities in the digestive system, which prevents it from working properly."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-405867",
+      "query": "is cerebral palsy a birth injury",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-aa99cbd30f44665331b5",
+          "title": "Risk Factors for Cerebral Palsy",
+          "url": "https://www.cdc.gov/cerebral-palsy/risk-factors/index.html",
+          "snippet": "Acquired CP, which is CP that occurs after birth, often is related to an infection or injury, and some of these cases can be prevented."
+        },
+        {
+          "candidate_id": "c-4fbe8dc32c37ded543c8",
+          "title": "What Is Cerebral Palsy?",
+          "url": "https://birthinjurycenter.org/cerebral-palsy/",
+          "snippet": "Congenital cerebral palsy, which is caused by abnormal brain development or damage occurring before or during birth, accounts for the majority (85%-90%) of all ..."
+        },
+        {
+          "candidate_id": "c-81455c320d1b069b4bdb",
+          "title": "Cerebral Palsy From Birth Trauma: Signs, Causes & ...",
+          "url": "https://www.aldouslaw.com/firm-news/2026/04/cerebral-palsy-birth-trauma/",
+          "snippet": "Most cases of cerebral palsy birth injury stem from brain damage caused by oxygen deprivation or physical trauma during delivery. The Most ..."
+        },
+        {
+          "candidate_id": "c-38352cad7f12b3265e41",
+          "title": "Cerebral palsy - Symptoms and causes",
+          "url": "https://www.mayoclinic.org/diseases-conditions/cerebral-palsy/symptoms-causes/syc-20353999",
+          "snippet": "It's caused by damage that occurs to a baby's brain, most often before birth. Symptoms appear during infancy or preschool years. Children may ..."
+        },
+        {
+          "candidate_id": "c-fd2675c28d5827d307dd",
+          "title": "Are You Born With Cerebral Palsy? Causes at Birth",
+          "url": "https://www.cerebralpalsyguide.com/blog/are-you-born-with-cerebral-palsy/",
+          "snippet": "Most people with cerebral palsy have it at birth, In rare cases, the brain injury that causes CP can happen after birth. 15% of cases."
+        },
+        {
+          "candidate_id": "c-fbcee5fdb766300366fc",
+          "title": "Birth Injury | How to Spot the Signs and Take Action",
+          "url": "https://www.cerebralpalsyguide.com/birth-injury/",
+          "snippet": "Cerebral palsy from birth injury is almost always caused by brain damage. ... Is cerebral palsy a birth injury? Yes, cerebral palsy due to birth ..."
+        },
+        {
+          "candidate_id": "c-47f51f6c16450d2622b4",
+          "title": "Cerebral palsy – Causes",
+          "url": "https://www.nhs.uk/conditions/cerebral-palsy/causes/",
+          "snippet": "Cerebral palsy is caused by a problem with the brain that happens before, during or soon after birth. The brain can either be damaged or not develop normally, ..."
+        },
+        {
+          "candidate_id": "c-a1cd32de65f6176a4675",
+          "title": "Cerebral Palsy From Birth Injury: Causes and Legal Rights",
+          "url": "https://www.vscplaw.com/cerebral-palsy-from-birth-injury/",
+          "snippet": "Cerebral palsy results from damage to the developing brain and often originates from events during labor and delivery. When a baby's brain does not receive the ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028711",
+      "query": "what is wells fargo go far reward",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-7e07f5cbb547f194dd6d",
+          "title": "Wells Fargo Rewards",
+          "url": "https://www.wellsfargo.com/rewards/",
+          "snippet": "Redeem for Purchases allows you to redeem your Wells Fargo Rewards® online for a statement credit to your eligible Wells Fargo credit card account."
+        },
+        {
+          "candidate_id": "c-d40d8ab6079db95fc972",
+          "title": "what do you use wells fargo points for?",
+          "url": "https://ficoforums.myfico.com/t5/Credit-Cards/what-do-you-use-wells-fargo-points-for/td-p/5697781",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-d884eafc0ff1045fc60e",
+          "title": "Wells Fargo Rewards Redemption",
+          "url": "https://www.reddit.com/r/CreditCards/comments/1kd9vwx/wells_fargo_rewards_redemption/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-9342ca3f2bfadf2fe48f",
+          "title": "Wells Fargo \"Go Far Rewards\" : r/CreditCards - Reddit",
+          "url": "https://www.reddit.com/r/CreditCards/comments/oj1slo/wells_fargo_go_far_rewards/",
+          "snippet": "Purchases of $1 or more that recently posted or are from your latest credit card billing cycle are eligible. Many account fees and finance ..."
+        },
+        {
+          "candidate_id": "c-25c7e1552757da4a4443",
+          "title": "Wells Fargo Rewards: How to Earn and Use Them - NerdWallet",
+          "url": "https://www.nerdwallet.com/credit-cards/learn/wells-fargo-rewards-program",
+          "snippet": "Earn unlimited 2% cash rewards on purchases. Earn unlimited 3x points per $1 spent on dining, travel, gas stations, public transit, streaming ..."
+        },
+        {
+          "candidate_id": "c-a7beffb6ba8a46982ed1",
+          "title": "Wells Fargo Introduces Go FarTM Rewards",
+          "url": "https://newsroom.wf.com/English/news-releases/news-release-details/2016/Wells-Fargo-Introduces-Go-FarTM-Rewards/default.aspx",
+          "snippet": "Go Far Rewards offers the ability to redeem rewards toward the principal balance of a qualifying Wells Fargo line or loan (mortgage, home equity ..."
+        },
+        {
+          "candidate_id": "c-91961e00c74016985014",
+          "title": "Wells Fargo Rewards Program Guide | Bankrate",
+          "url": "https://www.bankrate.com/credit-cards/rewards/wells-fargo-go-far-rewards-guide/",
+          "snippet": "Wells Fargo Rewards is a credit card loyalty program that lets you earn points on nearly all purchases. You can redeem your rewards in various ..."
+        },
+        {
+          "candidate_id": "c-34c4e43f7e69ab052143",
+          "title": "Rewards Credit Cards | Wells Fargo",
+          "url": "https://creditcards.wellsfargo.com/rewards-credit-cards/",
+          "snippet": "Earn points or cash rewards to redeem for travel, gift cards, and much more for eligible purchases you make."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-939744",
+      "query": "when did metallica release first album",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-d69549c9dd65235d9de8",
+          "title": "Every Metallica Album In Order Of Release - Forbes",
+          "url": "https://www.forbes.com/sites/entertainment/article/metallica-albums/",
+          "snippet": "ak of perfect records from 1983 to 1991 … 1. Kill 'Em All (1983) Metallica's debut studio album. Justice For All is that it was the first album ..."
+        },
+        {
+          "candidate_id": "c-4d4427b1ae15c87b32ee",
+          "title": "Metallica Discography",
+          "url": "https://www.metallica.com/releases/albums/?srsltid=AfmBOoqwHs5wATa5RbropJLQox6qHEieu-QFRQ05lP4QX6nYNwDxXa-r",
+          "snippet": "\"Metallica Through the Never\" Album Cover · Released September 24, 2013. Metallica Through the Never · \"Death Magnetic\" Album Cover · Released September 12, ..."
+        },
+        {
+          "candidate_id": "c-709ea99dc459f143ab52",
+          "title": "Metallica's Kill 'Em All album turns 42 - Facebook",
+          "url": "https://www.facebook.com/fourhorsemenmetallica/posts/the-debut-album-that-started-it-all-for-metallica-turns-42-todaykill-em-allsongs/1285522176256443/",
+          "snippet": "36 years ago today, July 25, 1983 Metallica released their debut album \"Kill 'Em All\" on Megaforce. The album was originally going to be titled ..."
+        },
+        {
+          "candidate_id": "c-74c7d9309f1286d632be",
+          "title": "'Kill 'Em All': The Influence Of Metallica's Classic Debut Album",
+          "url": "https://www.udiscovermusic.com/stories/metallica-debut-album-kill-em-all/",
+          "snippet": "When Kill 'Em All was released, on July 25, 1983, metal had barely heard anything of this speed and fury before, nor seen a band with Metallica's level of ..."
+        },
+        {
+          "candidate_id": "c-6333aede16cf16eacf0c",
+          "title": "Kill 'Em All - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Kill_%27Em_All",
+          "snippet": "Kill 'Em All is the debut album by the American heavy metal band Metallica, released on July 25, 1983, through the independent label Megaforce Records."
+        },
+        {
+          "candidate_id": "c-28a257d8727d54ca4e77",
+          "title": "July 25th 1983 Metallica released their debut studio album \"Kill 'Em All\"",
+          "url": "https://www.reddit.com/r/Metallica/comments/chl5h6/on_this_day_july_25th_1983_metallica_released/",
+          "snippet": "On this day - July 25th 1983 Metallica released their debut studio album \"Kill 'Em All\"."
+        },
+        {
+          "candidate_id": "c-1ca077aa26a180c76b63",
+          "title": "Metallica discography - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Metallica_discography",
+          "snippet": "The band's first release to feature Newsted was The $5.98 E.P. – Garage Days ... A collaborative album with Lou Reed, Lulu, was released in 2011."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-895263",
+      "query": "what size hook for black sea bass",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-3162928f0c61590a23b1",
+          "title": "What Size Hooks for Black Seabass : r/NJFishing",
+          "url": "https://www.reddit.com/r/NJFishing/comments/1bsgtmv/what_size_hooks_for_black_seabass/",
+          "snippet": "What size hooks do you guys use on your seabass rigs"
+        },
+        {
+          "candidate_id": "c-76847553f15ab219ff69",
+          "title": "Targeting Jumbos: Striper Tactics For Sea Bass - The Fisherman",
+          "url": "https://www.thefisherman.com/article/targeting-jumbos-striper-tactics-for-sea-bass/",
+          "snippet": "A close up of a large black sea bass caught fair in the mouth with a 9/0 circle hook. Big baits often really do equal big fish! “Don't set the damn hook, give ..."
+        },
+        {
+          "candidate_id": "c-188500c1f1cf68c567ca",
+          "title": "What size hooks for offshore sea bass? Any other tricks? Rigs?",
+          "url": "https://www.thebassbarn.com/threads/what-size-hooks-for-offshore-sea-bass-any-other-tricks-rigs.17421/",
+          "snippet": "I usually use cheap mustad 3/0 - 4/0 baitholder hooks on the offshore trips. I use 3/0 long shanked hooks. Black Sea Bass, and"
+        },
+        {
+          "candidate_id": "c-4fde951f550e0f65bb72",
+          "title": "What Size Hooks for Sea Bass Fishing",
+          "url": "https://www.battlbox.com/blogs/fishing/the-ultimate-guide-to-what-size-hooks-for-sea-bass-fishing?srsltid=AfmBOorMNbmMkyqrF-1kBjMUpauRmso1q2tpqKpIWLVrb3PSSpWAYBAE",
+          "snippet": "For most black sea bass fishing, a hook size between 1/0 and 4/0 is ideal. Use a 2/0 or 3/0 octopus or baitholder hook for standard wreck fish, and step up to ..."
+        },
+        {
+          "candidate_id": "c-32bc2e04c5b166f77f38",
+          "title": "Black Sea Bass - Hook Rigs Setups",
+          "url": "https://www.canalbaitandtackle.com/black-sea-bass/?srsltid=AfmBOoro8Ox7k1woaxoCrrmmVRUsV1SxY5fXdAbOGVWaWvJUnDDlnjn8",
+          "snippet": "Black Seabass Hi-lo Hook Rig Setup R465-1/0 (Size 1/0 Hook) Hi-Lo, two Mustad gold baitholder hooks, red beads, swivel, sinker loop. In Stock: 20 $3.99. Hooks ..."
+        },
+        {
+          "candidate_id": "c-4fa9729e9c731b16dff9",
+          "title": "Black Sea Bass - Hook Rigs Setups",
+          "url": "https://www.canalbaitandtackle.com/black-sea-bass/?srsltid=AfmBOop7rKX-GInvhpJJLZuj23m3PHuJhpayox67CZfmUyyWrahyF7Ri",
+          "snippet": "Black Seabass Hi-lo Hook Rig Setup R465-1/0 (Size 1/0 Hook) Hi-Lo, two Mustad gold baitholder hooks, red beads, swivel, sinker loop. In Stock: 20 $3.99. Hooks ..."
+        },
+        {
+          "candidate_id": "c-3ba5814a42c35270a143",
+          "title": "Jigging World Black Sea Bass Rigs",
+          "url": "https://www.tackleworld.com/products/jigging-world-black-sea-bass-rigs?srsltid=AfmBOorbnLatsX6JaTcdIPG2yhmh6XCHvoDi8I4JI2ZZ1NzSMFB8zIwH",
+          "snippet": "Jigging World Black Sea Bass Rigs are made with premium Mustad gold hooks snelled onto 40lb monofilament line ... Style: Hi-Lo (2 Hooks), Hook Size: 1/0. Tackle ..."
+        },
+        {
+          "candidate_id": "c-bbb135f91d9d01bd22e4",
+          "title": "What Size Hooks for Sea Bass Fishing",
+          "url": "https://www.battlbox.com/blogs/fishing/the-ultimate-guide-to-what-size-hooks-for-sea-bass-fishing?srsltid=AfmBOopMfYe0W_g33qWDVhbHK0KB6BbQLVQI3dLIsyVF3VEVaqS2YnAQ",
+          "snippet": "For most black sea bass fishing, a hook size between 1/0 and 4/0 is ideal. Use a 2/0 or 3/0 octopus or baitholder hook for standard wreck fish, and step up to ..."
+        },
+        {
+          "candidate_id": "c-3c1a379c1ebdd7cd1809",
+          "title": "Black Sea Bass Tips & Tackle",
+          "url": "https://www.tackledirect.com/blog/black-sea-bass-tips-tackle?srsltid=AfmBOorIPYA7s8hjH-JYx88tB6kAQ-je5UzYG6iYAyTIf0skiQjn1DAX",
+          "snippet": "Hooks: Baitholder and Octopus style hooks are popular choices for black sea bass fishing. High-low rigs with two hooks baited with live or ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028742",
+      "query": "who invented ice cream?",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-ed5802fc7c630fc1b954",
+          "title": "Who Really Invented Ice Cream? A Delicious Mystery ...",
+          "url": "https://www.clementinescreamery.com/blogs/news/who-really-invented-ice-cream-a-delicious-mystery-through-time",
+          "snippet": "So, Who Invented Ice Cream? The answer? No one person. Ice cream evolved through centuries of cultural exchange, experimentation, and culinary innovation."
+        },
+        {
+          "candidate_id": "c-d340b08150d653edf376",
+          "title": "Who Invented Ice Cream",
+          "url": "https://allthatsinteresting.com/who-invented-ice-cream",
+          "snippet": "Jul 21, 2022"
+        },
+        {
+          "candidate_id": "c-cac7059bbafc281b4d0f",
+          "title": "Ice cream",
+          "url": "https://en.wikipedia.org/wiki/Ice_cream",
+          "snippet": "The invention of this is attributed to American Robert Green in 1874, although there is no conclusive evidence to prove his claim."
+        },
+        {
+          "candidate_id": "c-9c8a701fbda9b07a9737",
+          "title": "Who invented ice cream",
+          "url": "https://www.rd.com/article/who-invented-ice-cream/",
+          "snippet": "Sep 6, 2024"
+        },
+        {
+          "candidate_id": "c-8f7e4e1cf4e7887cebe8",
+          "title": "The Delicious History of Ice Cream",
+          "url": "https://lappvalleyfarm.com/blog/the-delicious-history-of-ice-cream/",
+          "snippet": "There's also a legend that King Charles I of England had a French chef who introduced him to the dish. The story goes that the king was so ..."
+        },
+        {
+          "candidate_id": "c-2f7ff26af7afe51b49c9",
+          "title": "Who invented ice cream",
+          "url": "https://www.usatoday.com/story/life/food-dining/2023/06/21/who-invented-ice-cream/70327625007/",
+          "snippet": "Jun 21, 2023"
+        },
+        {
+          "candidate_id": "c-dfe3e3a2a84727263870",
+          "title": "History of Ice Cream",
+          "url": "https://ice-cream.org/about-the-ice-cream-alliance/history-of-ice-cream/",
+          "snippet": "Just who discovered the process is unknown, but it was probably invented by the Chinese. It was written about in India in the 4th century, and the first ..."
+        },
+        {
+          "candidate_id": "c-fe51d319ec74d8049876",
+          "title": "The History of Ice Cream: How Every Culture Invented It ...",
+          "url": "https://www.museumoficecream.com/blog/history-of-ice-cream/",
+          "snippet": "Frances Hashimoto invented mochi ice cream in Los Angeles by wrapping small balls of ice cream inside soft Japanese rice cake, combining two ..."
+        },
+        {
+          "candidate_id": "c-5056234e69ff307404ea",
+          "title": "Who Invented Ice Cream",
+          "url": "https://www.history.com/articles/where-do-ice-cream-sorbet-frozen-desserts-come-from",
+          "snippet": "Apr 17, 2023"
+        },
+        {
+          "candidate_id": "c-297a4f3d4baf1da57083",
+          "title": "Who Invented Ice Cream",
+          "url": "https://historycooperative.org/the-history-of-ice-cream/",
+          "snippet": "Mar 11, 2024"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028752",
+      "query": "what is watamote",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-d4ae97596a43223c8e9e",
+          "title": "WATAMOTE: No Matter How I Look at It, It's You Guys ...",
+          "url": "https://www.imdb.com/title/tt2963556/",
+          "snippet": "Watamote is Cute & Silly. It's about a bitter, socially awkward 15 year old girl … chronicles the life of a socially awkward and relatively friendless high ..."
+        },
+        {
+          "candidate_id": "c-ba9ad80af56dfd9f17da",
+          "title": "WATAMOTE ~No Matter How I Look at It, It's You Guys Fault I'm Not Popular!",
+          "url": "https://www.crunchyroll.com/series/G69PXZN1Y/watamote-no-matter-how-i-look-at-it-its-you-guys-fault-im-not-popular?srsltid=AfmBOopVk5xS4P-jelmmvCcMyNlaPSdT7_N8U7CzCutplkVv_OL3B5uu",
+          "snippet": "The protagonist, Kuroki Tomoko, thought she would naturally become popular once she became a “high school girl”, but reality was different…"
+        },
+        {
+          "candidate_id": "c-2eee766b70b5fae1791f",
+          "title": "No Matter How I Look at It, It's You Guys' Fault I ... - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/No_Matter_How_I_Look_at_It,_It%27s_You_Guys%27_Fault_I%27m_Not_Popular!",
+          "snippet": "commonly referred to as WataMote (わたモテ ), is a Japanese manga series written and illustrated by two people under the pseudonym Nico Tanigawa."
+        },
+        {
+          "candidate_id": "c-d8b7d05723b3c442981a",
+          "title": "WATAMOTE: No Matter How I Look at It, It's You Guys' Fault I'm Not Popular!",
+          "url": "https://m.imdb.com/title/tt2963556/",
+          "snippet": "It's about a bitter, socially awkward 15 year old girl that tries her hardest to fit in and become more sociable, but her fear and misunderstanding of people ..."
+        },
+        {
+          "candidate_id": "c-61bf3f47dac8d16289ad",
+          "title": "Tomoko Kuroki - WataMote Wiki - Fandom",
+          "url": "https://watamote.fandom.com/wiki/Tomoko_Kuroki",
+          "snippet": "Tomoko Kuroki (黒木 智子, Kuroki Tomoko?) is the main protagonist of No Matter How I Look At It, It's You Guys Fault I'm Not Popular! (\"WataMote\")."
+        },
+        {
+          "candidate_id": "c-db181db215b22900fb16",
+          "title": "Review/discussion about: Watamote : r/anime - Reddit",
+          "url": "https://www.reddit.com/r/anime/comments/2krmsd/reviewdiscussion_about_watamote/",
+          "snippet": "Watamote features Tomoko, a young girl just starting her high school life. Not wanting to stick to the past, she decides she will take measures ..."
+        },
+        {
+          "candidate_id": "c-8b6f8427d1c365967642",
+          "title": "WATAMOTE ~No Matter How I Look at It, It's You Guys ...",
+          "url": "https://www.crunchyroll.com/series/G69PXZN1Y/watamote-no-matter-how-i-look-at-it-its-you-guys-fault-im-not-popular?srsltid=AfmBOoqzdvHRtxlfK1PngsaQ1hnxnVyYWoAuQOjwnACeTkiaZ5XdY9gh",
+          "snippet": "Stream WATAMOTE ~No Matter How I Look at It, It's You Guys Fault I'm Not Popular!~ on Crunchyroll and experience the latest and greatest anime!"
+        },
+        {
+          "candidate_id": "c-5e657ef85cdca24cf034",
+          "title": "WataMote Wiki | Fandom",
+          "url": "https://watamote.fandom.com/wiki/WataMote_Wiki",
+          "snippet": "it is a Japanese manga series written and illustrated by Nico Tanigawa that recently was adapted into an anime series set to air in July 2013. WataMote Wiki is ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028753",
+      "query": "what is walmarts phone number",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-43095b5cb0467633673e",
+          "title": "Walmart Family Mobile Customer Service Phone Number 1 ...",
+          "url": "https://walmart-family-mobile.pissedconsumer.com/customer-service.html",
+          "snippet": "You can dial one of the Walmart family mobile phones and reach the customer care team for purchase assistance at 1-855-638-1010. However, if you ..."
+        },
+        {
+          "candidate_id": "c-8c2bedf30a320a1c26ca",
+          "title": "Walmart Customer Service Phone Number 1-800-925-6278, Email ...",
+          "url": "https://walmart.pissedconsumer.com/customer-service.html",
+          "snippet": "To get in touch with the Walmart support, call toll-free at Call 1-800-925-6278 (1-800-WALMART) or drop an email at help@walmart.com."
+        },
+        {
+          "candidate_id": "c-193a6ba9ba5037d1c999",
+          "title": "Contact Walmart",
+          "url": "https://corporate.walmart.com/about/contact",
+          "snippet": "You may also contact our customer service team at 1-800-925-6278 (1-800-WALMART). Customer support is available in American Sign Language (enable video). For ..."
+        },
+        {
+          "candidate_id": "c-3d577f21b5298f80eae4",
+          "title": "Walmart Supercenter in Greenville, MI | Serving 48838 | Store 3328",
+          "url": "https://www.walmart.com/store/3328-greenville-mi",
+          "snippet": "Give us a call at 616-754-3062 and one of our friendly and knowledgeable associates will be happy to help you out."
+        },
+        {
+          "candidate_id": "c-1621048bf6a0415c2980",
+          "title": "WalMart Customer Service Phone Number 800-925-6278 - GetHuman",
+          "url": "https://gethuman.com/phone-number/WalMart",
+          "snippet": "WalMart operates the call center for this 800-925-6278 phone number 24 hours, 7 days. The short answer is that you should call on a Tuesday. This observation ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028755",
+      "query": "what is walgreens starting pay",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-52974cf1134c62633e5a",
+          "title": "Walgreens jobs & what they pay: Starting wages for entry- ...",
+          "url": "https://hermistonherald.com/2024/03/24/walgreens-jobs-what-they-pay-starting-wages-for-entry-level-positions/",
+          "snippet": "Walgreens starts all customer service associates at a minimum of $15 per hour in all of its stores. starting range of $15–$17.50 per hour."
+        },
+        {
+          "candidate_id": "c-6b21fc3beb019d7bb0d2",
+          "title": "Walgreens Employee Salary: Hourly Rate August 2026 USA - ZipRecruiter",
+          "url": "https://www.ziprecruiter.com/Salaries/Walgreens-Employee-Salary",
+          "snippet": "Average hourly pay for a Walgreens Employee job in the US is $24.37. Salary range is $7.93 to $50.24. The median wage is $44.2K / yr. $4,224/month."
+        },
+        {
+          "candidate_id": "c-236cece9f0ad8b45dba4",
+          "title": "Pay Transparency - Walgreens Careers",
+          "url": "https://jobs.walgreens.com/en/paycsat",
+          "snippet": "The current salary range for this position is $15.00 per hour - $19.00 per hour. The actual hourly salary within this range that you will be offered will depend ..."
+        },
+        {
+          "candidate_id": "c-51952a2d76daf1486cc3",
+          "title": "Walgreens Pay Guide: Hourly Wages, Benefits & Hiring ...",
+          "url": "https://gridwise.io/blog/walgreens-pay",
+          "snippet": "Walgreens pays most hourly retail and pharmacy employees between $12 and $25 per hour, Cashier and customer service associates start at $12–$19 ..."
+        },
+        {
+          "candidate_id": "c-17a41611c8c896040772",
+          "title": "how much do you make at Walgreens? everyone please share.",
+          "url": "https://www.reddit.com/r/WalgreensStores/comments/xkhrgg/how_much_do_you_make_at_walgreens_everyone_please/",
+          "snippet": "Walgreens starts at $13 currently. Federal minimum wage is $7.25 … $15.37/hr. Photo specialist. minimum wage is $12.56/hr. $18/hour as a ..."
+        },
+        {
+          "candidate_id": "c-0f3a5c6e16429f2e4f9c",
+          "title": "How Much Does Walgreens Pay in 2026? (63583 Salaries)",
+          "url": "https://www.glassdoor.com/Salary/Walgreens-Salaries-E716.htm",
+          "snippet": "Annual salaries typically range from $30,104 (or $14) for a Part Time Cashier to $401,106 (or $193) for a Vice President."
+        },
+        {
+          "candidate_id": "c-020cf88bb77527470aea",
+          "title": "Average Hourly Rate for Walgreen Co. Employees - Payscale",
+          "url": "https://www.payscale.com/research/US/Employer=Walgreen_Co./Hourly_Rate",
+          "snippet": "Walgreen Co. pays its employees an average of $17.99 an hour. Hourly pay at Walgreen Co. ranges from an average of $13.30 to $31.45 an hour."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-850820",
+      "query": "what is the test for cholecystitis",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-532fb16b343988eca347",
+          "title": "Murphy Sign - Clinical Examination",
+          "url": "https://www.youtube.com/watch?v=2T0XUQ1M-x0",
+          "snippet": "A positive Murphy sign can be seen with acute cholecystitis. To perform the test, palpate the gallbladder area medial to the midclavicular line ..."
+        },
+        {
+          "candidate_id": "c-03f4734511fd4b023dd4",
+          "title": "Murphys Sign",
+          "url": "https://www.physio-pedia.com/Murphys_Sign",
+          "snippet": "Murphy's sign is a physical examination technique used to diagnose acute cholecystitis, which is inflammation of the gallbladder and it was first described ..."
+        },
+        {
+          "candidate_id": "c-c2f5f4823a3902639a4b",
+          "title": "Acute Cholecystitis Workup",
+          "url": "https://emedicine.medscape.com/article/171886-workup",
+          "snippet": "Ultrasonography is the preferred initial imaging test for the diagnosis of acute cholecystitis; scintigraphy is the preferred alternative."
+        },
+        {
+          "candidate_id": "c-6a3997cf1f1986e2b7ef",
+          "title": "Cholecystitis",
+          "url": "https://www.hopkinsmedicine.org/health/conditions-and-diseases/cholecystitis",
+          "snippet": "How is cholecystitis diagnosed? · Complete blood count (CBC). This test measures your white blood cell count. You may have a high white blood cell count if you ..."
+        },
+        {
+          "candidate_id": "c-9da27dc32438fad46d3c",
+          "title": "Flowcharts for the diagnosis and treatment of acute cholangitis ...",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2784508/",
+          "snippet": "by F Miura · 2007 · Cited by 287 — There is no specific blood test for acute cholecystitis; however, the white blood cell count and the measurement of C-reactive protein is very useful in ..."
+        },
+        {
+          "candidate_id": "c-5e624552105c7de53b46",
+          "title": "Cholecystitis - Diagnosis and treatment",
+          "url": "https://www.mayoclinic.org/diseases-conditions/cholecystitis/diagnosis-treatment/drc-20364895",
+          "snippet": "Tests and procedures used to diagnose cholecystitis include: Blood tests. Abdominal ultrasound, endoscopic ultrasound, CT scan or magnetic ..."
+        },
+        {
+          "candidate_id": "c-07d3f0a658386cba9a66",
+          "title": "Cholecystitis (Gallbladder Inflammation)",
+          "url": "https://my.clevelandclinic.org/health/diseases/15265-gallbladder-swelling--inflammation-cholecystitis",
+          "snippet": "Tests to diagnose cholecystitis may include: Complete blood count (CBC). Liver function tests. Abdominal ultrasound. Endoscopic ultrasound. CT ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-227992",
+      "query": "how does the electoral college operate",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-9e24797a62a888f3d154",
+          "title": "Electoral College | USAGov",
+          "url": "https://www.usa.gov/electoral-college",
+          "snippet": "How does the Electoral College process work? · After you cast your ballot for president, your vote goes to a statewide tally. · A candidate needs ..."
+        },
+        {
+          "candidate_id": "c-85f5122a9af0a9c0ba4a",
+          "title": "United States Electoral College - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/United_States_Electoral_College",
+          "snippet": "Each state appoints electors using legal procedures determined by its legislature. Federal office holders, including senators and representatives, cannot be ..."
+        },
+        {
+          "candidate_id": "c-2848e004fc7aabeb401c",
+          "title": "Electoral College Explained: How is the U.S. President Elected?",
+          "url": "https://www.usvotefoundation.org/electoral-college-explained-how-us-president-elected",
+          "snippet": "The Electoral College is a system that prescribes the creation of a temporary group of electors to officially elect the U.S. President every four years during ..."
+        },
+        {
+          "candidate_id": "c-d3ad92e0b510b4b764fe",
+          "title": "The Electoral College, Explained",
+          "url": "https://www.brennancenter.org/our-work/research-reports/electoral-college-explained",
+          "snippet": "Under this plan, each elector cast two votes for president; the candidate who received the most votes became the president, with the second- ..."
+        },
+        {
+          "candidate_id": "c-59e35555ccd1f84d52c2",
+          "title": "How does the electoral college work? - Brookings Institution",
+          "url": "https://www.brookings.edu/articles/how-does-the-electoral-college-work/",
+          "snippet": "When Americans cast their ballot this Election Day, they will decide the outcome of a winner-take-all contest for their state's electoral votes. Their vote ..."
+        },
+        {
+          "candidate_id": "c-59056e08ed9c1ac61d77",
+          "title": "What is the Electoral College? | Quick Learner",
+          "url": "https://www.youtube.com/watch?v=ENTWICpoN0Y",
+          "snippet": "Learn about the origins of the Electoral College, how it functions, and why it remains a topic of debate in modern politics."
+        },
+        {
+          "candidate_id": "c-3e2ac42563651783e7ce",
+          "title": "Summary of the U.S. Presidential Election Process",
+          "url": "https://kz.usembassy.gov/summary-of-the-u-s-presidential-election-process/",
+          "snippet": "The Electoral college is a process in which electors or representatives from each state in number proportional to the state's population cast their vote"
+        },
+        {
+          "candidate_id": "c-6b07e79241f66db352f1",
+          "title": "What is the Electoral College?",
+          "url": "https://www.archives.gov/electoral-college/about",
+          "snippet": "The Electoral College process consists of the selection of the electors, the meeting of the electors where they vote for President and Vice President, and the ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1028796",
+      "query": "what is vulnerable animals",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-ae016b44528e64eed33a",
+          "title": "Vulnerable Species - A-Z Animals",
+          "url": "https://a-z-animals.com/animals/endangered/vulnerable/",
+          "snippet": "A species is listed as Vulnerable (VU) when the best available evidence shows it faces a high risk of extinction in the wild in the medium term."
+        },
+        {
+          "candidate_id": "c-305143f3f49bd9ef5566",
+          "title": "What Is a Vulnerable Species? Vulnerable Species Definition",
+          "url": "https://www.youtube.com/watch?v=6tK4PJWva28",
+          "snippet": "A vulnerable species is any kind of species that is at risk of becoming extinct. Often species are vulnerable because they lose their homes."
+        },
+        {
+          "candidate_id": "c-d8d4109b56176964f708",
+          "title": "Vulnerable species - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Vulnerable_species",
+          "snippet": "A vulnerable species is a species that has been categorized by the International Union for Conservation of Nature as being threatened with extinction unless ..."
+        },
+        {
+          "candidate_id": "c-39fe1abaffc6a00f3c69",
+          "title": "What are the differences between endangered, threatened, imperiled ...",
+          "url": "https://www.usgs.gov/faqs/what-are-differences-between-endangered-threatened-imperiled-and-risk-species",
+          "snippet": "Generally speaking, they are animals and plants that are in decline and may be in danger of extinction. Those terms can include species that are at low ..."
+        },
+        {
+          "candidate_id": "c-12e67a45077b6ecc1ca8",
+          "title": "Endangered Species - WWF",
+          "url": "https://www.worldwildlife.org/species/",
+          "snippet": "WWF is committed to saving endangered species. Learn more about the species we are working to protecting from becoming endangered or extinct."
+        },
+        {
+          "candidate_id": "c-518bc3e04eb0c75898f8",
+          "title": "Vulnerable and Endangered Species - Bagheera",
+          "url": "https://bagheera.com/classroom-studies-vulnerable-and-endangered-species/",
+          "snippet": "Vulnerable Species: A vulnerable species is one which has been categorized (IUCN) as likely to become endangered unless the circumstances that are threatening ..."
+        },
+        {
+          "candidate_id": "c-a0df77d88edeb765a493",
+          "title": "List of Endangered Species | Animal Welfare Institute",
+          "url": "https://awionline.org/programs/endangered-species/list-of-endangered-species/",
+          "snippet": "“Endangered” means a species is in danger of extinction throughout all or a significant portion of its range. Bandicoot, pig-footed Chaeropus ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-272500",
+      "query": "how long to wait between perm and color",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-9980bba9629d939376b0",
+          "title": "Can you get a perm after coloring your hair? - Facebook",
+          "url": "https://www.facebook.com/groups/kelownabc/posts/3953844134915732/",
+          "snippet": "I usually recommend waiting at least 4 weeks in between these services, however. With having blonde hair, I recommend waiting at least 15 weeks ..."
+        },
+        {
+          "candidate_id": "c-ad58a8dfd325704b7bbe",
+          "title": "How long should I wait after a perm to add a semi-permanent hair color?",
+          "url": "https://www.quora.com/How-long-should-I-wait-after-a-perm-to-add-a-semi-permanent-hair-color",
+          "snippet": "You MUST wait 36–48 hours after a perm to color your hair or you will relax the curl. You also need to wait 14 days after you perm to color."
+        },
+        {
+          "candidate_id": "c-dfe08c5ec9d24552a28c",
+          "title": "Can You Dye Your Hair After a Perm? The Facts about ...",
+          "url": "https://perfectxhair.com/can-you-dye-your-hair-after-a-perm/",
+          "snippet": "Some stylists recommend waiting just 1 week after a colour to get a perm, while others suggest waiting between 2 to 3 weeks. Can I dye and perm ..."
+        },
+        {
+          "candidate_id": "c-c631ad9ceeeea7133108",
+          "title": "How Long to Wait Before Coloring Hair Again – Beauty Blog",
+          "url": "https://avedafi.edu/blog/how-long-to-wait-before-coloring-hair-again",
+          "snippet": "Typically it is suggested to wait 6 weeks between getting colored. This depends on the health of your hair, how fast your hair grows, the type ..."
+        },
+        {
+          "candidate_id": "c-6e0527af230890749ffb",
+          "title": "Q&A on Should I perm my hair before dyeing, or dye before perming?",
+          "url": "https://www.mandom.co.jp/en/customer/faq_detail.html?id=100055",
+          "snippet": "If you want to perm and color your hair, leave an interval of at least a week in between to lessen the burden on your hair and scalp."
+        },
+        {
+          "candidate_id": "c-8be2ff0fb43979758d59",
+          "title": "I'm planning to get my hair dyed and a perm. Should I space them out? Or ...",
+          "url": "https://www.reddit.com/r/beauty/comments/bz89kw/im_planning_to_get_my_hair_dyed_and_a_perm_should/",
+          "snippet": "Last time I got a perm + dye, I think I got perm first, then waited for 2-3 weeks and got the color. Worked well for me. HannahBall89. •. 7y ago."
+        },
+        {
+          "candidate_id": "c-7f030a331e13dada3b4e",
+          "title": "Can I Color my Hair After a Perm? What You Need To Know! - YouTube",
+          "url": "https://www.youtube.com/watch?v=zCFHkB6rjME",
+          "snippet": "... perm can damage your hair, weaken curls, and cause dryness. Experts recommend waiting at least one to two weeks before applying any hair dye ..."
+        },
+        {
+          "candidate_id": "c-59a4b12f4cedbb6403d3",
+          "title": "Is It Safe to Color and Perm Your Hair at the Same Time?",
+          "url": "https://mensalonllc.com/is-it-safe-to-color-and-perm-your-hair-at-the-same-time/",
+          "snippet": "Professional stylists often prefer to space these services apart, usually by one to two weeks. This gives your hair time to recover between ..."
+        },
+        {
+          "candidate_id": "c-d18622dc22e7e8dda1de",
+          "title": "How long to wait after hair coloring for a perm?",
+          "url": "https://www.facebook.com/groups/hookedonhair/posts/1721548881199832/",
+          "snippet": "I usually recommend waiting at least 4 weeks in between these services, however. With having blonde hair, I recommend waiting at least 15 weeks ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-405985",
+      "query": "is chatham ct incorporated",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-12ae43b9b4bcf50dc90f",
+          "title": "Preserving East Hampton History - Chatham Historical Society",
+          "url": "https://chathamhistoricalct.org/history/",
+          "snippet": "Originally a part of Middletown, the community grew quickly and was officially incorporated as Chatham Connecticut in 1767, named in honor of the Earl of ..."
+        },
+        {
+          "candidate_id": "c-8d19403b82e939e6bee3",
+          "title": "East Hampton CT Homepage for the USGENWEB Project",
+          "url": "http://chatham.itgo.com/",
+          "snippet": "Chatham was first settled in 1710. In 1767 it was incorporated as it's own town and seperated from the town of Middletown, CT."
+        },
+        {
+          "candidate_id": "c-dc19686c7a276cfb8ffe",
+          "title": "Chatham Historical Society | East Hampton CT - Facebook",
+          "url": "https://www.facebook.com/chathamhistoricalsocietyCT/",
+          "snippet": "The Chatham Historical Society 6 Bevin Blvd East Hampton, CT 06424 Our Museum is OPEN April - November, the first Sunday of each month from 2pm-4pm."
+        },
+        {
+          "candidate_id": "c-fb6c63bb3a0581fac10b",
+          "title": "The Town of Chatham, Middlesex Co., CT",
+          "url": "http://dunhamwilcox.net/town_hist/chatham_ct_hist.htm",
+          "snippet": "Chatham was originally a part of Middletown, and at the time of its incorporation, by the General Assembly, in 1767, it included in its bounds all of what had ..."
+        },
+        {
+          "candidate_id": "c-a5b7fc66f93831583f9e",
+          "title": "Our History - Chatham Place at Mary Wade",
+          "url": "https://chathamplace.org/about-us/our-history/",
+          "snippet": "At Chatham Place, we offer Memory Care and Assisted Living services in New Haven, CT. Learn more about our history on our website."
+        },
+        {
+          "candidate_id": "c-d57a9dadce53b282bd1d",
+          "title": "East Hampton, Connecticut",
+          "url": "https://en.wikipedia.org/wiki/East_Hampton,_Connecticut",
+          "snippet": "In 1767, the community was separated from Middletown incorporated by the Connecticut General Assembly as the township of Chatham, after Chatham, Medway"
+        },
+        {
+          "candidate_id": "c-81a020be58ae16db3b08",
+          "title": "Chatham Connecticut | East Hampton, CT History | CHS",
+          "url": "https://chathamhistoricalct.org/chatham/",
+          "snippet": "The Town of Chatham was officially incorporated by the Connecticut General Assembly in 1767. It was named in honor of William Pitt, the Earl of Chatham,"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-939866",
+      "query": "when did modern humans appear on the planet",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-bc479e18a81bca0bd8df",
+          "title": "An Evolutionary Timeline of Homo Sapiens - Smithsonian Magazine",
+          "url": "https://www.smithsonianmag.com/science-nature/essential-timeline-understanding-evolution-homo-sapiens-180976807/",
+          "snippet": "modern humans dwelt there, alongside the Mediterranean, some 177,000 to 194,000 years ago."
+        },
+        {
+          "candidate_id": "c-1eed19d2aebc99b7803b",
+          "title": "Modern humans, Homo sapiens: When, where and how did we ...",
+          "url": "https://www.nhm.ac.uk/discover/modern-humans-homo-sapiens-when-where-how-did-we-evolve.html",
+          "snippet": "It's thought that they eventually gave rise to our genus, Homo, around 2.5 million years ago. One of the longest lived members of this group is Homo erectus, an ..."
+        },
+        {
+          "candidate_id": "c-ce93e1adf588c491f12f",
+          "title": "Early modern human",
+          "url": "https://en.wikipedia.org/wiki/Early_modern_human",
+          "snippet": "The earliest fossil evidence of early modern humans appears in Africa around 300,000 years ago, with the earliest genetic splits among modern people, according ..."
+        },
+        {
+          "candidate_id": "c-e9b7e25d3e471848fbfb",
+          "title": "How long have humans been anatomically the same as ...",
+          "url": "https://www.reddit.com/r/askscience/comments/xi987v/how_long_have_humans_been_anatomically_the_same/",
+          "snippet": "Anatomically modern humans appeared on December 31st, around 11:30pm. Recorded history started December 31st, ~11:59:25."
+        },
+        {
+          "candidate_id": "c-17c2282b8e4b97303121",
+          "title": "When did we become fully human? What fossils and DNA tell us about ...",
+          "url": "https://theconversation.com/when-did-we-become-fully-human-what-fossils-and-dna-tell-us-about-the-evolution-of-modern-intelligence-143717",
+          "snippet": "Fossils and DNA suggest people looking like us, anatomically modern Homo sapiens, evolved around 300,000 years ago."
+        },
+        {
+          "candidate_id": "c-c7e4e0051b6e23e26343",
+          "title": "Homo sapiens - The Smithsonian's Human Origins Program",
+          "url": "https://humanorigins.si.edu/evidence/human-fossils/species/homo-sapiens",
+          "snippet": "About 300,000 years ago to present Homo sapiens have lived since about 300,000 years ago. 164,000 years ago modern humans"
+        },
+        {
+          "candidate_id": "c-ee53f8cb798b7ca11800",
+          "title": "When did Homo sapiens enter Europe? - AAAS",
+          "url": "https://www.aaas.org/membership/qualia/when-did-homo-sapiens-enter-europe",
+          "snippet": "modern humans arrived in Europe much earlier, some 45,000 years ago. They were dated at 43,000 to 45,000 years old. at about 41,500 to 44,200 years old,"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-139090",
+      "query": "definition of tumor",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-d211429ee46a2547b990",
+          "title": "What is a tumor? The NCI's Dictionary of Cancer Terms ...",
+          "url": "https://www.facebook.com/cancer.gov/videos/words-to-know-tumor/225292848162709/",
+          "snippet": "Tumor, an abnormal mass of tissue that results when cells divide more than they should or do not die when they should. Tumors may be benign not ..."
+        },
+        {
+          "candidate_id": "c-c87befbf530ed420c3ac",
+          "title": "Definition of tumor - NCI Dictionary of Cancer Terms",
+          "url": "https://www.cancer.gov/publications/dictionaries/cancer-terms/def/tumor",
+          "snippet": "An abnormal mass of tissue that forms when cells grow and divide more than they should or do not die when they should. Tumors may be benign (not cancer) or ..."
+        },
+        {
+          "candidate_id": "c-3a49d56fc2e3b031685c",
+          "title": "TUMOR Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/tumor",
+          "snippet": "an abnormal benign or malignant new growth of tissue that possesses no physiological function and arises from uncontrolled usually rapid ..."
+        },
+        {
+          "candidate_id": "c-028e166d2abbe47d1a30",
+          "title": "Tumor (Neoplasm): Types, Symptoms & Treatment",
+          "url": "https://my.clevelandclinic.org/health/diseases/21881-tumor",
+          "snippet": "A tumor (neoplasm) is a solid tissue mass that forms when abnormal cells group together. Tumors may be benign (noncancerous), ..."
+        },
+        {
+          "candidate_id": "c-65e6c61505ee98ed6eaf",
+          "title": "Tumor | Words to Know, NCI Dictionary of Cancer Terms",
+          "url": "https://www.youtube.com/watch?v=3TLkqQbuZ6Y",
+          "snippet": "NCI's Dictionary of Cancer Terms provides easy-to-understand definitions for words and phrases related to cancer and medicine."
+        },
+        {
+          "candidate_id": "c-fb6853c060a97bcb512e",
+          "title": "Tumor vs Cancer: What You Need to Know",
+          "url": "https://blog.dana-farber.org/insight/2018/05/difference-cancer-tumor/",
+          "snippet": "A tumor occurs when uncontrolled growth, whether cancerous or non-cancerous, occurs in solid tissue such as an organ, muscle, or bone."
+        },
+        {
+          "candidate_id": "c-573e635727a21403ab39",
+          "title": "DEFINITION",
+          "url": "https://dictionary.cambridge.org/dictionary/english/definition",
+          "snippet": "In bodybuilding, definition - that dramatic separation of every muscle group that looks as though it has been carved by a sculptor's …"
+        },
+        {
+          "candidate_id": "c-4eba6b183c107444a9d9",
+          "title": "Definition",
+          "url": "https://en.wikipedia.org/wiki/Definition",
+          "snippet": "In mathematics, a definition is used to give a precise meaning to a new term, by describing a condition which unambiguously …"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1073358",
+      "query": "what is a fume hood used for in chemistry",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-381dba7e86246f0dcd6e",
+          "title": "The Fundamentals of Chemical Fume Hood Safety - NEBB.org",
+          "url": "https://www.nebb.org/blog/the-fundamentals-of-chemical-fume-hood-safety/",
+          "snippet": "Chemical fume hoods are primarily used to protect users from hazardous chemical fumes and vapors. While they protect users and the environment, the product ..."
+        },
+        {
+          "candidate_id": "c-91afdc184a5c619113c2",
+          "title": "How To Use a Fume Hood #SCIENCE",
+          "url": "https://www.youtube.com/watch?v=WlEgeQoqZkQ",
+          "snippet": "A fume hood is a great place to work with any sort of experiment that can be quite messy."
+        },
+        {
+          "candidate_id": "c-1b2e906e2ae66a28f72d",
+          "title": "Fume Hood Use - Environment, Health & Safety",
+          "url": "https://ehs.umich.edu/research-clinical/engineering-controls/fume-hood-use/",
+          "snippet": "A fume hood is a ventilated, enclosed work space intended to capture, contain, and exhaust harmful or dangerous fumes, vapors, and particulate matter"
+        },
+        {
+          "candidate_id": "c-610441d7ba0e075573c0",
+          "title": "Where do fume hoods go? : r/chemistry",
+          "url": "https://www.reddit.com/r/chemistry/comments/hg6kp8/where_do_fume_hoods_go/",
+          "snippet": "Considering all the toxic gases and waste byproducts that get released in a fume hood, where does the duct lead out to and how do the toxic gases ..."
+        },
+        {
+          "candidate_id": "c-7d9d434d5cf42b9f6beb",
+          "title": "What is a fume hood? How do fume hoods work? - Best Technology",
+          "url": "https://www.besttechnologyinc.com/wet-bench/what-is-a-fume-hood-how-do-fume-hoods-work/",
+          "snippet": "A chemical fume hood is a ventilated enclosure that helps contain and remove hazardous fumes, vapors, gases, and dust generated during chemical processes."
+        },
+        {
+          "candidate_id": "c-9c835322b1761a0fcb6b",
+          "title": "The ABCs of the Chemical Fume Hood - Interface Engineering",
+          "url": "https://www.interfaceengineering.com/news-and-awards/the-abcs-of-the-chemical-fume-hood",
+          "snippet": "A chemical fume hood is a major piece of laboratory safety equipment used when working with any volatile or dangerous substance."
+        },
+        {
+          "candidate_id": "c-c6e32679a7e9820d32f1",
+          "title": "What is a Fume Hood? - Types of Fume Hoods - Fisher American",
+          "url": "https://fisheramerican.com/blog/what-is-a-fume-hood/?srsltid=AfmBOoomiUdiOj4z3BGdKbGmqkKctU5Rv4T7SZbhQ8jm9BBwbJ0VjeB7",
+          "snippet": "A fume hood is a ventilated enclosure designed to capture, contain, and exhaust hazardous fumes, vapors, and particulates away from laboratory personnel."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-850919",
+      "query": "what is the the sedition act",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-e62021d5ac40c13e89dd",
+          "title": "An Act in Addition to the Act, Entitled \"An Act for the ... - Avalon Project",
+          "url": "https://avalon.law.yale.edu/18th_century/sedact.asp",
+          "snippet": "An Act in Addition to the Act, Entitled \"An Act for the Punishment of ... sedition within the United States, or to excite any unlawful combinations ..."
+        },
+        {
+          "candidate_id": "c-5c2084d6d56db12f0c95",
+          "title": "Alien and Sedition Acts (1798) | National Archives",
+          "url": "https://www.archives.gov/milestone-documents/alien-and-sedition-acts",
+          "snippet": "The Sedition Act made it a crime for American citizens to \"print, utter, or publish...any false, scandalous, and malicious writing\" about the ..."
+        },
+        {
+          "candidate_id": "c-b523526602356e56bf89",
+          "title": "Espionage Act of 1917 and Sedition Act of 1918 (1917-1918)",
+          "url": "https://constitutioncenter.org/the-constitution/historic-document-library/detail/espionage-act-of-1917-and-sedition-act-of-1918-1917-1918",
+          "snippet": "the Sedition Act imposed harsh penalties for a wide range of dissenting speech, including speech abusing the U.S. government, the flag, the Constitution, and ..."
+        },
+        {
+          "candidate_id": "c-0c3b09c0a3e37e29cbc3",
+          "title": "The Sedition Act of 1798 | US House of Representatives",
+          "url": "https://history.house.gov/Historical-Highlights/1700s/The-Sedition-Act-of-1798/",
+          "snippet": "Sedition Act, permitting the deportation, fine, or imprisonment of anyone deemed a threat or publishing “false, scandalous, or malicious writing” against the ..."
+        },
+        {
+          "candidate_id": "c-aa6fc4aab0ff4bf9f866",
+          "title": "Sedition Act of 1918 - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sedition_Act_of_1918",
+          "snippet": "It forbade the use of \"disloyal, profane, scurrilous, or abusive language\" about the United States government, its flag, or its armed forces or that caused ..."
+        },
+        {
+          "candidate_id": "c-4e20e2f851edf767c333",
+          "title": "Sedition Act becomes federal law | July 14, 1798",
+          "url": "https://www.history.com/this-day-in-history/july-14/sedition-act-becomes-federal-law",
+          "snippet": "the Sedition Act permitted the prosecution of individuals who voiced or printed what the government deemed to be malicious remarks about the president or ..."
+        },
+        {
+          "candidate_id": "c-840215f563dfb0fa5034",
+          "title": "\"The Sedition Act of 1798 and the incorporation of seditious libel into ...",
+          "url": "https://mds.marshall.edu/etd/1683/",
+          "snippet": "This Act, codifying the substantive English common law of seditious libel, made it a federal crime to publish defamatory matter against the Congress, President, ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1073365",
+      "query": "what is a front company",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-052beb03c122f4e7549a",
+          "title": "Understanding Front Companies: Risks, Detection, and Prevention",
+          "url": "https://www.tookitaki.com/compliance-hub/understanding-front-companies-risks-detection-and-prevention",
+          "snippet": "A front company, in its simplest definition, is a business that appears legitimate but primarily exists to conceal or mask an underlying, often illegal, ..."
+        },
+        {
+          "candidate_id": "c-78d5c40793efdd3d76bf",
+          "title": "Shell Company, Shelf Company And Front Company",
+          "url": "https://financialcrimeacademy.org/shell-company-shelf-company-and-front-company/",
+          "snippet": "a front company or front organization is an entity with limited or no operations of its own but associated with a group or organization engaged ..."
+        },
+        {
+          "candidate_id": "c-90282c376ba52191544c",
+          "title": "What Is Front Company? Detection Signals and Prevention Tactics",
+          "url": "https://www.sardine.ai/pt/learn/front-company",
+          "snippet": "A front company is a business with real or apparent operations used to mix in and legitimize dirty money, giving criminal cash a believable commercial source."
+        },
+        {
+          "candidate_id": "c-b4bc536f5ebf039cde13",
+          "title": "Front organization - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Front_organization",
+          "snippet": "A front organization is any entity set up by and controlled by another organization that acts for the parent group without the actions being attributed to ..."
+        },
+        {
+          "candidate_id": "c-8374225b5731982be237",
+          "title": "What is a front company in money laundering? | Anna ...",
+          "url": "https://www.linkedin.com/posts/annastylianoucy_what-is-a-front-company-in-money-laundering-activity-7163071820303163393-88Lm",
+          "snippet": "A front company in money laundering is a legitimate business entity 🏢 which is created for the sole purpose to disguise the source of illegal ..."
+        },
+        {
+          "candidate_id": "c-317f1a624be44b9ab653",
+          "title": "What is a Front Company? Understanding the Facade ...",
+          "url": "https://www.kyclookup.com/knowledgebase/what-is-a-front-company/",
+          "snippet": "A front company is a legitimate-looking business used to conceal illicit activities. These entities are often created to disguise the origin of ..."
+        },
+        {
+          "candidate_id": "c-d81dd1b90e9140c0bf46",
+          "title": "What Is a Front Company? A Tool Money Launderers Exploit",
+          "url": "https://www.sanctions.io/blog/what-is-a-front-company-money-laundering-sanctions-evasion",
+          "snippet": "A front company is a business that often hides its true function from law enforcement, possibly because of money laundering and sanctions ..."
+        },
+        {
+          "candidate_id": "c-8d4b92f0d88db03f19fb",
+          "title": "What Is a Front Company? Risks & Detection Tips - Paystand",
+          "url": "https://www.paystand.com/blog/front-company",
+          "snippet": "A front company or front organization is a fake company created by criminals or fraudsters to engage in fraudulent and illegal activities."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-761963",
+      "query": "what is january's birthstone color",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-7fbdcc05b165b652101e",
+          "title": "January Birthstone | Garnet Birthstone Meaning",
+          "url": "https://www.gia.edu/birthstones/january-birthstones",
+          "snippet": "Garnets are commonly red but also come in an extraordinary range of beautiful colors, including orange, yellow, purple and vibrant green."
+        },
+        {
+          "candidate_id": "c-b268e9d156f60a571070",
+          "title": "January Birthstone - Garnet Gemstone",
+          "url": "https://www.americangemsociety.org/birthstones/january-birthstone/",
+          "snippet": "January's birthstone color is commonly red, but it can also be found in a range of colors. Garnet is the name of a group of minerals that come in a rainbow of ..."
+        },
+        {
+          "candidate_id": "c-018bdc7e0e10f46ca706",
+          "title": "January Birthstone: Garnet Birthstone Meaning & Info",
+          "url": "https://www.jamesavery.com/jewelry-information/january-birthstone.html?srsltid",
+          "snippet": "Though the classic deep red is often the first shade to come to mind, Garnet's spectrum is surprisingly broad, ranging from greens to oranges and even some ..."
+        },
+        {
+          "candidate_id": "c-90f2332c9676300fa73b",
+          "title": "January Birthstones, Colors and Flowers & more January ...",
+          "url": "https://www.monthlybirthstones.com/january-birthstone/",
+          "snippet": "The official birthstone for the month of January is beautiful deep red Garnet and thus the January birthstone color is deep red."
+        },
+        {
+          "candidate_id": "c-02c92bc95d6b3cae9484",
+          "title": "What Is January's Birthstone? Garnet Meaning & Color",
+          "url": "https://www.gabrielny.com/blog/what-is-januarys-birthstone/?srsltid",
+          "snippet": "January's birthstone is garnet. Common colors: Deep red (almandine, pyrope), also green (tsavorite), orange (spessartine), and pink (rhodolite) ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-272605",
+      "query": "how long to wait to swim after tattoo",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-db5c7c3a816e569406c3",
+          "title": "How long should I wait to go swimming after getting a tattoo? - Quora",
+          "url": "https://www.quora.com/How-long-should-I-wait-to-go-swimming-after-getting-a-tattoo",
+          "snippet": "You should wait at least 2–3 weeks after getting it before going swimming. You should wait until it has peeled and scabbed over and healed."
+        },
+        {
+          "candidate_id": "c-4e74214688bc82712347",
+          "title": "When can I start swimming after getting a tattoo? : r/triathlon - Reddit",
+          "url": "https://www.reddit.com/r/triathlon/comments/rlejj9/when_can_i_start_swimming_after_getting_a_tattoo/",
+          "snippet": "The majority of peoples' tattoos will ooze a bit and peel, which is why they should be considerate and wait to swim the recommended 2-3 weeks, ..."
+        },
+        {
+          "candidate_id": "c-8a7f31715ba78c51ff19",
+          "title": "How Long After a Tattoo Can You Swim? - themagic5",
+          "url": "https://themagic5.com/blogs/news/how-long-after-a-tattoo-can-you-swim?srsltid=AfmBOoq9IhfcHQEoCCRPp_gCAHFtyWSv6RcKzdAsfz2Y6ykjXD9JYFxL",
+          "snippet": "Most tattoo artists and dermatologists recommend waiting at least two to four weeks before swimming after getting a tattoo."
+        },
+        {
+          "candidate_id": "c-d0eefa7311aba4044858",
+          "title": "How Long After a Tattoo Can You Swim? - themagic5",
+          "url": "https://themagic5.com/blogs/news/how-long-after-a-tattoo-can-you-swim?srsltid=AfmBOooshWR-G864DMFSMeiW2s2QY8gvZgMD6XjnJzncL8KfkfZN5qwS",
+          "snippet": "Most tattoo artists and dermatologists recommend waiting at least two to four weeks before swimming after getting a tattoo."
+        },
+        {
+          "candidate_id": "c-c72782b268abc4110d44",
+          "title": "How long to wait before swimming with a new tattoo? - Facebook",
+          "url": "https://www.facebook.com/groups/5848236027/posts/10163023540086028/",
+          "snippet": "It's generally recommended to wait at least 2-4 weeks before swimming after getting a tattoo to minimize the risk of infection and ensure proper ..."
+        },
+        {
+          "candidate_id": "c-d564dbebdf52530c170c",
+          "title": "How Long After a Tattoo Can You Swim?",
+          "url": "https://electrumsupply.com/blogs/main/how-long-after-a-tattoo-can-you-swim?srsltid=AfmBOop25BxlF7kcBSWIioOyBZo4YKi4bs0Y8gDmwulM4hTjURQjtBwx",
+          "snippet": "Your tattoo must be at least two weeks old before you submerge it in water. If possible, wait until after four to six weeks before being in ..."
+        },
+        {
+          "candidate_id": "c-630410613540a9bcb1b3",
+          "title": "How Long After a Tattoo Can You Swim?",
+          "url": "https://www.blackpalettetattoo.com/waikiki-tattoo-shops/how-long-after-tattoo-can-you-swim",
+          "snippet": "Most tattoo artists recommend waiting 2 to 4 weeks before swimming. It is generally recommended to wait this period, but healing time can vary ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-850957",
+      "query": "what is the theme song",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-956a096eec76508e445e",
+          "title": "The Theme Song",
+          "url": "https://open.spotify.com/artist/0o7cNzlOq45tjWDu25j838",
+          "snippet": "Listen to The Theme Song on Spotify. Im Out (feat. Youngblaze) Go Murcy Appears On Darker Days Brighter Nights (Deluxe Edition)"
+        },
+        {
+          "candidate_id": "c-5f677c700368b44bda61",
+          "title": "Theme Music Explained - YouTube",
+          "url": "https://www.youtube.com/watch?v=bM3Z4Akgg0w",
+          "snippet": "... tune memorable for a wide range of listeners. If a theme is too complicated, it might not stick in the memory of the audience. Repeating a ..."
+        },
+        {
+          "candidate_id": "c-761ab6f9966684e756f4",
+          "title": "THEME SONG Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/theme%20song",
+          "snippet": "The meaning of THEME SONG is a song or melody strongly associated with someone or something; often : an identifying melody or song typically ..."
+        },
+        {
+          "candidate_id": "c-aee06ae9bf3eda16c0a9",
+          "title": "Theme music - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Theme_music",
+          "snippet": "Theme music is a musical composition which is often written specifically for radio programming, television shows, video games, or films"
+        },
+        {
+          "candidate_id": "c-bd9eadee17de2103e257",
+          "title": "The Importance of Theme Songs: A Short Essay - Savage Content",
+          "url": "https://www.savagecontent.com/post/the-importance-of-theme-songs-a-short-essay",
+          "snippet": "Theme songs take an ordinary TV show and elevate it. Theme songs can transform, transcend, and translate a story to the audience in a more ..."
+        },
+        {
+          "candidate_id": "c-3c79fd17c5f6fc080345",
+          "title": "About The Law & Order Theme Song & Its Creator Mike Post",
+          "url": "https://www.nbc.com/nbc-insider/law-order-theme-song",
+          "snippet": "The Law & Order theme song was written by famed television composer Mike Post, who officially titled the tune \"The Theme of Law & Order.\"."
+        },
+        {
+          "candidate_id": "c-7b372e6ded16bb8d77fd",
+          "title": "What is a Theme Song — How Music Sets the Stage - StudioBinder",
+          "url": "https://www.studiobinder.com/blog/what-is-a-theme-song-definition/",
+          "snippet": "A theme song is music written and composed to introduce and represent a film, TV show, radio program, video game, or personal brand."
+        },
+        {
+          "candidate_id": "c-2cb590746b141b25df4e",
+          "title": "Best free smartphone themes for Android, Xiaomi, Samsung, Oppo, …",
+          "url": "https://thethemes.co/",
+          "snippet": "TheThemes is a global platform for Android theme lovers. We collect and share high-quality themes for Xiaomi, Redmi, Samsung, …"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-361594",
+      "query": "how to get free social security card",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-ffc033cf4568b8b8cacd",
+          "title": "Social Security number & card | SSA",
+          "url": "https://www.ssa.gov/number-card",
+          "snippet": "Social Security will issue commemorative cards with the Freedom 250 logo to children born between July 2 and December 31, 2026. The limited-edition cards ..."
+        },
+        {
+          "candidate_id": "c-7bcd824f75d3fc51c02d",
+          "title": "Request Social Security number for the first time | SSA",
+          "url": "https://www.ssa.gov/number-card/request-number-first-time",
+          "snippet": "Social Security numbers and cards are free. you can apply online, then go to a local Social Security office to provide your documentation. to 10 business days."
+        },
+        {
+          "candidate_id": "c-4b48ca0f46508a0a188f",
+          "title": "Social Security Administration",
+          "url": "https://www.facebook.com/socialsecurity/posts/did-you-know-that-you-may-be-able-to-request-a-replacement-social-security-card-/1029945815840454/",
+          "snippet": "Did you know that you may be able to request a replacement Social Security card online? Answer a few questions to find out the best way for you to request ..."
+        },
+        {
+          "candidate_id": "c-22471cee93786fef6d4c",
+          "title": "How to get, replace, or correct a Social Security card | USAGov",
+          "url": "https://www.usa.gov/social-security-card",
+          "snippet": "Applying for a Social Security number and card for yourself or your child is free. Learn who can get a Social Security number and begin the ..."
+        },
+        {
+          "candidate_id": "c-0dc482e2958b5a457b88",
+          "title": "Apply for a Social Security Card",
+          "url": "https://secure.ssa.gov/ossnap/public/privacyActStatement",
+          "snippet": "You can apply online. Documents MUST be original or certified copies, unexpired, and show your name and date of birth."
+        },
+        {
+          "candidate_id": "c-cb02e9434ed5d2812dab",
+          "title": "How to Replace a Social Security Card",
+          "url": "https://www.experian.com/blogs/ask-experian/how-to-replace-a-social-security-card/",
+          "snippet": "If your Social Security card has been lost or stolen, you can get a free replacement card through the SSA website, by visiting an SSA office or ..."
+        },
+        {
+          "candidate_id": "c-7651300d71671f56792e",
+          "title": "Replace Social Security card | SSA",
+          "url": "https://www.ssa.gov/number-card/replace-card",
+          "snippet": "You can request a free replacement card. The fastest way to get a replacement card is to start your application online. Call +1 800-772-1213"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-984434",
+      "query": "where is highgarden where the tyrells are from",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-3065638abacca48955de",
+          "title": "Castles of Westeros: Highgarden - Tower of the Hand",
+          "url": "https://towerofthehand.com/blog/2016/12/12-castles-highgarden/",
+          "snippet": "In A Game of Thrones, Highgarden is where Renly Baratheon (along with Loras Tyrell) flees after Robert's death and Ned Stark's failure to take ..."
+        },
+        {
+          "candidate_id": "c-0d64cbc303e1498d2ca7",
+          "title": "In all seriousness, who gets Highgarden after the Tyrells goes ...",
+          "url": "https://www.reddit.com/r/freefolk/comments/1ddwfms/in_all_seriousness_who_gets_highgarden_after_the/",
+          "snippet": "The most likely answer would be one of the Redwyne twins. They're the sons of Mace's sister Mina, and Paxter Redwyne. other gets Highgarden"
+        },
+        {
+          "candidate_id": "c-900ef613e9c4b9ae8c2a",
+          "title": "Meet the Tyrells🌹 The family that proved you don't need ...",
+          "url": "https://www.facebook.com/GOTStudioTour/posts/meet-the-tyrellsthe-family-that-proved-you-dont-need-dragons-or-direwolves-to-pl/1273229701581200/",
+          "snippet": "As the stewards of House Gardener, the Tyrells surrendered Highgarden to Aegon and were rewarded with lordship over the richest and most ..."
+        },
+        {
+          "candidate_id": "c-1f179e4750257e8ff62d",
+          "title": "8 Things About House Tyrell and Highgarden - Boomtron",
+          "url": "https://www.boomtron.com/game-of-thrones-8-things-about-house-tyrell-and-highgarden/",
+          "snippet": "The Hightowers are a very powerful house, and she's the daughter of its Lord, Leyton Hightower. The Hightowers rule Oldtown, the oldest and one ..."
+        },
+        {
+          "candidate_id": "c-d49d033834c58ecc001f",
+          "title": "House Tyrell - Wiki of Westeros - Fandom",
+          "url": "https://gameofthrones.fandom.com/wiki/House_Tyrell",
+          "snippet": "House Tyrell of Highgarden is an extinct Great House of Westeros. It ruled over the Reach, a vast, fertile, and heavily-populated region of southwestern ..."
+        },
+        {
+          "candidate_id": "c-a851c107f2b4dc9244f7",
+          "title": "House Tyrell - A Wiki of Ice and Fire",
+          "url": "https://awoiaf.westeros.org/index.php/House_Tyrell",
+          "snippet": "House Tyrell of Highgarden is one of the Great Houses of the Seven Kingdoms, being Lords Paramount of the Mander and the liege lords of the Reach."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-628532",
+      "query": "what does a clinical psychology do",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-013e876843156aa2fe6f",
+          "title": "What Do Clinical Psychologists Do & Where Can You Work?",
+          "url": "https://www.alliant.edu/blog/responsibilities-clinical-psychologist",
+          "snippet": "At their core, these mental health professionals help patients navigate life's most difficult moments: guiding a teenager through anxiety, ..."
+        },
+        {
+          "candidate_id": "c-b5f0dd600cc89424057f",
+          "title": "Psychologist: What They Do, Specialties & Training",
+          "url": "https://my.clevelandclinic.org/health/articles/22679-psychologist",
+          "snippet": "A clinical psychologist has specialized and broad training to provide comprehensive mental and behavioral healthcare for individuals and ..."
+        },
+        {
+          "candidate_id": "c-cf99bd24454754187283",
+          "title": "How can you pursue a career in clinical psychology?",
+          "url": "https://www.capella.edu/blog/psychology/how-does-clinical-psychology-differ-from-non-clinical-psychology/",
+          "snippet": "Clinical psychologists help anyone struggling with mental health, emotional or behavioral challenges to promote well-being and personal growth."
+        },
+        {
+          "candidate_id": "c-9639a647d9d1d090f4db",
+          "title": "Clinical Psychologist Job Description | Duties & Career Paths",
+          "url": "https://www.allpsychologyschools.com/clinical-psychology/job-description/",
+          "snippet": "A clinical psychologist plays a vital role in assessing, diagnosing, and treating individuals with mental, emotional, and behavioral disorders."
+        },
+        {
+          "candidate_id": "c-2e3a4eb80eddb6448b37",
+          "title": "Psychologist vs. Clinical Psychologist: What is the ...",
+          "url": "https://www.alliant.edu/blog/psychologist-vs-clinical-psychologist",
+          "snippet": "A clinical psychologist is a professional licensed to diagnose and treat mental, emotional, and behavioral disorders."
+        },
+        {
+          "candidate_id": "c-2c3b5a88e67f4074a313",
+          "title": "What's a typical day in the life of a clinical psychologist? - Reddit",
+          "url": "https://www.reddit.com/r/ClinicalPsychology/comments/12863s9/whats_a_typical_day_in_the_life_of_a_clinical/",
+          "snippet": "Some clinicians may focus on conducting evaluations and analyzing results, while others may spend more time in therapy sessions, teaching, ..."
+        },
+        {
+          "candidate_id": "c-25869664e1904b4d43bb",
+          "title": "Clinical Psychology",
+          "url": "https://www.apa.org/ed/graduate/specialize/clinical",
+          "snippet": "Clinical psychology is the psychological specialty that provides continuing and comprehensive mental and behavioral health care for individuals, couples, ..."
+        },
+        {
+          "candidate_id": "c-0f3258fb17e67314d5cf",
+          "title": "Clinical psychology - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Clinical_psychology",
+          "snippet": "Central to its practice are psychological assessment, diagnosis, clinical formulation, and psychotherapy; although clinical psychologists also engage in ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-361620",
+      "query": "how to get from kauai to big island",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-459208d8d57117a31fff",
+          "title": "How easy is it to island hop? : r/VisitingHawaii",
+          "url": "https://www.reddit.com/r/VisitingHawaii/comments/1bqs0q3/how_easy_is_it_to_island_hop/",
+          "snippet": "I'm looking at a family vacation to Oahu but we need to visit Volcanoes National Park, too. If we fly into Kona for like 2 days, how easy is it to get ..."
+        },
+        {
+          "candidate_id": "c-92c6eaf23fc2d4877288",
+          "title": "How to travel from Kauai to the Big Island without flying?",
+          "url": "https://www.facebook.com/groups/1478535869139825/posts/3669818236678233/",
+          "snippet": "When we come back, I want to split time between Kauai and the Big Island. Is there a way to get from one to the other without flying, and if not, what’s ..."
+        },
+        {
+          "candidate_id": "c-a135450b3689ddb8d015",
+          "title": "Kauai Day Trips To Oahu, Maui Or Big Island",
+          "url": "https://www.hawaiitours.com/kauai/inter-island-day-trips/",
+          "snippet": "We handle all the arrangements for you, including flights to one of the major islands (Oahu, Maui, or Big Island), a full day of exploration, and your return ..."
+        },
+        {
+          "candidate_id": "c-be42082bf73442d72641",
+          "title": "Island Hopping Guide: From the Big Island to Kauai",
+          "url": "https://www.kauaicalls.com/hawaiian-island-hopping-guide-getting-from-the-big-island-to-kauai/",
+          "snippet": "We'll tell you all you need to know to use the ferry to travel between the Big Island and the adventurous island of Kauai."
+        },
+        {
+          "candidate_id": "c-4cd55708654c639ae02b",
+          "title": "Island Hopping from the Big Island: A Local's Guide to Quick",
+          "url": "https://keteamhawaii.com/blog/island-hopping-from-the-big-island-a-locals-guide-to-quick-escapes",
+          "snippet": "Kauai has one direct flight from Kona per day. About an hour in the air. you can take Uber, a taxi, or rent a car. Private chauffeurs are ..."
+        },
+        {
+          "candidate_id": "c-6b4ff6d2f1229bd918f7",
+          "title": "Travel between Kauai and Big Island - Kauai Forum",
+          "url": "https://www.tripadvisor.com/ShowTopic-g29218-i304-k4257331-Travel_between_Kauai_and_Big_Island-Kauai_Hawaii.html",
+          "snippet": "all flights from Kauai to the Big Island go through Honolulu. The prices was $592/person which is pretty good."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-851004",
+      "query": "what is the thermaic gulf?",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-3f4fa7ef8e5934756bfb",
+          "title": "Thermaic Gulf (Thessaloniki) - Place - ToposText",
+          "url": "https://topostext.org/place/404228WThe",
+          "snippet": "Thermaic Gulf, sea, the modern Thermaic Gulf in Thessaloniki, Beyond the Peneios river are the Macedonians, a nation, and the Thermaic gulf. Flowing between ..."
+        },
+        {
+          "candidate_id": "c-a1cde3190491b470fb20",
+          "title": "Thermaikos gulf - iSea",
+          "url": "https://isea.com.gr/project/thermaikos-gulf/",
+          "snippet": "The Thermaikos Gulf, the largest gulf in the Aegean Sea, stretches from Thessaloniki to Larissa in the west and to Chalkidiki in the east. It is a semi-enclosed and relatively shallow marine area, with a maximum depth of 45 m and a width ranging from 5 km in the northern part to 50 km in the southern part."
+        },
+        {
+          "candidate_id": "c-4de1c055afb001c97246",
+          "title": "Thermaic Gulf (Bay) - Mapy.com",
+          "url": "https://mapy.com/en/?source=osm&id=139704146",
+          "snippet": "Thermaikos Gulf, the largest in the Aegean Sea, Known for its beautiful beaches, it hosts important ports and is a center for mussel farming, producing 80-90% ..."
+        },
+        {
+          "candidate_id": "c-0feac302a254bbc5725d",
+          "title": "Gulf of Thérmai | Ionian Sea, Mediterranean, Aegean Sea",
+          "url": "https://www.britannica.com/place/Gulf-of-Thermai",
+          "snippet": "Gulf of Thérmai, large gulf of the Aegean Sea in northeastern Greece between Thessaly (Modern Greek: Thessalía), Macedonia (Makedonía), and the Chalcidice ..."
+        },
+        {
+          "candidate_id": "c-fe9a31a1a2ef7ede3433",
+          "title": "Thermaic Gulf - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Thermaic_Gulf",
+          "snippet": "The Thermaic Gulf also called the Gulf of Thessaloniki and the Macedonian Gulf, is a gulf in Greece, constituting the northwest corner of the Aegean Sea."
+        },
+        {
+          "candidate_id": "c-0bc3e45e7bea5d7f846b",
+          "title": "Thermaic Gulf – Axios Delta National Park",
+          "url": "https://axiosdelta.gr/en/thermaic-gulf/",
+          "snippet": "The Thermaic gulf is a closed, relatively shallow gulf which is very important as a place for fish reproduction on a national level and a region of crucial ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-539601",
+      "query": "was abraham lincoln half black",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-608a3a69448ac5a8a1b9",
+          "title": "Abraham Lincoln Was Mixed Race?",
+          "url": "https://www.youtube.com/shorts/wOsQZXmPw84",
+          "snippet": "Abraham Lincoln Was Mixed Race? Listen to the full episode now on Apple Podcasts. The multi-hyphenate rapper, actor, entrepreneur, family man, ..."
+        },
+        {
+          "candidate_id": "c-372e5016b54b32f607ab",
+          "title": "How do we know that Abraham Lincoln was not actually ...",
+          "url": "https://www.quora.com/How-do-we-know-that-Abraham-Lincoln-was-not-actually-part-African-American-just-a-very-light-skinned-one-Couldnt-it-be-possible-he-was-an-African-American-who-became-the-first-black-President-to-undo-slavery",
+          "snippet": "How do we know that Abraham Lincoln was not actually part African American, just a very light skinned one? Couldn't it be possible he was an African ..."
+        },
+        {
+          "candidate_id": "c-0f9645bbe75e5a0100a8",
+          "title": "Was Abraham Lincoln Actually Black?",
+          "url": "https://www.youtube.com/watch?v=6Rimh1BXngg",
+          "snippet": "Rumors about President Lincoln's racial background have persisted for a long time."
+        },
+        {
+          "candidate_id": "c-62097911816ebf8cee25",
+          "title": "Am I the only one who thought this guy was president as ...",
+          "url": "https://www.reddit.com/r/Presidents/comments/17e1no4/am_i_the_only_one_who_thought_this_guy_was/",
+          "snippet": "Lincoln was called half black even by his contemporaries. Abe Lincoln was some type of Indian (push start) halfsies."
+        },
+        {
+          "candidate_id": "c-48ac556c9d1cc42a67e5",
+          "title": "Was Abraham Lincoln Black? Let's Talk About It",
+          "url": "https://blackgirlnerds.com/was-abraham-lincoln-black-lets-talk-about-it/",
+          "snippet": "some rumors suggested that he was part African-American due to his very dark skin, and even Lincoln described himself as a “long Black fellow” ..."
+        },
+        {
+          "candidate_id": "c-aa2a141a2f5f28305c4d",
+          "title": "\"The Black Man's President\": Abraham Lincoln, African ...",
+          "url": "https://www.whitehousehistory.org/videos/white-house-history-with-susan-page-black-mans-president",
+          "snippet": "\"The Black Man's President\": Abraham Lincoln, African Americans, and the Pursuit of Racial Equality \"knows more about Lincoln than any other living person.\""
+        },
+        {
+          "candidate_id": "c-42d00923eed50d88b082",
+          "title": "African heritage of presidents of the United States",
+          "url": "https://en.wikipedia.org/wiki/African_heritage_of_presidents_of_the_United_States",
+          "snippet": "... Abraham Lincoln had black lineage. Jump up to: 1 2 3 4 Gage, Beverly (April 6, 2008). \"Our First Black President?\". The New York Times. Archived from the ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-406140",
+      "query": "is chihuahua yorkshire mix",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-5fb67053897d2febddb8",
+          "title": "Both chihuahua-yorkshire mix! Mine looks entirely like a chi ...",
+          "url": "https://www.reddit.com/r/Chihuahua/comments/oqtmoc/both_chihuahuayorkshire_mix_mine_looks_entirely/",
+          "snippet": "Both chihuahua-yorkshire mix! Mine looks entirely like a ・ chihuahua yorkie mix ・ she is 50/50. She just looks like a short chi ・ 8 week old ..."
+        },
+        {
+          "candidate_id": "c-2713ae4c32ba1738f136",
+          "title": "Chorkie Puppies for sale",
+          "url": "https://www.pets4homes.co.uk/sale/puppies/chorkie/",
+          "snippet": "Chorkies, also known as Yorkie-chi, Yorkchi, Chiorkie, are a delightful cross between a Chihuahua and a Yorkshire Terrier, with some dogs being tiny while ..."
+        },
+        {
+          "candidate_id": "c-5d9012e294bbedcfbf0e",
+          "title": "10 Essential Tips for Caring for Your Yorkie Chihuahua Mix",
+          "url": "https://jetpetresort.com/blog/dog-care/10-essential-tips-for-caring-for-your-yorkie-chihuahua-mix/",
+          "snippet": "The Yorkie Chihuahua mix, affectionately known as the Chorkie, is a delightful blend of two beloved small breeds, each contributing their unique ..."
+        },
+        {
+          "candidate_id": "c-837c63279ae83ec74a4f",
+          "title": "Chorkie Dog Profile: The Complete Chihuahua Yorkie Mix ...",
+          "url": "https://www.rover.com/blog/chorkie-dog-profile-complete-chihuahua-yorkie-mix-guide/",
+          "snippet": "Chorkie dogs are the adorable cross between Chihuahuas and Yorkshire terriers, or Yorkies. mix of the two purebreds, very small Average ..."
+        },
+        {
+          "candidate_id": "c-d7c76d020772399596cd",
+          "title": "10 Fascinating Facts About Chorkies - Chihuahua Yorkie Mix ...",
+          "url": "https://www.youtube.com/watch?v=qcNNIuOJT_s",
+          "snippet": "This designer dog breed is a cross between a Yorkshire Terrier and a Chihuahua, resulting in a confident and self-assured dog"
+        },
+        {
+          "candidate_id": "c-28beac3cfed7667af186",
+          "title": "Chorkie - Amazing mix of Yorkshire Terrier and Chihuahua",
+          "url": "https://www.youtube.com/watch?v=ZhV1ETNoaLY",
+          "snippet": "The Chorkie is the result of crossing Yorkshire Terrier with Chihuahua, two extremely popular small breed dogs."
+        },
+        {
+          "candidate_id": "c-ee026176a8a746ff5a51",
+          "title": "Chorkie Dog Breed Health and Care",
+          "url": "https://www.petmd.com/dog/breeds/chorkie",
+          "snippet": "The Chorkie dog is a cross between a Chihuahua and a Yorkshire Terrier (Yorkie). the Chorkie is a relatively new mix and is not yet recognized ..."
+        },
+        {
+          "candidate_id": "c-853b6b0514ae551b6611",
+          "title": "Chihuahua Yorkie mix photos and stories wanted",
+          "url": "https://www.facebook.com/groups/1378409559299240/posts/1968647006942156/",
+          "snippet": "Does anyone else have a Chihuahua Yorkie mix? Curious of pics! Here's my boy, Jasper, he's a rescue and 5 years old."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-717563",
+      "query": "what is an unlocked cell phone",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-df96cb620f40fc740664",
+          "title": "What is an Unlocked Phone?",
+          "url": "https://www.youtube.com/watch?v=uN1dh3YBRm0",
+          "snippet": "It's a mobile device that isn't tied up to any specific carrier this means means you have the freedom to choose your network provider."
+        },
+        {
+          "candidate_id": "c-7915a8c8d22d8c9389f8",
+          "title": "Unlocked Cell Phones",
+          "url": "https://www.bestbuy.com/site/mobile-cell-phones/unlocked-mobile-phones/pcmcat156400050037.c?id=pcmcat156400050037",
+          "snippet": "Unlocked phones give you the freedom to choose the model and carrier you want, without locking yourself into a long-term contract. You can own and use multiple ..."
+        },
+        {
+          "candidate_id": "c-c4ca6340512daee72436",
+          "title": "What does an unlocked phone mean speficially?",
+          "url": "https://www.reddit.com/r/cellphones/comments/1dw40yl/what_does_an_unlocked_phone_mean_speficially/",
+          "snippet": "I've been getting my phones through Verizon for a while now, it was simply easier that way. I've been spending a lot of time browsing tech deals on ..."
+        },
+        {
+          "candidate_id": "c-0b902a13220322e1415b",
+          "title": "What is an Unlocked Phone and How Does it Work?",
+          "url": "https://www.boostmobile.com/boost-blog/mobile-101/what-is-an-unlocked-phone",
+          "snippet": "An unlocked phone is any phone that isn't tied to a specific carrier, allowing you to bring it to any compatible network."
+        },
+        {
+          "candidate_id": "c-ef06c3d1ffad5c98f412",
+          "title": "What is an unlocked phone - Learn how to unlock a phone",
+          "url": "https://www.mintmobile.com/blog/unlocking-the-difference-between-locked-and-unlocked-phones/",
+          "snippet": "Unlocked phones are phones that aren't tied to a specific carrier's network, which means an unlocked phone can work with more than just one ..."
+        },
+        {
+          "candidate_id": "c-79eddcde9e5e5c47b75b",
+          "title": "Benefits and Questions Before Getting an Unlocked Phone",
+          "url": "https://www.verizon.com/articles/switching-to-verizon/whats-an-unlocked-phone/",
+          "snippet": "Higher resale value: Unlocked phones retain much of their value since they don't have carrier-specific software that limits their use. No ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-984499",
+      "query": "where is hips measured",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-d87ed2d33b6c4cec2d81",
+          "title": "Measure Waist, Hips, Bust, and Inseam | maurices",
+          "url": "https://www.maurices.com/size-chart/how-to-measure",
+          "snippet": "To measure your hips, stand with your feet together and wrap the tape around your hips and the roundest part of your rear."
+        },
+        {
+          "candidate_id": "c-e4c946fb88704347d955",
+          "title": "Hip Joint: What It Is, Anatomy & How It Works - Cleveland Clinic",
+          "url": "https://my.clevelandclinic.org/health/body/24675-hip-joint",
+          "snippet": "Your hips are the connection between your upper legs and torso. They’re the second biggest joint in your body. Learn about their …"
+        },
+        {
+          "candidate_id": "c-76961f05d4b937a8634e",
+          "title": "How to Measure Your Hips | Boody Eco Wear",
+          "url": "https://boody.com/blogs/guide/how-to-measure-your-hips",
+          "snippet": "Hold the measuring tape parallel to the floor – Circle it around the widest part of the hips, crossing behind the back. Meet the measuring tape ..."
+        },
+        {
+          "candidate_id": "c-b31d777d0a22be748519",
+          "title": "Waist and hip measures - Understanding Society",
+          "url": "https://www.understandingsociety.ac.uk/participants/projects/health/bodymass/",
+          "snippet": "Measuring your hips. Stand up straight. Place the tape measure around the widest part of your buttocks. Make sure that the tape is not around your waistband ..."
+        },
+        {
+          "candidate_id": "c-e57d95c430e1f0cc052e",
+          "title": "Where is the “hip” measured? : r/sewing",
+          "url": "https://www.reddit.com/r/sewing/comments/bv2lwq/where_is_the_hip_measured/",
+          "snippet": "Whenever you take the measurement for clothes for your “hips” they say measure at the widest part of your “hip” but a lot of women’s “largest ..."
+        },
+        {
+          "candidate_id": "c-d058b8e2a104105125cd",
+          "title": "HOW TO TAKE YOUR HIP MEASUREMENT - YouTube",
+          "url": "https://www.youtube.com/shorts/yci_NXlcKVw",
+          "snippet": "https://www.youtube.com/playlist?list=PL8TvsrDMOHAm6jfDVUa6mR6JcZUIDNl-o Struggling to find the perfect fit? It all starts with knowing your ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-762059",
+      "query": "what is java for",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-d2a3335cfd433002a0e4",
+          "title": "What Is Java Programming Language?",
+          "url": "https://azure.microsoft.com/en-us/resources/cloud-computing-dictionary/what-is-java-programming-language",
+          "snippet": "Java is widely used for building large-scale enterprise systems, including banking applications, customer relationship management (CRM) tools, and inventory ..."
+        },
+        {
+          "candidate_id": "c-4cb426831b9cc3a769cd",
+          "title": "How and why is Java useful? : r/learnprogramming",
+          "url": "https://www.reddit.com/r/learnprogramming/comments/q72t25/how_and_why_is_java_useful/",
+          "snippet": "What are its uses exactly? Most sites and blogs on google just list stuff like Mobile applications, Desktop applications, Gaming Applications, ..."
+        },
+        {
+          "candidate_id": "c-f08a45d2838650d432bb",
+          "title": "What is Java",
+          "url": "https://www.java.com/en/about/whatis_java.jsp",
+          "snippet": "What is Java? Java allows you to play online games, chat with people around the world, calculate your mortgage interest, and view …"
+        },
+        {
+          "candidate_id": "c-b433490d198f79162fe5",
+          "title": "What is Java technology and why do I need it?",
+          "url": "https://www.java.com/en/download/help/whatis_java.html",
+          "snippet": "What is Java technology and why do I need it? Java is a programming language and computing platform first released by Sun Microsystems in 1995."
+        },
+        {
+          "candidate_id": "c-49c20a5e56c10716ef85",
+          "title": "What Is Java Used For?",
+          "url": "https://www.coursera.org/articles/what-is-java-used-for",
+          "snippet": "Java is used for tasks such as building mobile and cloud applications, developing chatbots, powering web applications, and supporting AI."
+        },
+        {
+          "candidate_id": "c-bdb5b902b67a1268c487",
+          "title": "What Is Java Used For? 8 Things You Can Create",
+          "url": "https://www.bairesdev.com/blog/things-you-can-create-with-java/",
+          "snippet": "Java is used for developing desktop applications, system software, server applications, and software tools. It is platform-independent, robust, ..."
+        },
+        {
+          "candidate_id": "c-b7039385251360d44d99",
+          "title": "What is Java? - Java Programming Language Explained",
+          "url": "https://aws.amazon.com/what-is/java/",
+          "snippet": "Java is a widely-used programming language for coding web applications. Java is a multi-platform, object-oriented, and network-centric language. Java is a free ..."
+        },
+        {
+          "candidate_id": "c-c1fa187e4f876a58eee8",
+          "title": "Java (programming language)",
+          "url": "https://en.wikipedia.org/wiki/Java_(programming_language)",
+          "snippet": "Java is a high-level, general-purpose, memory-safe, object-oriented programming language. It is intended to let programmers write once, run anywhere (WORA),"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-139239",
+      "query": "definition of velvet",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-2841a1802b9444d34ef8",
+          "title": "Velvet - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Velvet",
+          "snippet": "Velvet is a type of woven fabric with a dense, even pile that gives it a distinctive soft feel. Historically, velvet was typically made from silk."
+        },
+        {
+          "candidate_id": "c-c4a137c20be5f4e49bee",
+          "title": "VELVET definition in American English - Collins Dictionary",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/velvet",
+          "snippet": "Velvet is soft material made from cotton, silk, or nylon, that has a thick layer of short cut threads on one side. a velvet collar."
+        },
+        {
+          "candidate_id": "c-d56b859a86243832d297",
+          "title": "VELVET | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/velvet",
+          "snippet": "a cloth usually made from silk or cotton with a thick, soft surface: as soft as velvet Her skin was as soft as velvet."
+        },
+        {
+          "candidate_id": "c-2e0edfc7f2bbdf25c8fc",
+          "title": "VELVET Definition & Meaning - Dictionary.com",
+          "url": "https://www.dictionary.com/browse/velvet",
+          "snippet": "VELVET definition: a fabric of silk, nylon, acetate, rayon, etc., sometimes having a cotton backing, with a thick, soft pile formed of loops of the warp ..."
+        },
+        {
+          "candidate_id": "c-662db8e32822d56eb506",
+          "title": "VELVET Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/velvet",
+          "snippet": "The meaning of VELVET is a clothing and upholstery fabric (as of silk, rayon, or wool) characterized by a short soft dense warp pile."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1029003",
+      "query": "what is varignon's theorem",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-6cb79f1d111e349492c3",
+          "title": "4.3 Varignon's Theorem",
+          "url": "https://engineeringstatics.org/varignons-theorem.html",
+          "snippet": "Varignon's Theorem states that the moment of a force is the sum of the moments of its components. In this example, we will determine the vertical and horizontal ..."
+        },
+        {
+          "candidate_id": "c-e59b0cb212d7de68d5d4",
+          "title": "[Solved] According to Varignon's Theorem, what is r1 in the - Testbook",
+          "url": "https://testbook.com/question-answer/according-to-varignons-theorem-what-is-r1nb--62c665e1fa350bb9dd515c33",
+          "snippet": "The Principle of Moments, also known as Varignon's Theorem, states that the moment of any force is equal to the algebraic sum of the moments of the components ..."
+        },
+        {
+          "candidate_id": "c-67881cbf9a9e650f8ccd",
+          "title": "Varignon's Theorem Explained with Examples | PDF - Scribd",
+          "url": "https://www.scribd.com/document/522767417/Hand-Outs-123",
+          "snippet": "Varignon's theorem states that the moment of a force is equivalent to the sum of the moments of its horizontal and vertical components."
+        },
+        {
+          "candidate_id": "c-cbdaf4d0160843419db8",
+          "title": "Varignon's Theorem [Vector Statics #34]",
+          "url": "https://www.youtube.com/watch?v=V6ilhKr4BgY",
+          "snippet": ". The cool thing about this theorem is that we can use the distributive property to find the moment at any point due to any number of forces"
+        },
+        {
+          "candidate_id": "c-27eb01e502dc726f43ea",
+          "title": "Varignon's theorem - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Varignon%27s_theorem",
+          "snippet": "Varignon's theorem holds that the midpoints of the sides of an arbitrary quadrilateral form a parallelogram, called the Varignon parallelogram."
+        },
+        {
+          "candidate_id": "c-ad6f6a8d92dec386f688",
+          "title": "Varignon's Theorem - NPTEL Archive",
+          "url": "https://archive.nptel.ac.in/content/storage2/courses/112103109/chap1/slides/slide15.htm",
+          "snippet": "Varignon's Theorem: Moment of a force about any point is equal to the sum of the moments of the components of that force about the same point."
+        },
+        {
+          "candidate_id": "c-83f208141963b4c708d3",
+          "title": "4.3: Varignon's Theorem - Engineering LibreTexts",
+          "url": "https://eng.libretexts.org/Bookshelves/Mechanical_Engineering/Engineering_Statics%3A_Open_and_Interactive_(Baker_and_Haynes)/04%3A_Moments_and_Static_Equivalence/4.03%3A_Varignons_Theorem",
+          "snippet": "Varignon's Theorem is a method to calculate moments developed in 1687 by French mathematician Pierre Varignon (1654 – 1722)."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-406181",
+      "query": "is china a reserve currency",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-a092815447d883f99952",
+          "title": "Is Chinese Yuan becoming a reserve currency alongside ...",
+          "url": "https://www.reddit.com/r/AusFinance/comments/1v7p5rl/is_chinese_yuan_becoming_a_reserve_currency/",
+          "snippet": "CNY cant be a reserve currency. They have capital controls, its not a free floating currency and they restrict capital movement."
+        },
+        {
+          "candidate_id": "c-24175099cc37d8b31c63",
+          "title": "Xi Has Made China's Currency Ambition Explicit",
+          "url": "https://warontherocks.com/xi-has-made-chinas-currency-ambition-explicit/",
+          "snippet": "What changes when China's leader finally states a reserve currency ambition explicitly? Xi Jinping has now done so, calling for the renminbi ..."
+        },
+        {
+          "candidate_id": "c-80023aa49a6805938ac0",
+          "title": "The Chinese Yuan is already a global reserve currency, and ...",
+          "url": "https://www.youtube.com/watch?v=m_zMQ4Q6zAs",
+          "snippet": "The Chinese Yuan is already a global reserve currency, and Chinese companies are taking advantage ..."
+        },
+        {
+          "candidate_id": "c-75a3f4e9ed1647de9a9a",
+          "title": "Yuan, Not Crypto, Will Challenge Dollar Within 5 Years",
+          "url": "https://finance.yahoo.com/markets/currencies/articles/yuan-not-crypto-challenge-dollar-233358369.html",
+          "snippet": "Harvard economist Kenneth Rogoff says China's yuan will become a reserve currency within five years as nations rush to diversify."
+        },
+        {
+          "candidate_id": "c-f18509db3584903de5ad",
+          "title": "China Foreign Exchange Reserves",
+          "url": "https://tradingeconomics.com/china/foreign-exchange-reserves",
+          "snippet": "In China, Foreign Exchange Reserves are the foreign assets held or controlled by the country central bank. The reserves are made of gold or a specific currency."
+        },
+        {
+          "candidate_id": "c-740d0959c08aeb290c62",
+          "title": "The renminbi rises but will not rival the dollar",
+          "url": "https://www.brookings.edu/articles/the-renminbi-rises-but-will-not-rival-the-dollar/",
+          "snippet": "The renminbi's status as a reserve currency has been impeded by the Chinese government's unwillingness to free up its exchange rate,"
+        },
+        {
+          "candidate_id": "c-7f7405cb09d6e490376d",
+          "title": "Foreign-exchange reserves of China",
+          "url": "https://en.wikipedia.org/wiki/Foreign-exchange_reserves_of_China",
+          "snippet": "The foreign exchange reserves of China are the state of foreign exchange reserves held by the People's Republic of China, comprising cash, bank deposits, ..."
+        },
+        {
+          "candidate_id": "c-05c7e9ade5720546f148",
+          "title": "What is Holding the Yuan Back? Xi is.",
+          "url": "https://gjia.georgetown.edu/business-economics/what-is-holding-the-yuan-back-xi-is/",
+          "snippet": "China's currency has considerable economic potential, but, as a reserve currency, the yuan (also called the renminbi) remains far behind the US ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1029016",
+      "query": "who invented the first camera",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-18da80ec15aecb1f9c48",
+          "title": "Who Invented the First Camera?",
+          "url": "https://southtree.com/blogs/artifact/who-invented-the-first-camera",
+          "snippet": "In 1825, Joseph Nicephore Niepce made the first camera for photography purposes through a process called heliography. But the images displayed on his silver- ..."
+        },
+        {
+          "candidate_id": "c-1ff248ad657f874da7c3",
+          "title": "Who Invented the First Camera",
+          "url": "https://www.worldatlas.com/articles/who-invented-the-first-camera.html",
+          "snippet": "May 17, 2018"
+        },
+        {
+          "candidate_id": "c-0e82363742904508b987",
+          "title": "History of the Camera: When was Photography Invented? - Adorama",
+          "url": "https://www.adorama.com/alc/camera-history/?srsltid=AfmBOorLA-3wiMf-7dtkQldm_J8pAP7DcCzjVLXqTHJz6RptEpuohAtP",
+          "snippet": "Kodak is considered the first camera brand. The company created by George Eastman in 1888 produced the first camera for the masses. Kodak ..."
+        },
+        {
+          "candidate_id": "c-1758cf0883686af9f411",
+          "title": "History of the camera",
+          "url": "https://en.wikipedia.org/wiki/History_of_the_camera",
+          "snippet": "The first major post-war SLR innovation was the eye-level viewfinder, which first appeared on the Hungarian Duflex in 1947 and was refined in 1948 with the ..."
+        },
+        {
+          "candidate_id": "c-6419e9a1168ddd36aa02",
+          "title": "When Was The Camera Invented? A Short History Of ...",
+          "url": "https://www.pixsy.com/photography/camera-invention-photography-history",
+          "snippet": "Invented in 1816 by Joseph Nicéphore Niépce, the first device we recognize as a camera was created. Beaumont Newhall's “The History of ..."
+        },
+        {
+          "candidate_id": "c-5261ed51fe6798d4353d",
+          "title": "When Was the First Camera Invented?",
+          "url": "https://www.studiobinder.com/blog/when-was-the-camera-invented/",
+          "snippet": "But the camera, as we know it today, was invented by French inventor Joseph Nicéphore Niépce in (about) 1816."
+        },
+        {
+          "candidate_id": "c-fe96d8552634b0a3cc92",
+          "title": "History of the Camera - When was Photography Invented? - YouTube",
+          "url": "https://www.youtube.com/watch?v=diNLTZNntuk",
+          "snippet": "Invention of Camera - History of the Camera - When was Photography Invented ... first camera. Watch the video till the end to learn about the ..."
+        },
+        {
+          "candidate_id": "c-96fa0737fb9153357f80",
+          "title": "When was the first Camera invented? A brief History of Photography",
+          "url": "https://www.fairlicensing.com/en/blog/when_was_photography_invented_history_of_photography_and_cameras",
+          "snippet": "7. When was the first camera phone made? ... The inaugural camera phone, the J-SH04, made its debut in Japan in 2000, manufactured by Sharp."
+        },
+        {
+          "candidate_id": "c-d5d5dbd796770e891e3f",
+          "title": "Who Invented the First Camera",
+          "url": "https://www.youtube.com/shorts/0xGwGHYtDSM",
+          "snippet": "The first camera was invented by Joseph Nicéphore Niépce, a French inventor, who captured the world's first permanent photograph in 1826"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-539648",
+      "query": "was amelia earhart alone when she crashed",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-56b2012547446665ebc6",
+          "title": "It was today in 1939, that pioneer Amelia Earhart ...",
+          "url": "https://www.facebook.com/clivecussler/posts/it-was-today-in-1939-that-pioneer-amelia-earhart-was-declared-dead-after-disappe/10155180739402267/",
+          "snippet": "It was today in 1939, that pioneer Amelia Earhart was declared dead after disappearing on that historic flight over the Pacific Ocean. What theories ..."
+        },
+        {
+          "candidate_id": "c-40edc9e164356348464a",
+          "title": "Amelia Earhart - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Amelia_Earhart",
+          "snippet": "On July 2, 1937, she disappeared over the Pacific Ocean while attempting to become the first female pilot to circumnavigate the world."
+        },
+        {
+          "candidate_id": "c-66c691c3fa1825ccd89a",
+          "title": "Did Amelia Earhart Survive Plane Crash? Newly Discovered Photo ...",
+          "url": "https://www.nprillinois.org/2017-07-06/did-amelia-earhart-survive-plane-crash-newly-discovered-photo-offers-clues",
+          "snippet": "Earhart and Noonan survived a crash landing in the Japanese-held Marshall Islands. The evidence - a fuzzy photo from the National Archives"
+        },
+        {
+          "candidate_id": "c-0cdba8cd76f2454b448b",
+          "title": "What happened to Amelia Earhart?",
+          "url": "https://www.reddit.com/r/mystery/comments/1qp0if6/what_happened_to_amelia_earhart/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-7a9319cb0d3ded365b2a",
+          "title": "Answering Your Questions About Earhart's Disappearance ... Except ...",
+          "url": "https://airandspace.si.edu/stories/editorial/answering-your-questions-about-earharts-disappearance-except-big-one",
+          "snippet": "Something that would turn disastrous for Earhart. Was Earhart Alone When She Disappeared? Earhart was flying with navigator Fred Noonan."
+        },
+        {
+          "candidate_id": "c-aaa530db053bf586bbd9",
+          "title": "The Disappearance of Amelia Earhart - Britannica",
+          "url": "https://www.britannica.com/story/the-disappearance-of-amelia-earhart",
+          "snippet": "Notably, some believed that she and Noonan had crashed on a different island after failing to locate Howland, and others posited that they were ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1029031",
+      "query": "what is usta",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-263e5e573b71899a6478",
+          "title": "What are UTR and USTA? : r/10s",
+          "url": "https://www.reddit.com/r/10s/comments/11kg7qa/what_are_utr_and_usta/",
+          "snippet": "First of all, I know they are ratings for your skill level in tennis, about that im clear. The thing is that in my country this system does not exist, ..."
+        },
+        {
+          "candidate_id": "c-e465a222af12e2bd68ce",
+          "title": "United States Tennis Association - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/United_States_Tennis_Association",
+          "snippet": "The United States Tennis Association (USTA) is the national governing body for tennis in the United States. A not-for-profit organization with more than 700, ..."
+        },
+        {
+          "candidate_id": "c-42a271abbd5d4d20d0b1",
+          "title": "USTA: Find a Tennis Tournament & Play Tennis Near You",
+          "url": "https://www.usta.com/en/home.html",
+          "snippet": "The official site of the U.S. Tennis Association. Find a tennis court near you, learn to play tennis, and get tennis news from the USTA."
+        },
+        {
+          "candidate_id": "c-a9aa0152f2719a367e9f",
+          "title": "USTA Florida - To Promote & Develop Tennis For All",
+          "url": "https://www.ustaflorida.com/",
+          "snippet": "The Florida Section of the United States Tennis Association is your source for Florida tennis including USTA Leagues, Team Tennis, Tournaments, & more."
+        },
+        {
+          "candidate_id": "c-9d692624e0bec9a4b208",
+          "title": "USTA Leagues - USTA TennisLink",
+          "url": "https://tennislink.usta.com/leagues/",
+          "snippet": "USTA League is the country's largest recreational tennis league with more than 300,000 players nationwide competing on teams while meeting new people and ..."
+        },
+        {
+          "candidate_id": "c-e11da4df8d51249d0147",
+          "title": "United States Tennis Association Careers - USTA",
+          "url": "https://careers.usta.com/",
+          "snippet": "Work (and play) at the USTA, the United States Tennis Association. Explore tennis jobs or something to fill your free time."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-94782",
+      "query": "color of brake fluid",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-88f6ad719d0495a3f4d8",
+          "title": "Mechanic said I need a brake fluid flush because the color is ... - Reddit",
+          "url": "https://www.reddit.com/r/mechanic/comments/1744u9w/mechanic_said_i_need_a_brake_fluid_flush_because/",
+          "snippet": "The reason brake fluid changes color is due to copper content. You flush the fluid to get the moisture and copper out of the system."
+        },
+        {
+          "candidate_id": "c-02e8b10d83f98e8e9b9a",
+          "title": "What Color is Brake Fluid? | What It Looks Like, How to Check Brake Fluid",
+          "url": "https://www.jaguarpalmbeach.com/service/service-tips-and-tricks/what-color-is-brake-fluid/?srsltid=AfmBOoqQJImT5EWcQ0QjCoy8msWXfQ8bqUnKptXsXw0VBwK5NnLzTDg6",
+          "snippet": "It's typically light yellow in color, but will brown as it ages. if you see it under your car around your wheel wells, you have a leak. If it's dark, brownish, ..."
+        },
+        {
+          "candidate_id": "c-f73fdaff82f13637ab51",
+          "title": "What Color Is Brake Fluid? - Elgin Hyundai",
+          "url": "https://www.elginhyundai.com/service/service-tips/what-color-is-brake-fluid.htm",
+          "snippet": "Brake fluid is colorless. The fluid has a vegetable oil consistency, thicker than other liquids, such as antifreeze. Brake fluid does darken as it ages and is ..."
+        },
+        {
+          "candidate_id": "c-f1048b3b8fcd4b153a6c",
+          "title": "Understanding Brake Fluid Colors: Green and Black Explained - TikTok",
+          "url": "https://www.tiktok.com/@andycharger/video/7487243456772033814",
+          "snippet": "Discover what green and black brake fluid indicates about your car's brakes and maintenance needs. @andycharger · original sound."
+        },
+        {
+          "candidate_id": "c-3107940ed605d8dd914b",
+          "title": "What Color is Brake Fluid? | What It Looks Like, How to Check Brake Fluid",
+          "url": "https://www.jaguarpalmbeach.com/service/service-tips-and-tricks/what-color-is-brake-fluid/?srsltid=AfmBOoo46EY-1ff7mU_RVS1ARF3Zxc-TBIGmsa4uRKH6IKJomooYnenz",
+          "snippet": "So, what does brake fluid look like? It's typically light yellow in color, but will brown as it ages. Now that you know what color brake fluid is, if you see it ..."
+        },
+        {
+          "candidate_id": "c-0a52f9b7cc799aa8c87e",
+          "title": "What Color Is Brake Fluid? - AutoZone",
+          "url": "https://www.autozone.com/diy/brakes/brake-fluid/what-color-is-brake-fluid",
+          "snippet": "Brake fluid is usually a clear, amber, bluish, red, or greenish color when it comes out of the container and it's new in the system. You can see it in the ..."
+        },
+        {
+          "candidate_id": "c-2b825aa8e7004283d50d",
+          "title": "Do you know what color your brake fluid should be? Fresh ... - Facebook",
+          "url": "https://www.facebook.com/ericscarcarehouston/videos/do-you-know-what-color-your-brake-fluid-should-befresh-brake-fluid-is-usually-cl/880633134515582/",
+          "snippet": "Fresh brake fluid should be clear to light yellow. Brown, time for action. Dirty brake fluid can make brakes feel spongy or fail in emergencies."
+        },
+        {
+          "candidate_id": "c-03b5ec9607dc964b8430",
+          "title": "What Color is Brake Fluid Near Norfolk, NE? | Midway CDJR",
+          "url": "https://www.midwaycdjr.com/what-color-is-brake-fluid/",
+          "snippet": "Are you wondering, “What color is brake fluid?” Well, when you put fresh brake fluid in your car, it should be nearly clear with a bit of a yellow tint However, ..."
+        },
+        {
+          "candidate_id": "c-9f37f116b443400446d9",
+          "title": "I assume this is NOT what color brake fluid is supposed to be. - Reddit",
+          "url": "https://www.reddit.com/r/MechanicAdvice/comments/bsuxxp/i_assume_this_is_not_what_color_brake_fluid_is/",
+          "snippet": "Brake fluid is hygroscopic, which means it absorbs water over time. As it does this it darkens in colour. Unless it is blue like mentioned ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-406205",
+      "query": "is chinese white watercolor transparent",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-124f966921bdf3fe488e",
+          "title": "Titanium White vs. Chinese White: What's the Difference? - Daniel Smith",
+          "url": "https://danielsmith.com/tutorials/extra-fine-watercolors/titanium-white-vs-chinese-white-whats-the-difference/",
+          "snippet": "“Forbidden by purists, Chinese White is much more than a repair patch. This semi-transparent, pure white offers excellent permanency and a medium-high tinting ..."
+        },
+        {
+          "candidate_id": "c-60a6f4c41996fcb0ade4",
+          "title": "What is the difference between Chinese white and titanium ...",
+          "url": "https://www.facebook.com/groups/watercolourbeginners/posts/3498972833752168/",
+          "snippet": "What is the difference between Chinese white and titanium white?"
+        },
+        {
+          "candidate_id": "c-885684a6d6fd16c4abd4",
+          "title": "Chinese White watercolor | Creative Spark",
+          "url": "https://creativespark.art/threads/chinese-white-watercolor.5395/",
+          "snippet": "Chinese White is more transparent than Titanium white. Titanium white is very similar to white gouache paint, but less chalky. In my ..."
+        },
+        {
+          "candidate_id": "c-72983941e5eaebdef2e4",
+          "title": "The Studio Society Pages - Chinese White?",
+          "url": "https://www.theartstorecny.com/blogs/the-art-store-society-pages/chinese-white/",
+          "snippet": "Chinese White is more translucent and tends to mix with other pigments more subtly, allowing for the underlying color to remain visible."
+        },
+        {
+          "candidate_id": "c-bea3c1187dee2e752cf1",
+          "title": "In any watercolour set that contains Chinese White, have ...",
+          "url": "https://www.reddit.com/r/Watercolor/comments/1f5mjuz/in_any_watercolour_set_that_contains_chinese/",
+          "snippet": "I’ve always heard it’s bad to have white watercolour paint next to other watercolours - not just because it isn’t necessary when working with white ..."
+        },
+        {
+          "candidate_id": "c-0ab0b47ad071b29ce085",
+          "title": "So how is Chinese White 'transparent'? - WetCanvas",
+          "url": "https://www.wetcanvas.com/forums/topic/so-how-is-chinese-white-transparent/",
+          "snippet": "It's not really as transparent as some other watercolors, but as far as white watercolor goes it's more transparent than white gouache."
+        },
+        {
+          "candidate_id": "c-d0be5db855995f2c23e4",
+          "title": "Chinese White vs. Titanium White: Which white wins in ...",
+          "url": "https://www.youtube.com/watch?v=JpRx2t74g0I",
+          "snippet": "Chinese White is great for blending with other colors to lighten them while keeping a soft, transparent look."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-762111",
+      "query": "what is javascript?",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-9c42a35ab68d3a06def3",
+          "title": "JavaScript",
+          "url": "https://en.wikipedia.org/wiki/JavaScript",
+          "snippet": "JavaScript (JS) [a] is a programming language and core technology of the Web, alongside HTML and CSS. JavaScript is the most widely used programming language ..."
+        },
+        {
+          "candidate_id": "c-256e5e59f35070a91568",
+          "title": "What Is JavaScript? The 2026 Beginner's Guide (with ...",
+          "url": "https://mimo.org/blog/what-is-javascript",
+          "snippet": "JavaScript is a programming language that makes websites interactive. It lets you create dynamic content that responds to user actions—from ..."
+        },
+        {
+          "candidate_id": "c-f0080d82e8cde745e72c",
+          "title": "What Is JavaScript Used For?",
+          "url": "https://www.computerscience.org/bootcamps/guides/javascript-uses/",
+          "snippet": "JavaScript is a programming language used to create dynamic content for websites. It achieves this by adding new HTML elements while modifying existing ones."
+        },
+        {
+          "candidate_id": "c-83fab735cde733f9ce07",
+          "title": "What is JavaScript",
+          "url": "https://www.javascripttutorial.net/what-is-javascript/",
+          "snippet": "JavaScript is a programming language initially designed to interact with elements of web pages. Within web browsers, JavaScript …"
+        },
+        {
+          "candidate_id": "c-7e9cae17a5396a45716a",
+          "title": "What is JavaScript",
+          "url": "https://www.w3schools.com/whatis/whatis_js.asp",
+          "snippet": "JavaScript is the Programming Language for the Web. JavaScript can update and change both HTML and CSS. JavaScript can calculate, manipulate and validate data."
+        },
+        {
+          "candidate_id": "c-a543151a17b7fd342ae6",
+          "title": "What Is JavaScript and Why Do I Need It?",
+          "url": "https://www.youtube.com/watch?v=KyuQyhUamug",
+          "snippet": "JavaScript is a programming language that can be used on webpages to implement anything from simple interactivity to complex computer programs ..."
+        },
+        {
+          "candidate_id": "c-82d7ed3d6e85e4c4a8d5",
+          "title": "What is JavaScript? - Learn web development | MDN",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/What_is_JavaScript",
+          "snippet": "JavaScript is a scripting language that enables you to create dynamically updating content, control multimedia, animate images, and pretty much ..."
+        },
+        {
+          "candidate_id": "c-83e1363c27f3cf8843f4",
+          "title": "Introduction to JavaScript",
+          "url": "https://www.geeksforgeeks.org/javascript/introduction-to-javascript/",
+          "snippet": "JavaScript is a versatile, dynamically typed programming language that brings life to web pages by making them interactive. It is used for ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-94798",
+      "query": "color overlay photoshop",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-95db8b95116949eeedff",
+          "title": "Photo Color Overlay | Photoshop Tutorial",
+          "url": "https://www.youtube.com/watch?v=aCbGRs6qYAM",
+          "snippet": "In this Photoshop tutorial, learn how to create a color overlay on your photos! This can be a quick and easy way to create a duotone effect."
+        },
+        {
+          "candidate_id": "c-0f26d6a21096c134489d",
+          "title": "MASTERY CLASS | 4. COLOR OVERLAY IN PHOTOSHOP",
+          "url": "https://www.youtube.com/watch?v=PrhgTudYl6w",
+          "snippet": "In this module, we will cover applying a color overlay in Adobe Photoshop: ADOBE PHOTOSHOP (CREATIVE CLOUD)"
+        },
+        {
+          "candidate_id": "c-ab2606e0e4bfb48e3ae2",
+          "title": "Use transparent overlays to tell stories with color",
+          "url": "https://www.adobe.com/products/photoshop/transparent-overlay.html",
+          "snippet": "1. Open the Layers palette and create a new layer. Open the Layer Style dialog box. 4. Go to Styles and click Color Overlay. 5. Select and apply an overlay ..."
+        },
+        {
+          "candidate_id": "c-d1244134948c1979d033",
+          "title": "How to create a color overlay effect in Photoshop",
+          "url": "https://www.facebook.com/groups/weirdfantasticbeautifulandoddd/posts/1739632210317467/",
+          "snippet": "Okay, I took this picture in full color.. put it in Photoshop copied it once, turned the copy into a black and white print put it on top of the colored ..."
+        },
+        {
+          "candidate_id": "c-ae8a53318aba6118bea3",
+          "title": "How to Use Color Overlay Within the Layer Styles Dialogue in ...",
+          "url": "https://design.tutsplus.com/articles/how-to-use-color-overlay-within-the-layer-styles-dialogue-in-photoshop--psd-17580",
+          "snippet": "Color Overlay is probably the most self-explanatory effect within all of Photoshop's Layer Styles. It has only three settings: Blend Mode, Color ..."
+        },
+        {
+          "candidate_id": "c-b8a974d14e8bfdcb653f",
+          "title": "Color Overlay Change? : r/photoshop",
+          "url": "https://www.reddit.com/r/photoshop/comments/1cwz5cw/color_overlay_change/",
+          "snippet": "Is it just me or did color overlay change? Normally, when I do color overlay as a layer style, it covers the entire layer with the color I choose. Now, ..."
+        },
+        {
+          "candidate_id": "c-ee6b1dfeb16820bbbad1",
+          "title": "How do I recreate this color overlay layer effect in ...",
+          "url": "https://graphicdesign.stackexchange.com/questions/30566/how-do-i-recreate-this-color-overlay-layer-effect-in-photoshop",
+          "snippet": "I would like to use the overlay effect used on the screenshot(s) below. I've tried experimenting with several Blending modes but keep missing the mark. ..."
+        },
+        {
+          "candidate_id": "c-50eea9763ba7bb1ed982",
+          "title": "Stunning Color Overlay Effect in Photoshop: Step-by-Step",
+          "url": "https://www.youtube.com/watch?v=qffz0F6JRFs",
+          "snippet": "Learn how to create a stunning color overlay effect in Photoshop by crafting a black and white image and then applying the color overlay to it."
+        },
+        {
+          "candidate_id": "c-112ed10b02c2d7cb27a4",
+          "title": "How to Use Color Overlay Within the Layer Styles Dialogue in ...",
+          "url": "https://www.youtube.com/watch?v=hwRTn7uDhfk",
+          "snippet": "It allows us to quickly overlay a custom color onto the surface of our subject in order to shift its appearance by giving it a different look or mood."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-673143",
+      "query": "what is a *.xaml file",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-9f33c1dc277fde5cedbe",
+          "title": "What is XAML",
+          "url": "https://wpf-tutorial.com/xaml/what-is-xaml/",
+          "snippet": "What is XAML? XAML, which stands for eXtensible Application Markup Language, is Microsoft's variant of XML for describing a GUI."
+        },
+        {
+          "candidate_id": "c-c0fa76450e011bcdb23f",
+          "title": "What Is Extensible Application Markup Language (XAML)?",
+          "url": "https://www.ituonline.com/tech-definitions/what-is-extensible-application-markup-language-xaml/",
+          "snippet": "XAML is a declarative, XML-based UI markup language used in Microsoft .NET applications to define windows, pages, controls, layouts, styles, and ..."
+        },
+        {
+          "candidate_id": "c-a7093339fc0f7812d974",
+          "title": "Extensible Application Markup Language",
+          "url": "https://en.wikipedia.org/wiki/Extensible_Application_Markup_Language",
+          "snippet": "XAML is a user interface markup language to define UI elements, data binding, and events. In WF, however, XAML defines workflows."
+        },
+        {
+          "candidate_id": "c-ae4b52488020987a984d",
+          "title": "▷ Definition of an xaml file 【2026】 - Devs School",
+          "url": "https://devs.school/docs/net-maui/introduction-to-xaml-language/definition-of-an-xaml-file/",
+          "snippet": "In this section we will give a brief introduction to the XAML markup language, which is the type of file format that will be used to create ..."
+        },
+        {
+          "candidate_id": "c-39beccf5dcdca563bbf0",
+          "title": "Why is xaml still a thing? : r/csharp",
+          "url": "https://www.reddit.com/r/csharp/comments/uq1t48/why_is_xaml_still_a_thing/",
+          "snippet": "Recently was put on .Net MAUI project and honestly its just xamarin with the useful features being deprecated. Why don't the devs make something ..."
+        },
+        {
+          "candidate_id": "c-fa7a1d8a9992950993b1",
+          "title": "XAML : What is XAML Files in UiPath | XAML Full Form",
+          "url": "https://www.youtube.com/watch?v=X7QHawa1kww",
+          "snippet": "When we create a new process in UiPath it creates a default Main.xaml file and when we go about creating a new sequence from a designer ..."
+        },
+        {
+          "candidate_id": "c-2c7178062dca8cd596e9",
+          "title": "XAML language overview - WPF - Microsoft Learn",
+          "url": "https://learn.microsoft.com/en-us/dotnet/desktop/wpf/xaml/",
+          "snippet": "XAML is a declarative markup language. XAML files are XML files that generally have the .xaml extension. The files can be encoded by any XML ..."
+        },
+        {
+          "candidate_id": "c-d236c9941ee6773bf27f",
+          "title": "XAML File (What It Is & How to Open One) - Lifewire",
+          "url": "https://www.lifewire.com/xaml-file-2622432",
+          "snippet": "An XAML file is an Extensible Application Markup Language file. XAML is an XML-based language, so XAML files are basically just text files."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1029058",
+      "query": "what is used to help with urinary leakage surgeries",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-e92defecaaab3d149e18",
+          "title": "Surgery may benefit women with two types of urinary incontinence - NIH",
+          "url": "https://www.nih.gov/news-events/news-releases/surgery-may-benefit-women-two-types-urinary-incontinence",
+          "snippet": "Urgency urinary incontinence often is first treated with behavioral techniques, reducing liquid consumption, exercises to strengthen muscles ..."
+        },
+        {
+          "candidate_id": "c-7fa07795b151abe91b75",
+          "title": "Penile implants in spinal cord injury",
+          "url": "https://en.wikipedia.org/wiki/Penile_implants_in_spinal_cord_injury",
+          "snippet": "prosthesis in a man with a SCI will improve the application of external urinary collection devices.  This stands to reduce the incidence of leakage, skin irritation"
+        },
+        {
+          "candidate_id": "c-e2b8dddf3d656167ed3c",
+          "title": "Surgery and procedures for urinary incontinence - NHS",
+          "url": "https://www.nhs.uk/conditions/urinary-incontinence/surgery/",
+          "snippet": "Clean intermittent catheterisation (CIC) is used to empty the bladder at regular intervals and so reduce overflow incontinence, also known as chronic urinary ..."
+        },
+        {
+          "candidate_id": "c-37101ba8cf28a191c7fa",
+          "title": "Used Cars for Sale",
+          "url": "https://www.carfax.com/cars-for-sale",
+          "snippet": "When you buy a used car, you have to balance a number of factors that affect its value, in order to find the best car for you. Those …"
+        },
+        {
+          "candidate_id": "c-2c2930ae35d9193a8ed5",
+          "title": "Pessary",
+          "url": "https://en.wikipedia.org/wiki/Pessary",
+          "snippet": "incontinence to stop urinary leakage and to treat pelvic organ prolapse to maintain the location of organs in the pelvic region. It can also be used to administer"
+        },
+        {
+          "candidate_id": "c-9287e2d10151b910069b",
+          "title": "Used",
+          "url": "https://www.cargurus.com/Cars/spt-used-cars-Halifax_L37438",
+          "snippet": "Search used used cars listings to find the best Halifax, VA deals. We analyze millions of used cars daily."
+        },
+        {
+          "candidate_id": "c-87a50495debdaea9d3d7",
+          "title": "Surgery for stress urinary incontinence in women - Mayo Clinic",
+          "url": "https://www.mayoclinic.org/diseases-conditions/urinary-incontinence/in-depth/urinary-incontinence-surgery/art-20046858",
+          "snippet": "The most common procedure uses a sling to support the urethra or bladder neck. The sling is usually made from a synthetic material or a strip of your own body ..."
+        },
+        {
+          "candidate_id": "c-463cfe414e31e2cd27ef",
+          "title": "Treatments for Urinary Incontinence - Northwestern Medicine",
+          "url": "https://www.nm.org/conditions-and-care-areas/womens-health/obgyn/pelvic-health/urinary-incontinence/treatments",
+          "snippet": "Midurethral sling: Midurethral sling is the most commonly performed procedure for stress incontinence because of its high cure rates and quick recovery time."
+        },
+        {
+          "candidate_id": "c-0fb54d9f56f076f1859c",
+          "title": "Urethroplasty",
+          "url": "https://en.wikipedia.org/wiki/Urethroplasty",
+          "snippet": "technique, the anastomosis is completed and fibrin glue is applied to the anastomotic suture line to help prevent leakage and fistula formation. The silicone"
+        },
+        {
+          "candidate_id": "c-c1f2be0c121cf3f58008",
+          "title": "Surgery for Female Urinary Incontinence | NYU Langone Health",
+          "url": "https://nyulangone.org/conditions/female-urinary-incontinence/treatments/surgery-for-female-urinary-incontinence",
+          "snippet": "Pubovaginal Sling Surgery. In a pubovaginal sling procedure, the surgeon makes a small incision in the abdomen or leg and retrieves tissue, called fascia, from ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1073569",
+      "query": "what is a finderscope",
+      "stratum": "answer_seeking_holdout_13",
+      "candidates": [
+        {
+          "candidate_id": "c-de7ca28e8550714a9152",
+          "title": "Finderscopes Explained: Making Astronomy Easier and ...",
+          "url": "https://www.celestron.com/blogs/knowledgebase/finderscopes-explained-making-astronomy-easier-and-more-fun?srsltid=AfmBOooUj44ggSoo6ihsmAyo72s9R1uWgGO6ZEoSHjQppa-DyIsCXC-W",
+          "snippet": "A finderscope is a small auxiliary telescope or sighting device that attaches to your main telescope. It helps you locate celestial objects ..."
+        },
+        {
+          "candidate_id": "c-ad4263e76f72101ee4a8",
+          "title": "A guide to finderscopes",
+          "url": "https://www.skyatnightmagazine.com/advice/how-set-up-finderscope-on-telescope",
+          "snippet": "A finderscope is a simple but invaluable accessory that attaches to your telescope. The smaller optical tube provides a wide field of view ..."
+        },
+        {
+          "candidate_id": "c-b7676056bf5e50b7b1d5",
+          "title": "Finderscope",
+          "url": "https://en.wikipedia.org/wiki/Finderscope",
+          "snippet": "A finderscope is an accessory sighting device used in astronomy and stargazing, typically a small auxiliary refracting telescope/monocular mounted parallelly"
+        },
+        {
+          "candidate_id": "c-8c4de0ac5b801e9227ba",
+          "title": "Finderscopes Explained: Making Astronomy Easier and ...",
+          "url": "https://www.celestron.com/blogs/knowledgebase/finderscopes-explained-making-astronomy-easier-and-more-fun?srsltid=AfmBOooCapb-nhovFxUblpbs-svaR7qV1nYpOgN-K1XBOtPrhIgQEBOZ",
+          "snippet": "A finderscope is a small auxiliary telescope or sighting device that attaches to your main telescope. It helps you locate celestial objects ..."
+        },
+        {
+          "candidate_id": "c-169be4e244ba857792fb",
+          "title": "Finderscopes and red dot finders for every application",
+          "url": "https://www.astroshop.eu/magazine/buying-guide/finderscopes-and-red-dot-finders-for-every-application/i,1618",
+          "snippet": "A finderscope is a must-have: this is a mini telescope attached to your main telescope tube which, with 3–10 degrees, offers you significantly more field of ..."
+        },
+        {
+          "candidate_id": "c-fc427451f3b39b1ba97b",
+          "title": "Finder Scope Trap: Why You Struggle to Find Objects",
+          "url": "https://www.youtube.com/watch?v=yrq9lQ_No-Q",
+          "snippet": "Most telescopes come with only one finder scope and especially for beginners I find that to be completely inadequate."
+        },
+        {
+          "candidate_id": "c-dde9472b0b07417c176b",
+          "title": "FinderScope Recommendations Based On My Experience ...",
+          "url": "https://telescopicwatch.com/best-finderscope-recommendations-from-my-experience/",
+          "snippet": "finderscope is a fairly basic, inexpensive finder with a fixed, tiny eyepiece and a difficult-to-adjust “focusing mechanism” via adjusting the ..."
+        },
+        {
+          "candidate_id": "c-cc612123f51057ad362a",
+          "title": "What finderscope should I get? : r/telescopes",
+          "url": "https://www.reddit.com/r/telescopes/comments/17olo6y/what_finderscope_should_i_get/",
+          "snippet": "I bought a used Orion XT8, and it came with a red dot finder. However, the red dot finder is terrible. Half of the time it doesn't turn on when I scroll ..."
+        }
+      ]
+    }
+  ]
+}

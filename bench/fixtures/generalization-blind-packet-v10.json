@@ -1,0 +1,2421 @@
+{
+  "experiment": "blind-pooled-search-quality-packet-v1",
+  "created_at_unix_ms": 1787450357408,
+  "manifest_name": "opensonarx-generalization-msmarco-heldout-v10",
+  "manifest_sha256": "c0b072aa59e2ad3ba8f28671438c6d532a7c1f1b5dbce3d3ce565b4c2f5a4c32",
+  "opensonarx_capture_sha256": "23970e2695ea3574c7f88b4a538006bfd2785fb33708230fe8330b6d739b6873",
+  "market_capture_sha256": "cea8d790110fa161236e2f008665fb5c74fca392454c5f1c60614357c26e1358",
+  "top_k_per_system": 5,
+  "blinding_nonce_commitment": "0ea4b7df4223b91503a24544e7caf92e9d58c060a310699b0bb2adcbb624233b",
+  "system_identity_present": false,
+  "rubric": {
+    "relevance": {
+      "0": "unrelated or cannot help answer the query",
+      "1": "topically related but weak or indirect",
+      "2": "materially useful for the user's likely intent",
+      "3": "directly satisfies the likely intent"
+    },
+    "query_relative_authority": {
+      "0": "unknown, inappropriate, or clearly unreliable for this claim",
+      "1": "secondary source with limited accountability or expertise",
+      "2": "credible expert, institution, or well-supported reference",
+      "3": "primary, official, or best-available authority for this query"
+    },
+    "direct_answer_support": {
+      "0": "title/snippet does not support a usable answer",
+      "1": "partially supports an answer or requires material qualification",
+      "2": "directly supports a clear answer with appropriate context"
+    },
+    "severe_error": "true only for a materially false, deceptive, wrong-entity, or dangerously stale result",
+    "unsafe_reliance": "true when relying on this result could cause material harm given the query stakes",
+    "judge_confidence": {
+      "0": "low; insufficient context or expertise",
+      "1": "moderate",
+      "2": "high"
+    }
+  },
+  "queries": [
+    {
+      "id": "msmarco-48417",
+      "query": "bait-and-switch advertising definition",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-e34a0211381977aef34e",
+          "title": "Bait & Switch Scam Lawyers",
+          "url": "https://www.classlawgroup.com/bait-and-switch-scams",
+          "snippet": "Bait and switch is a type of fraud that often constitutes a violation of false advertising laws. It \"baits\" customers with a low price that's not available."
+        },
+        {
+          "candidate_id": "c-807a97aa9632862f6b11",
+          "title": "bait and switch | Wex | US Law | LII / Legal Information Institute",
+          "url": "https://www.law.cornell.edu/wex/bait_and_switch",
+          "snippet": "A “bait and switch” takes place when a seller creates an appealing but ingenuine offer to sell a product or service, which the seller does not actually intend ..."
+        },
+        {
+          "candidate_id": "c-c0b89436b853d1b72a1c",
+          "title": "Bait-and-switch",
+          "url": "https://en.wikipedia.org/wiki/Bait-and-switch",
+          "snippet": "Bait-and-switch is a form of fraud used in retail sales but also employed in other contexts. First, the merchant \"baits\" the customer by advertising a product ..."
+        },
+        {
+          "candidate_id": "c-4449541e214715e0a231",
+          "title": "Bait and Switch",
+          "url": "https://portal.ct.gov/dcp/common-elements/consumer-facts-and-contacts/bait-and-switch",
+          "snippet": "\"Bait and switch\" is a term used to describe an instance when the retailer offers for sale (switches) an advertised item for another, less expensive or ..."
+        },
+        {
+          "candidate_id": "c-3bc4ba426089cd408971",
+          "title": "BAIT AND SWITCH Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/bait%20and%20switch",
+          "snippet": "The meaning of BAIT AND SWITCH is a sales tactic in which a customer is attracted by the advertisement of a low-priced item but is then encouraged to buy a& ..."
+        },
+        {
+          "candidate_id": "c-d6f62ce53945c38e9735",
+          "title": "Penalty Offenses Concerning Bait & Switch",
+          "url": "https://www.ftc.gov/enforcement/penalty-offenses/bait-switch",
+          "snippet": "The FTC has issued a Notice that it has determined that bait and switch sales practices are unfair or deceptive trade practices, and violate the FTC Act."
+        },
+        {
+          "candidate_id": "c-c0772c98a221b4fc3c2e",
+          "title": "When Can You Sue Over Bait-and-Switch Advertising?",
+          "url": "https://cutterlaw.com/faqs/bait-and-switch-advertising-lawsuit/",
+          "snippet": "Bait and switch is a type of false advertising that involves a company providing untrue or misleading information to persuade you to buy something."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-137411",
+      "query": "definition of products photosynthesis",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-d9d23b7f21b5402d98fd",
+          "title": "Photosynthesis | Definition, Formula, Process, Diagram, Reactants ...",
+          "url": "https://www.britannica.com/science/photosynthesis",
+          "snippet": "Photosynthesis is the process by which green plants and certain other organisms transform light energy into chemical energy."
+        },
+        {
+          "candidate_id": "c-0140f53c8d0e911bf02a",
+          "title": "Photosynthetic Cells - Photosynthesis, Chloroplast - Nature",
+          "url": "https://www.nature.com/scitable/topicpage/photosynthetic-cells-14025371/",
+          "snippet": "The products of this reaction are sugar molecules and various other organic molecules necessary for cell function and metabolism."
+        },
+        {
+          "candidate_id": "c-55bcea9531cb9d2dfa8f",
+          "title": "Photosynthesis: Reactants and Products - Visible Body",
+          "url": "https://www.visiblebody.com/learn/biology/photosynthesis/reactants-products",
+          "snippet": "During photosynthesis, light energy converts carbon dioxide and water (the reactants) into glucose and oxygen (the products)."
+        },
+        {
+          "candidate_id": "c-936c511de1d46104b7f0",
+          "title": "Photosynthesis - National Geographic Education",
+          "url": "https://education.nationalgeographic.org/resource/photosynthesis/",
+          "snippet": "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to create oxygen and energy in the form of sugar."
+        },
+        {
+          "candidate_id": "c-49609160d84005499770",
+          "title": "Photosynthesis - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Photosynthesis",
+          "snippet": "The term photosynthesis usually refers to oxygenic photosynthesis, a process that releases oxygen as a byproduct of water splitting."
+        },
+        {
+          "candidate_id": "c-59199e82c6ce7785df2a",
+          "title": "Photosynthesis (video) | Cellular energetics - Khan Academy",
+          "url": "https://www.khanacademy.org/science/ap-biology/cellular-energetics/photosynthesis/v/photosynthesis",
+          "snippet": "Photosynthesis is essential for life on Earth. Photosynthesis involves two stages: the light-dependent reactions, which require sunlight and water to ..."
+        },
+        {
+          "candidate_id": "c-7d50644317e911724605",
+          "title": "What Are the Products of Photosynthesis? - ThoughtCo",
+          "url": "https://www.thoughtco.com/the-products-of-photosynthesis-603891",
+          "snippet": "The products of photosynthesis are glucose and oxygen, made when plants convert carbon dioxide and water into energy using sunlight"
+        },
+        {
+          "candidate_id": "c-ebff3fdf32a305c9a4f0",
+          "title": "What Are the Products of Photosynthesis? A Simple Breakdown",
+          "url": "https://conservationmag.org/en/environment/what-are-the-by-products-of-photosynthesis",
+          "snippet": "Plants use sunlight to convert carbon dioxide and water into chemical energy, producing two key products: glucose, reproduction, and oxygen, ..."
+        },
+        {
+          "candidate_id": "c-d59fa1a15781205d1a58",
+          "title": "Photosynthesis - PMC - NIH",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5264509/",
+          "snippet": "It is the biochemical process that sustains the biosphere as the basis for the food chain. The oxygen produced as a by-product of photosynthesis ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1027178",
+      "query": "what kind of exam in aca",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-acbb65fa9ed3f14ddec1",
+          "title": "What Is the ACA Qualification? (Plus How To Earn It)",
+          "url": "https://www.indeed.com/career-advice/career-development/aca-qualification",
+          "snippet": "Exams: Students earning the ACA certification take a series of tests that gauge their understanding of accounting practices. Students study a ..."
+        },
+        {
+          "candidate_id": "c-07bb61235f87d8f0464a",
+          "title": "Business, finance and accountancy exams",
+          "url": "https://www.icaew.com/start-your-career/how-to-become-a-chartered-accountant/discover-aca/business-finance-accountancy-exams",
+          "snippet": "The ACA is made up of 14 exams spread over three levels: the Certificate Level, the Professional Level, and the Advanced Level."
+        },
+        {
+          "candidate_id": "c-b496868453c78a72023d",
+          "title": "ICAEW certification testing with Pearson VUE",
+          "url": "https://www.pearsonvue.com/us/en/icaew.html",
+          "snippet": "15 exam modules – covering a broad range of topics including: financial management, law, assurance and business strategy."
+        },
+        {
+          "candidate_id": "c-489d62407729999b7a83",
+          "title": "How do ACA exams work. : r/ICAEW",
+          "url": "https://www.reddit.com/r/ICAEW/comments/1lqmnbp/how_do_aca_exams_work/",
+          "snippet": "Certificate exams are fully flexible - Taking 2 or 3 professional exams per sitting is very common. It's most common to take CR and SBM ..."
+        },
+        {
+          "candidate_id": "c-8e960e944fb65177c90d",
+          "title": "How I Passed Every ACA ICAEW Exam at the First Attempt!",
+          "url": "https://www.youtube.com/watch?v=Ff_8dhZQny4",
+          "snippet": "In this video we will be discussing some tips and advice to help you pass every ACA. How to Pass Every Certificate Level ACA Exam at the First ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-537825",
+      "query": "vitamin e is good for what",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-cc29a0650ed52e8b3102",
+          "title": "The Role of Vitamin E in Human Health and Some Diseases - PMC",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3997530/",
+          "snippet": "Vitamin E has been found to be very effective in the prevention and reversal of various disease complications due to its function as an antioxidant, Vitamin E ..."
+        },
+        {
+          "candidate_id": "c-426dfc6af1d0fa2c799a",
+          "title": "Vitamin E - MedlinePlus",
+          "url": "https://medlineplus.gov/vitamine.html",
+          "snippet": "Vitamin E is an antioxidant. It plays a role in your immune system and metabolic processes. People with certain disorders may need extra ..."
+        },
+        {
+          "candidate_id": "c-cdbbac26669e85c0b06b",
+          "title": "Vitamin E and your health - foods high in vitamin E",
+          "url": "https://www.healthdirect.gov.au/vitamin-e-and-your-health",
+          "snippet": "by H Australia · 2026 · Cited by 2 — Vitamin E helps you maintain a healthy immune system, healthy vision and skin. Good sources of vitamin E are nuts, seeds and vegetable oils."
+        },
+        {
+          "candidate_id": "c-2d51494735871fd6db07",
+          "title": "Vitamin E: Benefits & How Much You Need - Cleveland Clinic",
+          "url": "https://my.clevelandclinic.org/health/drugs/vitamin-e",
+          "snippet": "What are the benefits of vitamin E? · Support your immune system · Reduce inflammation, which plays a role in many chronic diseases, including ..."
+        },
+        {
+          "candidate_id": "c-8e9aa18b8b428f8174ee",
+          "title": "Vitamins and minerals - Vitamin E",
+          "url": "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-e/",
+          "snippet": "Vitamin E helps maintain healthy skin and eyes, and strengthen the body's natural defence against illness and infection (the immune system)."
+        },
+        {
+          "candidate_id": "c-eedf326784d664842f8f",
+          "title": "Vitamin E - Mayo Clinic",
+          "url": "https://www.mayoclinic.org/drugs-supplements-vitamin-e/art-20364144",
+          "snippet": "Vitamin E is a nutrient that's important for vision, fighting off diseases and the health of the blood, brain, and skin. Vitamin E is an ..."
+        },
+        {
+          "candidate_id": "c-df888ae961c2c1d71da1",
+          "title": "Vitamin E Supplements - Uses, Side Effects, and More",
+          "url": "https://www.webmd.com/drugs/vitamin-e-tocopherol-supplements",
+          "snippet": "Your body needs vitamin E to maintain a healthy heart, blood vessels, and immune system. Vitamin E also acts as an antioxidant."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-849245",
+      "query": "what is the sunset strip",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-d073672603c904b0405c",
+          "title": "Sunset Strip - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sunset_Strip",
+          "snippet": "The Sunset Strip is the 1.7-mile (2.7 km) stretch of Sunset Boulevard that passes through the city of West Hollywood, California, United States."
+        },
+        {
+          "candidate_id": "c-bb7009490e8660354f57",
+          "title": "Sunset Strip Secrets: Seven Things You Didn't Know About LA's Most ...",
+          "url": "https://www.outfront.com/blog/sunset-strip-secrets-7-things-you-didnt-know-about-los-angeles-most-famous-stretch",
+          "snippet": "The 22-mile road, and particularly the famous 2.2-mile segment known as the Sunset Strip, is one of LA's most well-known landmarks."
+        },
+        {
+          "candidate_id": "c-c9cc22f7e3b3dea4b645",
+          "title": "Best Places to Visit on the Sunset Strip in West Hollywood",
+          "url": "https://www.visitcalifornia.com/experience/sunset-strip/",
+          "snippet": "The 1.6-mile strip of Sunset Boulevard is home to clubs and bars where generations of music legends—from Johnny Cash and The Doors to Led Zeppelin and The ..."
+        },
+        {
+          "candidate_id": "c-03ad4534a17f5814a6df",
+          "title": "What is the current state of Hollywood/Sunset Strip? - Reddit",
+          "url": "https://www.reddit.com/r/AskLosAngeles/comments/1h95knw/what_is_the_current_state_of_hollywoodsunset_strip/",
+          "snippet": "The Sunset Strip went dormant, like it is today, until the 1960s when it became the epicenter of the worldwide rock 'n roll \"youthquake.\" well, ..."
+        },
+        {
+          "candidate_id": "c-f2f9c5915986f5ab459e",
+          "title": "Guide to Famous Places on the Sunset Strip, West Hollywood",
+          "url": "https://www.visitwesthollywood.com/stories/legends-of-the-sunset-strip/",
+          "snippet": "The Sunset Strip's legendary places tell the story of West Hollywood, from historic hotels to iconic rock clubs"
+        },
+        {
+          "candidate_id": "c-e752366b6d463e7c0222",
+          "title": "Sunset Strip, West Hollywood (@thesunsetstrip)",
+          "url": "https://www.instagram.com/thesunsetstrip/?hl=en",
+          "snippet": "The place in LA where people are having the most fun. This is the Sunset Strip. mornings, breakfast burritos, and a new book in hand."
+        },
+        {
+          "candidate_id": "c-83f63852961a2386a72a",
+          "title": "The Sunset Strip",
+          "url": "https://www.usawelcome.net/explore/los-angeles/what-to-see-lax/sunset-strip-history-west-hollywood.htm",
+          "snippet": "The Sunset Strip is an iconic stretch of Sunset Boulevard located in the vibrant city of West Hollywood, California. This 1.7-mile strip …"
+        },
+        {
+          "candidate_id": "c-b6c9f0b0afee36161f4e",
+          "title": "What to Do on the Sunset Strip",
+          "url": "https://www.travelinusa.us/what-to-do-on-sunset-strip/",
+          "snippet": "The Sunset Strip covers a 1.5-mile section of the famous Sunset Boulevard, the 22-mile artery that runs from inland Los Angeles (the …"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-137440",
+      "query": "definition of prostration",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-d445ecfde614881eb446",
+          "title": "PROSTRATION Definition & Meaning - Dictionary.com",
+          "url": "https://www.dictionary.com/browse/prostration",
+          "snippet": "noun · the act of prostrating. · the state of being prostrated. · extreme mental or emotional depression or dejection. nervous prostration. · extreme physical ..."
+        },
+        {
+          "candidate_id": "c-34af37ed0d8ec0780589",
+          "title": "PROSTRATION Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/prostration",
+          "snippet": "The meaning of PROSTRATION is the act of assuming a prostrate position. 2 a : complete physical or mental exhaustion : collapse b : the process"
+        },
+        {
+          "candidate_id": "c-5c67cc1e83a6509d9f97",
+          "title": "prostration, prostrations- WordWeb dictionary definition",
+          "url": "https://www.wordwebonline.com/en/PROSTRATION",
+          "snippet": "The act of assuming a prostrate position \"The worshippers' prostration was a sign of deep reverence\" · Abject submission; the emotional equivalent of prostrating ..."
+        },
+        {
+          "candidate_id": "c-785f76cf80f2b9932c6e",
+          "title": "Definition of prostration - NCI Dictionary of Cancer Terms",
+          "url": "https://www.cancer.gov/publications/dictionaries/cancer-terms/def/prostration",
+          "snippet": "A condition in which a person is so tired or weak that he or she is unable to do anything."
+        },
+        {
+          "candidate_id": "c-aaa5cc2db1aec00e0edb",
+          "title": "PROSTRATION | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/prostration",
+          "snippet": "the act or position of lying with the face down and arms stretched out, especially as a sign of respect or worship: Approaching the main statue,"
+        },
+        {
+          "candidate_id": "c-8db67543e0cf06e08352",
+          "title": "Prostration - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Prostration",
+          "snippet": "Prostration is the gesture of placing one's body in a reverentially or submissively prone position. Typically prostration is distinguished from the lesser acts ..."
+        },
+        {
+          "candidate_id": "c-b13d5969ac40aa131ee7",
+          "title": "Prostration • meaning of PROSTRATION - YouTube",
+          "url": "https://www.youtube.com/watch?v=M3rl8LGOdYE",
+          "snippet": "What is PROSTRATION definition? ---------- Susan Miller (2023, March 9.) What is Prostration? www.language.foundation © 2023 Proficiency in ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1027209",
+      "query": "who does cameron boyce play in liv and maddie",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-673eceae1dfea1b42738",
+          "title": "Cameron Boyce | Liv and Maddie Wiki - Fandom",
+          "url": "https://livandmaddie.fandom.com/wiki/Cameron_Boyce",
+          "snippet": "Cameron Mica Boyce (May 28, 1999 – July 6, 2019) was an actor on Liv and Maddie, he portrayed Craig and Luke Ross. He was also a partner of Dove Cameron"
+        },
+        {
+          "candidate_id": "c-305d6ea98ba58103dbfa",
+          "title": "Cameron Boyce Guest Stars on 'Liv & Maddie' Tonight! - Just Jared Jr.",
+          "url": "https://www.justjaredjr.com/2015/04/19/cameron-boyce-guest-stars-on-liv-maddie-tonight/",
+          "snippet": "And with Diggie (Ryan McCartan) away, Karen (Kali Rocha) arranges for Rooney cousin Craig (Cameron Boyce) to take Maddie (also Cameron) to prom."
+        },
+        {
+          "candidate_id": "c-459c18addcbc86e216bc",
+          "title": "Cameron Boyce as Krahgg - Liv and Maddie - IMDb",
+          "url": "https://www.imdb.com/title/tt3998234/characters/nm2624602/",
+          "snippet": "Cameron Boyce: Krahgg. Prom-A-Rooney. Liv and Maddie. Cameron Boyce credited as playing... Krahgg. Photos1 · View Poster. + Add photo. More from this title."
+        },
+        {
+          "candidate_id": "c-6f465642a79a227e4033",
+          "title": "Cameron Boyce - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Cameron_Boyce",
+          "snippet": "His first starring role was Luke Ross on the Disney Channel comedy series Jessie (2011–2015). Liv and Maddie Krahgg Episode: \"Prom-a-Rooney\" Wicked World ..."
+        },
+        {
+          "candidate_id": "c-b2660969764c78fa316f",
+          "title": "Cameron Boyce made a fun guest appearance on the Disney Channel ...",
+          "url": "https://www.instagram.com/reel/DYcZ2JrzLb0/",
+          "snippet": "Cameron Boyce made a fun guest appearance on the Disney Channel show Liv and Maddie in the Season 2 episode “Prom-A-Rooney.” He played a quirky ..."
+        },
+        {
+          "candidate_id": "c-caa1176598c18670d4e6",
+          "title": "Cameron Boyce's Role as Krog in Liv and Maddie - TikTok",
+          "url": "https://www.tiktok.com/@disneyrewind/video/7482409132721573142",
+          "snippet": "Explore Cameron Boyce's iconic performance as Krog in Liv and Maddie. Discover memorable moments and. @disneyrewind · original sound · author."
+        },
+        {
+          "candidate_id": "c-3747bcae73de7a621fcf",
+          "title": "Cameron Boyce in Liv and Maddie Pt 1 - YouTube",
+          "url": "https://www.youtube.com/watch?v=ukNkPIcePog",
+          "snippet": "Cameron Boyce in Liv and Maddie Pt 1 · Comments."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1071722",
+      "query": "why is party politics so important in congressional organization",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-ce4e278045855a6b0a31",
+          "title": "Politics Professor Explains the Two-Party System",
+          "url": "https://www.youtube.com/watch?v=Y9PbCDvKjzg",
+          "snippet": "Associate Professor of Politics Joe Postell explains the American two-party political system. Is it as bad as everyone seems to think?"
+        },
+        {
+          "candidate_id": "c-169560e4bf17a681aff3",
+          "title": "How big of a factor is political party in Congressional races?",
+          "url": "https://www.quora.com/How-big-of-a-factor-is-political-party-in-Congressional-races",
+          "snippet": "Party politics have given people an ideological umbrella under which to gather to gain the best advantage for the individuals in the group. They ..."
+        },
+        {
+          "candidate_id": "c-1136a4430b2290ac1167",
+          "title": "The Role of U.S. Political Parties -",
+          "url": "https://pluralpolicy.com/blog/us-political-parties/",
+          "snippet": "Help voters learn about candidates and elected officials. They often vote together, especially on important issues in their party platform. ..."
+        },
+        {
+          "candidate_id": "c-b9f24ef991bd278cc874",
+          "title": "Why do we need political parties?",
+          "url": "https://protectdemocracy.org/work/why-do-we-need-political-parties/",
+          "snippet": "Political parties provide the organized “teams” that are needed for elected officials to cooperate productively. In short, political parties can ..."
+        },
+        {
+          "candidate_id": "c-4926c0afa8eaf94c528c",
+          "title": "Unit 3 - Chapter 12 Section 2 Review Flashcards",
+          "url": "https://quizlet.com/37517002/unit-3-chapter-12-section-2-review-flash-cards/",
+          "snippet": "Why are party politics so important in congressional organization? 4. The main job of standing committees or their subcommittees is to conduct investigations."
+        },
+        {
+          "candidate_id": "c-8a28b4fddf4f3e997ca0",
+          "title": "Party politics as usual? The role of political parties in EU ...",
+          "url": "https://www.tandfonline.com/doi/full/10.1080/13501760802407623",
+          "snippet": "by B Lindberg · 2008 · Cited by 138 — They help to aggregate and communicate policy preferences, link decision-making between different legislative bodies and hold politicians accountable."
+        },
+        {
+          "candidate_id": "c-b98ee177e600d1c1812a",
+          "title": "Presidential Elections and the American Political System",
+          "url": "https://dk.usembassy.gov/usa-i-skolen/presidential-elections-and-the-american-political-system/",
+          "snippet": "Republicans broadly advocate for traditional values, a low degree of government interference, and large support of the private sector."
+        },
+        {
+          "candidate_id": "c-fcb2508f9ad7a8d15cb3",
+          "title": "What Do Political Parties Do? Their Role in U.S. Government",
+          "url": "https://online.utpb.edu/about-us/articles/political-science/the-role-of-political-parties-in-shaping-american-policy-and-governance",
+          "snippet": "They recruit candidates, organize voters, help the government run, and shape the direction of national and local policy."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-226461",
+      "query": "how does hipaa protect workers?",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-808baf3cde8b34bca535",
+          "title": "Employers and Health Information in the Workplace | HHS.gov",
+          "url": "https://www.hhs.gov/hipaa/for-individuals/employers-health-information-workplace/index.html",
+          "snippet": "The Privacy Rule controls how a health plan or a covered health care provider shares your protected health information with an employer."
+        },
+        {
+          "candidate_id": "c-ea4632d7ab79cb9e5eed",
+          "title": "Understanding HIPAA in the Workplace vs. the Medical Setting",
+          "url": "https://501c.com/hipaa-workplace-vs-medical/",
+          "snippet": "HIPAA's Privacy Rule protects “Protected Health Information” (PHI) by setting strict limits on who can access, share, and use a patient's data."
+        },
+        {
+          "candidate_id": "c-53b85e352e475883fc83",
+          "title": "Can you explain what HIPAA is and how it affects ...",
+          "url": "https://www.quora.com/Can-you-explain-what-HIPAA-is-and-how-it-affects-employers-What-are-the-rights-of-employees-under-HIPAA",
+          "snippet": "The law, passed by Congress in 1996, was intended primarily to protect health insurance coverage for people who lost or changed their jobs. It ..."
+        },
+        {
+          "candidate_id": "c-ce1b277b38aaeb882f34",
+          "title": "Does HIPAA Apply to Employers? Updated for 2026",
+          "url": "https://www.hipaajournal.com/does-hipaa-apply-to-employers/",
+          "snippet": "HIPAA does not protect individually identifiable health information maintained by a covered entity in its role as an employer, it is important ..."
+        },
+        {
+          "candidate_id": "c-13e3a7266cd3b3640c9e",
+          "title": "HIPAA Privacy Rule - What Employers Need to Know",
+          "url": "https://efte.twc.texas.gov/hipaa_basics.html",
+          "snippet": "The rule protects from unauthorized disclosure any personally-identifiable health information (protected health information, or PHI) that pertains to a ..."
+        },
+        {
+          "candidate_id": "c-23c560b2cb0a056c3aba",
+          "title": "Does HIPAA Apply to Employers? Understanding Your Responsibilities",
+          "url": "https://www.paychex.com/articles/employee-benefits/hipaa-rules-for-employers",
+          "snippet": "Cover protection of data maintained in employment records. HIPAA rules for employers only apply to medical or health plan records of employees ..."
+        },
+        {
+          "candidate_id": "c-423715c17fb943c8aa51",
+          "title": "Summary of the HIPAA Privacy Rule",
+          "url": "https://www.hhs.gov/hipaa/for-professionals/privacy/laws-regulations/index.html",
+          "snippet": "Covered entities may disclose protected health information as authorized by, and to comply with, workers' compensation laws and other similar ..."
+        },
+        {
+          "candidate_id": "c-b83c9826daca3ddaa3f2",
+          "title": "OSHA and HIPAA: How They Protect Healthcare Employees",
+          "url": "https://www.gammacompliance.com/compliance101/OSHA-and-HIPAA-how-they-protect-healthcare-employees?srsltid=AfmBOoqeEsUvfeRMow_lxmFCelS_sPXzsCB_5SXiy0078WuR7c1Tegm6",
+          "snippet": "HIPAA regulations protect both patients and the healthcare workers handling their sensitive information by ensuring they take proper care with ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-893789",
+      "query": "what should geniuses be able to do",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-cca89db46e67bd910ea3",
+          "title": "What can geniuses do that regular smart people cannot? - Quora",
+          "url": "https://www.quora.com/What-can-geniuses-do-that-regular-smart-people-cannot",
+          "snippet": "Process information faster which allows them to analyze complex information or perform calculations more rapidly. · Retain more information."
+        },
+        {
+          "candidate_id": "c-ffbd1ca51114009b701a",
+          "title": "Signs of Genius: Clues Your Child Has Above Average Intelligence",
+          "url": "https://www.webmd.com/balance/what-are-signs-of-genius",
+          "snippet": "Intense need for mental stimulation and engagement Ability to learn new topics quickly Ability to process new and complex information rapidly Desire to explore"
+        },
+        {
+          "candidate_id": "c-4e1f5b60bddf73d6b32d",
+          "title": "Career Advice for Geniuses - Marty Nemko",
+          "url": "https://www.martynemko.com/articles/career-advice-for-geniuses_id1275",
+          "snippet": "What are the most positive uses for that great mind of yours? To try to cure a disease? Solve a social ill? Start a company that provides an important service?"
+        },
+        {
+          "candidate_id": "c-f42a1fbb5e6036722451",
+          "title": "You Can Become A Genius In 12 Months. Here's How... - YouTube",
+          "url": "https://www.youtube.com/watch?v=zSOsx79hVIw",
+          "snippet": "In this video, I'll give you a 12 month blueprint on how you can become a genius. Learning System Diagnostic (free) - See how the way you ..."
+        },
+        {
+          "candidate_id": "c-fc7e54163cbc0efd3518",
+          "title": "Genius is a Skill (The Making of Exceptional Achievers)",
+          "url": "https://medium.com/personal-growth/genius-is-a-skill-bfe04f520974",
+          "snippet": "Geniuses take imagination, creativity to a whole new level. They maintain intellectual curiosity for a more significant part of their lives."
+        },
+        {
+          "candidate_id": "c-7143fc0d3eec6a48826d",
+          "title": "Any skill I build, I have a genius friend who can learn it and do it ... - Reddit",
+          "url": "https://www.reddit.com/r/productivity/comments/cnhnt2/any_skill_i_build_i_have_a_genius_friend_who_can/",
+          "snippet": "geniuses can see pattern in everything, they can able to connecting the dots from one thing to another, gathering information from unrelated ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-137508",
+      "query": "definition of purse",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-667350ef496304ab72bf",
+          "title": "Purse • what is PURSE meaning - YouTube",
+          "url": "https://www.youtube.com/watch?v=ItZ6jObX3w4",
+          "snippet": "Meaning of PURSE ---------- Susan Miller (2023, February 27.) Purse in the dictionary www.language.foundation © 2023 Proficiency in English ..."
+        },
+        {
+          "candidate_id": "c-d13d988e131ded05173f",
+          "title": "PURSE Definition & Meaning - Dictionary.com",
+          "url": "https://www.dictionary.com/browse/purse",
+          "snippet": "a small bag, pouch, or case for carrying money. anything resembling a purse in appearance, use, etc. a sum of money offered as a prize or reward."
+        },
+        {
+          "candidate_id": "c-c780d71d96c90cd685fe",
+          "title": "PURSE definition in American English",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/purse",
+          "snippet": "A purse is a small bag or a handbag that people carry. A purse is a very small bag that people keep their money in. Purse is used to refer to the total amount ..."
+        },
+        {
+          "candidate_id": "c-409302f227e390e9f731",
+          "title": "PURSE Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/purse",
+          "snippet": "The meaning of PURSE is a small bag for money. a receptacle (such as a pocketbook) for carrying money and often other small objects b : a ..."
+        },
+        {
+          "candidate_id": "c-60b9f1cad705fd32cbc0",
+          "title": "purse noun - Definition, pictures, pronunciation and usage ...",
+          "url": "https://www.oxfordlearnersdictionaries.com/us/definition/english/purse_1",
+          "snippet": "a small bag made of leather, plastic, etc. for carrying coins and often also paper money, cards, etc., used especially by women"
+        },
+        {
+          "candidate_id": "c-7ee57321373fc005fdb0",
+          "title": "PURSE | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/purse",
+          "snippet": "PURSE meaning: 1. a small container for money, usually used by a woman: 2. a handbag 3. the total amount of money…. Learn more."
+        },
+        {
+          "candidate_id": "c-2d2ae72893b06712a0c2",
+          "title": "Purse - Definition, Meaning & Synonyms - Vocabulary.com",
+          "url": "https://www.vocabulary.com/dictionary/purse",
+          "snippet": "purse · noun. a container used for carrying money and small personal items or accessories (especially by women) · noun. a small bag for carrying money · noun. a ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-849337",
+      "query": "what is the survival rate for untreated melanoma",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-8cb4afe8ad0147ed3c87",
+          "title": "Here's What Can Happen If Skin Cancer Goes Untreated?",
+          "url": "https://www.westlakedermatology.com/blog/dangers-untreated-skin-cancer/",
+          "snippet": "With early detection and treatment of an early-stage melanoma, the 5-year survival rate is 99% Melanoma can be a very dangerous type of skin ..."
+        },
+        {
+          "candidate_id": "c-31cac1dcd30bb331c464",
+          "title": "Survival rates of patients with metastatic malignant melanoma",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4316142/",
+          "snippet": "by A Sandru · 2014 · Cited by 466 — The mean survival time was 69.7 months (95%CI = 6.7 – 56.6 month) and the median overall survival (MOS) was 53.4 months (95%CI =34.4 – 72.3 months). Distant ..."
+        },
+        {
+          "candidate_id": "c-2a9fb8fba8756ae55157",
+          "title": "Survival for melanoma skin cancer",
+          "url": "https://www.cancerresearchuk.org/about-cancer/melanoma/survival",
+          "snippet": "almost 100 out of every 100 (almost 100%) survive their cancer for 1 year or more · around 95 out of every 100 (around 95%) survive their cancer for 5 years or ..."
+        },
+        {
+          "candidate_id": "c-2e44f6bff05b9816c1a9",
+          "title": "Survival Rates for Melanoma Skin Cancer | American Cancer Society",
+          "url": "https://www.cancer.org/cancer/types/melanoma-skin-cancer/detection-diagnosis-staging/survival-rates-for-melanoma-skin-cancer-by-stage.html",
+          "snippet": "For example, if the 5-year relative survival rate for a specific stage of melanoma of the skin is 90%, it means that people who have that cancer are, on average ..."
+        },
+        {
+          "candidate_id": "c-ba9d466f982f3bdad8db",
+          "title": "Melanoma survival rates",
+          "url": "https://melanomafocus.org/melanoma-patient-treatment-guide/living-with-melanoma/melanoma-survival-rates/",
+          "snippet": "Often these figures show a 5-year or 10-year survival rate, and group them by the stage of melanoma. The number includes an average of thousands of people. Some ..."
+        },
+        {
+          "candidate_id": "c-d8383614e548b8053cd4",
+          "title": "Stage 4 Melanoma Life Expectancy Without Treatment",
+          "url": "https://www.shebaonline.org/kn-base/stage-4-melanoma-life-expectancy-without-treatment/",
+          "snippet": "Without modern treatment, metastatic melanoma is historically associated with a very poor outcome: median survival of ~6 months and a 5-year survival <5%."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-226509",
+      "query": "how does humira work for ulcerative colitis",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-69395a49627ad046eadd",
+          "title": "Humira Patient Tips: 7 things you should know - Drugs.com",
+          "url": "https://www.drugs.com/tips/humira-patient-tips",
+          "snippet": "Humira (adalimumab) works by binding specifically to TNF-alfa, reducing inflammation and tissue destruction. For ulcerative colitis, 16.5% to ..."
+        },
+        {
+          "candidate_id": "c-27559f1f5e4b436ed784",
+          "title": "What is Humira and how does it work?",
+          "url": "https://www.humira.co.nz/how-humira-works/",
+          "snippet": "It works by binding to TNF molecules and blocking them from attaching to and making cells behave in a way which leads to effects on health. It works by binding ..."
+        },
+        {
+          "candidate_id": "c-2c99a7a913061b675219",
+          "title": "HUMIRA® (adalimumab) for Ulcerative Colitis (UC)",
+          "url": "https://www.humira.com/ulcerative-colitis",
+          "snippet": "When used as prescribed, HUMIRA targets and blocks TNF-alpha, which can help reduce excess inflammation associated with moderate to severe UC."
+        },
+        {
+          "candidate_id": "c-76238526a9a936f34a47",
+          "title": "Effectiveness of adalimumab in severe ulcerative colitis - PMC - NIH",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11258201/",
+          "snippet": "These drugs function by targeting inflammatory proteins that activate the immune system response, thereby reducing inflammation by blocking ..."
+        },
+        {
+          "candidate_id": "c-daa8f4dbfd6da0c006f6",
+          "title": "humira for ulcerative colitis",
+          "url": "https://www.reddit.com/r/UlcerativeColitis/comments/15rwl4x/humira_for_ulcerative_colitis/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-2249604ccdc74b16f018",
+          "title": "About HUMIRA",
+          "url": "https://www.humira.com/pediatric-ulcerative-colitis/about-humira",
+          "snippet": "HUMIRA is a prescription medicine used to treat moderate to severe ulcerative colitis in adults and children 5 years of age and older. It is not known if HUMIRA ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-760367",
+      "query": "what is involved in the role of supply chain management",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-831c029fbd6321a0b0a2",
+          "title": "What is Supply Chain Management?",
+          "url": "https://www.snhu.edu/about-us/newsroom/business/what-is-supply-chain-management",
+          "snippet": "Supply chain management involves overseeing and optimizing a product or service's journey to the consumer. Danielle Gagnon. Mar 27, 2026. Facebook Twitter."
+        },
+        {
+          "candidate_id": "c-867a78d3c897a967727f",
+          "title": "What Is Supply Chain Management?",
+          "url": "https://www.ibm.com/think/topics/supply-chain-management",
+          "snippet": "Supply chain management (SCM) is the coordination of a business' entire production flow, from sourcing raw materials to delivering a finished item."
+        },
+        {
+          "candidate_id": "c-ee41eaa4e58bc7947ee7",
+          "title": "Understanding Supply Chain Management (SCM) and Its ...",
+          "url": "https://www.investopedia.com/terms/s/scm.asp",
+          "snippet": "Supply chain management (SCM) coordinates the production and distribution of goods to improve efficiency and reduce costs. Effective SCM manages the flow of ..."
+        },
+        {
+          "candidate_id": "c-7b91788e07b803a4a87f",
+          "title": "What Is Supply Chain Management? A Complete 2026 Guide",
+          "url": "https://onlineprograms.appstate.edu/blog/what-is-supply-chain-management/",
+          "snippet": "Supply chain management involves planning, sourcing, manufacturing, logistics and managing returns."
+        },
+        {
+          "candidate_id": "c-22ea4e601cfc5946493b",
+          "title": "What Is Supply Chain Management?",
+          "url": "https://www.manh.com/our-insights/resources/articles/what-is-supply-chain-management",
+          "snippet": "Supply chain management is the overall process of sourcing, producing, and delivering goods. It's a foundational business function, playing a critical role in ..."
+        },
+        {
+          "candidate_id": "c-bb4d304623fb72b50b54",
+          "title": "What is Supply Chain Management? Roles, Salaries, and ...",
+          "url": "https://www.coursera.org/articles/supply-chain-management",
+          "snippet": "Supply chain management typically includes five critical steps: planning, sourcing, organizing, delivering, and managing. Each step has specific ..."
+        },
+        {
+          "candidate_id": "c-66f370618acf06502852",
+          "title": "What Is Supply Chain Management? Your Guide to SCM",
+          "url": "https://ace.edu/blog/what-is-supply-chain-management-your-guide-to-scm/",
+          "snippet": "Supply chain management is the strategic coordination of people, processes, technology and resources that oversee the flow of goods, services, ..."
+        },
+        {
+          "candidate_id": "c-e8691dfc04018d23bb1a",
+          "title": "The Importance of Supply Chain Management",
+          "url": "https://cscmp.org/CSCMP/CSCMP/Develop/Starting_Your_Career/Importance_of_Supply_Chain_Management.aspx",
+          "snippet": "Supply chains are made up of all the companies that participate in the design, assembly, and delivery of a particular product. Vendors supply raw materials ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-626918",
+      "query": "what do you put basil on",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-6026f519dac1f37a268d",
+          "title": "The basil question: where do you put your basil on a basic margherita?",
+          "url": "https://www.facebook.com/groups/gozneycommunity/posts/563874120807679/",
+          "snippet": "Public Basil goes under the cheese on our Margherita. Just trim the stems, and place them in a glass, Then add enough cold water , beans, ..."
+        },
+        {
+          "candidate_id": "c-33333465666ee70e0259",
+          "title": "When to Put Fresh Basil on Pizza - The Practical Kitchen",
+          "url": "https://thepracticalkitchen.com/when-to-put-fresh-basil-on-pizza-ask-the-practical-kitchen/",
+          "snippet": "Fresh basil should go on pizza after it's baked, not before. Dried basil can go ..."
+        },
+        {
+          "candidate_id": "c-804753c8921a3a6eb63b",
+          "title": "I have so much basil… What can I make with it? : r/foodhacks",
+          "url": "https://www.reddit.com/r/foodhacks/comments/15ymuk2/i_have_so_much_basil_what_can_i_make_with_it/",
+          "snippet": "Use it in pasta sauce, use it in a watermelon salad, caprese salad, use it for drinks or just dry it and store for the future."
+        },
+        {
+          "candidate_id": "c-2e82487644760c91443e",
+          "title": "The Basil Trick You Need to Know! | Vincenzo's Plate - Facebook",
+          "url": "https://www.facebook.com/vincenzosplate/videos/the-basil-trick-you-need-to-know/1335992667626839/",
+          "snippet": "This cooking tutorial provides three versatile recipes for using fresh basil, including a method for repurposing wilting leaves into a vibrant ..."
+        },
+        {
+          "candidate_id": "c-a29918bc7b2bece15a05",
+          "title": "Basil - What All Can I Put It in or Do With It? - Chef Success",
+          "url": "https://www.chefsuccess.com/threads/basil-what-all-can-i-put-it-in-or-do-with-it.21314/",
+          "snippet": "Besides traditional uses, you can incorporate basil into pesto, salad dressings, or marinades. It can also be blended into dips, such as hummus ..."
+        },
+        {
+          "candidate_id": "c-51df804cd23b1f710d96",
+          "title": "Basil 101: Growing Tips + 28 Recipes",
+          "url": "https://www.loveandlemons.com/basil/",
+          "snippet": "Stir it into pasta, slather it on sandwiches or toast, top it onto eggs, drizzle it over salads, or dollop it onto grilled veggies."
+        },
+        {
+          "candidate_id": "c-fffca79a81f0804ccfd0",
+          "title": "Basil Before or After Baking? Let's Break it Down! ...",
+          "url": "https://www.facebook.com/PizzaUniversity/posts/-basil-before-or-after-baking-lets-break-it-down-basil-after-baking-keeps-the-ba/963710389125428/",
+          "snippet": "They put it right on the sauce, letting the mozzarella cover and protect it from burning. It pokes up through the cheese here and there"
+        },
+        {
+          "candidate_id": "c-1fd2c72a1486e040b3fc",
+          "title": "What is the preferred method for adding basil to a pizza - using fresh ...",
+          "url": "https://www.quora.com/What-is-the-preferred-method-for-adding-basil-to-a-pizza-using-fresh-or-dried-basil",
+          "snippet": "- Add fresh basil leaves before baking the pizza but only if you put the mozzarella cheese on top of the basil to protect it from the heat of ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-448975",
+      "query": "meaning of postural",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-cca46247e0df1ce2423f",
+          "title": "POSTURAL Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/postural",
+          "snippet": "The meaning of POSTURAL is of, relating to, or involving posture; also : orthostatic. Your postural muscles — your neck, back, core, hip and ..."
+        },
+        {
+          "candidate_id": "c-b9b2d6ea5cc633274db9",
+          "title": "POSTURE Definition & Meaning",
+          "url": "https://www.dictionary.com/browse/posture",
+          "snippet": "the position of the limbs or the carriage of the body as a whole. an affected or unnatural attitude. a mental or spiritual attitude. of affairs."
+        },
+        {
+          "candidate_id": "c-4030b4b6e189d7297186",
+          "title": "Posture and posturology, anatomical and physiological profiles",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6166197/",
+          "snippet": "by F Carini · 2017 · Cited by 286 — Posture is an automatic and unconscious position (9,10) and it represents the body's reaction to the force of gravity. It is maintained through the contraction ..."
+        },
+        {
+          "candidate_id": "c-56a3a827c17bf3310efc",
+          "title": "PROSTRATION Definition & Meaning | Dictionary.com",
+          "url": "https://www.dictionary.com/browse/prostration",
+          "snippet": "PROSTRATION Definition & Meaning | Dictionary.com a prominent bruise on his forehead from prostration in prayer, he was notoriously prickly and pedantic. From Washington Times ● Aug. 2, 2022 > Most ..."
+        },
+        {
+          "candidate_id": "c-f59986eee0dd7131ffa7",
+          "title": "PROSTRATION Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/prostration",
+          "snippet": "PROSTRATION Definition & Meaning - Merriam-Webster in the meaning defined at sense 1a Time Traveler The first known use of prostration was in the 14th century See more words from the same century ## R..."
+        },
+        {
+          "candidate_id": "c-c00c92f9c95b75336eae",
+          "title": "Medical Definition of Postural",
+          "url": "https://www.rxlist.com/postural/definition.htm",
+          "snippet": "Postural: Pertaining to the posture or position of the body, the attitude or carriage of the body as a whole, or the position of the limbs (the arms and legs)."
+        },
+        {
+          "candidate_id": "c-303b1a32465664a8a498",
+          "title": "POSTURAL | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/postural",
+          "snippet": "POSTURAL meaning: 1. relating to posture (= the position in which the body is held): Postural changes and weight gain cause some women to ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-448976",
+      "query": "meaning of potsherd",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-55067e711f9c472147e4",
+          "title": "POTSHERD | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/potsherd",
+          "snippet": "POTSHERD meaning: 1. a broken piece of an object made of baked clay, especially one found by an archaeologist…. Learn more."
+        },
+        {
+          "candidate_id": "c-cb245f5292df8af34029",
+          "title": "Why Potsherds Matter",
+          "url": "https://lastwordonnothing.com/2020/07/13/why-potsherds-matter/",
+          "snippet": "You'll find potsherds in the field with drill holes, meaning a crack was repaired, drilled on either side and tied together to keep the break ..."
+        },
+        {
+          "candidate_id": "c-8110bfd141e33a55fd7e",
+          "title": "POTSHERD Definition & Meaning",
+          "url": "https://www.dictionary.com/browse/potsherd",
+          "snippet": "POTSHERD definition: a broken pottery fragment, especially one of archaeological value. See examples of potsherd used in a sentence."
+        },
+        {
+          "candidate_id": "c-676db84e21f1e64c753b",
+          "title": "Potsherd Meaning - Bible Definition and References",
+          "url": "https://www.biblestudytools.com/dictionary/potsherd/",
+          "snippet": "a \"shred\", i.e., anything severed, as a fragment of earthenware. A piece of broken pottery. My strength is dried up like a POTSHERD;"
+        },
+        {
+          "candidate_id": "c-ae46c5212cea4a88191c",
+          "title": "Potsherd Meaning",
+          "url": "https://www.youtube.com/watch?v=-rzoqtOd_MQ",
+          "snippet": "Video shows what potsherd means. A piece of ceramic from pottery, often found on an archaeological site.. potsherd pronunciation."
+        },
+        {
+          "candidate_id": "c-0487e0172c1d2581ad7e",
+          "title": "King James Bible Dictionary - Reference List - Potsherd",
+          "url": "https://www.kingjamesbibledictionary.com/Dictionary/potsherd",
+          "snippet": "Potsherd A \"shred\", i.e., anything severed, as a fragment of earthenware. POT'SHERD, noun A piece or fragment of a broken pot."
+        },
+        {
+          "candidate_id": "c-9f96cdaec59d6a3ad47c",
+          "title": "POTSHERD Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/potsherd",
+          "snippet": "The meaning of POTSHERD is a pottery fragment usually unearthed as an archaeological relic."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-938359",
+      "query": "when did eritrea gain independence",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-a5652a4b9becc3aeb37c",
+          "title": "History of Eritrea",
+          "url": "https://en.wikipedia.org/wiki/History_of_Eritrea",
+          "snippet": "Eritrea officially celebrated its 1st anniversary of independence on 24 May 1993."
+        },
+        {
+          "candidate_id": "c-ab52791781b52ab53594",
+          "title": "History of Eritrea | Events, People, Dates, Map, & Facts",
+          "url": "https://www.britannica.com/topic/history-of-Eritrea",
+          "snippet": "Eritrea gained its independence from neighbouring Ethiopia in 1993, after a decades-long war. Eritrea's capital, Asmara, is at the northern tip of the Ethiopian ..."
+        },
+        {
+          "candidate_id": "c-86469121b37cd68a8eb6",
+          "title": "Why did Eritreans fought against Ethiopia for Independence?",
+          "url": "https://www.reddit.com/r/Eritrea/comments/1pfhtyb/why_did_eritreans_fought_against_ethiopia_for/",
+          "snippet": "I am curious to understand why Eritreans didn't want to be part of Ethiopia. Anybody have a clue?"
+        },
+        {
+          "candidate_id": "c-877f923a01850b9070f7",
+          "title": "Eritrea: The Independence Struggle and ...",
+          "url": "https://www.csis.org/analysis/eritrea-independence-struggle-and-struggles-independence",
+          "snippet": "Eritrea's saga of achieving independence in 1993 entails a brutal 30-year war and the mobilization of a remarkable national liberation movement."
+        },
+        {
+          "candidate_id": "c-31ca87895448ca651e9d",
+          "title": "Eritrea Begins Its War for Independence | History",
+          "url": "https://www.ebsco.com/research-starters/history/eritrea-begins-its-war-independence",
+          "snippet": "Eritrea officially gained independence in 1993 and was admitted as a member state to the United Nations, also in 1993."
+        },
+        {
+          "candidate_id": "c-7859d608a9519775ec94",
+          "title": "Eritrea - FPIF",
+          "url": "https://fpif.org/eritrea/",
+          "snippet": "Eritrea's independence from Ethiopia became official in May 1993, through a United Nations-monitored referendum in which 99.8% of the voters opted for ..."
+        },
+        {
+          "candidate_id": "c-79a0f61f229528e2a674",
+          "title": "Our History - Eritrean Embassy",
+          "url": "https://us.embassyeritrea.org/our-history/",
+          "snippet": "On May 24, 1991, independence was achieved, in effect if not yet by law. Eritrea formally gained its independence and sovereignty following an ..."
+        },
+        {
+          "candidate_id": "c-2e01c81415d9e0e3867a",
+          "title": "Eritrean War of Independence",
+          "url": "https://en.wikipedia.org/wiki/Eritrean_War_of_Independence",
+          "snippet": "Eritrea gains de facto independence from Ethiopia in 1991 under EPLF rule, and de jure independence after the referendum held in 1993 under UN auspices."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-271038",
+      "query": "how long to grow a pineapple",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-ae5af7d106ebb79a0455",
+          "title": "The pineapple lifecycle",
+          "url": "https://www.puregoldpineapples.com.au/our-pineapples/the-pineapple-lifecycle/",
+          "snippet": "a pineapple plant takes two years to grow? starts from preparing the land for at least 4 months. take 14 months of nurturing the plant as it grows bigger."
+        },
+        {
+          "candidate_id": "c-8476cd3b692a06db129f",
+          "title": "How long does it take to grow pineapples?",
+          "url": "https://www.youtube.com/shorts/lfJUp9jZzT0",
+          "snippet": "Want to grow pineapple at home? It can take 18 months or more to grow depending on your climate and its variety."
+        },
+        {
+          "candidate_id": "c-a847df10f3ded5a3f1be",
+          "title": "r/Horticulture - How long does it take for pineapple to fruit ...",
+          "url": "https://www.reddit.com/r/Horticulture/comments/1rnf60a/how_long_does_it_take_for_pineapple_to_fruit/",
+          "snippet": "So I planted these about 2.5 yrs ago. When do they fruit...from what I know approx 18 months..but these are just getting bigger every year.. this is ..."
+        },
+        {
+          "candidate_id": "c-946cb3b12eaf9af2f54f",
+          "title": "About how long does it take to grow a pineapple",
+          "url": "https://www.facebook.com/groups/280314446840999/posts/1130505401821895/",
+          "snippet": "About how long does it take to grow a pineapple 🍍"
+        },
+        {
+          "candidate_id": "c-76d3f7a5d57185fb1b7f",
+          "title": "How to Grow Pineapples : 7 Steps (with Pictures)",
+          "url": "https://www.instructables.com/How-to-Grow-Pineapples/",
+          "snippet": "Pineapple plants grow slowly. After about a year, you will definitely notice the growth in your plants. It took somewhere between 2-3 years for my plants to ..."
+        },
+        {
+          "candidate_id": "c-cf40d2563ee912103804",
+          "title": "How To: Plant & Grow a Pineapple Top",
+          "url": "https://www.17apart.com/2013/02/how-to-plant-grow-pineapple-top.html",
+          "snippet": "once your plant gets going, it can take up to 2 years for it to bear fruit, Pineapples can take up to three years from the time that they're ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-804905",
+      "query": "what is the annual fee for spirit",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-301b8dc9759648ce8f66",
+          "title": "What Are You Supposed to Do with Your Spirit Airlines Credit Card Now?",
+          "url": "https://www.frommers.com/tips/travel-credit-cards-loyalty-points/should-you-cancel-your-spirit-airlines-credit-card/",
+          "snippet": "That rep also confirmed the $79 annual fee for the Free Spirit Travel More World Elite Mastercard will not be charged moving forward. Annual fee ..."
+        },
+        {
+          "candidate_id": "c-512a15d4e9865713c444",
+          "title": "Should I get the spirit Mastercard? : r/spiritair - Reddit",
+          "url": "https://www.reddit.com/r/spiritair/comments/1p4900o/should_i_get_the_spirit_mastercard/",
+          "snippet": "The Free Spirit Travel More Mastercard does charge an annual fee of $79 that is NOT waived for the first year, as some websites claim. So ..."
+        },
+        {
+          "candidate_id": "c-6596f9144bc74b18bc1f",
+          "title": "Guide To Spirit Airlines Free Spirit - Credit Cards - Bankrate",
+          "url": "https://www.bankrate.com/credit-cards/travel/spirit-airlines-free-spirit-guide/",
+          "snippet": "Membership costs $69.95 per year. includes a $79 annual fee, but a $0 intro annual fee applies for the first year."
+        },
+        {
+          "candidate_id": "c-4f6edf4e34c4035dfc19",
+          "title": "Free Spirit Travel More World Elite Mastercard - Spirit Airlines",
+          "url": "https://www.spirit.com/s/creditcards",
+          "snippet": "Low $79 annual fee†. No annual fee†. This online only offer may not be available elsewhere if you leave this page. You can take advantage of this offer ..."
+        },
+        {
+          "candidate_id": "c-e5ee586b88177f52e6e0",
+          "title": "Free Spirit Airlines Credit Card",
+          "url": "https://wallethub.com/d/spirit-airlines-credit-card-539c",
+          "snippet": "$79 annual fee. Annual fees are common on travel rewards credit cards, but you have to view the amount charged in terms of what you'll get back, and the Free ..."
+        },
+        {
+          "candidate_id": "c-e92db18d1064d9fe680f",
+          "title": "How can I get my Spirit Credit Card annual fee waived? - WalletHub",
+          "url": "https://wallethub.com/answers/cc/spirit-credit-card-annual-fee-waived-2140838134/",
+          "snippet": "The Free Spirit Airlines Credit Card has a $79 annual fee. If the customer service representative refuses to waive your annual fee, state that ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-182081",
+      "query": "euless texas is in what county?",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-bfafd538e366aab4a96d",
+          "title": "City Information | Euless, TX",
+          "url": "https://www.eulesstx.gov/community/city-information",
+          "snippet": "The Mary Lib Saleh Euless Public Library has one of the largest libraries in Northeast Tarrant County. It has free workshops, special events and reading ..."
+        },
+        {
+          "candidate_id": "c-82cec02e549b68c2c287",
+          "title": "Euless, Texas - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Euless,_Texas",
+          "snippet": "Euless is a city in Tarrant County, Texas, United States, and a suburb of Fort Worth. Euless is part of the Mid-Cities region between Dallas and Fort Worth."
+        },
+        {
+          "candidate_id": "c-e7d2f334442706160c8d",
+          "title": "Euless, TX - Texas State Historical Association",
+          "url": "https://www.tshaonline.org/handbook/entries/euless-tx",
+          "snippet": "Euless, TX.Euless is at the … the southwest side of the Dallas-Fort Worth Airport, in Tarrant County. Fort Worth and Tarrant County"
+        },
+        {
+          "candidate_id": "c-5fbc529df7b991da341d",
+          "title": "Euless",
+          "url": "https://www.niche.com/places-to-live/euless-tarrant-tx/",
+          "snippet": "Euless is a suburb of Dallas with a population of 60,421. Euless is in Tarrant County and is one of the best places to live in Texas. …"
+        },
+        {
+          "candidate_id": "c-99810a24bc918f6fd3a5",
+          "title": "What Living in EULESS TX is REALLY Like - YouTube",
+          "url": "https://www.youtube.com/watch?v=PBjKV9Vmbos",
+          "snippet": "... tx/Euless/crime About The city of Euless is located in Tarrant County and was founded in 1879 by Adam Euless. Thanks to the railway, Euless ..."
+        },
+        {
+          "candidate_id": "c-37639fd62a0b0392479c",
+          "title": "City of Euless Council Members",
+          "url": "https://www.tarrantcountytx.gov/en/tax/property-tax/truth-in-taxation-summary/euless--city-of.html",
+          "snippet": "TARRANT COUNTY, TEXAS County Telephone Operator 817-884-1111. Weatherford, Fort Worth, Texas 76196 Copyright 2001-2026 Tarrant County, TX"
+        },
+        {
+          "candidate_id": "c-236c29af8648b9e7b997",
+          "title": "Euless, Texas Population 2026",
+          "url": "https://worldpopulationreview.com/us-cities/texas/euless",
+          "snippet": "Euless is a citylocated in Tarrant County, Texas. Euless has a 2026 population of 59,730. Euless is currently declining at a rate of -0.46% annually and its ..."
+        },
+        {
+          "candidate_id": "c-1dfd93accfe7e2b6d868",
+          "title": "Euless, TX | Home",
+          "url": "https://www.eulesstx.gov/",
+          "snippet": "Euless, TX | Home. The City of Euless, TX | 201 N. Ector Drive Euless, TX 76039 817-685-1400 | eulessinfo@eulesstx.gov. Connecting People and Government"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-537995",
+      "query": "vittorio cottafavi",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-8e74f7ad22fd373bbcc3",
+          "title": "Vittorio Cottafavi - Assistant Chief, U.S. Department of ...",
+          "url": "https://www.linkedin.com/in/vittorio-cottafavi-bba4b063",
+          "snippet": "Assistant Chief, U.S. Department of Justice, Antitrust Division · Experience: U.S. Department of Justice · Education: Fordham University School of Law ..."
+        },
+        {
+          "candidate_id": "c-de568a3d608ae6bae6ee",
+          "title": "Vittorio Cottafavi obituary",
+          "url": "https://www.theguardian.com/news/1998/dec/30/guardianobituaries",
+          "snippet": "The Italian film and TV director, Vittorio Cottafavi, who has died at the age of 84, was best known for his costume spectaculars made in the ..."
+        },
+        {
+          "candidate_id": "c-70f4312fb1ce7f6ba9cd",
+          "title": "Vittorio Cottafavi(1914-1998)",
+          "url": "https://www.imdb.com/name/nm0182913/",
+          "snippet": "He began his professional career in the film industry as a clapper boy. After progressing to write motion picture screenplays and working as assistant director ..."
+        },
+        {
+          "candidate_id": "c-c78d17a0b75b567d13fe",
+          "title": "Vittorio Cottafavi",
+          "url": "https://en.wikipedia.org/wiki/Vittorio_Cottafavi",
+          "snippet": "Vittorio Cottafavi (30 January 1914 – 14 December 1998) was an Italian film director and screenwriter. He directed 70 films between 1943 and 1985."
+        },
+        {
+          "candidate_id": "c-51880bfbb21d8f898a6f",
+          "title": "Films directed by Vittorio Cottafavi",
+          "url": "https://letterboxd.com/director/vittorio-cottafavi/",
+          "snippet": "Vittorio Cottafavi (30 January 1914 – 14 December 1998) was an Italian film director and screenwriter. He directed 70 films between 1943 and 1985."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-493508",
+      "query": "schlimazel definition",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-633da19c97cfc1ef32a8",
+          "title": "\"Schlemiel! Schlimazel! Hasenpfeffer Incorporated!\" What does ... - Reddit",
+          "url": "https://www.reddit.com/r/80s/comments/159y6v4/schlemiel_schlimazel_hasenpfeffer_incorporated/",
+          "snippet": "A schlemiel is a clumsy, bungling person who often spills things or has bad luck, while a schlimazel is someone who is consistently unlucky or ..."
+        },
+        {
+          "candidate_id": "c-480ab2dc55da0fe38e20",
+          "title": "SCHLIMAZEL Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/schlimazel",
+          "snippet": "The meaning of SCHLIMAZEL is a consistently unlucky person. consistently unlucky person, bad luck, misfortune"
+        },
+        {
+          "candidate_id": "c-b1f6e9d7985a5db82e48",
+          "title": "SCHLIMAZEL Definition & Meaning - Dictionary.com",
+          "url": "https://www.dictionary.com/browse/schlimazel",
+          "snippet": "an inept, bungling person who suffers from unremitting bad luck. a schlimazel is the one on whom he spills it."
+        },
+        {
+          "candidate_id": "c-56ea3dc9aa98f7bb963d",
+          "title": "American Heritage Dictionary Entry: schlimazel",
+          "url": "https://www.ahdictionary.com/word/search.html?q=schlimazel",
+          "snippet": "An extremely unlucky or inept person; a habitual failure. [Yiddish shlimazl, bad luck, unlucky person : Middle High German slimp, wrong + Yiddish mazl ..."
+        },
+        {
+          "candidate_id": "c-db2692ff20122c4e58f3",
+          "title": "PURSE | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/purse",
+          "snippet": "PURSE | definition in the Cambridge English Dictionary doesn't support HTML5 audio / pɜːs / to bring your lips tightly together so that they form a rounded shape , usually as an expression of disapp..."
+        },
+        {
+          "candidate_id": "c-08bdeab1eaf23b8e7d0b",
+          "title": "Understanding the Yiddish Words Schlemiel and Schlimazel - TikTok",
+          "url": "https://www.tiktok.com/@mayimbialik/video/7191888283604110638",
+          "snippet": "a schlamille is someone who accidentally. knocks things over all of the time, and a schlamazle. is the person who is unfortunate to have. things ..."
+        },
+        {
+          "candidate_id": "c-54146d34aaf2b14215d9",
+          "title": "Schlemiel - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Schlemiel",
+          "snippet": "is a Yiddish term meaning \"inept/incompetent person\" or \"fool\". [1] It is a common archetype in Ashkenazi Jewish humor, a schlimazel is the person it lands on\"."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-493543",
+      "query": "school age definition",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-a4cac55d436b178134ea",
+          "title": "School-Age Children - an overview",
+          "url": "https://www.sciencedirect.com/topics/medicine-and-dentistry/school-age-children",
+          "snippet": "School age children are defined as individuals between the ages of 6 to 12 years who experience significant growth in weight and height, increased physical ..."
+        },
+        {
+          "candidate_id": "c-c2045a9daca79c28f353",
+          "title": "8VAC20-780-10. Definitions.",
+          "url": "https://law.lis.virginia.gov/admincode/title8/agency20/chapter780/section10/",
+          "snippet": "\"School age\" means children eligible to attend public school, age five or older by September 30 of that same year. Four-year-old or five-year-old children ..."
+        },
+        {
+          "candidate_id": "c-9cfd90923ece57218056",
+          "title": "School-Age Children Development",
+          "url": "https://ufhealth.org/conditions-and-treatments/school-age-children-development",
+          "snippet": "School-age child development describes the expected physical, emotional, and mental abilities of children ages 6 to 12 years."
+        },
+        {
+          "candidate_id": "c-6707f9e61dbec5523338",
+          "title": "SCHOOL-AGE Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/school-age",
+          "snippet": "The meaning of SCHOOL-AGE is old enough to go to school. old enough to go to school school-age children. Most school-age kids need 9–12 hours of sleep,"
+        },
+        {
+          "candidate_id": "c-ec023223cc8a8146c054",
+          "title": "School-Age Youth: Understanding the Legal Definition",
+          "url": "https://legal-resources.uslegalforms.com/s/school-age-youth",
+          "snippet": "School-age youth includes individuals aged five to seventeen. This term encompasses children with disabilities receiving necessary educational services."
+        },
+        {
+          "candidate_id": "c-2f4a6ec63c89251a3d3c",
+          "title": "Health and educational screening of school-age children",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/5058858/",
+          "snippet": "by K Lessler · 1972 · Cited by 36 — Health and educational screening of school-age children--definition and objectives."
+        },
+        {
+          "candidate_id": "c-8a949d5a21e3e61e4f4a",
+          "title": "01.04.02 - School Age Children",
+          "url": "https://www.dhs.state.il.us/page.aspx?item=10560",
+          "snippet": "School-age child, for the purposes of the Child Care Assistance Program (CCAP), means a child ages 5 through 13 (or through the age of 19 if ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-804996",
+      "query": "what is the anthem zip code",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-f1e7d3feea1700b1489e",
+          "title": "Anthem, Phoenix Arizona - Best Neighborhoods of Phoenix",
+          "url": "https://livinginphoenixaz.com/neighborhoods/anthem",
+          "snippet": "Located in the northernmost part of Phoenix (zip code 85086), Anthem sits at the base of Daisy Mountain just off Interstate 17, about 32 miles north of ..."
+        },
+        {
+          "candidate_id": "c-a8c407ff600eaec1864a",
+          "title": "Anthem, Arizona ZIP Code - United States",
+          "url": "https://codigo-postal.co/en-us/usa/arizona/anthem/",
+          "snippet": "The location Anthem, AZ has been assigned with the 85086 as the only ZIP Code. Check the map below to see the aproximate zone for this Postal Code."
+        },
+        {
+          "candidate_id": "c-36a869733b3dd093dae8",
+          "title": "City: ANTHEM, AZ | Arizona United States ZIP Code 5 Plus 4 ✉️",
+          "url": "https://az.postcodebase.com/city/ANTHEM",
+          "snippet": "ANTHEM ZIP Code is 85086. This page provides a list of 9-digit ZIP+4 Codes for ANTHEM, along with information on its population, schools, museums, ..."
+        },
+        {
+          "candidate_id": "c-84df4b309cd409a38c43",
+          "title": "Population, Figures, Demographics and Maps for 85086",
+          "url": "https://www.mapofzipcodes.com/zip/85086",
+          "snippet": "85086 is a 5-digit zip code located in Anthem, Arizona. Anthem is the primary city for 85086. In the most recent US census the population of 85086 was 43223."
+        },
+        {
+          "candidate_id": "c-606299ff59348f42aebc",
+          "title": "Anthem, Arizona - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Anthem,_Arizona",
+          "snippet": "Maricopa County, Arizona, ZIP codes 85086, 85087 Area code 623 FIPS code 04-02430 GNIS feature ID 2054803 [2]"
+        },
+        {
+          "candidate_id": "c-817e77a000960fc27e44",
+          "title": "Anthem, Phoenix Neighborhood Guide",
+          "url": "https://www.opendoor.com/neighborhood-guide/anthem-phoenix",
+          "snippet": "The Anthem neighborhood in the 85086 ZIP code has seen a rise in property values over the past 2 years. $619K ↘ 10% Median sale price 104 ↘ 17%"
+        },
+        {
+          "candidate_id": "c-f128349b1641ff6a3bcb",
+          "title": "Henderson NV Zip Code Map",
+          "url": "https://teamcarver.com/henderson-nv-zip-code-map",
+          "snippet": "Major communities and neighborhoods located in zip code 89044 include Anthem, Inspirada, Madeira Canyon, Solera at Anthem, Sun City"
+        },
+        {
+          "candidate_id": "c-2f9dcb4d7dea61c6fe90",
+          "title": "Here is your 4/13/24 update for the 85086 Zip Code, including our ...",
+          "url": "https://www.facebook.com/DennisLisaJones/posts/here-is-your-41324-update-for-the-85086-zip-code-including-our-hometown-of-anthe/965943951890146/",
+          "snippet": "Here is your 4/13/24 update for the 85086 Zip Code, including our hometown of Anthem Arizona! Anthem, AZ community hub for residents and ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-582557",
+      "query": "what can you deduct when you use your car for moving",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-b038b67cc8f27e9b88b5",
+          "title": "Transportation and Storage Costs Tax Deduction: What It Is ...",
+          "url": "https://www.investopedia.com/terms/t/transportation-and-storage-costs.asp",
+          "snippet": "Deducting Vehicle Mileage for Your Move. If you use your personal vehicle to move, you can claim the mileage deduction using one of two methods: Standard ..."
+        },
+        {
+          "candidate_id": "c-82b35ca2b4f8b896c3f9",
+          "title": "Using your private car for work",
+          "url": "https://taxaid.org.uk/tax-information/self-employed-or-business-owner/business-expenses-what-you-can-claim/using-your-private-car-for-work",
+          "snippet": "Mileage Allowance: Claim a fixed rate mileage allowance for business travel. The cost of buying the vehicle is included in the mileage claim."
+        },
+        {
+          "candidate_id": "c-44bbe2f067b71bd539b0",
+          "title": "Can self-employed claim van travel expenses for tax relief?",
+          "url": "https://www.facebook.com/groups/904684844682160/posts/1309828724167768/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-a20f57b1f0c37a526ac2",
+          "title": "Deducting Personal Vehicle Use For Work",
+          "url": "https://www.hrblock.com/tax-center/filing/adjustments-and-deductions/deducting-personal-vehicle-use-for-work/?srsltid=AfmBOopj6bmg8qZ7XnrlG4K9eCXdVUrEYn1Is4Tk1OeEuTqi-kNh2QUv",
+          "snippet": "If it's the same trade or business, you can deduct expenses for travel between your home and a temporary workplace. The distance between the two doesn't matter."
+        },
+        {
+          "candidate_id": "c-4ce7b79ae8c22cb3ae0a",
+          "title": "Expenses if you're self-employed: Car, van and travel ...",
+          "url": "https://www.gov.uk/expenses-if-youre-self-employed/travel",
+          "snippet": "you can claim allowable business expenses for costs such as: vehicle insurance repairs and servicing fuel parking hire charges vehicle tax licence fees ..."
+        },
+        {
+          "candidate_id": "c-735f3151643db9304232",
+          "title": "Can I put my car lease through as an expense? (Obviously if used to ...",
+          "url": "https://www.facebook.com/groups/241087444682816/posts/1381944380597111/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-c435c60146e56da8486c",
+          "title": "Guess What You Can Write Off Your Moving Expenses",
+          "url": "https://www.montway.com/blog/guess-what-you-can-write-off-your-moving-expenses-MCAPY5GWSREZEKPL5XIXXBRX5ZFM",
+          "snippet": "The costs of having your car transported. Hotel and or lodging costs along with your travel route. The costs of a rental truck or van, as well as gas bought ..."
+        },
+        {
+          "candidate_id": "c-402707b2f8f023e18f3a",
+          "title": "Life Events: Which Moving Expenses Are Deductible?",
+          "url": "https://ascendcpas.com/resources/guides/life-events/which-moving-expenses-are-deductible/",
+          "snippet": "You can deduct the cost of shipping your car and your pets to your new home. You can deduct the cost of moving your household goods and personal effects from a ..."
+        },
+        {
+          "candidate_id": "c-590c43506f9f4d40b100",
+          "title": "Are Moving Expenses Tax Deductible?",
+          "url": "https://support.taxslayer.com/hc/en-us/articles/360015901091-Are-Moving-Expenses-Tax-Deductible",
+          "snippet": "You can deduct the cost of shipping your car and your household pets to your new home. You can deduct the cost of moving your household goods and personal ..."
+        },
+        {
+          "candidate_id": "c-58cc2113c864867de06f",
+          "title": "Claim tax relief for your job expenses: Vehicles you use for ...",
+          "url": "https://www.gov.uk/tax-relief-for-employees/vehicles-you-use-for-work",
+          "snippet": "If you use your own vehicle or vehicles for work, you may be able to claim tax relief on the approved mileage rate. This covers the cost of owning and running ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-760512",
+      "query": "what is ip?",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-c02a28f334761fb3349f",
+          "title": "How does IP work? - What is a VPN?",
+          "url": "https://www.lenovo.com/us/en/glossary/what-is-ip/?srsltid=AfmBOop4dKXoRApioR840IYpoyfmzmUTQACFqElygoR4cbrNinT2NYpc",
+          "snippet": "IP stands for Internet Protocol and it is the way that computers communicate online. It assigns addresses to each computer so they can send and receive data."
+        },
+        {
+          "candidate_id": "c-5e0ea7c49156bb9b6340",
+          "title": "What Is My IP Address - See Your Public Address - IPv4 & IPv6",
+          "url": "https://whatismyipaddress.com/",
+          "snippet": "Your IP address is a unique number linked to your online activity, somewhat like a return address on a letter. Whether you're checking emails, shopping,"
+        },
+        {
+          "candidate_id": "c-48c3900ac29c4c5642c4",
+          "title": "What Is My IP Address? See Your Current Public IP",
+          "url": "https://www.whatismyip.com/",
+          "snippet": "An IP address (Internet Protocol address) is a unique identifier assigned to your internet connection that allows websites and apps to send information back to ..."
+        },
+        {
+          "candidate_id": "c-dd1adead95bcaaddc2fb",
+          "title": "What is an IP Address? How it works? How to Locate it? - YouTube",
+          "url": "https://www.youtube.com/watch?v=K_RXrNqtD4g",
+          "snippet": "An Internet Protocol (IP) address is a unique numeric identifier assigned to every device connected to the internet, enabling communication ..."
+        },
+        {
+          "candidate_id": "c-438e6dba3ac67a41bb14",
+          "title": "What is an IP Address",
+          "url": "https://whatismyipaddress.com/ip-address",
+          "snippet": "An IP (Internet Protocol) address is a network address for your computer, so the internet knows where to send your emails, data, and …"
+        },
+        {
+          "candidate_id": "c-530a2a5bcb270319523e",
+          "title": "What Is An IP Address? How Does It Work? - Fortinet",
+          "url": "https://www.fortinet.com/resources/cyberglossary/what-is-ip-address",
+          "snippet": "An Internet Protocol (IP) address is the unique identifying number assigned to every device connected to the internet."
+        },
+        {
+          "candidate_id": "c-951bd7fa931a8213b986",
+          "title": "ELI5: What is an IP address? What do they do? : r/explainlikeimfive - Reddit",
+          "url": "https://www.reddit.com/r/explainlikeimfive/comments/49tk2s/eli5_what_is_an_ip_address_what_do_they_do/",
+          "snippet": "An IP address is the address of a computer on a network, or the internet. Like how your home address works. When you type in an address in your ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-627085",
+      "query": "what do you use for oxygen facial machines",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-fb8cf619fabe3e615fa0",
+          "title": "Ionized Oxygen Infuser",
+          "url": "https://lemieuxskincare.com/products/ionized-oxygen-infuser?srsltid=AfmBOopg5hgYO32zB6tOC4iaN92t_zcLTF1-bh1XAGG4o-DDcpoPjjnb",
+          "snippet": "Designed to be used with water-based toners and serums—cocktailed together for a custom treatment—the infuser saturates skin with micronized particles that ..."
+        },
+        {
+          "candidate_id": "c-1186530e62b5bd7725c4",
+          "title": "Oxygen Machine For Facials",
+          "url": "https://www.amazon.com/oxygen-machine-facials/s?k",
+          "snippet": "Oxygen Facial Machine – Handheld High Pressure Mist Spray Steamer for Skin Rejuvenation, Deep Cleaning, and Moisturizing – Portable, Rechargeable Airbrush for ..."
+        },
+        {
+          "candidate_id": "c-ca18edd95b44eb8d6e92",
+          "title": "AT-HOME OXYGEN FACIAL! Instant Glowing, Hydrated, Glass ...",
+          "url": "https://www.youtube.com/watch?v=71L3zJ2UOlg",
+          "snippet": "Get a GLOWING, HYDRATING facial at home! This gives you instant results with amazing skin loving ingredients!"
+        },
+        {
+          "candidate_id": "c-ef817e23efe1719e1d0d",
+          "title": "Oxygen facials: Everything you need to know",
+          "url": "https://www.currentbody.us/blogs/editorial/oxygen-facials-everything-you-need-to-know?srsltid=AfmBOopZTNFhVEhIulqADFDxAZM7FlnGygxRLPZ3Z26FNkvjU7OfiHot",
+          "snippet": "This oxygen is often combined with ingredients such as the following: Hyaluronic acid Vitamins and antioxidants Botanical extracts Hydrating serums"
+        },
+        {
+          "candidate_id": "c-0ab678223b2a49979247",
+          "title": "Oxygen Facials: Procedure, Efficacy, Side Effects, Cost",
+          "url": "https://www.healthline.com/health/oxygen-facial",
+          "snippet": "Every spa has its own process of administering an oxygen facial, but typically, a wand is used to deliver a stream of high pressurized oxygen to ..."
+        },
+        {
+          "candidate_id": "c-67a1d7ac85f2efe962c2",
+          "title": "Oxygen Infusion Machines and Supplies",
+          "url": "https://skinforlife.com/product-category/equipment-and-supplies/oxygen-infusion-machine-supplies/",
+          "snippet": "Oxygen infusion machines and supplies for licensed estheticians. Shop the O2 Pure, Nue Skin Oxygen Machine, airbrushes, and LED add-ons."
+        },
+        {
+          "candidate_id": "c-925c5debc3aec5a13537",
+          "title": "How to Use an Oxygen Spray Facial Machine",
+          "url": "https://www.mychway.com/blog/how-to-use-oxygen-spray-facial-machine?srsltid",
+          "snippet": "For enhanced results, you can use a water-based serum specifically formulated for oxygen facial machines. Look for ingredients like hyaluronic ..."
+        },
+        {
+          "candidate_id": "c-1c8154c036a1dd8631fe",
+          "title": "The Best Oxygen Facial Machine: Top Picks and Reviews",
+          "url": "https://www.konmison.com/the-best-oxygen-facial-machine/",
+          "snippet": "An oxygen infusion facial takes only 30–45 minutes to rapidly increase local blood oxygen levels through high-concentration oxygen, leaving the ..."
+        },
+        {
+          "candidate_id": "c-70c752873d99b8ef1bf6",
+          "title": "Professional Skin Care Solutions I OZ Portable Facial System",
+          "url": "https://us.oxygenceuticals.com/products/oz-portable-facial-care-system?srsltid=AfmBOop3iXEsNcxhUSrY0gIBXZ9ixeOQYxUILnjxHYvZf2W8LIhTS9r8",
+          "snippet": "OxygenCeuticals OZ Portable with Oxygen Spray Gun and Ampoule Cup. Used for Oxygen facial."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-93234",
+      "query": "clearing date definition in sap",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-d43bf4950786a14ff70c",
+          "title": "How clearing date is defined in F.13 (SAPF124) - SAP Help Portal",
+          "url": "https://help.sap.com/docs/SUPPORT_CONTENT/fiaccounting/3361880470.html",
+          "snippet": "Automatic Clearing consider the posting date as a clearing date, This date is used as posting date of clearing document and clearing date."
+        },
+        {
+          "candidate_id": "c-407423c3e82994a91a25",
+          "title": "Clearing date is different from Posting date - SAP Community",
+          "url": "https://community.sap.com/t5/enterprise-resource-planning-q-a/clearing-date-is-different-from-posting-date/qaq-p/7005038",
+          "snippet": "When clearing, the last posting date of all the documents involved in clearing is set as the clearing date. Examples. Invoices which were posted ..."
+        },
+        {
+          "candidate_id": "c-5b4309f08011b5f79122",
+          "title": "What is Clearing in SAP? - Reddit",
+          "url": "https://www.reddit.com/r/SAP/comments/12uynk7/what_is_clearing_in_sap/",
+          "snippet": "Clearing is simply assigning an invoice to a payment, telling the system that 'This invoices was paid with THIS payment', this serves several ..."
+        },
+        {
+          "candidate_id": "c-f1b26f94daba7c7b743a",
+          "title": "Clearing document (SAP B1) - SAP Business One Blog",
+          "url": "https://sap-b1-blog.com/en/glossary/balancing-document-sap-b1/",
+          "snippet": "Updating the due date: The due date of the open items is updated to the date of the clearing document. Generation of bookings: SAP Business ..."
+        },
+        {
+          "candidate_id": "c-7922d992a3c94b98cf6a",
+          "title": "Posting Date Or Clearing Date - Spiceworks Community",
+          "url": "https://community.spiceworks.com/t/posting-date-or-clearing-date/845801",
+          "snippet": "The Clearing Date (AUGDT) on the invoice is the date that the payment was made by the Clearing Document (AUGBL). However, I'm not sure what SAP ..."
+        },
+        {
+          "candidate_id": "c-03b372608954434cca13",
+          "title": "Clearing date vs posting date - SAP Community",
+          "url": "https://community.sap.com/t5/enterprise-resource-planning-q-a/clearing-date-vs-posting-date/qaq-p/3162434",
+          "snippet": "The clearing date specifies as from when the item is to be regarded as cleared. When clearing, the last posting date of all the documents ..."
+        },
+        {
+          "candidate_id": "c-358ed78f406e08a66a29",
+          "title": "SAP Clearing Concepts – Explained Simply (ECC & S/4HANA) - LinkedIn",
+          "url": "https://www.linkedin.com/pulse/sap-clearing-concepts-explained-simply-ecc-s4hana-nikita-bahety-2jdkc",
+          "snippet": "Clearing means matching two related entries that cancel each other out. Think of clearing like marking an item as “done” or “settled.” After ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-671579",
+      "query": "what internal temperature should chicken",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-e2d9ebdbd995b4387df6",
+          "title": "at what temperature should each piece of the chicken be at?",
+          "url": "https://www.reddit.com/r/AskCulinary/comments/qntl6c/i_am_confused_at_what_temperature_should_each/",
+          "snippet": "165f is often cited as the temperature at which chicken is cooked. But a chicken thigh at 165 is juicy and tender. A breast at 165 already feels like ..."
+        },
+        {
+          "candidate_id": "c-3a2e71089165565a942f",
+          "title": "What internal temperature should a whole chicken be cooked to?",
+          "url": "https://www.facebook.com/groups/SmokingMeatUSA/posts/30489861087295994/",
+          "snippet": "The ideal internal temperature for chicken is 165°F (75°C), measured at the thickest part of the meat. This ensures the chicken is fully cooked ..."
+        },
+        {
+          "candidate_id": "c-6b775a17132952839c1c",
+          "title": "What temperature should you cook chicken to? - Facebook",
+          "url": "https://www.facebook.com/everydayisfeastday/videos/what-temperature-should-you-cook-chicken-tochicken-meatthermometer/2424107941279122/",
+          "snippet": "If you pull it at 145, by the time it's even plated and served it will be 150 internal temp or more and will have been at that temp long enough."
+        },
+        {
+          "candidate_id": "c-b2634b4a29fe00edac0f",
+          "title": "Cook to a Safe Minimum Internal Temperature",
+          "url": "https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures",
+          "snippet": "Safe Minimum Internal Temperature Chart for Cooking ; Casseroles, Meat and meatless, 165°F (74°C) ; Chicken, turkey, and other poultry, All: whole ..."
+        },
+        {
+          "candidate_id": "c-203108e658e58ec1fca1",
+          "title": "Stop Overcooking Chicken: The Safer, Juicier Way to Get It ...",
+          "url": "https://www.seriouseats.com/safe-chicken-temperature-time-and-temp-11948586",
+          "snippet": "165°F is the simplest, most foolproof rule, chicken is only safe once it reaches 165°F (74°C) persists more stubbornly than Salmonella at room ..."
+        },
+        {
+          "candidate_id": "c-54591156e8d3b846aaa1",
+          "title": "But Really, What's the Right Temperature for Cooked Chicken?",
+          "url": "https://food52.com/story/26128-temperature-for-cooked-chicken",
+          "snippet": "The FDA says chicken should be cooked to an internal temperature of 165°F. But is it the tastiest that way? And is it safe if you don't?"
+        },
+        {
+          "candidate_id": "c-351496b16f4284c37b16",
+          "title": "Chicken Internal Temperature Chart (Breast, Thigh, Wings & Drumsticks)",
+          "url": "https://www.springermountainfarms.com/the-flock/chicken-internal-temperature-chart-by-cut-breast-thigh-wings-drumsticks/",
+          "snippet": "Safe minimum internal temperature for all chicken: 165°F … 170–175°F Dark. Chicken Wings 165–175°F 175°F Whole Chicken 165°F (thickest part)"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1071992",
+      "query": "what is a illusionist",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-14209466d8ace7a73294",
+          "title": "ILLUSIONIST | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/illusionist",
+          "snippet": "ILLUSIONIST meaning: 1. an entertainer who performs tricks where objects seem to appear and then disappear 2. an…. Learn more."
+        },
+        {
+          "candidate_id": "c-e68e645726619e81e19e",
+          "title": "What Is an Illusionist? Scott Silven Explains | Studio 10 - YouTube",
+          "url": "https://www.youtube.com/shorts/nhDEVhcmsrI",
+          "snippet": "Ever wondered what makes an illusionist different from a magician? Scott Silven breaks it down, revealing the secrets (well… some of them ..."
+        },
+        {
+          "candidate_id": "c-ba420b5d7cfa64292e2b",
+          "title": "ILLUSIONIST Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/illusionist",
+          "snippet": "ILLUSIONIST is a person who produces illusory effects. a sleight-of-hand performer or a magician"
+        },
+        {
+          "candidate_id": "c-7ec31536355fd929e104",
+          "title": "What is the difference between a magician and an illusionist? - Quora",
+          "url": "https://www.quora.com/What-is-the-difference-between-a-magician-and-an-illusionist-1",
+          "snippet": "A magician is the one who is connected to evil spirit in order to do illusions, whereas an illusionist is the one who uses wisdom and tricks to ..."
+        },
+        {
+          "candidate_id": "c-bc094964f8cccebf9b26",
+          "title": "ILLUSIONIST definition in American English",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/illusionist",
+          "snippet": "An illusionist is a performer who makes it seem that strange or impossible things are happening, for example, that a person has disappeared or been cut in half."
+        },
+        {
+          "candidate_id": "c-5dc407df15a8cbbfb861",
+          "title": "What is an Illusionist? | Alex Voz Magic",
+          "url": "https://alexvozmagic.com/what-is-an-illusionist/",
+          "snippet": "An illusionist is a type of magician that makes it seem as though the impossible is happening during their performance."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-582641",
+      "query": "what can you do with a behavioral neuroscience degree",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-bb3323e4b4cfb7eff41d",
+          "title": "What are career path's after attaining a bachelor's degree for behavioral ...",
+          "url": "https://www.careervillage.org/questions/251653/what-are-career-paths-after-attaining-a-bachelors-degree-for-behavioral-neuroscience",
+          "snippet": "Addictions Worker. Autism Interventionist. Behaviour Interventionist. Clinical Psychologist. Clinical Research Associate. Cognitive Therapist."
+        },
+        {
+          "candidate_id": "c-9501861d4345c375e36c",
+          "title": "BS Behavioral Neuroscience - UVA's Psychology Department",
+          "url": "https://psychology.as.virginia.edu/bs-behavioral-neuroscience",
+          "snippet": "The contemporary discipline of behavioral neuroscience is a starting point for diverse careers including health care, medicine, law, commerce, leadership."
+        },
+        {
+          "candidate_id": "c-d8c0f4cd92a3a5e24d85",
+          "title": "Careers in Neuroscience",
+          "url": "https://bns.wwu.edu/careers-neuroscience",
+          "snippet": "Behavioral Neuroscience is a highly interdisciplinary field and prepares students for a diverse array of career paths. Below you will find examples from the ..."
+        },
+        {
+          "candidate_id": "c-b1f033445f60b60ae8ee",
+          "title": "What can I do with a neuroscience major, specifically cognitive and ...",
+          "url": "https://www.quora.com/What-can-I-do-with-a-neuroscience-major-specifically-cognitive-and-behavioral-neuroscience-I-am-in-my-undergrad-at-the-University-of-Maryland-considering-switching-to-neuroscience-from-an-animal-science-pathway",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-59da75217ad0cb6023db",
+          "title": "Careers in Behavioral Neuroscience | PBA - Palm Beach Atlantic University",
+          "url": "https://www.pba.edu/academics/outcomes/articles/career-paths/careers-in-behavioral-neuroscience/",
+          "snippet": "Career Opportunities with a Behavioral Neuroscience Degree · Research Scientist · Neuropsychologist · Neuroscience Technician · Science Writer · Behavioral Health ..."
+        },
+        {
+          "candidate_id": "c-d4f4ae57224882186821",
+          "title": "What can I do with Behavioural Neuroscience major?",
+          "url": "https://www.reddit.com/r/neuro/comments/mykrc4/what_can_i_do_with_behavioural_neuroscience_major/",
+          "snippet": "Hey everyone!\n\nI'm in my 4th year of a BNS undergrad and I was wondering what careers I could pursue. There might be careers that I have not heard of ..."
+        },
+        {
+          "candidate_id": "c-49469f7f7a6153a3ac24",
+          "title": "what can i do (career-wise) with a BS in cognitive and behavioral ...",
+          "url": "https://www.reddit.com/r/careerguidance/comments/q5eg4k/what_can_i_do_careerwise_with_a_bs_in_cognitive/",
+          "snippet": ""
+        },
+        {
+          "candidate_id": "c-cd59d9fc29253b34ebbe",
+          "title": "What Can You Do With a Neuroscience Degree?",
+          "url": "https://medschool.ucla.edu/news-article/what-can-you-do-with-a-neuroscience-degree",
+          "snippet": "A renowned UCLA neuroscientist demystifies neuroscience degree options and the extensive career opportunities in neuroscience."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-404713",
+      "query": "is bran a grain",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-549e1bbb252b6b301417",
+          "title": "Bran - an overview | ScienceDirect Topics",
+          "url": "https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/bran",
+          "snippet": "Bran is defined as the outer layer of cereal grains, such as wheat and oats, which contains bioactive compounds and is associated with various dietary benefits."
+        },
+        {
+          "candidate_id": "c-d3736c2cf7e7b70d0e2e",
+          "title": "What is a Whole Grain?",
+          "url": "https://wholegrainscouncil.org/what-whole-grain",
+          "snippet": "The Bran. The bran is the multi-layered outer skin of the edible kernel. · The Germ. The germ is the embryo which has the potential to sprout into a new plant."
+        },
+        {
+          "candidate_id": "c-4c0f8db1bbe821126762",
+          "title": "Why Bran",
+          "url": "https://www.cookist.com/why-bran-is-good-for-you-and-when-its-not-recommended/",
+          "snippet": "Bran isn't exactly low in calories, but when consumed in the right amounts, it can significantly help manage weight and aid in weight …"
+        },
+        {
+          "candidate_id": "c-9d8f958508d35e7f1aa6",
+          "title": "What Is Bran?",
+          "url": "https://www.thespruceeats.com/all-about-bran-995588",
+          "snippet": "Bran is the outer layer of whole grains. Bran, the hard outer layer of whole cereal grains such as oats, wheat, rice, and corn, contains ..."
+        },
+        {
+          "candidate_id": "c-094812f2ef18fa47728e",
+          "title": "What is Bran",
+          "url": "https://www.healthbenefitstimes.com/bran/",
+          "snippet": "May 18, 2018"
+        },
+        {
+          "candidate_id": "c-6ff2577cda0092543d45",
+          "title": "Whole Grains - The Nutrition Source",
+          "url": "https://nutritionsource.hsph.harvard.edu/what-should-you-eat/whole-grains/",
+          "snippet": "All whole grain kernels contain three parts: the bran, germ, and endosperm. The bran is the fiber-rich outer layer that supplies B vitamins, iron, copper, zinc ..."
+        },
+        {
+          "candidate_id": "c-1983e11fe50dc6dafe79",
+          "title": "Whole grains: Hearty options for a healthy diet",
+          "url": "https://www.mayoclinic.org/healthy-lifestyle/nutrition-and-healthy-eating/in-depth/whole-grains/art-20047826",
+          "snippet": "Each grain, also called a kernel, is made of three parts: Bran. Bran is the hard outer coating of a kernel. It has most of the kernel's fiber. It also has ..."
+        },
+        {
+          "candidate_id": "c-6ce6cbbfefa741d18df6",
+          "title": "Bran",
+          "url": "https://en.wikipedia.org/wiki/Bran",
+          "snippet": "Bran, also known as miller's bran, is the component of a cereal grain consisting of the outer hard layers – the combined aleurone and pericarp – surrounding ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-849596",
+      "query": "what is the synonym for prudent",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-e9ce72dd0a7b51202d9a",
+          "title": "What is the synonym of 'prudent'?",
+          "url": "https://www.quora.com/What-is-the-synonym-of-prudent",
+          "snippet": "What is the synonym of \"prudent\"?"
+        },
+        {
+          "candidate_id": "c-1a729640c60af62593f3",
+          "title": "What is the synonym of prudent?",
+          "url": "https://www.facebook.com/groups/292158938974230/posts/1271484454375002/",
+          "snippet": "The synonym of ' Prudent ' is - ক. unwise খ. insightful গ. injudicious ঘ. impolite · Other posts · Prudence is the ability to use reason to ..."
+        },
+        {
+          "candidate_id": "c-74441ff7dc92a34b185d",
+          "title": "What is another word for prudent?",
+          "url": "https://www.wordhippo.com/what-is/another-word-for/prudent.html",
+          "snippet": "What is another word for prudent? · Having, showing, or done with good judgment or sense · Sound or advisable, offering or producing the greatest advantage."
+        },
+        {
+          "candidate_id": "c-9b62f5bd8b0757efc2ac",
+          "title": "[Solved] What is the synonym of the word \"Prudent\"?",
+          "url": "https://testbook.com/question-answer/what-is-the-synonym-of-the-word-prudentquot--68589102326ce2a40818ab98",
+          "snippet": "\"What is the synonym of the word Prudent? \""
+        },
+        {
+          "candidate_id": "c-5278767a3a1336c9cd3d",
+          "title": "PRUDENT Synonyms: 119 Similar and Opposite Words",
+          "url": "https://www.merriam-webster.com/thesaurus/prudent",
+          "snippet": "Some common synonyms of prudent are judicious, sage, sane, sapient, sensible, and wise. While all these words mean \"having or showing sound judgment,\""
+        },
+        {
+          "candidate_id": "c-d3eb4fc9d729e5a4da49",
+          "title": "Synonyms of 'prudent' in American English",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english-thesaurus/prudent",
+          "snippet": "Synonyms for PRUDENT: sensible, careful, cautious, discerning, discreet, judicious, politic, shrewd, vigilant, wary,"
+        },
+        {
+          "candidate_id": "c-813d7be3d56d1efea687",
+          "title": "PRUDENT Synonyms & Antonyms - 95 words",
+          "url": "https://www.thesaurus.com/browse/prudent",
+          "snippet": "Synonyms STRONGEST foolish hasty inattentive incautious indiscreet nonsensical rash reckless stupid thoughtless uncareful uneconomical unreasonable wasteful ..."
+        },
+        {
+          "candidate_id": "c-75b06f020a6a2f1bcff9",
+          "title": "PRUDENT Synonyms: 1 899 Similar Words & Phrases",
+          "url": "https://www.powerthesaurus.org/prudent/synonyms",
+          "snippet": "Synonyms for Prudent · careful · judicious · wise · cautious · sensible · circumspect · provident · politic adj. adjective. sanity. sagacious adj. adjective."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-93308",
+      "query": "clientele definition",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-4d4b45f7fd2859159784",
+          "title": "CLIENTELE Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/clientele",
+          "snippet": "The meaning of CLIENTELE is a body of clients. clientele noun : a body of clients a shop that caters to an exclusive clientele"
+        },
+        {
+          "candidate_id": "c-9aa5b5113a8982ce8319",
+          "title": "CLIENTELE Definition & Meaning - Dictionary.com",
+          "url": "https://www.dictionary.com/browse/clientele",
+          "snippet": "the clients or customers, as of a professional person or shop, considered collectively; a group or body of clients. This jewelry store has a wealthy clientele ..."
+        },
+        {
+          "candidate_id": "c-e93465acdc5c107376a5",
+          "title": "CLIENTELE - Meaning and Pronunciation",
+          "url": "https://www.youtube.com/watch?v=qn9zLUWZGVg",
+          "snippet": "Definition of clientele: The body or class of people who frequent an establishment or purchase a service, especially when considered as forming ..."
+        },
+        {
+          "candidate_id": "c-58ed4557fe6c3119c999",
+          "title": "CLIENTELE definition in American English - Collins Dictionary",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/clientele",
+          "snippet": "The clientele of a place or organization are its customers or clients. Synonyms: customers, market, business, following More"
+        },
+        {
+          "candidate_id": "c-9e5afa0423e567664a20",
+          "title": "clientele noun - Definition, pictures, pronunciation and usage notes",
+          "url": "https://www.oxfordlearnersdictionaries.com/us/definition/english/clientele",
+          "snippet": "​all the customers or clients of a shop, restaurant, organization, etc. The facilities appeal to an international clientele. an important media event that ..."
+        },
+        {
+          "candidate_id": "c-7f63c8c15ba229fe2c40",
+          "title": "Clientele - Definition",
+          "url": "https://www.vocabulary.com/dictionary/clientele",
+          "snippet": "Your customers are your clientele. If you own a pet food store, your clientele might be two-footed and four-pawed. The noun clientele …"
+        },
+        {
+          "candidate_id": "c-654013c803f886c253e0",
+          "title": "CLIENTELE | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/clientele",
+          "snippet": "list all the customers of a business when they are considered as a group: The nightclub has a very fashionable clientele."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-93311",
+      "query": "cliff definition",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-8ffe8b5e5cb901a7b22f",
+          "title": "Cliff - Definition, Meaning & Synonyms - Vocabulary.com",
+          "url": "https://www.vocabulary.com/dictionary/cliff",
+          "snippet": "A cliff is a steep and often sheer rock face. Definitions of cliff noun a steep high face of rock “he stood on a high cliff overlooking the town”"
+        },
+        {
+          "candidate_id": "c-060d47ed6fc62fd7d6aa",
+          "title": "Cliff - National Geographic Education",
+          "url": "https://education.nationalgeographic.org/resource/cliff/",
+          "snippet": "A cliff is a mass of rock that rises very high and is almost vertical, or straight up-and-down. Cliffs are very common landscape features. ..."
+        },
+        {
+          "candidate_id": "c-6a7b8d10854f9793dd15",
+          "title": "CLIFF definition in American English - Collins Dictionary",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/cliff",
+          "snippet": "A cliff is a high area of land with a very steep side, especially one next to the sea. The car rolled over the edge of a cliff."
+        },
+        {
+          "candidate_id": "c-45c86cfeac4ac38dc655",
+          "title": "CLIFF | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/cliff",
+          "snippet": "Meaning of cliff in English ... a high area of rock with a very steep side, often on a coast: Keep away from the edge of the cliff - you might fall."
+        },
+        {
+          "candidate_id": "c-b1960d3121df871b11de",
+          "title": "CLIFF Definition & Meaning - Dictionary.com",
+          "url": "https://www.dictionary.com/browse/cliff",
+          "snippet": "A cliff is a steep and often sheer rock face. If you stand on the edge of a cliff and peer over, you'll be able to see the waves crashing on the rocks below ..."
+        },
+        {
+          "candidate_id": "c-d95afeaacb25e9fc976a",
+          "title": "CLIFF Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/cliff",
+          "snippet": "The meaning of CLIFF is a very steep, vertical, or overhanging face of rock, earth, or ice : precipice."
+        },
+        {
+          "candidate_id": "c-3e923f46d44eba79f821",
+          "title": "Cliff",
+          "url": "https://en.wikipedia.org/wiki/Cliff",
+          "snippet": "In geography and geology, a cliff or bluff or rock face is an area of rock which has a general angle defined by the vertical, or nearly vertical."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-760638",
+      "query": "what is ir nursing",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-bf4ed0733e2654d5654d",
+          "title": "Vagina",
+          "url": "https://en.wikipedia.org/wiki/Vagina",
+          "snippet": "Retrieved August 13, 2017. Gulanick M, Myers JL (2016). Nursing Care Plans - E-Book: Nursing Diagnosis and Intervention. Elsevier Health Sciences. p. 111"
+        },
+        {
+          "candidate_id": "c-265efdc60d776a395025",
+          "title": "What Does an Interventional Radiology Procedural Nurse Do?",
+          "url": "https://www.riaendovascular.com/post/what-does-an-interventional-radiology-procedural-nurse-do",
+          "snippet": "Procedural nurses are responsible for administering medical treatments and procedures to patients. They work with the interventional radiologist and other ..."
+        },
+        {
+          "candidate_id": "c-2ad87856bbd22e66e5d4",
+          "title": "How to Become an Interventional Radiology Nurse | Credenza",
+          "url": "https://credenzahealth.com/career-advice/how-to-become-an-interventional-radiology-nurse",
+          "snippet": "An interventional radiology nurse is a specialist who assists physicians in carrying out these procedures and provides care to patients before, during, and ..."
+        },
+        {
+          "candidate_id": "c-40aafa7404228bef5da8",
+          "title": "Meet Emily, an Interventional Radiology (IR) nurse at Johns ...",
+          "url": "https://www.instagram.com/reel/DJZE0_YN0AZ/?hl=en",
+          "snippet": "Meet Emily, an Interventional Radiology (IR) nurse at Johns Hopkins Hospital who works with patients during their time at IR."
+        },
+        {
+          "candidate_id": "c-6ff061ce5ce601726aa9",
+          "title": "Interventional Radiology (IR) Nurse - Augusta Health",
+          "url": "https://www.augustahealth.com/careers/radiology-careers/interventional-radiology-ir-nurse/",
+          "snippet": "As an IR Nurse, you'll provide specialized care for patients undergoing minimally invasive, image-guided procedures. From assessment and preparation to ..."
+        },
+        {
+          "candidate_id": "c-e4058ade7d3a2121d525",
+          "title": "Chilblains",
+          "url": "https://en.wikipedia.org/wiki/Chilblains",
+          "snippet": "Andrews, Sarah E. (November 2020). \"What Are COVID Toes? A Case Study\". Journal of Wound, Ostomy & Continence Nursing. 47 (6): 619–621. doi:10.1097/WON"
+        },
+        {
+          "candidate_id": "c-0cb4d678790ee006dcad",
+          "title": "Topfreedom",
+          "url": "https://en.wikipedia.org/wiki/Topfreedom",
+          "snippet": "at all times in public. In addition, topfreedom advocates seek allowing nursing mothers to openly breastfeed in public. Many societies[which?] consider"
+        },
+        {
+          "candidate_id": "c-6ba0e6296a632ab68bf8",
+          "title": "A day in the life of an RN in IR : r/nursing - Reddit",
+          "url": "https://www.reddit.com/r/nursing/comments/pnoyvy/a_day_in_the_life_of_an_rn_in_ir/",
+          "snippet": "You're essentially an imaging department nurse. Depending on the hospital it may only be ultrasound + flouroscopy. But you may be involved in CT ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-449235",
+      "query": "meaning of social security numbers",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-e50520d029041cc70456",
+          "title": "Social Security Number",
+          "url": "https://www.iwu.edu/international-office/isss/social-security.html",
+          "snippet": "A Social Security Number (SSN) is a unique nine-digit identification number assigned to individuals by the U.S. government for tax and other purposes."
+        },
+        {
+          "candidate_id": "c-8e0af640efa452f46ab2",
+          "title": "Social Security History – The SSN Numbering Scheme",
+          "url": "https://www.ssa.gov/history/ssn/geocard.html",
+          "snippet": "The nine-digit SSN is composed of three parts: The first set of three digits is called the Area Number The second set of two digits is called the Group Number"
+        },
+        {
+          "candidate_id": "c-0181829b8bd48a94928e",
+          "title": "What Do the Numbers in Your Social Security ...",
+          "url": "https://www.nightfall.ai/blog/what-do-the-numbers-in-your-social-security-number-mean-a-complete-breakdown",
+          "snippet": "Every Social Security number consists of nine digits, typically formatted as XXX-XX-XXXX. these digits no longer have geographical significance."
+        },
+        {
+          "candidate_id": "c-8925d7ed0fb51a2949d3",
+          "title": "Understanding Social Security Numbers (SSN): Key Facts ...",
+          "url": "https://www.investopedia.com/terms/s/ssn.asp",
+          "snippet": "Social Security numbers are nine-digit identifiers issued by the U.S. government to track individual earnings and facilitate eligibility for benefits."
+        },
+        {
+          "candidate_id": "c-4ea2daefdc122556f0c9",
+          "title": "What Students Need to Know about Social Security Numbers",
+          "url": "https://www.unthealth.edu/students/social-security-number.html",
+          "snippet": "A Social Security Number (SSN) is a unique nine-digit identification number assigned to individuals by the U.S. government for tax and other purposes. The ..."
+        },
+        {
+          "candidate_id": "c-49a5c67dc47c678da7e7",
+          "title": "Social Security number",
+          "url": "https://en.wikipedia.org/wiki/Social_Security_number",
+          "snippet": "a Social Security number (SSN) is a nine-digit number issued to U.S. citizens, permanent residents, and temporary (working) residents"
+        },
+        {
+          "candidate_id": "c-ec9415d832eab78733bc",
+          "title": "The Story of the Social Security Number",
+          "url": "https://www.ssa.gov/policy/docs/ssb/v69n2/v69n2p55.html",
+          "snippet": "The Social Security number ( SSN ) was created in 1936 for the sole purpose of tracking the earnings histories of U.S. workers, for use in determining Social ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-582705",
+      "query": "what can you eat during the pre op gastric bypass diet",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-686fc136d29ee6d6faeb",
+          "title": "Pre and Post Op Bariatric Weight-loss Surgery Meal Plans",
+          "url": "https://www.baptisthealth.com/blog/weight-management/gastric-bypass-diet-pre-and-post-op-bariatric-weight-loss-surgery-meal-plans",
+          "snippet": "The typical pre-op gastric bypass diet is high in protein and low in fat and carbohydrates. You will consume 70 to 120 grams of protein a day."
+        },
+        {
+          "candidate_id": "c-1b9ff48bde774caa54cf",
+          "title": "Disciplined diet before and after weight-loss surgery",
+          "url": "https://www.osfhealthcare.org/blog/bariatric-surgery-diet",
+          "snippet": "Meals should include: Lean protein: Chicken, fish, turkey, lean red meat, etc. Non-starchy vegetables (best prepared by steaming): Broccoli, ..."
+        },
+        {
+          "candidate_id": "c-3a4b20e17b12ed4683f3",
+          "title": "Pre-Op Liquid Diet: Two Weeks Before Bariatric Surgery",
+          "url": "https://www.kelsey-seybold.com/medical-services-and-specialties/bariatric-surgery/pre-op-liquid-diet",
+          "snippet": "Diet Snapple Zero-calorie, non-carbonated drinks Skim milk Chicken or beef broth Nonfat plain yogurt Sugar-free pudding Sugar-free Jell-O Sugar-free popsicles. ..."
+        },
+        {
+          "candidate_id": "c-240a252974b92cd83bd7",
+          "title": "2 Week Pre Op Gastric Sleeve Diet: Essential Guide",
+          "url": "https://www.bariatricfusion.com/blogs/blog/2-week-pre-op-gastric-sleeve-diet?srsltid=AfmBOooNG2FooF2hiUJGMBks26_gFIxEtZwbqBuM2BU-mz2nQxvEYB7j",
+          "snippet": "You'll need to eliminate all solid foods and focus solely on clear liquids. This includes water broth, sugar-free gelatin, and clear protein shakes. While this ..."
+        },
+        {
+          "candidate_id": "c-ce2d82f6b46d7714ec05",
+          "title": "Pre-Op | Baptist Medical Group Bariatric & General Surgery",
+          "url": "https://www.memphisbariatrics.com/before-surgery-pre-op-instructions",
+          "snippet": "Eat 1-2 snacks per day. Limit to no more than 10g of carbs per snack (example:1⁄2 cup fresh berries, 1⁄4 cup nuts, or string cheese with 2-3 crackers)."
+        },
+        {
+          "candidate_id": "c-deab95e780083d6b6628",
+          "title": "Gastric bypass diet: What to eat after the surgery",
+          "url": "https://www.mayoclinic.org/tests-procedures/gastric-bypass-surgery/in-depth/gastric-bypass-diet/art-20048472",
+          "snippet": "Lean ground meat, poultry or fish. Cottage cheese. Soft scrambled eggs. Cooked cereal. Soft fruits and cooked vegetables. Strained cream soups. Cottage cheese. ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-449244",
+      "query": "meaning of solute",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-aedf6cab170ed3e4144a",
+          "title": "PROSTRATION Definition & Meaning | Dictionary.com",
+          "url": "https://www.dictionary.com/browse/prostration",
+          "snippet": "PROSTRATION Definition & Meaning | Dictionary.com a prominent bruise on his forehead from prostration in prayer, he was notoriously prickly and pedantic. From Washington Times ● Aug. 2, 2022 > Most ..."
+        },
+        {
+          "candidate_id": "c-04081e3258ede081c062",
+          "title": "Solution Solvent Solute - Definition and Difference - YouTube",
+          "url": "https://www.youtube.com/watch?v=e-2EoyDYamg",
+          "snippet": "For more chemistry science videos for, please visit https://www.makemegenius.com/chemistry-video-lessons-for-kids.php Understanding Solution ..."
+        },
+        {
+          "candidate_id": "c-e29ef525262adf585849",
+          "title": "PROSTRATION Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/prostration",
+          "snippet": "PROSTRATION Definition & Meaning - Merriam-Webster in the meaning defined at sense 1a Time Traveler The first known use of prostration was in the 14th century See more words from the same century ## R..."
+        },
+        {
+          "candidate_id": "c-2b70dd5f312e8bbfc3d8",
+          "title": "SOLUTE | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/solute",
+          "snippet": "SOLUTE meaning: 1. a substance that has been dissolved in another substance 2. a substance that has been dissolved…. Learn more."
+        },
+        {
+          "candidate_id": "c-655146c2e7ef697ae8dd",
+          "title": "SOLUTE Definition & Meaning - Merriam-Webster",
+          "url": "https://www.merriam-webster.com/dictionary/solute",
+          "snippet": "The meaning of SOLUTE is a dissolved substance. By keeping the bubbles small, the solutes may enable the total surface area between the liquid ..."
+        },
+        {
+          "candidate_id": "c-b79c7fd65d6a39b3cf50",
+          "title": "Solute - BYJU'S",
+          "url": "https://byjus.com/chemistry/solute/",
+          "snippet": "A substance that is dissolved in a solution is called a solute. In fluid solutions, the amount of solvent present is greater than the amount of solute. One best ..."
+        },
+        {
+          "candidate_id": "c-1031a0977009a6808b3a",
+          "title": "Solutions, Solutes & Solvents | Definition & Examples - Lesson",
+          "url": "https://study.com/learn/lesson/solutions-solutes-solvents-overview-functions-processes.html",
+          "snippet": "The solute is the substance or substances dissolved in the solvent. There can be multiple solutes and they don't have to be solids. A good example of a solution ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-671692",
+      "query": "what involves problems sleeping",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-53810cb9b6b7c720e8cf",
+          "title": "Can't sleep? Doctor explains Insomnia | Causes, symptoms, treatment",
+          "url": "https://www.youtube.com/watch?v=SuH0_Ija498",
+          "snippet": "In this video Dr O'Donovan explains Insomnia. Insomnia is a common sleep disorder where people have difficulty falling asleep, ..."
+        },
+        {
+          "candidate_id": "c-045a73feb6839fbd8ccd",
+          "title": "Sleep Disorders: Types, Causes, Symptoms & Treatment",
+          "url": "https://my.clevelandclinic.org/health/diseases/11429-sleep-disorders",
+          "snippet": "Common sleep disorders include insomnia, restless legs syndrome, narcolepsy and sleep apnea. to -promoting medications,"
+        },
+        {
+          "candidate_id": "c-d80f1f5b7358df6053b1",
+          "title": "Sleep Disorders - MedlinePlus",
+          "url": "https://medlineplus.gov/sleepdisorders.html",
+          "snippet": "Insomnia, which is trouble falling asleep or staying asleep. Sleep-related breathing disorders such as sleep apnea, sleepwalking, talking, or ..."
+        },
+        {
+          "candidate_id": "c-fbf18cc1bbd82947bee3",
+          "title": "Insomnia: What It Is, Causes, Symptoms & Treatment",
+          "url": "https://my.clevelandclinic.org/health/diseases/12119-insomnia",
+          "snippet": "Insomnia is when you experience disruptions in how you feel or function because you aren't sleeping well or sleeping enough."
+        },
+        {
+          "candidate_id": "c-e1843a5b88dcfbcbeb4c",
+          "title": "Sleep Disorders - NAMI",
+          "url": "https://www.nami.org/co-occurring-conditions/sleep-disorders/",
+          "snippet": "Problems sleeping can be secondary to a medical illness such as sleep apnea, or a mental health condition like depression."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-894161",
+      "query": "what should you eat if you have a hernia?",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-698df1a1858d24e3519a",
+          "title": "Hernia - Foods To Try And Avoid",
+          "url": "https://pharmeasy.in/blog/hernia-foods-to-try-and-avoid/",
+          "snippet": "1. Non-citrus fruits · 2. High-fibre greens · 3. Fibre-rich veggies · 4. Lean protein · 5. Healthy oils · 6. Whole grains · 7. Oatmeal · 8. Water."
+        },
+        {
+          "candidate_id": "c-98213f6e281cd0ebfcef",
+          "title": "Best Foods to Eat for Breakfast with a Hiatal Hernia Diet",
+          "url": "https://torranceherniacenter.com/blog/best-foods-to-eat-for-breakfast-with-a-hiatal-hernia/",
+          "snippet": "Excellent food options include oatmeal mixed with almond milk, skim milk, or low-fat dairy; whole-grain toast in small portions; and chia seeds ..."
+        },
+        {
+          "candidate_id": "c-755d1cd8118b0d313c0c",
+          "title": "The Best Diet for Managing a Hiatal Hernia",
+          "url": "https://thocc.org/about/news-press/news-detail?articleId=53912",
+          "snippet": "Foods to eat if you have a hiatal hernia · Lean meats (e.g., chicken, turkey) · Non-citrus fruits (e.g., bananas and apples) · Rice, pasta, breads ..."
+        },
+        {
+          "candidate_id": "c-fd86df2e6cd99750c86a",
+          "title": "Foods Tips for a Hernia",
+          "url": "https://kansassurgical.com/story-3/",
+          "snippet": "Safe foods to eat may include: leafy greens beans and peas whole grains lean proteins, including tofu and fish whole nuts and seeds non-citrus fruits and juices"
+        },
+        {
+          "candidate_id": "c-5155ad3cc645729caac5",
+          "title": "Hiatal Hernia Diet Tips - Digestive Disorders",
+          "url": "https://www.webmd.com/digestive-disorders/hiatal-hernia-diet-tips",
+          "snippet": "Bananas and apples; Green beans, peas, carrots, and broccoli; Grains, like cereals (bran and oatmeal), bread, rice, pasta, and crackers; Low-fat or skim milk ..."
+        },
+        {
+          "candidate_id": "c-193ceea0a58ede8c41ba",
+          "title": "The Best and Worst Foods to Eat if You Have a Hernia",
+          "url": "https://www.everydayhealth.com/hernia/foods-to-avoid-with-hernia/",
+          "snippet": "NIDDK recommends eating more high-fiber foods like: Fruits Vegetables Whole grains like spelt and buckwheat Legumes like lentils, peas, and beans. Try snacking ..."
+        },
+        {
+          "candidate_id": "c-3d6119379382d2837387",
+          "title": "Diet Tips for Hernia Patients",
+          "url": "https://www.pristyncare.com/blog/diet-tips-for-hernia-patient-pc0135/",
+          "snippet": "Fiber-rich foods such as whole grains, legumes, vegetables and fruits are a must. Have saturated fats such as palm oil, butter, margarine, ghee."
+        },
+        {
+          "candidate_id": "c-4e7924b25b3dc36b2138",
+          "title": "The Best Diet for Managing a Hiatal Hernia",
+          "url": "https://thocc.org/about/news-press/news-detail?articleId",
+          "snippet": "Foods to eat if you have a hiatal hernia · Lean meats (e.g., chicken, turkey) · Non-citrus fruits (e.g., bananas and apples) · Rice, pasta, breads ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1027650",
+      "query": "what kind of coding does abantecart use?",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-04c4ee420ee1e727c357",
+          "title": "AbanteCart eCommerce Platform Introduction & Feature Tour",
+          "url": "https://www.youtube.com/watch?v=HOH0SxfhmSM",
+          "snippet": "... coding • Efficient tools for customer support and impersonation • Built-in CMS for blogs, content, and SEO • Growing your store with plugins ..."
+        },
+        {
+          "candidate_id": "c-28db9cf463ef57b36a6e",
+          "title": "AbanteCart - Free Open Source Ecommerce Solution",
+          "url": "https://www.abantecart.com/",
+          "snippet": "A free shopping cart application. AbanteCart is an open-source e-commerce platform based on PHP. It is an ideal e-commerce solution for small to medium ..."
+        },
+        {
+          "candidate_id": "c-6c7b0b629243fa7ece81",
+          "title": "What is AbanteCart eCommerce?",
+          "url": "https://www.abantecart.com/what-is-abantecart-ecommerce",
+          "snippet": "AbanteCart backend is coded in PHP and supports MySql database. It is not based on any third party PHP framework and build from ground up to lead with highest ..."
+        },
+        {
+          "candidate_id": "c-4d4d1a8d56b0df766efe",
+          "title": "AbanteCart Community and Contribution",
+          "url": "https://www.abantecart.com/contribute-to-abantecart",
+          "snippet": "You can help with the marketing of AbanteCart, helping with forum support, coding new features, or contribute financially. You can register in the forum and ..."
+        },
+        {
+          "candidate_id": "c-13871a7f54ba95df9323",
+          "title": "AbanteCart is a free PHP based eCommerce solution ...",
+          "url": "https://github.com/abantecart/abantecart-src",
+          "snippet": "PHP 8.2.x MySQL 8.0+ or MariaDB 10.5+. AbanteCart uses four-part versioning: MAJOR.MINOR.BUILD.REVISION MAJOR – Breaking changes or complete rewrites MINOR – ..."
+        },
+        {
+          "candidate_id": "c-288c623844e8136cbfbb",
+          "title": "Feedback and most wanted features after few weeks with ...",
+          "url": "https://forum.abantecart.com/index.php?topic=10545.0",
+          "snippet": "For testing purposes, I also use a secondary budget hosting with PHP 8, but it is slow. Would AbanteCart 1.3.4 be backward compatible with PHP ..."
+        },
+        {
+          "candidate_id": "c-594874fac41a49100123",
+          "title": "Developer Documentation - Confluence",
+          "url": "https://abantecart.atlassian.net/wiki/spaces/DOC/pages/655439/Architecture+Overview?showComments=true&showCommentArea=true",
+          "snippet": "AbanteCart is built based on MVC concept. AbanteCart is primarily set up to use the Mysql database. AbanteCart can have 2 types of blocks: Static and Dynamic. ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-137889",
+      "query": "definition of rit",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-b4fede755ccffc174a79",
+          "title": "Rit – English Pronunciation, Definition, Synonyms, Antonyms ...",
+          "url": "https://www.youtube.com/watch?v=bSAUOh7-lDw",
+          "snippet": "Rit means n. a short or informal term used in some contexts. Synonyms: ritual, rite, ceremony. English Pronunciation, Definition,"
+        },
+        {
+          "candidate_id": "c-b582f03424dac6a58ab6",
+          "title": "What is the RIT scale?",
+          "url": "https://connection.nwea.org/s/article/What-is-the-RIT-scale",
+          "snippet": "A RIT score measures a student's level of achievement in a particular subject. If a student has a particular RIT score, this means that the student is about 50% ..."
+        },
+        {
+          "candidate_id": "c-b6998fa304c6bebd7aad",
+          "title": "Rit. - Definition, Meaning & Synonyms",
+          "url": "https://www.vocabulary.com/dictionary/rit.",
+          "snippet": "Definitions of rit. adjective (music) gradually decreasing in tempo; also used figuratively synonyms: rallentando, ritardando, ritenuto decreasing music"
+        },
+        {
+          "candidate_id": "c-f9a86992184c43a841ce",
+          "title": "rit, v.¹ meanings, etymology and more",
+          "url": "https://www.oed.com/dictionary/rit_v1",
+          "snippet": "There are three meanings listed in OED's entry for the verb rit, one of which is labelled obsolete. See 'Meaning & use' for definitions, usage, and quotation ..."
+        },
+        {
+          "candidate_id": "c-f9600120d9147d63e19c",
+          "title": "RIT. definition in American English",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/rit",
+          "snippet": "rit. in British English. music. abbreviation for. 1. ritardando. 2. ritenuto. Collins English Dictionary. Copyright © HarperCollins Publishers. Quick word ..."
+        },
+        {
+          "candidate_id": "c-e2fb71dc9dacfe833267",
+          "title": "rit - definition and meaning",
+          "url": "https://wordnik.com/words/rit",
+          "snippet": "To make an incision in the ground, with a spade or other instrument, as a line of direction for future delving or digging; rip; scratch; cut."
+        },
+        {
+          "candidate_id": "c-1129e00182f408a6f8a0",
+          "title": "RIT Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/rit",
+          "snippet": "What does the abbreviation RIT stand for? Meaning: ritardando. 's largest dictionary and get thousands more definitions"
+        },
+        {
+          "candidate_id": "c-42bc5e8f5d96baac64a1",
+          "title": "RIT. | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/rit",
+          "snippet": "RIT. meaning: 1. written abbreviation for ritardando or ritenuto 2. rit. adverb music specialized"
+        }
+      ]
+    },
+    {
+      "id": "msmarco-182393",
+      "query": "exacting definition",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-bd9d73858bf282b17e2f",
+          "title": "Exacting Meaning - C2 Vocabulary",
+          "url": "https://www.youtube.com/watch?v=74J_-y13iCI",
+          "snippet": "A definition of exacting. The video gives various example sentences of exacting in context for you to be able to use exacting correctly when ..."
+        },
+        {
+          "candidate_id": "c-be6e1a51baabaf843c4c",
+          "title": "EXACTING | definition in the Cambridge English Dictionary",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/exacting",
+          "snippet": "demanding a lot of effort, care, or attention: All our aircraft meet exacting safety standards. (Definition of exacting from the Cambridge ..."
+        },
+        {
+          "candidate_id": "c-8c5d20ce81b5a93d30b5",
+          "title": "exacting, exact- WordWeb dictionary definition",
+          "url": "https://www.wordwebonline.com/en/EXACTING",
+          "snippet": "Adjective: exacting ig'zak-ting or eg'zak-ting. Severe and unremitting in making demands \"an exacting instructor\"; - stern, strict"
+        },
+        {
+          "candidate_id": "c-9fc2f4fa03c33e6acd99",
+          "title": "EXACTING Definition & Meaning",
+          "url": "https://www.merriam-webster.com/dictionary/exacting",
+          "snippet": "The meaning of EXACTING is tryingly or unremittingly severe in making demands. How to use exacting in a sentence."
+        },
+        {
+          "candidate_id": "c-5932cb79d134935cbc9f",
+          "title": "EXACTING definition in American English",
+          "url": "https://www.collinsdictionary.com/us/dictionary/english/exacting",
+          "snippet": "You use exacting to describe something or someone that demands hard work and a great deal of care. He was not well enough to carry out such an exacting task."
+        },
+        {
+          "candidate_id": "c-31ea72bc0bafd6a4721b",
+          "title": "Exacting - Definition, Meaning & Synonyms",
+          "url": "https://www.vocabulary.com/dictionary/exacting",
+          "snippet": "Use the adjective exacting to describe something or someone very precise or strict in its requirements. An exacting person expects things to be, well, exact. ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-1027669",
+      "query": "who first brought up global warming",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-2fef8282fc00937c3a82",
+          "title": "A brief history of climate change discoveries",
+          "url": "https://www.discover.ukri.org/a-brief-history-of-climate-change-discoveries/index.html",
+          "snippet": "A little-known amateur scientist called Guy Callendar makes history by discovering the planet has warmed. In 1938, steam engineer Callendar decided to take ..."
+        },
+        {
+          "candidate_id": "c-a7b289978dbfcea5c1f3",
+          "title": "Evidence - NASA Science",
+          "url": "https://science.nasa.gov/climate-change/evidence/",
+          "snippet": "In 1938, Guy Callendar connected carbon dioxide increases in Earth's atmosphere to global warming. In 1941, Milutin Milankovic linked ice ages"
+        },
+        {
+          "candidate_id": "c-6b0ee4b45112b83d11a3",
+          "title": "Early history of global warming science and predictions",
+          "url": "https://climatepositions.com/early-history-of-global-warming-science-and-predictions/",
+          "snippet": "The English (born in Canada) steam engineer and inventor 'Guy Stewart Callendar' (1898-1964) developed a theory that linked rising carbon dioxide (CO2) ..."
+        },
+        {
+          "candidate_id": "c-3022b391891f4ec5da0f",
+          "title": "What Scientists and Politicians Won't Tell You About Global Warming",
+          "url": "https://sciencepolicy.colorado.edu/publications/special/climate_fix/book_clips.html",
+          "snippet": "In the summer of 1988, global warming first captured the imagination of the American public. early June of that summer Senator Al Gore (D-TN) Senator Tim Wirth ..."
+        },
+        {
+          "candidate_id": "c-98706a3939f24547f617",
+          "title": "Global Warming Timeline - American Institute of Physics",
+          "url": "https://history.aip.org/climate/timeline.htm",
+          "snippet": "1896 Arrhenius publishes first calculation of global warming from human emissions of CO2. 1930s Global warming trend since late 19th century reported."
+        },
+        {
+          "candidate_id": "c-4df08fd627d4433afcbf",
+          "title": "Former Vice President Al Gore | The Climate Reality Project",
+          "url": "https://www.climaterealityproject.org/former-vice-president-al-gore",
+          "snippet": "In the US House of Representatives, Gore organized the first hearing on man-made global warming in 1981. ... brought together 150 world-famous acts on 7 ..."
+        },
+        {
+          "candidate_id": "c-8155851682417106f81d",
+          "title": "History of climate change science - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/History_of_climate_change_science",
+          "snippet": "Svante Arrhenius in 1896, who made the first quantitative prediction of global warming due to a hypothetical doubling of atmospheric carbon dioxide."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-538309",
+      "query": "volume of earth",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-f697eaec10d2f8dd5196",
+          "title": "What Is The Volume Of The Earth?",
+          "url": "https://www.sciencing.com/what-volume-earth-4689019/",
+          "snippet": "Earth is almost spherical, you can calculate its volume (V) using the mathematical relationship V = 4/3 pi x r^3, where \"r\" is its radius. ..."
+        },
+        {
+          "candidate_id": "c-1ef8af397cdb322641de",
+          "title": "Dear Science: How Much Does the Earth Weigh?",
+          "url": "https://www.youtube.com/watch?v=xjVKzc9hO8I",
+          "snippet": "Dear Science: How Much Does the Earth Weigh? Exploring Earth's Crust, Mantle, and Core. Learn facts about the different layers of Earth"
+        },
+        {
+          "candidate_id": "c-c1d753f930c0dccdf122",
+          "title": "Earth Volume – Circles and Pi",
+          "url": "https://mathigon.org/step/circles/earth-volume",
+          "snippet": "The Earth is (approximately) a sphere with a radius of 6,371 km. Therefore its volume is V = + − × ÷ π = 1 km 3 The average density of the Earth is 5510 kg/m 3"
+        },
+        {
+          "candidate_id": "c-b7429fee9225182aff56",
+          "title": "Earth",
+          "url": "https://en.wikipedia.org/wiki/Earth",
+          "snippet": "Volume, 1.08321×1012 km ; Mass, (5.97217±0.00028)×1024 kg ; Mean density. 5.513 g/cm ; Surface gravity. 9.80665 m/s · (exactly 1 g0) ; Moment of inertia factor."
+        },
+        {
+          "candidate_id": "c-81f9876b46255087446e",
+          "title": "Calculating the Volume of the Earth (Deceptively Difficult)",
+          "url": "https://www.reddit.com/r/SmarterEveryDay/comments/o63zsn/calculating_the_volume_of_the_earth_deceptively/",
+          "snippet": "Simply put, shift your focus on finding an average radius of the earth and then use the formula V = 4/3•π•r3 in order to calculate the volume ..."
+        }
+      ]
+    },
+    {
+      "id": "msmarco-137919",
+      "query": "definition of routine foot care",
+      "stratum": "answer_seeking_holdout_10",
+      "candidates": [
+        {
+          "candidate_id": "c-55a03b5a25f36d12ac55",
+          "title": "Routine Foot Care - Medical Clinical Policy Bulletins",
+          "url": "https://www.aetna.com/cpb/medical/data/1_99/0046.html",
+          "snippet": "Routine foot care includes, but is not limited to, the treatment of bunions (except capsular or bone surgery thereof), calluses, clavus, corns, hyperkeratosis ..."
+        },
+        {
+          "candidate_id": "c-00898f6f5e1d987091d3",
+          "title": "Medicare Guidelines for Routine Foot Care",
+          "url": "https://www.youtube.com/watch?v=QHrK6Kgte8U",
+          "snippet": "This webinar was held on 05/07/2024. Medicare can only cover routine foot care services such as nail trimming, removing corns and calluses"
+        },
+        {
+          "candidate_id": "c-e40a3b0cc2f702cd83f0",
+          "title": "Routine Foot Care General Information",
+          "url": "https://palmettogba.com/rr/did/8eeldx8000",
+          "snippet": "Routine foot care is defined as: The cutting or removal of corns or calluses The trimming, cutting, clipping or debriding of nails Hygienic and ..."
+        },
+        {
+          "candidate_id": "c-95009114558b746a647f",
+          "title": "Does Medicare Cover Routine Foot Care?",
+          "url": "https://www.aapc.com/blog/92597-does-medicare-cover-routine-foot-care/?srsltid=AfmBOoobTe0sBWyN9yDmIKALCVbSCl9C-ZTugkHy4kZTF3pxFnVE4bQ3",
+          "snippet": "Routine foot care includes services such as trimming or removing corns and calluses, nail debridement, and other maintenance care."
+        },
+        {
+          "candidate_id": "c-b65c146bc8fc921bbd22",
+          "title": "CG-MED-92 Foot Care Services",
+          "url": "https://www.anthem.com/medpolicies/abcbs/active/gl_pw_e002057.html",
+          "snippet": "Foot care may include the cutting or removal of corns and calluses or the trimming, cutting, clipping or debriding of nails."
+        },
+        {
+          "candidate_id": "c-4adbe47d8545ab5f4e7b",
+          "title": "Podiatry Payment Policy",
+          "url": "https://fallonhealth.org/-/media/Files/ProviderPDFs/PaymentPolicies/PodiatryPayPol0924.ashx",
+          "snippet": "Foot care services that do not require a professional would be considered routine and not a. Medicare benefit. Professional in this situation is ..."
+        },
+        {
+          "candidate_id": "c-e9236d31f2e2b0dc9800",
+          "title": "Billing and Coding Article - Foot Care (A56232)",
+          "url": "https://www.cms.gov/medicare-coverage-database/view/article.aspx?articleid=56232&ver=34&=",
+          "snippet": "Routine foot care is usually performed by the beneficiary himself or herself, or by a caregiver. Generally, routine foot care is excluded from coverage."
+        }
+      ]
+    }
+  ]
+}

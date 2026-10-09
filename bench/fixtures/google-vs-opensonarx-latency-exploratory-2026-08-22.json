@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "capture": {
+    "captured_at": "2026-08-22",
+    "locale": "pt-BR",
+    "country": "BR",
+    "google_session": "signed_out; pws=0",
+    "google_url_template": "https://www.google.com/search?hl=pt-BR&gl=br&pws=0&q={query}",
+    "opensonarx_report_path": "/private/tmp/openindex-v312-current-resident.json",
+    "opensonarx_data_dir": "/private/tmp/openindex-v311-current-cold.2X05Ir"
+  },
+  "protocols": {
+    "google": {
+      "measured_surface": "in-app browser wall time from before navigation until the first visible a h3 organic heading",
+      "execution": "sequential signed-out browser navigation",
+      "rounds": 3,
+      "stop_condition": "first visible organic heading, with a 5000 ms readiness ceiling"
+    },
+    "opensonarx": {
+      "measured_surface": "live-search report search_ms for the production backend path",
+      "execution": "three passes, concurrency four, retained corpus, no warmup",
+      "rounds": 3,
+      "stop_condition": "backend search() returned; background crawl is reported separately by live-search"
+    }
+  },
+  "cases": [
+    {
+      "id": "nav_claude",
+      "intent": "navigational",
+      "query_relation": "exact",
+      "google_query": "claude",
+      "opensonarx_query": "claude",
+      "google_samples": [
+        {"latency_ms": 203, "organic_ready": true},
+        {"latency_ms": 185, "organic_ready": true},
+        {"latency_ms": 197, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [4.350209, 6.061375, 2.054208],
+      "opensonarx_quality_passes": 3
+    },
+    {
+      "id": "transaction_claude_login",
+      "intent": "transactional",
+      "query_relation": "exact",
+      "google_query": "claude login",
+      "opensonarx_query": "claude login",
+      "google_samples": [
+        {"latency_ms": 237, "organic_ready": true},
+        {"latency_ms": 170, "organic_ready": true},
+        {"latency_ms": 189, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [14.535125, 6.77775, 11.956],
+      "opensonarx_quality_passes": 3
+    },
+    {
+      "id": "tool_python_compiler",
+      "intent": "tool",
+      "query_relation": "localized_equivalent",
+      "google_query": "compilador python online",
+      "opensonarx_query": "python online compiler",
+      "google_samples": [
+        {"latency_ms": 158, "organic_ready": true},
+        {"latency_ms": 142, "organic_ready": true},
+        {"latency_ms": 196, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [8.993458, 1.957417, 2.14675],
+      "opensonarx_quality_passes": 3
+    },
+    {
+      "id": "nav_gama_fund_typo",
+      "intent": "navigational",
+      "query_relation": "exact",
+      "google_query": "gama found",
+      "opensonarx_query": "gama found",
+      "google_samples": [
+        {"latency_ms": 192, "organic_ready": true},
+        {"latency_ms": 198, "organic_ready": true},
+        {"latency_ms": 186, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [1.631791, 1.7785, 1.8555],
+      "opensonarx_quality_passes": 3
+    },
+    {
+      "id": "diligence_gama",
+      "intent": "due_diligence",
+      "query_relation": "exact",
+      "google_query": "gama fund é legítimo",
+      "opensonarx_query": "gama fund é legítimo",
+      "google_samples": [
+        {"latency_ms": 402, "organic_ready": true},
+        {"latency_ms": 407, "organic_ready": true},
+        {"latency_ms": 414, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [2400.03525, 0.042125, 0.058875],
+      "opensonarx_quality_passes": 3
+    },
+    {
+      "id": "current_brazil_election_poll",
+      "intent": "current_events",
+      "query_relation": "exact",
+      "google_query": "pesquisa eleitoral presidente brasil hoje",
+      "opensonarx_query": "pesquisa eleitoral presidente brasil hoje",
+      "google_samples": [
+        {"latency_ms": 215, "organic_ready": true},
+        {"latency_ms": 198, "organic_ready": true},
+        {"latency_ms": 159, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [31.020208, 0.15, 0.157916],
+      "opensonarx_quality_passes": 3
+    },
+    {
+      "id": "factual_pix_creator",
+      "intent": "factual",
+      "query_relation": "exact",
+      "google_query": "quem criou o Pix?",
+      "opensonarx_query": "quem criou o Pix?",
+      "google_samples": [
+        {"latency_ms": 353, "organic_ready": true},
+        {"latency_ms": 359, "organic_ready": true},
+        {"latency_ms": 405, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [27.554375, 0.148541, 0.1315],
+      "opensonarx_quality_passes": 3
+    },
+    {
+      "id": "factual_anthropic_founders",
+      "intent": "factual",
+      "query_relation": "exact",
+      "google_query": "quem fundou a Anthropic?",
+      "opensonarx_query": "quem fundou a Anthropic?",
+      "google_samples": [
+        {"latency_ms": 367, "organic_ready": true},
+        {"latency_ms": 361, "organic_ready": true},
+        {"latency_ms": 370, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [17.684334, 0.130708, 0.314791],
+      "opensonarx_quality_passes": 3
+    },
+    {
+      "id": "current_generic_ai_news",
+      "intent": "current_events",
+      "query_relation": "exact",
+      "google_query": "últimas notícias de inteligência artificial hoje",
+      "opensonarx_query": "últimas notícias de inteligência artificial hoje",
+      "google_samples": [
+        {"latency_ms": 362, "organic_ready": true},
+        {"latency_ms": 355, "organic_ready": true},
+        {"latency_ms": 367, "organic_ready": true}
+      ],
+      "opensonarx_samples_ms": [15.592375, 0.385083, 0.410167],
+      "opensonarx_quality_passes": 3
+    }
+  ],
+  "exact_retry_after_capture": {
+    "query": "python online compiler",
+    "attempts": 3,
+    "successful_organic_results": 0,
+    "observed_outcome": "Google unusual-traffic interstitial in all three attempts; excluded from latency aggregates"
+  },
+  "claimed_comparable": false
+}

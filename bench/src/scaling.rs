@@ -184,18 +184,27 @@ fn compute_exponents(rows: &[SizeRow]) -> ScalingExponents {
     ScalingExponents {
         hnsw: log_log_slope(&log_n, &rows.iter().map(|r| r.hnsw_p50).collect::<Vec<_>>()),
         bm25: log_log_slope(&log_n, &rows.iter().map(|r| r.bm25_p50).collect::<Vec<_>>()),
-        fusion: log_log_slope(&log_n, &rows.iter().map(|r| r.fusion_p50).collect::<Vec<_>>()),
+        fusion: log_log_slope(
+            &log_n,
+            &rows.iter().map(|r| r.fusion_p50).collect::<Vec<_>>(),
+        ),
         enrichment: log_log_slope(
             &log_n,
             &rows.iter().map(|r| r.enrichment_p50).collect::<Vec<_>>(),
         ),
-        total: log_log_slope(&log_n, &rows.iter().map(|r| r.total_p50).collect::<Vec<_>>()),
+        total: log_log_slope(
+            &log_n,
+            &rows.iter().map(|r| r.total_p50).collect::<Vec<_>>(),
+        ),
     }
 }
 
 /// Simple linear regression slope on (log_n, log(latency)) pairs.
 fn log_log_slope(log_n: &[f64], latency: &[f64]) -> f64 {
-    let log_lat: Vec<f64> = latency.iter().map(|&v| if v > 0.0 { v.ln() } else { 0.0 }).collect();
+    let log_lat: Vec<f64> = latency
+        .iter()
+        .map(|&v| if v > 0.0 { v.ln() } else { 0.0 })
+        .collect();
 
     let n = log_n.len() as f64;
     let sum_x: f64 = log_n.iter().sum();
@@ -326,9 +335,15 @@ pub fn parse_sizes(s: &str) -> Vec<usize> {
         .filter_map(|tok| {
             let tok = tok.trim().to_lowercase();
             if tok.ends_with('m') {
-                tok[..tok.len() - 1].parse::<f64>().ok().map(|v| (v * 1_000_000.0) as usize)
+                tok[..tok.len() - 1]
+                    .parse::<f64>()
+                    .ok()
+                    .map(|v| (v * 1_000_000.0) as usize)
             } else if tok.ends_with('k') {
-                tok[..tok.len() - 1].parse::<f64>().ok().map(|v| (v * 1_000.0) as usize)
+                tok[..tok.len() - 1]
+                    .parse::<f64>()
+                    .ok()
+                    .map(|v| (v * 1_000.0) as usize)
             } else {
                 tok.parse().ok()
             }

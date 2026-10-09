@@ -61,7 +61,11 @@ fn download_file(url: &str, dest: &Path) -> Result<(), String> {
 }
 
 fn extract_tar_gz(tar_gz_path: &Path, target_name: &str, dest: &Path) -> Result<(), String> {
-    tracing::info!("Extracting {} from {} ...", target_name, tar_gz_path.display());
+    tracing::info!(
+        "Extracting {} from {} ...",
+        target_name,
+        tar_gz_path.display()
+    );
     let file = std::fs::File::open(tar_gz_path).map_err(|e| format!("open tar.gz: {e}"))?;
     let decoder = flate2::read::GzDecoder::new(file);
     let mut archive = tar::Archive::new(decoder);
@@ -107,10 +111,7 @@ pub(crate) fn ensure_msmarco() -> Result<PathBuf, String> {
     }
 
     // Download qrels (small direct file)
-    download_file(
-        &format!("{BASE_URL}/{QRELS_FILE}"),
-        &dir.join(QRELS_FILE),
-    )?;
+    download_file(&format!("{BASE_URL}/{QRELS_FILE}"), &dir.join(QRELS_FILE))?;
 
     Ok(dir)
 }
@@ -118,7 +119,10 @@ pub(crate) fn ensure_msmarco() -> Result<PathBuf, String> {
 // ── TSV parsing ──
 
 /// Parse collection.tsv: `pid\tpassage_text` (no header)
-pub(crate) fn parse_collection(path: &Path, limit: Option<usize>) -> Result<Vec<(String, String)>, String> {
+pub(crate) fn parse_collection(
+    path: &Path,
+    limit: Option<usize>,
+) -> Result<Vec<(String, String)>, String> {
     let file = std::fs::File::open(path).map_err(|e| format!("open collection: {e}"))?;
     let reader = BufReader::with_capacity(1024 * 1024, file);
     let mut docs = Vec::new();
@@ -261,8 +265,7 @@ fn load_embeddings(
         embeddings.push(emb);
     }
 
-    let ids_content =
-        std::fs::read_to_string(ids_path).map_err(|e| format!("read ids: {e}"))?;
+    let ids_content = std::fs::read_to_string(ids_path).map_err(|e| format!("read ids: {e}"))?;
     let ids: Vec<String> = ids_content.lines().map(|s| s.to_string()).collect();
 
     if ids.len() != count {
@@ -316,7 +319,8 @@ fn embed_parallel(
 
                         let local_done = (batch_idx + 1) * batch_size;
                         if local_done % 10_000 < batch_size && worker_id == 0 {
-                            let done_global = global_offset + local_done.min(slice.len()) * n_workers;
+                            let done_global =
+                                global_offset + local_done.min(slice.len()) * n_workers;
                             let elapsed = global_start.elapsed().as_secs_f64();
                             let rate = (done_global - global_offset) as f64 / elapsed.max(0.1);
                             let remaining = (global_total - done_global) as f64 / rate;
@@ -524,15 +528,12 @@ pub fn run_msmarco(
     let sw = semantic_weight.unwrap_or_else(|| HybridConfig::default().semantic_weight);
 
     let corpus_pids: Vec<String> = corpus.iter().map(|(pid, _)| pid.clone()).collect();
-    let pid_set: std::collections::HashSet<&str> =
-        corpus_pids.iter().map(|s| s.as_str()).collect();
+    let pid_set: std::collections::HashSet<&str> = corpus_pids.iter().map(|s| s.as_str()).collect();
 
     // Only evaluate queries whose relevant passages are in our (possibly limited) corpus
     let eval_query_ids: Vec<&str> = qrels
         .keys()
-        .filter(|qid| {
-            qrels[*qid].iter().any(|pid| pid_set.contains(pid.as_str()))
-        })
+        .filter(|qid| qrels[*qid].iter().any(|pid| pid_set.contains(pid.as_str())))
         .map(|s| s.as_str())
         .collect();
 
@@ -725,14 +726,8 @@ pub fn run_msmarco(
             println!("{}", serde_json::to_string_pretty(&output).unwrap());
         }
         _ => {
-            println!(
-                "{:<16} {:<10} {:<10}",
-                "Metric", "Ours", "Published"
-            );
-            println!(
-                "{:<16} {:<10} {:<10}",
-                "------", "----", "---------"
-            );
+            println!("{:<16} {:<10} {:<10}", "Metric", "Ours", "Published");
+            println!("{:<16} {:<10} {:<10}", "------", "----", "---------");
             println!("{:<16} {:<10.4} {:<10}", "MRR@10", mrr_10, "");
             println!("{:<16} {:<10.4} {:<10}", "Recall@10", recall_10, "-");
             println!("{:<16} {:<10.4} {:<10}", "Recall@100", recall_100, "-");
@@ -808,11 +803,11 @@ mod tests {
 
         let queries = parse_queries(&path).unwrap();
         assert_eq!(queries.len(), 2);
-        assert_eq!(queries[0], ("101".to_string(), "define extreme".to_string()));
         assert_eq!(
-            queries[1],
-            ("202".to_string(), "what is a cat".to_string())
+            queries[0],
+            ("101".to_string(), "define extreme".to_string())
         );
+        assert_eq!(queries[1], ("202".to_string(), "what is a cat".to_string()));
 
         let _ = std::fs::remove_dir_all(&dir);
     }

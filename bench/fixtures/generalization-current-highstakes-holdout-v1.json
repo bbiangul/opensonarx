@@ -1,0 +1,428 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-current-highstakes-heldout-v1",
+  "sealed_at": "2026-08-22T23:47:35Z",
+  "selection": {
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true,
+    "strata": [
+      {
+        "name": "current_trends_br",
+        "count": 25,
+        "recipe": "first visible Google Trends Brazil rows, past 24 hours, ordered by Google Trends relevance; no row removed",
+        "source_snapshot": "bench/fixtures/google-trends-br-top25-2026-08-22.json",
+        "source_snapshot_sha256": "cd05d24f784254fded832dc5b0afb6c803893dae230e4aac6262db83d6a51bb0"
+      },
+      {
+        "name": "high_stakes_candidate",
+        "count": 15,
+        "recipe": "MS MARCO judged population excluding v1 sample; deterministic permutation score=(query_id*48271+20260822) mod 2147483647; first 15 whose query matches the sealed health/legal/finance cue regex",
+        "cue_regex": "symptom|disease|medicine|drug|side effect|doctor|hospital|health|cancer|blood|pain|syndrome|treatment|infection|pregnan|alcohol|tax|loan|mortgage|credit|insurance|annuity|salary|legal|law|bankruptcy|interest rate|retirement",
+        "selected_tsv_sha256": "5a1f8a1a1fe6104f8d5800370ce0296cb3e9df48ef691d0cdd5e5f1cf3da5506"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "id": "trends-br-01",
+      "query": "internacional x atlético-mg",
+      "source": "google-trends-br-past-24h",
+      "source_id": "1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-02",
+      "query": "cruzeiro x flamengo",
+      "source": "google-trends-br-past-24h",
+      "source_id": "2",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-03",
+      "query": "fluminense x remo",
+      "source": "google-trends-br-past-24h",
+      "source_id": "3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-04",
+      "query": "espanyol x real madrid",
+      "source": "google-trends-br-past-24h",
+      "source_id": "4",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-05",
+      "query": "ceará sc x londrina",
+      "source": "google-trends-br-past-24h",
+      "source_id": "5",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-06",
+      "query": "cuiabá x goiás",
+      "source": "google-trends-br-past-24h",
+      "source_id": "6",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-07",
+      "query": "borussia x bayern",
+      "source": "google-trends-br-past-24h",
+      "source_id": "7",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-08",
+      "query": "ituano x paysandu",
+      "source": "google-trends-br-past-24h",
+      "source_id": "8",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-09",
+      "query": "hull city x manchester united",
+      "source": "google-trends-br-past-24h",
+      "source_id": "9",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-10",
+      "query": "monte fuji",
+      "source": "google-trends-br-past-24h",
+      "source_id": "10",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-11",
+      "query": "santa cruz x caxias",
+      "source": "google-trends-br-past-24h",
+      "source_id": "11",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-12",
+      "query": "brentford x spurs",
+      "source": "google-trends-br-past-24h",
+      "source_id": "12",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-13",
+      "query": "contrabando",
+      "source": "google-trends-br-past-24h",
+      "source_id": "13",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-14",
+      "query": "biometria",
+      "source": "google-trends-br-past-24h",
+      "source_id": "14",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-15",
+      "query": "zolpidem",
+      "source": "google-trends-br-past-24h",
+      "source_id": "15",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-16",
+      "query": "real madrid",
+      "source": "google-trends-br-past-24h",
+      "source_id": "16",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-17",
+      "query": "inter x a.c. monza",
+      "source": "google-trends-br-past-24h",
+      "source_id": "17",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-18",
+      "query": "botafogo-pb x guarani",
+      "source": "google-trends-br-past-24h",
+      "source_id": "18",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-19",
+      "query": "inter miami x toronto",
+      "source": "google-trends-br-past-24h",
+      "source_id": "19",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-20",
+      "query": "jogo do flamengo hoje",
+      "source": "google-trends-br-past-24h",
+      "source_id": "20",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-21",
+      "query": "ministro",
+      "source": "google-trends-br-past-24h",
+      "source_id": "21",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-22",
+      "query": "paraná",
+      "source": "google-trends-br-past-24h",
+      "source_id": "22",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-23",
+      "query": "bayern",
+      "source": "google-trends-br-past-24h",
+      "source_id": "23",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-24",
+      "query": "brasileiro feminino",
+      "source": "google-trends-br-past-24h",
+      "source_id": "24",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "trends-br-25",
+      "query": "brawl stars",
+      "source": "google-trends-br-past-24h",
+      "source_id": "25",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR",
+      "stratum": "current_trends_br"
+    },
+    {
+      "id": "msmarco-hs-845529",
+      "query": "what is the salary range of a dentist",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "845529",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-578735",
+      "query": "what benefit did the social security act provide for people who were not of retirement age?",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "578735",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-400803",
+      "query": "is a revocable trust a separate legal entity",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "400803",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-845719",
+      "query": "what is the sales tax rate in lawrenceville  georgia",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "845719",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-534305",
+      "query": "usaa home insurance phone number",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "534305",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-579133",
+      "query": "what blood stream messenger",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "579133",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-89777",
+      "query": "centra credit union routing number",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "89777",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-445908",
+      "query": "mastocytosis symptoms",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "445908",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-1068924",
+      "query": "why hemorrhagic disease tests due to vitamin k deficiency in infancy",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1068924",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-90209",
+      "query": "chagas early stage symptoms",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "90209",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-624143",
+      "query": "what do numbers in blood pressure reading mean",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "624143",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-401878",
+      "query": "is alcoholics anonymous tax deductible",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "401878",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-1024893",
+      "query": "what medications can cause low blood sugar",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "1024893",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-980811",
+      "query": "where is csf reabsorbed into the blood",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "980811",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    },
+    {
+      "id": "msmarco-hs-580483",
+      "query": "what california agency oversee state payroll taxes",
+      "source": "msmarco-passage-ranking-dev-small",
+      "source_id": "580483",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "high_stakes_candidate"
+    }
+  ]
+}

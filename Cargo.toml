@@ -22,6 +22,7 @@ license = "MIT"
 repository = "https://github.com/bbiangul/opensonarx"
 
 [workspace.dependencies]
+base64 = "0.22"
 oi-types = { path = "crates/oi-types" }
 oi-index = { path = "crates/oi-index" }
 oi-crawl = { path = "crates/oi-crawl" }

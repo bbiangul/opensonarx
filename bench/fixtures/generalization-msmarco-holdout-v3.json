@@ -1,0 +1,515 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v3",
+  "sealed_at": "2026-08-23T00:13:34Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      }
+    ],
+    "selected_tsv_sha256": "62495a9ff57943d2fe2ce3a3bb686088a0d68d934d84f9bf7626d0d0d8a28e3e",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true
+  },
+  "queries": [
+    {
+      "id": "msmarco-178612",
+      "query": "effects of cortisol on bp",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "178612",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-178627",
+      "query": "effects of detox juice cleanse",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "178627",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-445573",
+      "query": "marketing communication specialist job duties",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "445573",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-801478",
+      "query": "what is sweetfx",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "801478",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1068408",
+      "query": "why does yahoo keep freezing",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1068408",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-934964",
+      "query": "when    was  kemi born",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "934964",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-267644",
+      "query": "how long should you wait in a walk in",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "267644",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-223165",
+      "query": "how do you measure for stair carpet",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "223165",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-712545",
+      "query": "what is an atm used for",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "712545",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-534617",
+      "query": "userra definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "534617",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-890532",
+      "query": "what record label is shawn mendes signed to",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "890532",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-134239",
+      "query": "definition of electric field",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "134239",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-178741",
+      "query": "effects of hyperthyroidism",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "178741",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024034",
+      "query": "who are the bantu",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024034",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-846082",
+      "query": "what is the score of the cavaliers and the warriors?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "846082",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-89786",
+      "query": "central city definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "89786",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-445714",
+      "query": "martin meaning and origin",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "445714",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024069",
+      "query": "what neuron causes a muscle to move",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024069",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1068584",
+      "query": "what is a purchase order definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1068584",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-178825",
+      "query": "effects of myokines on muscle",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "178825",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-401287",
+      "query": "is a written prescription required for hydrocodone",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "401287",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-178859",
+      "query": "effects of oxygen deprivation",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "178859",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024166",
+      "query": "what navy installation support camp david",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024166",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024176",
+      "query": "who are the hibernians",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024176",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-312368",
+      "query": "how much does amazon get for ebooks",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "312368",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-979713",
+      "query": "where is chandler texas",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "979713",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-757275",
+      "query": "what is ied",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "757275",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024221",
+      "query": "what natural processes affect climate change",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024221",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1068715",
+      "query": "what is a protocol examples",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1068715",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-356916",
+      "query": "how to edit facebook page name",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "356916",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1068726",
+      "query": "why food products or food contaminated wastes cannot be recycled?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1068726",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-846291",
+      "query": "what is the seniority level associate",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "846291",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-712832",
+      "query": "what is an awning window",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "712832",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-623857",
+      "query": "what do male penguins look like",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "623857",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-223468",
+      "query": "how do you pronounce MICR",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "223468",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-979787",
+      "query": "where is chedun town songjiang district",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "979787",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024288",
+      "query": "what nationality is sanders",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024288",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024300",
+      "query": "what nationality is joe pesci",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024300",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024305",
+      "query": "what nationality is dr. nowzaradan",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024305",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-534941",
+      "query": "usps schedule a delivery",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "534941",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-1024312",
+      "query": "who are the months named after",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024312",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-45590",
+      "query": "average temperature of refrigerator in usa",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "45590",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-935358",
+      "query": "when and where do the lavender fields bloom",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "935358",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-935362",
+      "query": "when and where does the glass castle take place",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "935362",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-935364",
+      "query": "when and where is mlb all star game",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "935364",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-801907",
+      "query": "what is table associated for draw originals in sap",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "801907",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-890890",
+      "query": "what region was rome in",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "890890",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    },
+    {
+      "id": "msmarco-579479",
+      "query": "what body system does the urinary system interact with",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "579479",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_3"
+    }
+  ]
+}

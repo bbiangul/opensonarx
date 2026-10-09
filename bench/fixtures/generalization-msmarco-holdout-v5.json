@@ -1,0 +1,523 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v5",
+  "sealed_at": "2026-08-23T00:24:19Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v4.json",
+        "sha256": "87521c1797a79539dcc2d90f7f374259dc3c0425cfbb74ca3c844d741bdb8c67"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      }
+    ],
+    "selected_tsv_sha256": "2ff6ba15b8baa904bdbf514fd61ecdcbf1ce4e3d68dcbf0adf87298f009e4e34",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true
+  },
+  "queries": [
+    {
+      "id": "msmarco-1069327",
+      "query": "what is a phooka",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069327",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-357519",
+      "query": "how to explain  elevated ck",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "357519",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-135079",
+      "query": "definition of hamburger",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "135079",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1069344",
+      "query": "what is a phobia of life",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069344",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-713448",
+      "query": "what is an emg/ncs test",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "713448",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-624503",
+      "query": "what do potatoes grow from",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "624503",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1024904",
+      "query": "what medications are prescribed for vasculitis",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024904",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-402075",
+      "query": "is alopecia permanent",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "402075",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1069405",
+      "query": "what is a perfect passive participle?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069405",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-935952",
+      "query": "when are tulip bulbs planted",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "935952",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-935973",
+      "query": "when are you admissible to be board certified",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "935973",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1024950",
+      "query": "who came up with punctuated equilibrium",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1024950",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-669046",
+      "query": "what herbs go with salmon",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "669046",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-891498",
+      "query": "what risks are associated with protein overconsumption",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "891498",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-535599",
+      "query": "vanda orchids different leaf types",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "535599",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-357664",
+      "query": "how to extract month from date",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "357664",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1069474",
+      "query": "why is atp needed for glycolysis",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069474",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-535627",
+      "query": "vanguard wellesley income",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "535627",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-758074",
+      "query": "what is in egg white protein powder",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "758074",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-891565",
+      "query": "what river is near scotts seadoos in sacramento",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "891565",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1069521",
+      "query": "what is a pedicle flap",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069521",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-624644",
+      "query": "what do ridges in your nails mean",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "624644",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1069556",
+      "query": "why is bioluminescence impacted",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069556",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-313262",
+      "query": "how much does braces cost ?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "313262",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-802634",
+      "query": "what is tcp chemical",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "802634",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-224314",
+      "query": "how do you tell the sex of baby bunnies",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "224314",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-535743",
+      "query": "varicose veins spiritual meaning",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "535743",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-980633",
+      "query": "where is counce tn",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "980633",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-135386",
+      "query": "definition of imagination",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "135386",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-402318",
+      "query": "is ammonium salts soluble water",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "402318",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-936182",
+      "query": "when can a temp be taken on perm",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "936182",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-446834",
+      "query": "mean and median definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "446834",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-624790",
+      "query": "what do sex therapist do",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "624790",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-891719",
+      "query": "what rocks have cooled slowly beneath the earth's surface",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "891719",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1025188",
+      "query": "who can write a death certificate",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025188",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-90941",
+      "query": "chateau meaning",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "90941",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-669288",
+      "query": "what honey locust are seedless",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "669288",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-580313",
+      "query": "what building is aabp convention in",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "580313",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-980726",
+      "query": "where is crestwood village, nj",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "980726",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-135464",
+      "query": "definition of indeterminism",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "135464",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-135465",
+      "query": "definition of indica",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "135465",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1069717",
+      "query": "what is a oligarchy def",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069717",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-802794",
+      "query": "what is technology world",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "802794",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-313438",
+      "query": "how much does cize cost",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "313438",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-936273",
+      "query": "when can eviction proceeding start on a rental",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "936273",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-402417",
+      "query": "is an alloy a homogeneous mixture",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "402417",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-1025259",
+      "query": "what mark of punctuation might indicate that more information is to come?  a. period",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025259",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    },
+    {
+      "id": "msmarco-402427",
+      "query": "is an american staffordshire a pitbull",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "402427",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_5"
+    }
+  ]
+}

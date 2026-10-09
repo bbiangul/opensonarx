@@ -1,0 +1,536 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v6",
+  "sealed_at": "2026-08-23T00:41:56Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "selected_tsv_schema": "source_id TAB query LF",
+    "selected_tsv_sha256": "7256af5450b8c6558b25eb5b4ae762ebc00b80d01a0aa37c53060a5bf32fa493",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true,
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v4.json",
+        "sha256": "87521c1797a79539dcc2d90f7f374259dc3c0425cfbb74ca3c844d741bdb8c67"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v5.json",
+        "sha256": "ac49568636f830aad1d1979c73e82578d26e67eb9f9f9676401995be4fcd5b7a"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v2.json",
+        "sha256": "a0d480ab908a1e14bffddbf2634f52273552e93dcdb763332994487b5e131c00"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v3.json",
+        "sha256": "56b20550fe96ad2cd2a0ac7efeff7dd768dcdf77477040cf6d8618cc026b172e"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "id": "msmarco-624876",
+      "query": "what do soapstone sits cost",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "624876",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-1025270",
+      "query": "what mammals eat birds",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025270",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-980789",
+      "query": "where is crystal colorado",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "980789",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-135516",
+      "query": "definition of infraction",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "135516",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-1025290",
+      "query": "deadliest attacks in us history",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025290",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-580411",
+      "query": "what business was trump in?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "580411",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-46579",
+      "query": "average vehicle length",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "46579",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-580450",
+      "query": "what cable connects pcs to printers",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "580450",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-669427",
+      "query": "what hormone secretion causes goiter",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "669427",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-224548",
+      "query": "how do you wrap a sari",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "224548",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-1025348",
+      "query": "who coined the term thagomizer?aaaa",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025348",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-669444",
+      "query": "what hormone stimulates the production of sperm gcse",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "669444",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-847415",
+      "query": "what is the solvent in vinegar",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "847415",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-135633",
+      "query": "definition of introspective.",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "135633",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-135635",
+      "query": "definition of invariant",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "135635",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-625022",
+      "query": "what do swans like to eat??",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "625022",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-758519",
+      "query": "what is included in a clutch kit",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "758519",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-46711",
+      "query": "average wage gilded age",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "46711",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-2235",
+      "query": "Bethel University was founded in what year",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "2235",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-358150",
+      "query": "how to find a bathroom remodel contractor",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "358150",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-936501",
+      "query": "when can menopause start",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "936501",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-1025483",
+      "query": "what make up the pistil in the female flower",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025483",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-1069981",
+      "query": "what is a mustelidae",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1069981",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-981006",
+      "query": "where is danvers, ma",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "981006",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-447169",
+      "query": "meaning of aerial in geography",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "447169",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-358240",
+      "query": "how to find a slit",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "358240",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-91345",
+      "query": "chemistry amu definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "91345",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-625205",
+      "query": "what do the colors on the russian mean",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "625205",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-1025624",
+      "query": "dcu electronic routing number",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025624",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-758720",
+      "query": "what is incremental revenue",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "758720",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-91422",
+      "query": "cherry dr pepper calories",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "91422",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-847722",
+      "query": "what is the specific heat value for liquid water.",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "847722",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-803237",
+      "query": "what is terminal velocity for humans",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "803237",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-847726",
+      "query": "what is the specific name for walrus classifying organisms",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "847726",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-447340",
+      "query": "meaning of black flowers",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "447340",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-669800",
+      "query": "what hours are considered brunch",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "669800",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-1025714",
+      "query": "who created spiritual gangster",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025714",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-803306",
+      "query": "what is test for hep c",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "803306",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-313940",
+      "query": "how much does general anesthesia cost",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "313940",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-358455",
+      "query": "how to find device ip",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "358455",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-892329",
+      "query": "what scale are percussion instruments on",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "892329",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-758901",
+      "query": "what is inductance",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "758901",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-1070324",
+      "query": "what is a mobile kitchen",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1070324",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-758909",
+      "query": "what is inductive",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "758909",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-536480",
+      "query": "verrucous lesion",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "536480",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-625458",
+      "query": "what do the testes do in the reproductive system",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "625458",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-136098",
+      "query": "definition of marginal propensity to save",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "136098",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    },
+    {
+      "id": "msmarco-180592",
+      "query": "english came from what language",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "180592",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_6"
+    }
+  ]
+}

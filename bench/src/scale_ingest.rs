@@ -22,7 +22,11 @@ pub fn run_scale_ingest(limit: usize, index_path: &str) {
         limit,
     )
     .expect("load embeddings");
-    println!("  {} embeddings in {:.1}s", ids.len(), t.elapsed().as_secs_f64());
+    println!(
+        "  {} embeddings in {:.1}s",
+        ids.len(),
+        t.elapsed().as_secs_f64()
+    );
 
     println!("Loading passages...");
     let t = Instant::now();
@@ -44,7 +48,11 @@ pub fn run_scale_ingest(limit: usize, index_path: &str) {
             }
         }
     }
-    println!("  {} passages in {:.1}s", passages.len(), t.elapsed().as_secs_f64());
+    println!(
+        "  {} passages in {:.1}s",
+        passages.len(),
+        t.elapsed().as_secs_f64()
+    );
 
     println!("Opening index at {index_path}...");
     let storage = Storage::new(PathBuf::from(index_path)).expect("storage");
@@ -60,8 +68,14 @@ pub fn run_scale_ingest(limit: usize, index_path: &str) {
     let mut batch: Vec<ContentChunk> = Vec::with_capacity(1000);
     let mut ingested_batches = 0;
     for (pid, emb) in ids.iter().zip(embeddings) {
-        let Some(text) = passages.get(pid) else { continue };
-        let title: String = text.split_whitespace().take(8).collect::<Vec<_>>().join(" ");
+        let Some(text) = passages.get(pid) else {
+            continue;
+        };
+        let title: String = text
+            .split_whitespace()
+            .take(8)
+            .collect::<Vec<_>>()
+            .join(" ");
         let hash = format!("msmarco-{pid}");
         batch.push(ContentChunk {
             chunk_id: format!("ms_{pid}"),

@@ -1,0 +1,540 @@
+{
+  "schema_version": 1,
+  "name": "opensonarx-generalization-msmarco-heldout-v7",
+  "sealed_at": "2026-08-23T00:46:03Z",
+  "selection": {
+    "source_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/queries.tar.gz",
+    "qrels_url": "https://msmarco.z22.web.core.windows.net/msmarcoranking/qrels.dev.small.tsv",
+    "queries_tar_sha256": "05e4c62c9c8520cd695725340d4c990627fd1a92eb8a71b88e3c746031ba6de8",
+    "extracted_queries_dev_sha256": "757b7e935ff46728be84cbf7d195c3e6ae479d6449d92bbb87b09fe56bebf5ee",
+    "qrels_dev_small_sha256": "ddc607dbe7b748d7168e8675a242f0811d47febaa2e69d3af09d7ab249c68d7e",
+    "eligible_population": "query IDs present in qrels.dev.small.tsv joined to queries.dev.tsv",
+    "permutation": "score=(query_id*48271+20260822) mod 2147483647; ascending numeric",
+    "selected_tsv_schema": "source_id TAB query LF",
+    "selected_tsv_sha256": "3eb3cb9c58fc093201f7b54bacfba4ac996e4e972164a35e0e86bfecc5f9ecec",
+    "sample_size": 48,
+    "selection_before_first_capture": true,
+    "labels_excluded_from_capture": true,
+    "development_queries_excluded_by_evaluator": true,
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v4.json",
+        "sha256": "87521c1797a79539dcc2d90f7f374259dc3c0425cfbb74ca3c844d741bdb8c67"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v5.json",
+        "sha256": "ac49568636f830aad1d1979c73e82578d26e67eb9f9f9676401995be4fcd5b7a"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v6.json",
+        "sha256": "f2baeb137df79aa989434ae943dd23417d38f4c7ecec0df863cd6778c114c1d7"
+      },
+      {
+        "path": "bench/fixtures/generalization-current-highstakes-holdout-v1.json",
+        "sha256": "39ed6accffbd7802552680f0fe3b870b79a63a9b910cdedde2d312e6191b1723"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v2.json",
+        "sha256": "a0d480ab908a1e14bffddbf2634f52273552e93dcdb763332994487b5e131c00"
+      },
+      {
+        "path": "bench/fixtures/generalization-highstakes-holdout-v3.json",
+        "sha256": "56b20550fe96ad2cd2a0ac7efeff7dd768dcdf77477040cf6d8618cc026b172e"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "id": "msmarco-1070361",
+      "query": "why is government necessary quizlet",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1070361",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-669979",
+      "query": "what ibn means crossword",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "669979",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-447540",
+      "query": "meaning of crevices",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "447540",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-981400",
+      "query": "where is disney",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "981400",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-1025895",
+      "query": "who created the song danny boy",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025895",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-447551",
+      "query": "meaning of current ratio",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "447551",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-892454",
+      "query": "what school district is santaquin in?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "892454",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-136157",
+      "query": "definition of meat myoglobin",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "136157",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-670022",
+      "query": "what identification is needed to open a bank account",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "670022",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-403095",
+      "query": "is apple the world's most innovative company (still)?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "403095",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-759021",
+      "query": "what is inference example",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "759021",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-1070452",
+      "query": "what is a mimo receiver",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1070452",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-180693",
+      "query": "enlarge definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "180693",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-759038",
+      "query": "what is infinite tv",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "759038",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-136209",
+      "query": "definition of menses",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "136209",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-759062",
+      "query": "what is inflammation of the mucous membranes of the bronchial tubes",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "759062",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-1025991",
+      "query": "what lake in mn is the deepest",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1025991",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-447648",
+      "query": "meaning of don't tread on me",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "447648",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-47270",
+      "query": "average weight for a pug",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "47270",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-536654",
+      "query": "vestibular hypofunction definition",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "536654",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-2798",
+      "query": "Does Suddenlink Carry ESPN3",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "2798",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-803599",
+      "query": "what is the  mascot of   yale university",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "803599",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-91790",
+      "query": "chili's pork carnitas calories",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "91790",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-670142",
+      "query": "what if my idea was stolen",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "670142",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-848100",
+      "query": "what is the standard mounting distance of a toilet",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "848100",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-714636",
+      "query": "what is an fcr",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "714636",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-1070546",
+      "query": "what is a meta analysis vs literature review",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1070546",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-714672",
+      "query": "what is an fmo",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "714672",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-714678",
+      "query": "what is an for generic substitution",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "714678",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-1026098",
+      "query": "who designed the first intelligence test",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1026098",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-314307",
+      "query": "how much does it cost for a concrete driveway",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "314307",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-714709",
+      "query": "what is an hd screen",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "714709",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-91881",
+      "query": "chinese meaning of ren",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "91881",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-1026148",
+      "query": "what kind of water do axolotls",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1026148",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-47419",
+      "query": "average weight of male labrador",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "47419",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-536791",
+      "query": "viable meaning?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "536791",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-180887",
+      "query": "enu protein shake",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "180887",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-625782",
+      "query": "what do usa flag represent",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "625782",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-180902",
+      "query": "environment variables types",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "180902",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-2962",
+      "query": "Explain what a bone scan is and what it is used for.",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "2962",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-403361",
+      "query": "is asperger's under a new dsm",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "403361",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-403388",
+      "query": "is aspirin good for muscle aches",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "403388",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-1070728",
+      "query": "why is it difficult to balance the budget at the federal or state level?",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1070728",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-1026258",
+      "query": "who developed the first photograph",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "1026258",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-803861",
+      "query": "what is the absolute location of germany",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "803861",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-47588",
+      "query": "average wpm typing speed",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "47588",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-670437",
+      "query": "what impact did the GI bill have",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "670437",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    },
+    {
+      "id": "msmarco-359040",
+      "query": "how to find regular payback period",
+      "source": "ms-marco-passage-ranking-dev-small",
+      "source_id": "359040",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US",
+      "stratum": "answer_seeking_holdout_7"
+    }
+  ]
+}
