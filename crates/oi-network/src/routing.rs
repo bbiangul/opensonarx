@@ -72,7 +72,14 @@ impl RoutingTable {
         let existing = self.peers.get(node_id);
         let existing_peer_id = existing.and_then(|p| p.peer_id);
         let (qa, qw, cr, cs) = existing
-            .map(|p| (p.queries_answered_for_us, p.queries_we_answered, p.chunks_received, p.chunks_sent))
+            .map(|p| {
+                (
+                    p.queries_answered_for_us,
+                    p.queries_we_answered,
+                    p.chunks_received,
+                    p.chunks_sent,
+                )
+            })
             .unwrap_or((0, 0, 0, 0));
         let watermarks = existing
             .map(|p| p.replication_watermarks.clone())
@@ -107,9 +114,9 @@ impl RoutingTable {
         self.peers
             .iter()
             .filter(|(_, info)| {
-                info.shard_ids.iter().any(|s| {
-                    s == shard_id || oi_types::shard::is_sub_shard_of(s, shard_id)
-                })
+                info.shard_ids
+                    .iter()
+                    .any(|s| s == shard_id || oi_types::shard::is_sub_shard_of(s, shard_id))
             })
             .map(|(id, _)| id.clone())
             .collect()
@@ -161,9 +168,10 @@ impl RoutingTable {
             .iter()
             .filter(|(_, info)| {
                 info.peer_id.is_some()
-                    && info.shard_ids.iter().any(|s| {
-                        s == shard_id || oi_types::shard::is_sub_shard_of(s, shard_id)
-                    })
+                    && info
+                        .shard_ids
+                        .iter()
+                        .any(|s| s == shard_id || oi_types::shard::is_sub_shard_of(s, shard_id))
             })
             .map(|(id, info)| (id.clone(), info.peer_id.unwrap(), info.vectors_stored))
             .collect();
@@ -179,9 +187,11 @@ impl RoutingTable {
     pub fn total_docs_for_shard(&self, shard_id: &str) -> u64 {
         self.peers
             .values()
-            .filter(|info| info.shard_ids.iter().any(|s| {
-                s == shard_id || oi_types::shard::is_sub_shard_of(s, shard_id)
-            }))
+            .filter(|info| {
+                info.shard_ids
+                    .iter()
+                    .any(|s| s == shard_id || oi_types::shard::is_sub_shard_of(s, shard_id))
+            })
             .map(|info| info.vectors_stored)
             .sum()
     }
@@ -191,9 +201,11 @@ impl RoutingTable {
     pub fn replica_count(&self, shard_id: &str) -> usize {
         self.peers
             .values()
-            .filter(|info| info.shard_ids.iter().any(|s| {
-                s == shard_id || oi_types::shard::is_sub_shard_of(s, shard_id)
-            }))
+            .filter(|info| {
+                info.shard_ids
+                    .iter()
+                    .any(|s| s == shard_id || oi_types::shard::is_sub_shard_of(s, shard_id))
+            })
             .count()
     }
 
@@ -288,8 +300,10 @@ impl RoutingTable {
         // Only throttle if we've had enough interactions to judge (at least 10 total)
         let total = match self.peers.get(node_id) {
             Some(info) => {
-                info.queries_answered_for_us + info.queries_we_answered
-                    + info.chunks_received + info.chunks_sent
+                info.queries_answered_for_us
+                    + info.queries_we_answered
+                    + info.chunks_received
+                    + info.chunks_sent
             }
             None => return false,
         };
@@ -327,7 +341,8 @@ impl RoutingTable {
     /// Set the replication watermark for a peer's shard.
     pub fn set_watermark(&mut self, node_id: &str, shard_id: &str, seq: u64) {
         if let Some(info) = self.peers.get_mut(node_id) {
-            info.replication_watermarks.insert(shard_id.to_string(), seq);
+            info.replication_watermarks
+                .insert(shard_id.to_string(), seq);
         }
     }
 
@@ -357,8 +372,7 @@ impl RoutingTable {
             })
             .collect();
 
-        let json = serde_json::to_string_pretty(&persisted)
-            .map_err(io::Error::other)?;
+        let json = serde_json::to_string_pretty(&persisted).map_err(io::Error::other)?;
 
         // Write to temp file then rename for atomicity
         let tmp_path = path.with_extension("json.tmp");
@@ -402,9 +416,7 @@ impl RoutingTable {
                 continue;
             }
 
-            let peer_id = entry
-                .peer_id
-                .and_then(|s| s.parse::<PeerId>().ok());
+            let peer_id = entry.peer_id.and_then(|s| s.parse::<PeerId>().ok());
 
             table.peers.insert(
                 entry.node_id,
@@ -529,8 +541,18 @@ mod tests {
         let pid1 = PeerId::random();
         let pid2 = PeerId::random();
         let mut rt = RoutingTable::new();
-        rt.update_peer_with_id("peer1", vec!["shard-0".into(), "shard-1".into()], 100, Some(pid1));
-        rt.update_peer_with_id("peer2", vec!["shard-1".into(), "shard-2".into()], 200, Some(pid2));
+        rt.update_peer_with_id(
+            "peer1",
+            vec!["shard-0".into(), "shard-1".into()],
+            100,
+            Some(pid1),
+        );
+        rt.update_peer_with_id(
+            "peer2",
+            vec!["shard-1".into(), "shard-2".into()],
+            200,
+            Some(pid2),
+        );
 
         let mapping = rt.one_peer_per_shard();
         assert_eq!(mapping.len(), 3);
@@ -644,7 +666,12 @@ mod tests {
         let pid1 = PeerId::random();
         let pid2 = PeerId::random();
         let mut rt = RoutingTable::new();
-        rt.update_peer_with_id("peer1", vec!["shard-0".into(), "shard-1".into()], 100, Some(pid1));
+        rt.update_peer_with_id(
+            "peer1",
+            vec!["shard-0".into(), "shard-1".into()],
+            100,
+            Some(pid1),
+        );
         rt.update_peer_with_id("peer2", vec!["shard-0".into()], 200, Some(pid2));
 
         // shard-0 has 2 replicas, shard-1 has 1 — with min=2, only shard-1 is under-replicated
@@ -739,7 +766,10 @@ mod tests {
         // Only 2 interactions — too few to judge
         rt.record_query_served("peer1");
         rt.record_query_served("peer1");
-        assert!(!rt.should_throttle("peer1", 0.5), "too few interactions to throttle");
+        assert!(
+            !rt.should_throttle("peer1", 0.5),
+            "too few interactions to throttle"
+        );
 
         // Add more to reach threshold (10 total)
         for _ in 0..8 {
@@ -774,12 +804,7 @@ mod tests {
         // 20 peers, each with 500 docs (total 10K). Fanout=3 covers 1500/10000 = 15%
         for i in 0..20 {
             let pid = PeerId::random();
-            rt.update_peer_with_id(
-                &format!("peer{i}"),
-                vec!["shard-0".into()],
-                500,
-                Some(pid),
-            );
+            rt.update_peer_with_id(&format!("peer{i}"), vec!["shard-0".into()], 500, Some(pid));
         }
 
         let shard_0 = "shard-0".to_string();
@@ -793,7 +818,12 @@ mod tests {
     fn test_save_load_roundtrip() {
         let pid = PeerId::random();
         let mut rt = RoutingTable::new();
-        rt.update_peer_with_id("peer1", vec!["shard-0".into(), "shard-1".into()], 1000, Some(pid));
+        rt.update_peer_with_id(
+            "peer1",
+            vec!["shard-0".into(), "shard-1".into()],
+            1000,
+            Some(pid),
+        );
         rt.update_peer("peer2", vec!["shard-2".into()], 500);
         rt.record_query_answered("peer1");
         rt.record_query_served("peer1");
@@ -827,21 +857,21 @@ mod tests {
         let old_ts = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
-            .as_secs() - 3600;
-        let json = serde_json::to_string(&vec![
-            serde_json::json!({
-                "node_id": "peer1",
-                "peer_id": null,
-                "shard_ids": ["shard-0"],
-                "vectors_stored": 100,
-                "last_seen_timestamp": old_ts,
-                "queries_answered_for_us": 0,
-                "queries_we_answered": 0,
-                "chunks_received": 0,
-                "chunks_sent": 0,
-                "replication_watermarks": {}
-            })
-        ]).unwrap();
+            .as_secs()
+            - 3600;
+        let json = serde_json::to_string(&vec![serde_json::json!({
+            "node_id": "peer1",
+            "peer_id": null,
+            "shard_ids": ["shard-0"],
+            "vectors_stored": 100,
+            "last_seen_timestamp": old_ts,
+            "queries_answered_for_us": 0,
+            "queries_we_answered": 0,
+            "chunks_received": 0,
+            "chunks_sent": 0,
+            "replication_watermarks": {}
+        })])
+        .unwrap();
         std::fs::write(&path, json).unwrap();
 
         // max_age=1800 (30min) should prune the 1h-old entry

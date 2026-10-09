@@ -136,11 +136,12 @@ fn compute_spam_score(text: &str) -> f64 {
     let mut signals = Vec::new();
 
     // 1. Keyword density: any single word > 10% of total (excluding stopwords)
-    let stopwords = ["the", "a", "an", "is", "are", "was", "were", "be", "been",
-        "being", "have", "has", "had", "do", "does", "did", "will", "would",
-        "could", "should", "may", "might", "shall", "can", "to", "of", "in",
-        "for", "on", "with", "at", "by", "from", "as", "into", "and", "or",
-        "but", "not", "no", "if", "then", "than", "that", "this", "it"];
+    let stopwords = [
+        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
+        "do", "does", "did", "will", "would", "could", "should", "may", "might", "shall", "can",
+        "to", "of", "in", "for", "on", "with", "at", "by", "from", "as", "into", "and", "or",
+        "but", "not", "no", "if", "then", "than", "that", "this", "it",
+    ];
     let mut lower_freq: HashMap<String, usize> = HashMap::new();
     for w in &words {
         let lw = w.to_lowercase();
@@ -240,8 +241,7 @@ fn compute_slop_score(text: &str) -> f64 {
 
     // 2. Vocabulary diversity: unique_words / total_words
     let lower_words: Vec<String> = words.iter().map(|w| w.to_lowercase()).collect();
-    let unique: std::collections::HashSet<&str> =
-        lower_words.iter().map(|s| s.as_str()).collect();
+    let unique: std::collections::HashSet<&str> = lower_words.iter().map(|s| s.as_str()).collect();
     let diversity = unique.len() as f64 / lower_words.len() as f64;
     // Very low diversity (< 0.3) is a slop signal
     if diversity < 0.3 {

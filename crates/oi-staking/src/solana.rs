@@ -150,12 +150,12 @@ impl SolanaStakeRegistry {
     /// Read the on-chain reputation root (if it exists).
     /// Returns `Ok(Some((merkle_root, epoch)))` or `Ok(None)` if not initialized.
     pub fn get_reputation_root(&self) -> Result<Option<([u8; 32], u64)>> {
-        let (pda, _) =
-            Pubkey::find_program_address(&[REPUTATION_ROOT_SEED], &self.program_id);
+        let (pda, _) = Pubkey::find_program_address(&[REPUTATION_ROOT_SEED], &self.program_id);
         match self.rpc.get_account_data(&pda) {
             Ok(data) => {
-                let account = ReputationRootAccount::try_from_slice(&data)
-                    .map_err(|e| Error::Internal(format!("borsh deserialize reputation root: {e}")))?;
+                let account = ReputationRootAccount::try_from_slice(&data).map_err(|e| {
+                    Error::Internal(format!("borsh deserialize reputation root: {e}"))
+                })?;
                 if account.is_initialized {
                     Ok(Some((account.merkle_root, account.epoch)))
                 } else {

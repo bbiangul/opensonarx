@@ -54,7 +54,10 @@ mod tests {
 
     #[test]
     fn test_basic_chunking() {
-        let text = (0..1024).map(|i| format!("word{i}")).collect::<Vec<_>>().join(" ");
+        let text = (0..1024)
+            .map(|i| format!("word{i}"))
+            .collect::<Vec<_>>()
+            .join(" ");
         let chunks = chunk_text(&text, 512, 128);
         assert!(chunks.len() >= 2);
         assert!(chunks[0].split_whitespace().count() <= 512);
@@ -62,7 +65,10 @@ mod tests {
 
     #[test]
     fn test_overlap() {
-        let text = (0..100).map(|i| format!("w{i}")).collect::<Vec<_>>().join(" ");
+        let text = (0..100)
+            .map(|i| format!("w{i}"))
+            .collect::<Vec<_>>()
+            .join(" ");
         let chunks = chunk_text(&text, 50, 10);
         // Second chunk should start 40 words in (50 - 10 overlap)
         let first_words: Vec<&str> = chunks[0].split_whitespace().collect();

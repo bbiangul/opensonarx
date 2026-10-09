@@ -3,22 +3,22 @@ use crate::fanout::{self, GossipCommand, PendingFanout, QueryCommand};
 use crate::gossip;
 use crate::routing::{self, RoutingTable};
 use futures::StreamExt;
+use libp2p::Swarm;
 use libp2p::gossipsub;
 use libp2p::mdns;
 use libp2p::request_response::{self, OutboundRequestId};
 use libp2p::swarm::SwarmEvent;
-use libp2p::Swarm;
 use oi_index::HybridIndex;
 use oi_types::proto::opensonarx::{
-    gossip_message, DocumentChunk, ErrorInfo, QueryRequest, QueryResponse, ReplicationReq,
-    ReplicationResp, ResponseMeta, SearchResult, Scores, FreshnessInfo,
+    DocumentChunk, ErrorInfo, FreshnessInfo, QueryRequest, QueryResponse, ReplicationReq,
+    ReplicationResp, ResponseMeta, Scores, SearchResult, gossip_message,
 };
 use oi_types::traits::SearchIndex;
 use oi_types::{EarningsTracker, SignedTicket, TopicRouter};
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
-use tokio::sync::{mpsc, RwLock};
+use tokio::sync::{RwLock, mpsc};
 use tracing::{debug, info, warn};
 
 /// Action to be taken after processing a swarm event.
@@ -26,12 +26,18 @@ use tracing::{debug, info, warn};
 /// once the swarm borrow is released.
 enum EventAction {
     None,
-    SendResponse(request_response::ResponseChannel<QueryResponse>, QueryResponse),
+    SendResponse(
+        request_response::ResponseChannel<QueryResponse>,
+        QueryResponse,
+    ),
     FanoutResponse {
         request_id: String,
         response: QueryResponse,
     },
-    SendReplicationResponse(request_response::ResponseChannel<ReplicationResp>, ReplicationResp),
+    SendReplicationResponse(
+        request_response::ResponseChannel<ReplicationResp>,
+        ReplicationResp,
+    ),
     IngestReplicatedChunks {
         peer: libp2p::PeerId,
         response: ReplicationResp,
@@ -106,7 +112,8 @@ pub async fn run_event_loop(
     let mut eviction_interval = tokio::time::interval(Duration::from_secs(300));
     let mut earnings_save_interval = tokio::time::interval(Duration::from_secs(60));
     let mut fanout_check_interval = tokio::time::interval(Duration::from_secs(1));
-    let mut replication_check_interval = tokio::time::interval(Duration::from_secs(replication_check_interval_secs));
+    let mut replication_check_interval =
+        tokio::time::interval(Duration::from_secs(replication_check_interval_secs));
     let mut routing_save_interval = tokio::time::interval(Duration::from_secs(300)); // every 5 min
 
     // In-flight fanout queries, keyed by request_id.
@@ -349,7 +356,8 @@ pub async fn run_event_loop(
                             // Record replication received (tit-for-tat) + update watermark.
                             // Untagged batches (sender ingested outside the topic
                             // router) count toward our own primary shard.
-                            let shard_of_batch = chunks.first()
+                            let shard_of_batch = chunks
+                                .first()
                                 .and_then(|c| c.meta.as_ref())
                                 .and_then(|m| m.shard_id.clone());
                             let shard_of_batch = match shard_of_batch {
@@ -370,19 +378,21 @@ pub async fn run_event_loop(
                             // Continuation: the peer holds more beyond this
                             // batch — keep pulling from the new watermark until
                             // caught up (one batch per response, no flooding).
-                            if chunk_count > 0 && latest_seq > max_seq
-                                && let Some(shard_id) = shard_of_batch {
-                                    info!(
-                                        "Replication catch-up continues: {} of latest_seq {latest_seq} synced",
-                                        max_seq
-                                    );
-                                    let req = ReplicationReq {
-                                        shard_id,
-                                        from_seq: max_seq,
-                                        max_chunks: 1000,
-                                    };
-                                    let _ = swarm.behaviour_mut().replication.send_request(&peer, req);
-                                }
+                            if chunk_count > 0
+                                && latest_seq > max_seq
+                                && let Some(shard_id) = shard_of_batch
+                            {
+                                info!(
+                                    "Replication catch-up continues: {} of latest_seq {latest_seq} synced",
+                                    max_seq
+                                );
+                                let req = ReplicationReq {
+                                    shard_id,
+                                    from_seq: max_seq,
+                                    max_chunks: 1000,
+                                };
+                                let _ = swarm.behaviour_mut().replication.send_request(&peer, req);
+                            }
                         }
                         Err(e) => {
                             warn!("Failed to ingest replicated chunks from {peer}: {e}");
@@ -409,11 +419,10 @@ pub async fn run_event_loop(
                     from_seq,
                     max_chunks,
                 };
-                let _outbound_id = swarm
-                    .behaviour_mut()
-                    .replication
-                    .send_request(&peer, req);
-                info!("Sent replication request to {peer} for shard {shard_id} (from_seq={from_seq})");
+                let _outbound_id = swarm.behaviour_mut().replication.send_request(&peer, req);
+                info!(
+                    "Sent replication request to {peer} for shard {shard_id} (from_seq={from_seq})"
+                );
             }
             EventAction::AddKademliaPeers(peers) => {
                 for (peer_id, addr) in peers {
@@ -429,7 +438,11 @@ pub async fn run_event_loop(
                         .unwrap_or(0);
                     let data =
                         gossip::encode_shard_announce(&node_id, &shard_snapshot, vector_count, 0);
-                    match swarm.behaviour_mut().gossipsub.publish(get_gossip_topic(), data) {
+                    match swarm
+                        .behaviour_mut()
+                        .gossipsub
+                        .publish(get_gossip_topic(), data)
+                    {
                         Ok(_) => info!(
                             "Announced shards to newly subscribed peer: {:?}",
                             shard_snapshot
@@ -540,9 +553,7 @@ async fn handle_query_command(
     let mut target_peers: HashMap<String, libp2p::PeerId> = HashMap::new();
     for shard_id in &selected_remote_shards {
         if let Some((_peer_node_id, peer_id)) = shard_peers.get(*shard_id) {
-            target_peers
-                .entry(peer_id.to_string())
-                .or_insert(*peer_id);
+            target_peers.entry(peer_id.to_string()).or_insert(*peer_id);
         }
     }
 
@@ -570,8 +581,7 @@ async fn handle_query_command(
         } else {
             5
         };
-        let response =
-            fanout::build_merged_response(&request_id, local_results, vec![], limit);
+        let response = fanout::build_merged_response(&request_id, local_results, vec![], limit);
         let _ = cmd.reply_tx.send(response);
         return;
     }
@@ -687,7 +697,11 @@ fn convert_content_chunks_to_proto(chunks: &[oi_types::ContentChunk]) -> Vec<Doc
                 content: c.content.clone(),
                 embedding: embedding_bytes,
                 metadata,
-                content_hash: c.meta.as_ref().map(|m| m.content_hash.clone()).unwrap_or_default(),
+                content_hash: c
+                    .meta
+                    .as_ref()
+                    .map(|m| m.content_hash.clone())
+                    .unwrap_or_default(),
                 seq: c.seq,
             }
         })
@@ -744,7 +758,9 @@ fn verify_replicated_chunks(
         .collect()
 }
 
-fn convert_proto_chunks_to_content_chunks(proto_chunks: &[DocumentChunk]) -> Vec<oi_types::ContentChunk> {
+fn convert_proto_chunks_to_content_chunks(
+    proto_chunks: &[DocumentChunk],
+) -> Vec<oi_types::ContentChunk> {
     proto_chunks
         .iter()
         .map(|pc| {
@@ -842,7 +858,10 @@ fn validate_ticket(ticket: &SignedTicket, our_pubkey: &str, earnings: &EarningsT
     {
         Ok(bytes) => bytes,
         Err(_) => {
-            warn!("Ticket payer_pubkey is not valid hex: {}", ticket.payer_pubkey);
+            warn!(
+                "Ticket payer_pubkey is not valid hex: {}",
+                ticket.payer_pubkey
+            );
             return false;
         }
     };
@@ -877,13 +896,19 @@ fn validate_ticket(ticket: &SignedTicket, our_pubkey: &str, earnings: &EarningsT
     let signature = match ed25519_dalek::Signature::from_slice(&ticket.signature) {
         Ok(sig) => sig,
         Err(_) => {
-            warn!("Ticket signature is not valid Ed25519 (expected 64 bytes, got {})", ticket.signature.len());
+            warn!(
+                "Ticket signature is not valid Ed25519 (expected 64 bytes, got {})",
+                ticket.signature.len()
+            );
             return false;
         }
     };
 
     use ed25519_dalek::Verifier;
-    if verifying_key.verify(payload.as_bytes(), &signature).is_err() {
+    if verifying_key
+        .verify(payload.as_bytes(), &signature)
+        .is_err()
+    {
         warn!("Ticket Ed25519 signature verification failed");
         return false;
     }
@@ -1098,10 +1123,7 @@ async fn handle_behaviour_event(
                         rt.set_peer_id(&hb.node_id, propagation_source);
                     }
                     Some(gossip_message::Payload::ShardAnnounce(sa)) => {
-                        info!(
-                            "Shard announce from {}: {:?}",
-                            sa.node_id, sa.shard_ids
-                        );
+                        info!("Shard announce from {}: {:?}", sa.node_id, sa.shard_ids);
                         let mut rt = routing_table.write().await;
                         rt.update_peer_with_id(
                             &sa.node_id,
@@ -1121,21 +1143,19 @@ async fn handle_behaviour_event(
                         if let Some(idx) = &index {
                             let our_docs = idx.doc_count() as u64;
                             if sa.vector_count > our_docs.saturating_mul(2).max(100)
-                                && let Some(shard_id) = sa
-                                    .shard_ids
-                                    .iter()
-                                    .find(|sid| shard_ids.contains(*sid))
-                                {
-                                    info!(
-                                        "Peer {} has {} vectors vs our {} in shard {shard_id} — catch-up replication",
-                                        sa.node_id, sa.vector_count, our_docs
-                                    );
-                                    return EventAction::SendReplicationRequest {
-                                        peer: propagation_source,
-                                        shard_id: shard_id.clone(),
-                                        max_chunks: 1000,
-                                    };
-                                }
+                                && let Some(shard_id) =
+                                    sa.shard_ids.iter().find(|sid| shard_ids.contains(*sid))
+                            {
+                                info!(
+                                    "Peer {} has {} vectors vs our {} in shard {shard_id} — catch-up replication",
+                                    sa.node_id, sa.vector_count, our_docs
+                                );
+                                return EventAction::SendReplicationRequest {
+                                    peer: propagation_source,
+                                    shard_id: shard_id.clone(),
+                                    max_chunks: 1000,
+                                };
+                            }
                         }
                     }
                     Some(gossip_message::Payload::StakeEvent(se)) => {
@@ -1145,14 +1165,23 @@ async fn handle_behaviour_event(
                         );
                     }
                     Some(gossip_message::Payload::ContentAnnouncement(ca)) => {
-                        let action_str = if ca.is_update { "updated" } else { "discovered" };
+                        let action_str = if ca.is_update {
+                            "updated"
+                        } else {
+                            "discovered"
+                        };
                         info!(
                             "Content {}: url={} domain={} hash={} chunks={} by sentinel={}",
-                            action_str, ca.url, ca.domain, ca.content_hash, ca.chunk_count,
+                            action_str,
+                            ca.url,
+                            ca.domain,
+                            ca.content_hash,
+                            ca.chunk_count,
                             ca.sentinel_id
                         );
                         // Trigger replication pull if we serve this shard and have an index
-                        if index.is_some() && !ca.shard_id.is_empty()
+                        if index.is_some()
+                            && !ca.shard_id.is_empty()
                             && shard_ids.contains(&ca.shard_id)
                         {
                             info!(
@@ -1216,7 +1245,8 @@ async fn handle_behaviour_event(
                                 error: Some(ErrorInfo {
                                     code: "E2002".to_string(),
                                     name: "THROTTLED".to_string(),
-                                    message: "Peer throttled due to low contribution ratio".to_string(),
+                                    message: "Peer throttled due to low contribution ratio"
+                                        .to_string(),
                                     retryable: true,
                                     retry_after_ms: 30_000,
                                 }),
@@ -1274,13 +1304,11 @@ async fn handle_behaviour_event(
                 }
             }
         },
-        OpenSonarXBehaviourEvent::RequestResponse(
-            request_response::Event::OutboundFailure {
-                peer,
-                request_id,
-                error,
-            },
-        ) => {
+        OpenSonarXBehaviourEvent::RequestResponse(request_response::Event::OutboundFailure {
+            peer,
+            request_id,
+            error,
+        }) => {
             warn!("Outbound query to {peer} failed (id={request_id}): {error}");
             // Count this as a received (failed) remote for fanout purposes
             if let Some(fanout_request_id) = outbound_to_fanout.remove(&request_id)
@@ -1293,13 +1321,11 @@ async fn handle_behaviour_event(
             }
             EventAction::None
         }
-        OpenSonarXBehaviourEvent::RequestResponse(
-            request_response::Event::InboundFailure {
-                peer,
-                request_id,
-                error,
-            },
-        ) => {
+        OpenSonarXBehaviourEvent::RequestResponse(request_response::Event::InboundFailure {
+            peer,
+            request_id,
+            error,
+        }) => {
             warn!("Inbound query from {peer} failed (id={request_id}): {error}");
             EventAction::None
         }
@@ -1338,14 +1364,17 @@ async fn handle_behaviour_event(
                     // they ARE this node's announced shard — a strict tag
                     // filter returned 0 chunks and silently broke catch-up
                     // replication between same-shard peers.
-                    let shard_filter = if request.shard_id.is_empty()
-                        || shard_ids.contains(&request.shard_id)
-                    {
-                        None
+                    let shard_filter =
+                        if request.shard_id.is_empty() || shard_ids.contains(&request.shard_id) {
+                            None
+                        } else {
+                            Some(request.shard_id.as_str())
+                        };
+                    let max = if request.max_chunks == 0 {
+                        1000
                     } else {
-                        Some(request.shard_id.as_str())
+                        request.max_chunks as usize
                     };
-                    let max = if request.max_chunks == 0 { 1000 } else { request.max_chunks as usize };
                     // Use incremental replication: only return chunks after from_seq
                     let from_seq = request.from_seq;
                     match idx.chunks_since(shard_filter, from_seq, max) {
@@ -1383,10 +1412,7 @@ async fn handle_behaviour_event(
                     EventAction::SendReplicationResponse(channel, resp)
                 }
             }
-            request_response::Message::Response {
-                response,
-                ..
-            } => {
+            request_response::Message::Response { response, .. } => {
                 info!(
                     "Replication response from {peer}: {} chunks",
                     response.chunks.len()
@@ -1394,10 +1420,7 @@ async fn handle_behaviour_event(
                 if response.chunks.is_empty() {
                     EventAction::None
                 } else {
-                    EventAction::IngestReplicatedChunks {
-                        peer,
-                        response,
-                    }
+                    EventAction::IngestReplicatedChunks { peer, response }
                 }
             }
         },
@@ -1424,17 +1447,15 @@ async fn handle_behaviour_event(
             debug!("Replication response sent to {peer} for request {request_id}");
             EventAction::None
         }
-        OpenSonarXBehaviourEvent::Mdns(event) => {
-            match event {
-                mdns::Event::Discovered(peers) => {
-                    if !peers.is_empty() {
-                        info!("mDNS discovered {} peers", peers.len());
-                    }
-                    EventAction::AddKademliaPeers(peers)
+        OpenSonarXBehaviourEvent::Mdns(event) => match event {
+            mdns::Event::Discovered(peers) => {
+                if !peers.is_empty() {
+                    info!("mDNS discovered {} peers", peers.len());
                 }
-                mdns::Event::Expired(_) => EventAction::None,
+                EventAction::AddKademliaPeers(peers)
             }
-        }
+            mdns::Event::Expired(_) => EventAction::None,
+        },
         OpenSonarXBehaviourEvent::Autonat(event) => {
             match event {
                 libp2p::autonat::Event::StatusChanged { old, new } => {
@@ -1499,7 +1520,11 @@ mod tests {
 
     #[test]
     fn test_verify_accepts_valid_chunk() {
-        let c = valid_chunk("real content here", "https://example.com/page", "example.com");
+        let c = valid_chunk(
+            "real content here",
+            "https://example.com/page",
+            "example.com",
+        );
         assert_eq!(verify_replicated_chunks(vec![c], 4).len(), 1);
     }
 

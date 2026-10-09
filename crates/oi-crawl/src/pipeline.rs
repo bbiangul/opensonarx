@@ -1,8 +1,10 @@
-use oi_types::{ChunkMeta, ContentChunk, CrawlMetadata, CrawlOutput, EmbeddingPipeline, Result, TopicRouter};
 use oi_types::entity::entity_from_url;
 use oi_types::traits::CrawlPipeline;
 #[cfg(feature = "facts")]
 use oi_types::traits::FactExtractionPipeline;
+use oi_types::{
+    ChunkMeta, ContentChunk, CrawlMetadata, CrawlOutput, EmbeddingPipeline, Result, TopicRouter,
+};
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
 
@@ -83,10 +85,7 @@ impl Default for Distiller {
 
 /// Embed chunks in-place using an embedding pipeline.
 /// Chunks without content are skipped.
-pub fn embed_chunks(
-    chunks: &mut [ContentChunk],
-    embedder: &dyn EmbeddingPipeline,
-) -> Result<()> {
+pub fn embed_chunks(chunks: &mut [ContentChunk], embedder: &dyn EmbeddingPipeline) -> Result<()> {
     let texts: Vec<&str> = chunks.iter().map(|c| c.content.as_str()).collect();
     let embeddings = embedder.embed_text_batch(&texts)?;
     for (chunk, emb) in chunks.iter_mut().zip(embeddings) {
@@ -183,7 +182,9 @@ impl CrawlPipeline for Distiller {
                     match factifier.extract(&text) {
                         Ok(facts) => Some(facts),
                         Err(e) => {
-                            tracing::warn!("Fact extraction failed for chunk {i}, continuing without: {e}");
+                            tracing::warn!(
+                                "Fact extraction failed for chunk {i}, continuing without: {e}"
+                            );
                             None
                         }
                     }
@@ -238,7 +239,12 @@ impl CrawlPipeline for Distiller {
 }
 
 /// Process raw HTML content without fetching (for testing)
-pub fn process_html(url: &str, html: &str, max_tokens: usize, overlap: usize) -> Result<CrawlOutput> {
+pub fn process_html(
+    url: &str,
+    html: &str,
+    max_tokens: usize,
+    overlap: usize,
+) -> Result<CrawlOutput> {
     let extracted = extractor::html_to_markdown(html);
     let publish_date = extractor::extract_publish_date(html);
     let published_at = publish_date
@@ -400,7 +406,10 @@ mod tests {
 
     #[test]
     fn test_domain_from_url_with_port() {
-        assert_eq!(domain_from_url("https://example.com:8080/path"), "example.com:8080");
+        assert_eq!(
+            domain_from_url("https://example.com:8080/path"),
+            "example.com:8080"
+        );
     }
 
     #[test]
@@ -435,9 +444,15 @@ mod tests {
         // Entity should be populated from the URL
         for chunk in &result.chunks {
             let meta = chunk.meta.as_ref().unwrap();
-            assert!(meta.entity.is_some(), "entity should be populated for YouTube URL");
+            assert!(
+                meta.entity.is_some(),
+                "entity should be populated for YouTube URL"
+            );
             let entity = meta.entity.as_ref().unwrap();
-            assert!(entity.contains("youtube.com"), "entity should contain youtube.com");
+            assert!(
+                entity.contains("youtube.com"),
+                "entity should contain youtube.com"
+            );
         }
     }
 

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use futures::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
-use libp2p::request_response;
 use libp2p::StreamProtocol;
+use libp2p::request_response;
 use oi_types::proto::opensonarx::{QueryRequest, QueryResponse, ReplicationReq, ReplicationResp};
 use prost::Message;
 use std::io;
@@ -169,7 +169,9 @@ mod tests {
     use super::*;
     use futures::io::Cursor;
     use libp2p::request_response::Codec as _;
-    use oi_types::proto::opensonarx::{DocumentChunk, Filters, ResponseMeta, ReplicationReq, ReplicationResp};
+    use oi_types::proto::opensonarx::{
+        DocumentChunk, Filters, ReplicationReq, ReplicationResp, ResponseMeta,
+    };
 
     #[tokio::test]
     async fn test_codec_roundtrip_request() {
@@ -296,17 +298,15 @@ mod tests {
         let protocol = REPLICATION_PROTOCOL.clone();
 
         let original = ReplicationResp {
-            chunks: vec![
-                DocumentChunk {
-                    chunk_id: "c1".to_string(),
-                    url: "https://example.com/page".to_string(),
-                    content: "some content".to_string(),
-                    embedding: vec![0, 0, 128, 63], // f32 LE for 1.0
-                    metadata: [("title".to_string(), "Test".to_string())].into(),
-                    content_hash: "abc123".to_string(),
-                    seq: 1,
-                },
-            ],
+            chunks: vec![DocumentChunk {
+                chunk_id: "c1".to_string(),
+                url: "https://example.com/page".to_string(),
+                content: "some content".to_string(),
+                embedding: vec![0, 0, 128, 63], // f32 LE for 1.0
+                metadata: [("title".to_string(), "Test".to_string())].into(),
+                content_hash: "abc123".to_string(),
+                seq: 1,
+            }],
             latest_seq: 1,
         };
 

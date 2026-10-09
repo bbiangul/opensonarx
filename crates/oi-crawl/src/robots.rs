@@ -107,7 +107,10 @@ pub fn parse_robots_txt(text: &str) -> RobotsRules {
                 if !path.is_empty() {
                     for agent in &current_agents {
                         let group = groups.entry(agent.clone()).or_default();
-                        group.rules.push(PathRule { path: path.to_string(), allowed: false });
+                        group.rules.push(PathRule {
+                            path: path.to_string(),
+                            allowed: false,
+                        });
                     }
                 }
                 saw_rules = true;
@@ -117,7 +120,10 @@ pub fn parse_robots_txt(text: &str) -> RobotsRules {
                 if !path.is_empty() {
                     for agent in &current_agents {
                         let group = groups.entry(agent.clone()).or_default();
-                        group.rules.push(PathRule { path: path.to_string(), allowed: true });
+                        group.rules.push(PathRule {
+                            path: path.to_string(),
+                            allowed: true,
+                        });
                     }
                 }
                 saw_rules = true;
@@ -139,7 +145,9 @@ pub fn parse_robots_txt(text: &str) -> RobotsRules {
 
     match chosen {
         Some(group) => {
-            let disallowed = group.rules.iter()
+            let disallowed = group
+                .rules
+                .iter()
                 .filter(|r| !r.allowed)
                 .map(|r| r.path.clone())
                 .collect();
@@ -313,9 +321,9 @@ Allow: /a/b
 Disallow: /a/b/c
 ";
         let rules = parse_robots_txt(txt);
-        assert!(!rules.is_path_allowed("/a/x"));        // matches /a (disallow)
-        assert!(rules.is_path_allowed("/a/b/x"));       // matches /a/b (allow)
-        assert!(!rules.is_path_allowed("/a/b/c/d"));    // matches /a/b/c (disallow)
+        assert!(!rules.is_path_allowed("/a/x")); // matches /a (disallow)
+        assert!(rules.is_path_allowed("/a/b/x")); // matches /a/b (allow)
+        assert!(!rules.is_path_allowed("/a/b/c/d")); // matches /a/b/c (disallow)
     }
 
     #[test]

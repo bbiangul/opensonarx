@@ -67,7 +67,9 @@ impl CrawlDb {
         domain_crawl_counts: &HashMap<String, usize>,
     ) -> Result<(), String> {
         let conn = self.conn.lock().unwrap();
-        let tx = conn.unchecked_transaction().map_err(|e| format!("tx begin: {e}"))?;
+        let tx = conn
+            .unchecked_transaction()
+            .map_err(|e| format!("tx begin: {e}"))?;
 
         tx.execute("DELETE FROM frontier_urls", [])
             .map_err(|e| format!("clear urls: {e}"))?;
@@ -85,11 +87,8 @@ impl CrawlDb {
         }
 
         for url in seen {
-            tx.execute(
-                "INSERT INTO frontier_seen (url) VALUES (?1)",
-                [url],
-            )
-            .map_err(|e| format!("insert seen: {e}"))?;
+            tx.execute("INSERT INTO frontier_seen (url) VALUES (?1)", [url])
+                .map_err(|e| format!("insert seen: {e}"))?;
         }
 
         // Merge domain_last_crawl, domain_delays, and domain_crawl_counts
@@ -110,10 +109,7 @@ impl CrawlDb {
                 .map(|d| d.as_millis() as i64)
                 .unwrap_or(2000);
             let last_crawl = domain_last_crawl.get(domain).copied().unwrap_or(0);
-            let crawl_count = domain_crawl_counts
-                .get(domain)
-                .copied()
-                .unwrap_or(0) as i64;
+            let crawl_count = domain_crawl_counts.get(domain).copied().unwrap_or(0) as i64;
             tx.execute(
                 "INSERT INTO domain_state (domain, delay_ms, last_crawl_secs, crawl_count) VALUES (?1, ?2, ?3, ?4)",
                 rusqlite::params![domain, delay_ms, last_crawl, crawl_count],
@@ -242,8 +238,14 @@ mod tests {
         let domain_delays = HashMap::new();
         let domain_crawl_counts = HashMap::new();
 
-        db.save_frontier(&entries, &seen, &domain_last_crawl, &domain_delays, &domain_crawl_counts)
-            .unwrap();
+        db.save_frontier(
+            &entries,
+            &seen,
+            &domain_last_crawl,
+            &domain_delays,
+            &domain_crawl_counts,
+        )
+        .unwrap();
 
         let (loaded_entries, loaded_seen, _, _, _) = db.load_frontier().unwrap();
         assert_eq!(loaded_entries.len(), 2);
@@ -257,8 +259,14 @@ mod tests {
 
         let mut seen = HashSet::new();
         seen.insert("https://example.com/page".to_string());
-        db.save_frontier(&[], &seen, &HashMap::new(), &HashMap::new(), &HashMap::new())
-            .unwrap();
+        db.save_frontier(
+            &[],
+            &seen,
+            &HashMap::new(),
+            &HashMap::new(),
+            &HashMap::new(),
+        )
+        .unwrap();
 
         let (_, loaded_seen, _, _, _) = db.load_frontier().unwrap();
         assert!(loaded_seen.contains("https://example.com/page"));
@@ -272,8 +280,14 @@ mod tests {
         delays.insert("slow.com".to_string(), Duration::from_secs(10));
         delays.insert("fast.com".to_string(), Duration::from_millis(500));
 
-        db.save_frontier(&[], &HashSet::new(), &HashMap::new(), &delays, &HashMap::new())
-            .unwrap();
+        db.save_frontier(
+            &[],
+            &HashSet::new(),
+            &HashMap::new(),
+            &delays,
+            &HashMap::new(),
+        )
+        .unwrap();
 
         let (_, _, _, loaded_delays, _) = db.load_frontier().unwrap();
         assert_eq!(loaded_delays["slow.com"], Duration::from_secs(10));

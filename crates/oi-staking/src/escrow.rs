@@ -109,9 +109,7 @@ impl Default for InMemoryStateChannel {
 
 impl StateChannel for InMemoryStateChannel {
     fn create_ticket(&self, amount_lamports: u64, payee_pubkey: &str) -> Result<SignedTicket> {
-        let nonce = self
-            .nonce
-            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        let nonce = self.nonce.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
 
         let mut ticket = SignedTicket {
             payer_pubkey: self.payer_pubkey.clone(),
@@ -124,7 +122,11 @@ impl StateChannel for InMemoryStateChannel {
 
         // Sign the canonical payload with Ed25519
         let payload = canonical_ticket_payload(&ticket);
-        ticket.signature = self.signing_key.sign(payload.as_bytes()).to_bytes().to_vec();
+        ticket.signature = self
+            .signing_key
+            .sign(payload.as_bytes())
+            .to_bytes()
+            .to_vec();
 
         Ok(ticket)
     }
@@ -216,7 +218,12 @@ mod tests {
     fn test_payer_pubkey_is_64_hex_chars() {
         let channel = InMemoryStateChannel::new();
         assert_eq!(channel.payer_pubkey().len(), 64);
-        assert!(channel.payer_pubkey().chars().all(|c| c.is_ascii_hexdigit()));
+        assert!(
+            channel
+                .payer_pubkey()
+                .chars()
+                .all(|c| c.is_ascii_hexdigit())
+        );
     }
 
     #[test]

@@ -32,7 +32,9 @@ impl PlatformAdapter for YouTubeAdapter {
     }
 
     fn extract_entity(&self, url: &str) -> Option<EntityRef> {
-        EntityRef::parse(url).ok().filter(|e| e.entity_path().is_some())
+        EntityRef::parse(url)
+            .ok()
+            .filter(|e| e.entity_path().is_some())
     }
 
     async fn discover_content(&self, entity: &EntityRef) -> Result<Vec<DiscoveredUrl>, String> {
@@ -46,20 +48,20 @@ impl PlatformAdapter for YouTubeAdapter {
             // to find the channel ID. Fetch the channel page HTML.
             let page_url = format!("https://youtube.com/{path}");
             let html = fetch_text(&page_url).await?;
-            extract_channel_id(&html).ok_or_else(|| {
-                format!("Could not resolve channel ID for {path}")
-            })?
+            extract_channel_id(&html)
+                .ok_or_else(|| format!("Could not resolve channel ID for {path}"))?
         };
 
         // Validate channel ID format to prevent URL injection
-        if !channel_id.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-') {
+        if !channel_id
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
+        {
             return Err(format!("Invalid channel ID: {channel_id}"));
         }
 
         // Fetch RSS feed
-        let feed_url = format!(
-            "https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
-        );
+        let feed_url = format!("https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}");
         let feed_xml = fetch_text(&feed_url).await?;
         let urls = parse_youtube_feed(&feed_xml);
 
@@ -73,8 +75,7 @@ impl PlatformAdapter for YouTubeAdapter {
         let title = extract_meta_content(&html, "og:title")
             .or_else(|| extract_title_tag(&html))
             .unwrap_or_default();
-        let description = extract_meta_content(&html, "og:description")
-            .unwrap_or_default();
+        let description = extract_meta_content(&html, "og:description").unwrap_or_default();
 
         // Build markdown from title + description
         let markdown = format!("# {title}\n\n{description}");
@@ -175,7 +176,8 @@ fn extract_channel_id(html: &str) -> Option<String> {
     if let Some(pos) = html.find("/channel/UC") {
         let start = pos + "/channel/".len();
         let rest = &html[start..];
-        let end = rest.find(|c: char| !c.is_alphanumeric() && c != '_' && c != '-')
+        let end = rest
+            .find(|c: char| !c.is_alphanumeric() && c != '_' && c != '-')
             .unwrap_or(rest.len());
         let id = &rest[..end];
         if !id.is_empty() {
@@ -280,7 +282,9 @@ mod tests {
     #[test]
     fn test_extract_entity() {
         let adapter = YouTubeAdapter::new();
-        let entity = adapter.extract_entity("https://youtube.com/c/3Blue1Brown").unwrap();
+        let entity = adapter
+            .extract_entity("https://youtube.com/c/3Blue1Brown")
+            .unwrap();
         assert_eq!(entity.domain(), "youtube.com");
         assert_eq!(entity.entity_path(), Some("c/3blue1brown"));
     }
@@ -317,7 +321,8 @@ mod tests {
 
     #[test]
     fn test_extract_channel_id() {
-        let html = r#"<script>var ytInitialData = {"channelId":"UCxxxx123","title":"Test"};</script>"#;
+        let html =
+            r#"<script>var ytInitialData = {"channelId":"UCxxxx123","title":"Test"};</script>"#;
         assert_eq!(extract_channel_id(html), Some("UCxxxx123".to_string()));
     }
 
@@ -404,7 +409,10 @@ mod tests {
     #[test]
     fn test_extract_xml_tag() {
         let xml = "<entry><yt:videoId>abc123</yt:videoId><title>Test</title></entry>";
-        assert_eq!(extract_xml_tag(xml, "yt:videoId"), Some("abc123".to_string()));
+        assert_eq!(
+            extract_xml_tag(xml, "yt:videoId"),
+            Some("abc123".to_string())
+        );
         assert_eq!(extract_xml_tag(xml, "title"), Some("Test".to_string()));
         assert_eq!(extract_xml_tag(xml, "missing"), None);
     }

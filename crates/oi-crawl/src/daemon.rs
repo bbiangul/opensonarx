@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Duration;
 
-use tokio::sync::{mpsc, Mutex, RwLock};
+use tokio::sync::{Mutex, RwLock, mpsc};
 use tracing::{debug, info, warn};
 
 use crate::discovery::{self, DiscoveredUrl, DiscoverySource};
@@ -67,7 +67,7 @@ impl Default for DaemonConfig {
     fn default() -> Self {
         Self {
             concurrency: 4,
-            feed_poll_interval: Duration::from_secs(300),    // 5 min
+            feed_poll_interval: Duration::from_secs(300), // 5 min
             homepage_poll_interval: Duration::from_secs(1800), // 30 min
             min_quality: 0.3,
             max_depth: 2,
@@ -210,7 +210,11 @@ impl CrawlDaemon {
         }
 
         stats.domains_monitored = stats.domains_monitored.saturating_add(domains.len());
-        info!("Added {} domains to monitor ({} total)", domains.len(), stats.domains_monitored);
+        info!(
+            "Added {} domains to monitor ({} total)",
+            domains.len(),
+            stats.domains_monitored
+        );
     }
 
     /// Fetch and cache robots.txt for a domain (skips if already cached).
@@ -273,7 +277,10 @@ impl CrawlDaemon {
 
         // Check if this is a feed (RSS/Atom)
         let content_type = fetch_result.content_type.to_lowercase();
-        if content_type.contains("xml") || content_type.contains("rss") || content_type.contains("atom") {
+        if content_type.contains("xml")
+            || content_type.contains("rss")
+            || content_type.contains("atom")
+        {
             let urls = discovery::parse_feed(&fetch_result.html);
             if !urls.is_empty() {
                 self.enqueue_discovered(urls, domain, stake_amount).await;
@@ -395,8 +402,7 @@ impl CrawlDaemon {
 
         let semaphore = Arc::new(tokio::sync::Semaphore::new(self.config.concurrency));
         let mut tasks = tokio::task::JoinSet::new();
-        let mut epoch_reset_interval =
-            tokio::time::interval(self.config.epoch_reset_interval);
+        let mut epoch_reset_interval = tokio::time::interval(self.config.epoch_reset_interval);
         let mut checkpoint_interval = tokio::time::interval(Duration::from_secs(60));
         // Consume the first immediate tick so it doesn't fire at t=0
         epoch_reset_interval.tick().await;
@@ -661,8 +667,8 @@ mod tests {
     fn test_entities_from_stake_events_skips_invalid() {
         let events = vec![
             ("youtube.com/c/test".to_string(), 10_000u64),
-            ("".to_string(), 5_000u64),               // empty — invalid
-            ("no-dot".to_string(), 5_000u64),          // no dot — invalid
+            ("".to_string(), 5_000u64),       // empty — invalid
+            ("no-dot".to_string(), 5_000u64), // no dot — invalid
         ];
         let entities = entities_from_stake_events(&events);
         assert_eq!(entities.len(), 1);
@@ -684,9 +690,7 @@ mod tests {
 
     #[test]
     fn test_entities_from_stake_events_domain_only() {
-        let events = vec![
-            ("example.com".to_string(), 10_000u64),
-        ];
+        let events = vec![("example.com".to_string(), 10_000u64)];
         let entities = entities_from_stake_events(&events);
         assert_eq!(entities.len(), 1);
         assert!(entities[0].entity.is_domain_only());

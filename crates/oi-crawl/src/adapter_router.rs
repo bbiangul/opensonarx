@@ -1,5 +1,5 @@
-use oi_types::entity::EntityRef;
 use oi_types::CrawlOutput;
+use oi_types::entity::EntityRef;
 
 use crate::adapter::{DiscoveredUrl, PlatformAdapter};
 use crate::pipeline::Distiller;
@@ -70,14 +70,18 @@ impl Default for AdapterRouter {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::adapters::youtube::YouTubeAdapter;
     use crate::adapters::reddit::RedditAdapter;
+    use crate::adapters::youtube::YouTubeAdapter;
 
     #[test]
     fn test_router_no_adapters() {
         let router = AdapterRouter::new();
         assert!(!router.has_adapter("https://youtube.com/watch?v=abc"));
-        assert!(router.extract_entity("https://youtube.com/c/test").is_none());
+        assert!(
+            router
+                .extract_entity("https://youtube.com/c/test")
+                .is_none()
+        );
     }
 
     #[test]

@@ -4,10 +4,8 @@ use crate::fanout::NodeHandle;
 use crate::protocol::{QUERY_PROTOCOL, REPLICATION_PROTOCOL};
 use crate::routing::RoutingTable;
 use libp2p::{
-    autonat, dcutr, gossipsub, identify, kad, mdns, relay, request_response, upnp,
-    identity::Keypair,
-    noise, tcp, yamux, Multiaddr, PeerId, SwarmBuilder,
-    swarm::behaviour::toggle::Toggle,
+    Multiaddr, PeerId, SwarmBuilder, autonat, dcutr, gossipsub, identify, identity::Keypair, kad,
+    mdns, noise, relay, request_response, swarm::behaviour::toggle::Toggle, tcp, upnp, yamux,
 };
 use oi_index::HybridIndex;
 use oi_types::{EarningsTracker, TopicRouter};
@@ -118,16 +116,21 @@ impl Node {
 
         // Request-Response for queries
         let request_response = request_response::Behaviour::new(
-            [(QUERY_PROTOCOL.clone(), request_response::ProtocolSupport::Full)],
+            [(
+                QUERY_PROTOCOL.clone(),
+                request_response::ProtocolSupport::Full,
+            )],
             request_response::Config::default()
                 .with_request_timeout(Duration::from_secs(self.config.query_timeout_secs)),
         );
 
         // Request-Response for replication
         let replication = request_response::Behaviour::new(
-            [(REPLICATION_PROTOCOL.clone(), request_response::ProtocolSupport::Full)],
-            request_response::Config::default()
-                .with_request_timeout(Duration::from_secs(30)),
+            [(
+                REPLICATION_PROTOCOL.clone(),
+                request_response::ProtocolSupport::Full,
+            )],
+            request_response::Config::default().with_request_timeout(Duration::from_secs(30)),
         );
 
         // mDNS (optional, wrapped in Toggle)
@@ -187,9 +190,7 @@ impl Node {
                 )?
                 .with_quic()
                 .with_behaviour(|_| behaviour)?
-                .with_swarm_config(|cfg| {
-                    cfg.with_idle_connection_timeout(Duration::from_secs(60))
-                })
+                .with_swarm_config(|cfg| cfg.with_idle_connection_timeout(Duration::from_secs(60)))
                 .build()
         } else {
             SwarmBuilder::with_existing_identity(self.keypair.clone())
@@ -200,9 +201,7 @@ impl Node {
                     yamux::Config::default,
                 )?
                 .with_behaviour(|_| behaviour)?
-                .with_swarm_config(|cfg| {
-                    cfg.with_idle_connection_timeout(Duration::from_secs(60))
-                })
+                .with_swarm_config(|cfg| cfg.with_idle_connection_timeout(Duration::from_secs(60)))
                 .build()
         };
 

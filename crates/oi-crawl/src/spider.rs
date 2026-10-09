@@ -5,18 +5,18 @@
 //! `extract_links` for link discovery, and `RobotsChecker` for compliance.
 
 use std::collections::{HashSet, VecDeque};
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use tokio::sync::{Mutex, RwLock, Semaphore};
 use tokio::task::JoinSet;
 
+use crate::Distiller;
 use crate::discovery::extract_links;
 use crate::fetcher::fetch_url;
-use crate::robots::{parse_robots_txt, RobotsChecker};
-use crate::Distiller;
-use oi_types::traits::CrawlPipeline;
+use crate::robots::{RobotsChecker, parse_robots_txt};
 use oi_types::CrawlOutput;
+use oi_types::traits::CrawlPipeline;
 
 /// Configuration for the spider.
 pub struct SpiderConfig {
@@ -71,8 +71,7 @@ impl Spider {
     {
         let on_page = Arc::new(on_page);
         let seen: Arc<RwLock<HashSet<String>>> = Arc::new(RwLock::new(HashSet::new()));
-        let queue: Arc<Mutex<VecDeque<(String, usize)>>> =
-            Arc::new(Mutex::new(VecDeque::new()));
+        let queue: Arc<Mutex<VecDeque<(String, usize)>>> = Arc::new(Mutex::new(VecDeque::new()));
         let robots: Arc<RwLock<RobotsChecker>> = Arc::new(RwLock::new(RobotsChecker::new()));
         let semaphore = Arc::new(Semaphore::new(self.config.concurrency));
 
@@ -142,9 +141,7 @@ impl Spider {
                 let _permit = permit;
 
                 // Robots.txt check
-                if respect_robots
-                    && let Some(domain) = domain_from_url(&url)
-                {
+                if respect_robots && let Some(domain) = domain_from_url(&url) {
                     let needs_fetch = {
                         let checker = robots.read().await;
                         !checker.has_rules(&domain)
@@ -314,10 +311,7 @@ mod tests {
         let spider = Spider::new(config, distiller);
 
         let result = spider
-            .crawl(
-                vec!["https://example.com".to_string()],
-                |_output| {},
-            )
+            .crawl(vec!["https://example.com".to_string()], |_output| {})
             .await;
 
         // At depth 0, we only crawl the seed — no links are followed

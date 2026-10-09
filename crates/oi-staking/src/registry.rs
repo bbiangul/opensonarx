@@ -1,5 +1,5 @@
-use oi_types::{Result, StakeInfo};
 use oi_types::traits::StakeRegistry;
+use oi_types::{Result, StakeInfo};
 use std::collections::HashMap;
 use std::sync::RwLock;
 

@@ -1,8 +1,13 @@
-use prost::Message;
 use oi_types::proto::opensonarx::{ContentAnnouncement, GossipMessage, Heartbeat, ShardAnnounce};
+use prost::Message;
 
 /// Encode a heartbeat message for gossip
-pub fn encode_heartbeat(node_id: &str, shard_count: u32, vectors_stored: u64, queries_served: u32) -> Vec<u8> {
+pub fn encode_heartbeat(
+    node_id: &str,
+    shard_count: u32,
+    vectors_stored: u64,
+    queries_served: u32,
+) -> Vec<u8> {
     let msg = GossipMessage {
         payload: Some(
             oi_types::proto::opensonarx::gossip_message::Payload::Heartbeat(Heartbeat {
@@ -61,7 +66,12 @@ pub fn encode_content_announcement(
 
 /// Encode a shard announcement for gossip.
 /// Nodes broadcast this on startup and when their shard assignments change.
-pub fn encode_shard_announce(node_id: &str, shard_ids: &[String], vector_count: u64, replica_count: u32) -> Vec<u8> {
+pub fn encode_shard_announce(
+    node_id: &str,
+    shard_ids: &[String],
+    vector_count: u64,
+    replica_count: u32,
+) -> Vec<u8> {
     let msg = GossipMessage {
         payload: Some(
             oi_types::proto::opensonarx::gossip_message::Payload::ShardAnnounce(ShardAnnounce {

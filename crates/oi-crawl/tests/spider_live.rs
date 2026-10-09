@@ -1,11 +1,11 @@
 //! Quick spider smoke test against a real domain.
 //! Run: cargo test -p oi-crawl --test spider_live -- --nocapture --ignored
 
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
-use oi_crawl::spider::{Spider, SpiderConfig};
 use oi_crawl::Distiller;
+use oi_crawl::spider::{Spider, SpiderConfig};
 
 #[tokio::test]
 #[ignore] // requires network
@@ -34,7 +34,9 @@ async fn spider_live_crawl() {
                 c.fetch_add(n, Ordering::Relaxed);
                 println!(
                     "  [page] {} — {} chunks, hash={}",
-                    output.url, n, &output.content_hash[..12]
+                    output.url,
+                    n,
+                    &output.content_hash[..12]
                 );
             },
         )
@@ -46,7 +48,10 @@ async fn spider_live_crawl() {
     println!("  pages_skipped_robots: {}", result.pages_skipped_robots);
     println!("  urls_discovered:      {}", result.urls_discovered);
     println!("  callback invocations: {}", pages.load(Ordering::Relaxed));
-    println!("  total chunks:         {}", chunks_total.load(Ordering::Relaxed));
+    println!(
+        "  total chunks:         {}",
+        chunks_total.load(Ordering::Relaxed)
+    );
 
     // Should have crawled at least the seed
     assert!(

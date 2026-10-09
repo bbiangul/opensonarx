@@ -1,7 +1,7 @@
 use oi_types::Result;
-use std::net::{IpAddr, Ipv6Addr};
 #[cfg(test)]
 use std::net::Ipv4Addr;
+use std::net::{IpAddr, Ipv6Addr, SocketAddr};
 use std::sync::LazyLock;
 use std::time::{Duration, Instant};
 
@@ -74,6 +74,30 @@ fn is_ipv6_link_local(v6: &Ipv6Addr) -> bool {
     (v6.segments()[0] & 0xFFC0) == 0xFE80
 }
 
+/// Validate the result of DNS resolution before opening a connection.
+///
+/// Every returned address must be public. Requiring all addresses to pass is
+/// important because otherwise an attacker could mix a public address with a
+/// private one and rely on the HTTP client selecting the unsafe address.
+fn validate_resolved_addrs(host: &str, resolved: &[SocketAddr]) -> Result<()> {
+    if resolved.is_empty() {
+        return Err(oi_types::Error::Internal(format!(
+            "DNS resolution returned no addresses for {host}"
+        )));
+    }
+
+    for addr in resolved {
+        if is_blocked_ip(addr.ip()) {
+            return Err(oi_types::Error::Internal(format!(
+                "blocked URL: {host} resolves to private/internal IP {}",
+                addr.ip()
+            )));
+        }
+    }
+
+    Ok(())
+}
+
 /// Validate that a URL is safe to fetch (not targeting internal/private networks).
 async fn validate_url_safe(url_str: &str) -> Result<()> {
     let parsed = url::Url::parse(url_str)
@@ -102,23 +126,7 @@ async fn validate_url_safe(url_str: &str) -> Result<()> {
         .map_err(|e| oi_types::Error::Internal(format!("DNS resolution failed for {host}: {e}")))?;
 
     let resolved: Vec<_> = addrs.collect();
-    if resolved.is_empty() {
-        return Err(oi_types::Error::Internal(format!(
-            "DNS resolution returned no addresses for {host}"
-        )));
-    }
-
-    // Reject if ANY resolved IP is in a blocked range
-    for addr in &resolved {
-        if is_blocked_ip(addr.ip()) {
-            return Err(oi_types::Error::Internal(format!(
-                "blocked URL: {host} resolves to private/internal IP {}",
-                addr.ip()
-            )));
-        }
-    }
-
-    Ok(())
+    validate_resolved_addrs(host, &resolved)
 }
 
 /// Fetch raw bytes from a URL (for .gz sitemaps and other binary content).
@@ -189,9 +197,7 @@ async fn fetch_bytes_once(url: &str) -> Result<(Vec<u8>, u16)> {
                 })?;
 
             let resolved = url::Url::parse(location)
-                .or_else(|_| {
-                    url::Url::parse(&current_url).and_then(|base| base.join(location))
-                })
+                .or_else(|_| url::Url::parse(&current_url).and_then(|base| base.join(location)))
                 .map_err(|e| {
                     oi_types::Error::Internal(format!("invalid redirect URL {location}: {e}"))
                 })?;
@@ -233,6 +239,30 @@ pub async fn fetch_url(url: &str) -> Result<FetchResult> {
     // SSRF protection: validate URL before any network requests
     validate_url_safe(url).await?;
 
+    if let Some(api_url) = bcb_page_api_url(url) {
+        // bcb.gov.br serves an Angular shell to static clients. The public
+        // page API used by that shell contains the canonical editorial HTML.
+        // Fetch it directly to avoid paying for a known-empty shell first.
+        // Keep the browser URL as provenance.
+        if let Ok(api_result) = fetch_url_with_retries(&api_url).await
+            && api_result.status < 400
+            && let Some(expanded) = bcb_api_content(&api_result.html)
+        {
+            return Ok(FetchResult {
+                url: url.to_string(),
+                html: expanded,
+                status: api_result.status,
+                content_type: "text/html; source=bcb-page-api".to_string(),
+                fetch_time_ms: api_result.fetch_time_ms,
+            });
+        }
+    }
+    fetch_url_with_retries(url).await
+}
+
+async fn fetch_url_with_retries(url: &str) -> Result<FetchResult> {
+    validate_url_safe(url).await?;
+
     let start = Instant::now();
     let mut last_err = None;
 
@@ -269,6 +299,61 @@ pub async fn fetch_url(url: &str) -> Result<FetchResult> {
     Err(last_err.unwrap_or_else(|| oi_types::Error::Internal("fetch failed".to_string())))
 }
 
+fn bcb_page_api_url(url: &str) -> Option<String> {
+    let parsed = url::Url::parse(url).ok()?;
+    let host = parsed.host_str()?.trim_start_matches("www.");
+    if host != "bcb.gov.br" || parsed.path().starts_with("/api/") {
+        return None;
+    }
+    let path = parsed.path().trim_matches('/');
+    let mut segments = path.split('/');
+    let trunk = segments.next()?;
+    let slug = segments.collect::<Vec<_>>().join("/");
+    if trunk.is_empty() || slug.is_empty() {
+        return None;
+    }
+    Some(format!(
+        "{}://{}/api/paginasite/sitebcb/{trunk}/{slug}",
+        parsed.scheme(),
+        parsed.host_str()?
+    ))
+}
+
+fn bcb_api_content(json: &str) -> Option<String> {
+    let value: serde_json::Value = serde_json::from_str(json).ok()?;
+    let html = value.get("conteudo")?.as_str()?.trim();
+    if html.is_empty() {
+        return None;
+    }
+
+    // Some editorial blocks are HTML stored inside Angular input attributes
+    // such as [card_body]="'<p>...</p>'". A static HTML extractor cannot see
+    // attribute text, so append those same retained fragments as ordinary DOM
+    // nodes. This is deterministic decoding of the official API response.
+    let fragment = scraper::Html::parse_fragment(html);
+    let selector = scraper::Selector::parse("*").ok()?;
+    let mut embedded = String::new();
+    for element in fragment.select(&selector) {
+        for (name, attribute) in element.value().attrs() {
+            if matches!(name, "[card_body]" | "[texto]" | "card_body" | "texto") {
+                let decoded = attribute
+                    .trim()
+                    .trim_matches('\'')
+                    .replace("\\&#34;", "&#34;");
+                if decoded.contains('<') && decoded.contains('>') {
+                    embedded.push_str(&decoded);
+                    embedded.push('\n');
+                }
+            }
+        }
+    }
+    Some(if embedded.is_empty() {
+        html.to_string()
+    } else {
+        format!("{html}\n<section data-opensonarx-expanded=\"bcb-api\">{embedded}</section>")
+    })
+}
+
 /// Single fetch attempt (no retry). Manually follows redirects with SSRF
 /// validation at each hop to prevent redirect-based SSRF bypasses.
 async fn fetch_once(url: &str) -> Result<FetchResult> {
@@ -302,9 +387,7 @@ async fn fetch_once(url: &str) -> Result<FetchResult> {
 
             // Resolve relative URLs against the current URL
             let resolved = url::Url::parse(location)
-                .or_else(|_| {
-                    url::Url::parse(&current_url).and_then(|base| base.join(location))
-                })
+                .or_else(|_| url::Url::parse(&current_url).and_then(|base| base.join(location)))
                 .map_err(|e| {
                     oi_types::Error::Internal(format!("invalid redirect URL {location}: {e}"))
                 })?;
@@ -393,6 +476,44 @@ mod tests {
         assert_eq!(RETRY_BASE_DELAY, Duration::from_millis(500));
     }
 
+    #[test]
+    fn bcb_angular_page_maps_to_its_public_editorial_api() {
+        assert_eq!(
+            bcb_page_api_url("https://www.bcb.gov.br/estabilidadefinanceira/pix-sobre"),
+            Some(
+                "https://www.bcb.gov.br/api/paginasite/sitebcb/estabilidadefinanceira/pix-sobre"
+                    .to_string()
+            )
+        );
+        assert!(bcb_page_api_url("https://example.com/estabilidadefinanceira/pix-sobre").is_none());
+        assert!(bcb_page_api_url("https://www.bcb.gov.br/api/config").is_none());
+    }
+
+    #[test]
+    fn bcb_api_exposes_html_stored_in_angular_attributes() {
+        let json = serde_json::json!({
+            "conteudo": r#"<h1>Sobre o Pix</h1><bcb-accordion-page [card_body]="'<p>O meio de pagamento criado pelo Banco Central.</p>'"></bcb-accordion-page>"#
+        })
+        .to_string();
+        let expanded = bcb_api_content(&json).expect("expanded BCB content");
+        let markdown = crate::extractor::html_to_markdown(&expanded).markdown;
+        assert!(
+            markdown.contains("O meio de pagamento criado pelo Banco Central"),
+            "Angular attribute content was lost: {markdown}"
+        );
+    }
+
+    #[tokio::test]
+    #[ignore = "requires public Banco Central website"]
+    async fn live_bcb_angular_page_fetches_canonical_editorial_content() {
+        let result = fetch_url("https://www.bcb.gov.br/estabilidadefinanceira/pix-sobre")
+            .await
+            .expect("live BCB page");
+        assert!(result.content_type.contains("bcb-page-api"));
+        assert!(result.html.contains("criado pelo Banco Central"));
+        assert!(result.html.contains("O BC criou e opera a infraestrutura"));
+    }
+
     // ── SSRF protection tests ──
 
     #[test]
@@ -465,6 +586,26 @@ mod tests {
     }
 
     #[test]
+    fn test_validate_resolved_addrs_allows_only_public_results() {
+        let resolved = [
+            "93.184.216.34:443".parse().unwrap(),
+            "[2607:f8b0:4004:800::200e]:443".parse().unwrap(),
+        ];
+        assert!(validate_resolved_addrs("example.com", &resolved).is_ok());
+    }
+
+    #[test]
+    fn test_validate_resolved_addrs_rejects_empty_and_mixed_results() {
+        assert!(validate_resolved_addrs("empty.example", &[]).is_err());
+
+        let mixed = [
+            "93.184.216.34:443".parse().unwrap(),
+            "127.0.0.1:443".parse().unwrap(),
+        ];
+        assert!(validate_resolved_addrs("rebinding.example", &mixed).is_err());
+    }
+
+    #[test]
     fn test_blocked_ip_ipv4_mapped_v6() {
         // ::ffff:127.0.0.1 should be blocked (maps to loopback)
         let mapped: Ipv6Addr = "::ffff:127.0.0.1".parse().unwrap();
@@ -495,20 +636,30 @@ mod tests {
 
     #[tokio::test]
     async fn test_validate_url_rejects_localhost() {
-        assert!(validate_url_safe("http://127.0.0.1:8080/admin").await.is_err());
+        assert!(
+            validate_url_safe("http://127.0.0.1:8080/admin")
+                .await
+                .is_err()
+        );
         assert!(validate_url_safe("http://[::1]/secret").await.is_err());
     }
 
     #[tokio::test]
     async fn test_validate_url_rejects_private_ips() {
         assert!(validate_url_safe("http://10.0.0.1/internal").await.is_err());
-        assert!(validate_url_safe("http://192.168.1.1/router").await.is_err());
+        assert!(
+            validate_url_safe("http://192.168.1.1/router")
+                .await
+                .is_err()
+        );
         assert!(validate_url_safe("http://172.16.0.1/").await.is_err());
     }
 
     #[tokio::test]
-    async fn test_validate_url_allows_public_domains() {
-        // These should pass URL validation (DNS resolves to public IPs)
+    #[ignore = "live test requires public DNS"]
+    async fn test_validate_url_allows_public_domains_live() {
+        // The deterministic address-policy path is tested above. This test is
+        // intentionally opt-in because it verifies the host DNS environment.
         assert!(validate_url_safe("https://example.com").await.is_ok());
     }
 

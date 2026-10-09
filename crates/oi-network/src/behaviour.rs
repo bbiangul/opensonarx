@@ -1,7 +1,7 @@
 use crate::protocol::{QueryCodec, ReplicationCodec};
 use libp2p::{
-    autonat, dcutr, gossipsub, identify, kad, mdns, relay, request_response, upnp,
-    swarm::NetworkBehaviour,
+    autonat, dcutr, gossipsub, identify, kad, mdns, relay, request_response,
+    swarm::NetworkBehaviour, upnp,
 };
 
 /// Combined network behaviour for OpenSonarX nodes.

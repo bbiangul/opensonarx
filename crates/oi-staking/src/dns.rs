@@ -18,8 +18,8 @@ pub fn verify_domain_ownership(domain: &str, expected_wallet: &str) -> Result<bo
 
 #[cfg(feature = "dns")]
 fn verify_domain_ownership_real(domain: &str, expected_wallet: &str) -> Result<bool> {
-    use trust_dns_resolver::config::*;
     use trust_dns_resolver::Resolver;
+    use trust_dns_resolver::config::*;
 
     let resolver = Resolver::new(ResolverConfig::default(), ResolverOpts::default())
         .map_err(|e| oi_types::Error::Internal(format!("DNS resolver init: {e}")))?;

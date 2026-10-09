@@ -32,7 +32,9 @@ impl PlatformAdapter for RedditAdapter {
     }
 
     fn extract_entity(&self, url: &str) -> Option<EntityRef> {
-        EntityRef::parse(url).ok().filter(|e| e.entity_path().is_some())
+        EntityRef::parse(url)
+            .ok()
+            .filter(|e| e.entity_path().is_some())
     }
 
     async fn discover_content(&self, entity: &EntityRef) -> Result<Vec<DiscoveredUrl>, String> {
@@ -60,10 +62,8 @@ impl PlatformAdapter for RedditAdapter {
         let markdown = format!("# {title}\n\n{body}");
 
         // Quality check with social profile
-        let qc = quality::check_quality_with_profile(
-            &markdown,
-            quality::QualityProfile::SocialPost,
-        );
+        let qc =
+            quality::check_quality_with_profile(&markdown, quality::QualityProfile::SocialPost);
         if !qc.passed {
             return Err(format!(
                 "Quality check failed: {}",
@@ -248,9 +248,7 @@ mod tests {
     #[test]
     fn test_extract_entity() {
         let adapter = RedditAdapter::new();
-        let entity = adapter
-            .extract_entity("https://reddit.com/r/rust")
-            .unwrap();
+        let entity = adapter.extract_entity("https://reddit.com/r/rust").unwrap();
         assert_eq!(entity.domain(), "reddit.com");
         assert_eq!(entity.entity_path(), Some("r/rust"));
     }
@@ -276,7 +274,10 @@ mod tests {
             urls[0].url,
             "https://www.reddit.com/r/rust/comments/abc123/how_to_use_async/"
         );
-        assert_eq!(urls[0].title.as_deref(), Some("How to use async/await in Rust"));
+        assert_eq!(
+            urls[0].title.as_deref(),
+            Some("How to use async/await in Rust")
+        );
         assert_eq!(urls[0].content_kind.as_deref(), Some("post"));
     }
 
@@ -328,10 +329,7 @@ mod tests {
             Some(pos) => format!("{}.json{}", &url2[..pos], &url2[pos..]),
             None => format!("{url2}.json"),
         };
-        assert_eq!(
-            json_url2,
-            "https://www.reddit.com/r/rust/comments/abc.json"
-        );
+        assert_eq!(json_url2, "https://www.reddit.com/r/rust/comments/abc.json");
     }
 
     #[test]

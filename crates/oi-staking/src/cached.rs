@@ -169,7 +169,9 @@ mod tests {
     #[test]
     fn test_cache_hit() {
         let inner = InMemoryStakeRegistry::new();
-        inner.add_stake(make_stake("example.com", 1_000_000)).unwrap();
+        inner
+            .add_stake(make_stake("example.com", 1_000_000))
+            .unwrap();
 
         let cached = CachedStakeRegistry::new(inner);
 
@@ -187,7 +189,9 @@ mod tests {
     #[test]
     fn test_cache_expiry() {
         let inner = InMemoryStakeRegistry::new();
-        inner.add_stake(make_stake("example.com", 1_000_000)).unwrap();
+        inner
+            .add_stake(make_stake("example.com", 1_000_000))
+            .unwrap();
 
         let cached = CachedStakeRegistry::new(inner).with_ttl(Duration::from_millis(0));
 
@@ -204,7 +208,9 @@ mod tests {
     #[test]
     fn test_invalidate() {
         let inner = InMemoryStakeRegistry::new();
-        inner.add_stake(make_stake("example.com", 1_000_000)).unwrap();
+        inner
+            .add_stake(make_stake("example.com", 1_000_000))
+            .unwrap();
 
         let cached = CachedStakeRegistry::new(inner);
 

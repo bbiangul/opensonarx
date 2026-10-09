@@ -88,7 +88,9 @@ impl NodeHandle {
 
     /// Announce updated shard assignments to the gossip network (fire-and-forget).
     pub fn announce_shards(&self, shard_ids: Vec<String>) {
-        let _ = self.gossip_tx.try_send(GossipCommand::ShardAnnounce { shard_ids });
+        let _ = self
+            .gossip_tx
+            .try_send(GossipCommand::ShardAnnounce { shard_ids });
     }
 
     /// Request replication of a shard from a specific peer (fire-and-forget).
@@ -146,11 +148,7 @@ pub fn build_merged_response(
         by_url
             .entry(result.url.clone())
             .and_modify(|existing| {
-                let existing_score = existing
-                    .scores
-                    .as_ref()
-                    .map(|s| s.r#final)
-                    .unwrap_or(0.0);
+                let existing_score = existing.scores.as_ref().map(|s| s.r#final).unwrap_or(0.0);
                 if final_score > existing_score {
                     *existing = result.clone();
                 }
@@ -247,7 +245,11 @@ mod tests {
         let resp = build_merged_response("req-1", local, remote, 10);
         assert_eq!(resp.results.len(), 2);
         // a.com should keep the 0.9 score
-        let a = resp.results.iter().find(|r| r.url == "https://a.com").unwrap();
+        let a = resp
+            .results
+            .iter()
+            .find(|r| r.url == "https://a.com")
+            .unwrap();
         assert!((a.scores.as_ref().unwrap().r#final - 0.9).abs() < 0.001);
     }
 
@@ -463,10 +465,7 @@ mod tests {
         let (shutdown_tx, _shutdown_rx) = tokio::sync::watch::channel(false);
         let handle = NodeHandle::new(peer_id, query_tx, gossip_tx, shutdown_tx);
 
-        handle.announce_shards(vec![
-            "topic-technology".into(),
-            "topic-science".into(),
-        ]);
+        handle.announce_shards(vec!["topic-technology".into(), "topic-science".into()]);
 
         let cmd = gossip_rx.try_recv().unwrap();
         match cmd {

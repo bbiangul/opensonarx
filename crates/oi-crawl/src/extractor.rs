@@ -53,22 +53,50 @@ pub fn html_to_markdown(html: &str) -> ExtractedContent {
 
     // Wikipedia-specific and generic boilerplate class/id patterns
     let boilerplate_patterns = [
-        "mw-navigation", "mw-panel", "mw-footer", "mw-header", "mw-jump-link",
+        "mw-navigation",
+        "mw-panel",
+        "mw-footer",
+        "mw-header",
+        "mw-jump-link",
         // NOTE: "references" (plural) — the singular prefix rule matched
         // MDN's "reference-layout__body" wrapper and deleted entire pages.
         // Wikipedia's big citation blocks are covered by references/reflist/
         // mw-cite; inline <sup class="reference"> markers are tiny noise.
-        "navbox", "infobox", "noprint", "sidebar", "toc", "catlinks",
-        "mw-editsection", "references", "reflist", "mw-cite", "language-list",
-        "cookie", "banner", "advertisement", "popup", "modal", "social-share",
-        "breadcrumb", "skip-link", "sr-only",
+        "navbox",
+        "infobox",
+        "noprint",
+        "sidebar",
+        "toc",
+        "catlinks",
+        "mw-editsection",
+        "references",
+        "reflist",
+        "mw-cite",
+        "language-list",
+        "cookie",
+        "banner",
+        "advertisement",
+        "popup",
+        "modal",
+        "social-share",
+        "breadcrumb",
+        "skip-link",
+        "sr-only",
         // Docusaurus
-        "pagination-nav", "theme-doc-footer", "theme-doc-version-badge",
-        "theme-doc-breadcrumbs", "table-of-contents", "docSidebarContainer",
+        "pagination-nav",
+        "theme-doc-footer",
+        "theme-doc-version-badge",
+        "theme-doc-breadcrumbs",
+        "table-of-contents",
+        "docSidebarContainer",
         // Gatsby / TypeScript handbook
-        "handbook-toc", "like-dislike-subnav", "edit-this-page",
+        "handbook-toc",
+        "like-dislike-subnav",
+        "edit-this-page",
         // Generic doc-site patterns
-        "on-this-page", "doc-footer", "navigation-link",
+        "on-this-page",
+        "doc-footer",
+        "navigation-link",
     ];
 
     // Build a set of node IDs to skip
@@ -396,7 +424,9 @@ pub fn extract_publish_date(html: &str) -> Option<String> {
     let html_lower = html.to_lowercase();
 
     // 1. <meta property="article:published_time" content="...">
-    if let Some(date) = extract_meta_content(&html_lower, html, "property", "article:published_time") {
+    if let Some(date) =
+        extract_meta_content(&html_lower, html, "property", "article:published_time")
+    {
         return Some(date);
     }
 
@@ -425,7 +455,12 @@ pub fn extract_publish_date(html: &str) -> Option<String> {
 
 /// Extract content attribute from a <meta> tag matching a given attr/value pair.
 /// `html_lower` is the lowercased HTML, `html_orig` is the original (for extracting exact values).
-fn extract_meta_content(html_lower: &str, html_orig: &str, attr: &str, value: &str) -> Option<String> {
+fn extract_meta_content(
+    html_lower: &str,
+    html_orig: &str,
+    attr: &str,
+    value: &str,
+) -> Option<String> {
     // Search for meta tags containing the attribute
     let search_attr = format!("{attr}=\"{value}\"");
     let mut search_pos = 0;
@@ -440,7 +475,11 @@ fn extract_meta_content(html_lower: &str, html_orig: &str, attr: &str, value: &s
         let tag_lower = &html_lower[tag_start..=tag_end];
 
         // Verify this is a <meta tag
-        if tag_lower.trim_start_matches('<').trim_start().starts_with("meta") {
+        if tag_lower
+            .trim_start_matches('<')
+            .trim_start()
+            .starts_with("meta")
+        {
             // Extract content="..."
             if let Some(content) = extract_attr_value(tag, tag_lower, "content") {
                 let trimmed = content.trim().to_string();
@@ -473,7 +512,11 @@ fn extract_time_datetime(html_lower: &str, html_orig: &str) -> Option<String> {
     // Make sure it's inside a <time tag
     let tag_start = html_lower[..pos].rfind('<')?;
     let tag_name_region = &html_lower[tag_start..pos];
-    if !tag_name_region.trim_start_matches('<').trim_start().starts_with("time") {
+    if !tag_name_region
+        .trim_start_matches('<')
+        .trim_start()
+        .starts_with("time")
+    {
         return None;
     }
 
@@ -574,19 +617,20 @@ pub fn parse_date_to_timestamp(date_str: &str) -> Option<i64> {
     }
 
     // Extract time if present
-    let (hour, minute, second) = if s.len() > 10 && (s.as_bytes()[10] == b'T' || s.as_bytes()[10] == b' ') {
-        let time_part = &s[11..];
-        if time_part.len() >= 8 {
-            let h: i64 = time_part[0..2].parse().ok()?;
-            let m: i64 = time_part[3..5].parse().ok()?;
-            let sec: i64 = time_part[6..8].parse().ok()?;
-            (h, m, sec)
+    let (hour, minute, second) =
+        if s.len() > 10 && (s.as_bytes()[10] == b'T' || s.as_bytes()[10] == b' ') {
+            let time_part = &s[11..];
+            if time_part.len() >= 8 {
+                let h: i64 = time_part[0..2].parse().ok()?;
+                let m: i64 = time_part[3..5].parse().ok()?;
+                let sec: i64 = time_part[6..8].parse().ok()?;
+                (h, m, sec)
+            } else {
+                (0, 0, 0)
+            }
         } else {
             (0, 0, 0)
-        }
-    } else {
-        (0, 0, 0)
-    };
+        };
 
     // Convert to unix timestamp (approximate, ignoring leap seconds)
     // Days from epoch (1970-01-01) to the given date
@@ -859,8 +903,8 @@ mod tests {
         // Regression: MDN reference pages wrap all content in
         // "reference-layout__body"; the old "reference" prefix pattern
         // deleted the entire page (0 chars extracted).
-        let body_text = "The Array object enables storing a collection of multiple items. "
-            .repeat(10);
+        let body_text =
+            "The Array object enables storing a collection of multiple items. ".repeat(10);
         let html = format!(
             r#"<html><head><title>Array - JavaScript | MDN</title></head><body>
             <main id="content" class="layout__content">
@@ -964,13 +1008,35 @@ mod tests {
         </body>
         </html>"##;
         let result = html_to_markdown(html);
-        eprintln!("Markdown ({} chars): {:?}", result.markdown.len(), &result.markdown);
-        assert!(result.markdown.contains("Microsoft Corporation"), "Should have article text");
-        assert!(result.markdown.contains("Founded in 1975"), "Should have second paragraph");
-        assert!(result.markdown.contains("## History"), "Should have section headings");
-        assert!(!result.markdown.contains("Site navigation"), "Should strip nav");
-        assert!(!result.markdown.contains("Footer content"), "Should strip footer");
-        assert!(!result.markdown.contains("Navigation box"), "Should strip navbox");
+        eprintln!(
+            "Markdown ({} chars): {:?}",
+            result.markdown.len(),
+            &result.markdown
+        );
+        assert!(
+            result.markdown.contains("Microsoft Corporation"),
+            "Should have article text"
+        );
+        assert!(
+            result.markdown.contains("Founded in 1975"),
+            "Should have second paragraph"
+        );
+        assert!(
+            result.markdown.contains("## History"),
+            "Should have section headings"
+        );
+        assert!(
+            !result.markdown.contains("Site navigation"),
+            "Should strip nav"
+        );
+        assert!(
+            !result.markdown.contains("Footer content"),
+            "Should strip footer"
+        );
+        assert!(
+            !result.markdown.contains("Navigation box"),
+            "Should strip navbox"
+        );
         assert!(!result.markdown.contains("Contents"), "Should strip toc");
     }
 
@@ -1007,11 +1073,27 @@ mod tests {
         </div>
         </body></html>"##;
         let result = html_to_markdown(html);
-        eprintln!("mdBook markdown ({} chars): {:?}", result.markdown.len(), &result.markdown);
-        assert!(result.markdown.contains("Ownership"), "Should preserve main content");
-        assert!(result.markdown.contains("Stack and the Heap"), "Should preserve headings");
-        assert!(!result.markdown.contains("Chapter list"), "Should strip sidebar nav");
-        assert!(!result.markdown.contains("Previous"), "Should strip page nav");
+        eprintln!(
+            "mdBook markdown ({} chars): {:?}",
+            result.markdown.len(),
+            &result.markdown
+        );
+        assert!(
+            result.markdown.contains("Ownership"),
+            "Should preserve main content"
+        );
+        assert!(
+            result.markdown.contains("Stack and the Heap"),
+            "Should preserve headings"
+        );
+        assert!(
+            !result.markdown.contains("Chapter list"),
+            "Should strip sidebar nav"
+        );
+        assert!(
+            !result.markdown.contains("Previous"),
+            "Should strip page nav"
+        );
     }
 
     #[test]
@@ -1065,17 +1147,45 @@ mod tests {
             </main>
         </body></html>"##;
         let result = html_to_markdown(html);
-        eprintln!("Docusaurus markdown ({} chars): {:?}", result.markdown.len(), &result.markdown);
+        eprintln!(
+            "Docusaurus markdown ({} chars): {:?}",
+            result.markdown.len(),
+            &result.markdown
+        );
         // Content preserved
-        assert!(result.markdown.contains("Getting Started"), "Should preserve heading");
-        assert!(result.markdown.contains("npm install my-framework"), "Should preserve code");
-        assert!(result.markdown.contains("Installation"), "Should preserve subheading");
+        assert!(
+            result.markdown.contains("Getting Started"),
+            "Should preserve heading"
+        );
+        assert!(
+            result.markdown.contains("npm install my-framework"),
+            "Should preserve code"
+        );
+        assert!(
+            result.markdown.contains("Installation"),
+            "Should preserve subheading"
+        );
         // Boilerplate stripped
-        assert!(!result.markdown.contains("Introduction"), "Should strip sidebar items");
-        assert!(!result.markdown.contains("Version: 2.0"), "Should strip version badge");
-        assert!(!result.markdown.contains("Edit this page"), "Should strip edit link");
-        assert!(!result.markdown.contains("Previous: Intro"), "Should strip pagination");
-        assert!(!result.markdown.contains("Next: Configuration"), "Should strip pagination");
+        assert!(
+            !result.markdown.contains("Introduction"),
+            "Should strip sidebar items"
+        );
+        assert!(
+            !result.markdown.contains("Version: 2.0"),
+            "Should strip version badge"
+        );
+        assert!(
+            !result.markdown.contains("Edit this page"),
+            "Should strip edit link"
+        );
+        assert!(
+            !result.markdown.contains("Previous: Intro"),
+            "Should strip pagination"
+        );
+        assert!(
+            !result.markdown.contains("Next: Configuration"),
+            "Should strip pagination"
+        );
     }
 
     #[test]
@@ -1118,18 +1228,49 @@ mod tests {
             </footer>
         </body></html>"##;
         let result = html_to_markdown(html);
-        eprintln!("Gatsby handbook ({} chars): {:?}", result.markdown.len(), &result.markdown);
+        eprintln!(
+            "Gatsby handbook ({} chars): {:?}",
+            result.markdown.len(),
+            &result.markdown
+        );
         // Content preserved
-        assert!(result.markdown.contains("Narrowing"), "Should preserve heading");
-        assert!(result.markdown.contains("typeof type guards"), "Should preserve subheading");
-        assert!(result.markdown.contains("padLeft"), "Should preserve code block");
-        assert!(result.markdown.contains("control flow"), "Should preserve body text");
+        assert!(
+            result.markdown.contains("Narrowing"),
+            "Should preserve heading"
+        );
+        assert!(
+            result.markdown.contains("typeof type guards"),
+            "Should preserve subheading"
+        );
+        assert!(
+            result.markdown.contains("padLeft"),
+            "Should preserve code block"
+        );
+        assert!(
+            result.markdown.contains("control flow"),
+            "Should preserve body text"
+        );
         // Boilerplate stripped
-        assert!(!result.markdown.contains("The Basics"), "Should strip sidebar");
-        assert!(!result.markdown.contains("Everyday Types"), "Should strip sidebar/nav links");
-        assert!(!result.markdown.contains("Like"), "Should strip like/dislike");
-        assert!(!result.markdown.contains("Dislike"), "Should strip like/dislike");
-        assert!(!result.markdown.contains("Made with love"), "Should strip footer");
+        assert!(
+            !result.markdown.contains("The Basics"),
+            "Should strip sidebar"
+        );
+        assert!(
+            !result.markdown.contains("Everyday Types"),
+            "Should strip sidebar/nav links"
+        );
+        assert!(
+            !result.markdown.contains("Like"),
+            "Should strip like/dislike"
+        );
+        assert!(
+            !result.markdown.contains("Dislike"),
+            "Should strip like/dislike"
+        );
+        assert!(
+            !result.markdown.contains("Made with love"),
+            "Should strip footer"
+        );
     }
 
     #[test]
@@ -1143,8 +1284,19 @@ mod tests {
             </div>
         </body></html>"#;
         let result = html_to_markdown(html);
-        assert!(result.markdown.contains("Simple Page"), "Should preserve heading");
-        assert!(result.markdown.contains("without any standard content containers"), "Should preserve body");
-        assert!(result.markdown.contains("fallback path"), "Should preserve all text");
+        assert!(
+            result.markdown.contains("Simple Page"),
+            "Should preserve heading"
+        );
+        assert!(
+            result
+                .markdown
+                .contains("without any standard content containers"),
+            "Should preserve body"
+        );
+        assert!(
+            result.markdown.contains("fallback path"),
+            "Should preserve all text"
+        );
     }
 }

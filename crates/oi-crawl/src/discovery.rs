@@ -2,8 +2,8 @@
 
 use std::collections::HashSet;
 
-use quick_xml::events::Event;
 use quick_xml::Reader;
+use quick_xml::events::Event;
 use url::Url;
 
 /// A discovered URL with metadata about how it was found.
@@ -142,7 +142,8 @@ fn parse_atom(xml: &str) -> Vec<DiscoveredUrl> {
             Ok(Event::Text(ref e)) if in_entry => {
                 if let Ok(text) = e.unescape() {
                     let text = text.trim().to_string();
-                    if !text.is_empty() && (current_tag == "updated" || current_tag == "published") {
+                    if !text.is_empty() && (current_tag == "updated" || current_tag == "published")
+                    {
                         current_updated = text;
                     }
                 }
@@ -375,11 +376,17 @@ fn extract_href_values(html: &str) -> Vec<String> {
         } else if let Some(stripped) = rest.strip_prefix('\'') {
             stripped.split('\'').next()
         } else {
-            rest.split_whitespace().next().map(|s| s.trim_end_matches('>'))
+            rest.split_whitespace()
+                .next()
+                .map(|s| s.trim_end_matches('>'))
         };
         if let Some(v) = value {
             let v = v.trim();
-            if !v.is_empty() && !v.starts_with('#') && !v.starts_with("javascript:") && !v.starts_with("mailto:") {
+            if !v.is_empty()
+                && !v.starts_with('#')
+                && !v.starts_with("javascript:")
+                && !v.starts_with("mailto:")
+            {
                 hrefs.push(v.to_string());
             }
         }
@@ -391,10 +398,11 @@ fn extract_href_values(html: &str) -> Vec<String> {
 fn should_skip_url(url: &str) -> bool {
     let lower = url.to_lowercase();
     // Skip common non-content paths
-    let skip_extensions = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", ".ico",
-        ".css", ".js", ".woff", ".woff2", ".ttf", ".eot",
-        ".pdf", ".zip", ".tar", ".gz", ".mp3", ".mp4", ".avi",
-        ".xml", ".json", ".rss"];
+    let skip_extensions = [
+        ".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", ".ico", ".css", ".js", ".woff", ".woff2",
+        ".ttf", ".eot", ".pdf", ".zip", ".tar", ".gz", ".mp3", ".mp4", ".avi", ".xml", ".json",
+        ".rss",
+    ];
     for ext in &skip_extensions {
         if lower.ends_with(ext) {
             return true;
@@ -402,15 +410,21 @@ fn should_skip_url(url: &str) -> bool {
     }
     // Use path-segment matching: check that the skip pattern appears as a
     // complete path segment (preceded by '/' and followed by '/' or end).
-    let skip_segments = ["login", "signup", "register", "logout",
-        "admin", "wp-admin", "cart", "checkout"];
+    let skip_segments = [
+        "login", "signup", "register", "logout", "admin", "wp-admin", "cart", "checkout",
+    ];
     if let Some(path_start) = lower.find("://").map(|i| i + 3) {
-        let path = lower[path_start..].find('/').map_or("", |i| &lower[path_start + i..]);
+        let path = lower[path_start..]
+            .find('/')
+            .map_or("", |i| &lower[path_start + i..]);
         for seg in &skip_segments {
             let pattern = format!("/{seg}");
             if let Some(pos) = path.find(&pattern) {
                 let after = pos + pattern.len();
-                if after >= path.len() || path.as_bytes()[after] == b'/' || path.as_bytes()[after] == b'?' {
+                if after >= path.len()
+                    || path.as_bytes()[after] == b'/'
+                    || path.as_bytes()[after] == b'?'
+                {
                     return true;
                 }
             }

@@ -236,7 +236,10 @@ impl Frontier {
 
     /// Record a successful crawl for budget tracking.
     pub fn record_crawl(&mut self, domain: &str) {
-        *self.domain_crawl_counts.entry(domain.to_string()).or_insert(0) += 1;
+        *self
+            .domain_crawl_counts
+            .entry(domain.to_string())
+            .or_insert(0) += 1;
         self.total_crawled_this_epoch += 1;
     }
 
@@ -273,7 +276,9 @@ impl Frontier {
 
     /// Extract the domain from a URL string.
     pub fn domain_of(url: &str) -> Option<String> {
-        url::Url::parse(url).ok().and_then(|u| u.domain().map(|d| d.to_lowercase()))
+        url::Url::parse(url)
+            .ok()
+            .and_then(|u| u.domain().map(|d| d.to_lowercase()))
     }
 
     /// Flush current state to the SQLite database (no-op if no DB attached).
@@ -309,12 +314,20 @@ mod tests {
         frontier.push(
             "https://example.com/page1",
             "example.com",
-            PriorityFactors { domain_stake: 10_000_000, source_bonus: 3, staleness: 7200 },
+            PriorityFactors {
+                domain_stake: 10_000_000,
+                source_bonus: 3,
+                staleness: 7200,
+            },
         );
         frontier.push(
             "https://example.com/page2",
             "example.com",
-            PriorityFactors { domain_stake: 50_000_000, source_bonus: 2, staleness: 3600 },
+            PriorityFactors {
+                domain_stake: 50_000_000,
+                source_bonus: 2,
+                staleness: 3600,
+            },
         );
 
         assert_eq!(frontier.len(), 2);
@@ -331,12 +344,20 @@ mod tests {
         let added1 = frontier.push(
             "https://example.com/page1",
             "example.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         let added2 = frontier.push(
             "https://example.com/page1",
             "example.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
 
         assert!(added1);
@@ -351,17 +372,29 @@ mod tests {
         frontier.push(
             "https://example.com/page1",
             "example.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         frontier.push(
             "https://example.com/page2",
             "example.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         frontier.push(
             "https://other.com/page1",
             "other.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
 
         // First pop should succeed for one domain
@@ -380,7 +413,11 @@ mod tests {
         frontier.push(
             "https://example.com/page1",
             "example.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         assert_eq!(frontier.seen_count(), 1);
 
@@ -392,21 +429,36 @@ mod tests {
         let added = frontier.push(
             "https://example.com/page1",
             "example.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         assert!(added);
     }
 
     #[test]
     fn test_priority_computation() {
-        let high = PriorityFactors { domain_stake: 50_000_000, source_bonus: 3, staleness: 86400 };
-        let low = PriorityFactors { domain_stake: 1_000_000, source_bonus: 1, staleness: 3600 };
+        let high = PriorityFactors {
+            domain_stake: 50_000_000,
+            source_bonus: 3,
+            staleness: 86400,
+        };
+        let low = PriorityFactors {
+            domain_stake: 1_000_000,
+            source_bonus: 1,
+            staleness: 3600,
+        };
         assert!(high.compute() > low.compute());
     }
 
     #[test]
     fn test_domain_of() {
-        assert_eq!(Frontier::domain_of("https://www.example.com/path"), Some("www.example.com".to_string()));
+        assert_eq!(
+            Frontier::domain_of("https://www.example.com/path"),
+            Some("www.example.com".to_string())
+        );
         assert_eq!(Frontier::domain_of("not-a-url"), None);
     }
 
@@ -423,7 +475,11 @@ mod tests {
         let added = frontier.push(
             "https://example.com/page3",
             "example.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         assert!(!added);
 
@@ -431,7 +487,11 @@ mod tests {
         let added2 = frontier.push(
             "https://other.com/page1",
             "other.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         assert!(added2);
     }
@@ -446,7 +506,11 @@ mod tests {
         let added = frontier.push(
             "https://c.com/page1",
             "c.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         assert!(!added);
     }
@@ -467,7 +531,11 @@ mod tests {
         let added = frontier.push(
             "https://c.com/page1",
             "c.com",
-            PriorityFactors { domain_stake: 0, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 0,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         assert!(added);
     }
@@ -502,12 +570,20 @@ mod tests {
         frontier.push(
             "https://a.com/1",
             "a.com",
-            PriorityFactors { domain_stake: 5_000_000, source_bonus: 2, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 5_000_000,
+                source_bonus: 2,
+                staleness: 0,
+            },
         );
         frontier.push(
             "https://b.com/1",
             "b.com",
-            PriorityFactors { domain_stake: 1_000_000, source_bonus: 1, staleness: 0 },
+            PriorityFactors {
+                domain_stake: 1_000_000,
+                source_bonus: 1,
+                staleness: 0,
+            },
         );
         frontier.record_crawl("a.com");
 
