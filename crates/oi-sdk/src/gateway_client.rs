@@ -95,11 +95,7 @@ impl GatewayClient {
     ///
     /// For maximum data moat value, include the original query, result URL, and rank
     /// so the system can build the Query -> Solved Problem mapping.
-    pub fn feedback(
-        &self,
-        result_id: &str,
-        useful: bool,
-    ) -> Result<()> {
+    pub fn feedback(&self, result_id: &str, useful: bool) -> Result<()> {
         self.feedback_with_context(result_id, useful, None, None, None)
     }
 
@@ -142,26 +138,16 @@ impl GatewayClient {
     pub fn feedback_stats(&self) -> Result<FeedbackStats> {
         let url = format!("{}/v1/feedback/stats", self.base_url);
 
-        let resp = self
-            .auth_get(&url)
-            .call()
-            .map_err(map_ureq_error)?;
+        let resp = self.auth_get(&url).call().map_err(map_ureq_error)?;
 
         read_json_body(resp)
     }
 
     /// Trust-check a URL (stake lookup + risk assessment).
     pub fn verify_url(&self, url: &str) -> Result<TrustCheckResult> {
-        let endpoint = format!(
-            "{}/v1/verify?url={}",
-            self.base_url,
-            urlencoded(url)
-        );
+        let endpoint = format!("{}/v1/verify?url={}", self.base_url, urlencoded(url));
 
-        let resp = self
-            .auth_get(&endpoint)
-            .call()
-            .map_err(map_ureq_error)?;
+        let resp = self.auth_get(&endpoint).call().map_err(map_ureq_error)?;
 
         read_json_body(resp)
     }
@@ -170,10 +156,7 @@ impl GatewayClient {
     pub fn quota(&self) -> Result<QueryQuota> {
         let url = format!("{}/v1/quota", self.base_url);
 
-        let resp = self
-            .auth_get(&url)
-            .call()
-            .map_err(map_ureq_error)?;
+        let resp = self.auth_get(&url).call().map_err(map_ureq_error)?;
 
         read_json_body(resp)
     }
@@ -207,10 +190,7 @@ impl GatewayClient {
     pub fn list_disputes(&self) -> Result<Vec<DisputeInfo>> {
         let url = format!("{}/v1/disputes", self.base_url);
 
-        let resp = self
-            .auth_get(&url)
-            .call()
-            .map_err(map_ureq_error)?;
+        let resp = self.auth_get(&url).call().map_err(map_ureq_error)?;
 
         let list: GatewayDisputeListResponse = read_json_body(resp)?;
         Ok(list.disputes)
@@ -220,10 +200,7 @@ impl GatewayClient {
     pub fn get_dispute(&self, dispute_id: &str) -> Result<GatewayDisputeInfoResponse> {
         let url = format!("{}/v1/disputes/{}", self.base_url, urlencoded(dispute_id));
 
-        let resp = self
-            .auth_get(&url)
-            .call()
-            .map_err(map_ureq_error)?;
+        let resp = self.auth_get(&url).call().map_err(map_ureq_error)?;
 
         read_json_body(resp)
     }
@@ -232,10 +209,7 @@ impl GatewayClient {
     pub fn leaderboard(&self, limit: usize) -> Result<Vec<oi_types::LeaderboardEntry>> {
         let url = format!("{}/v1/leaderboard?limit={limit}", self.base_url);
 
-        let resp = self
-            .auth_get(&url)
-            .call()
-            .map_err(map_ureq_error)?;
+        let resp = self.auth_get(&url).call().map_err(map_ureq_error)?;
 
         read_json_body(resp)
     }
@@ -244,17 +218,16 @@ impl GatewayClient {
     pub fn account(&self) -> Result<UserAccount> {
         let url = format!("{}/v1/account", self.base_url);
 
-        let resp = self
-            .auth_get(&url)
-            .call()
-            .map_err(map_ureq_error)?;
+        let resp = self.auth_get(&url).call().map_err(map_ureq_error)?;
 
         read_json_body(resp)
     }
 }
 
 /// Read and deserialize a JSON response body.
-fn read_json_body<T: serde::de::DeserializeOwned>(resp: ureq::http::Response<ureq::Body>) -> Result<T> {
+fn read_json_body<T: serde::de::DeserializeOwned>(
+    resp: ureq::http::Response<ureq::Body>,
+) -> Result<T> {
     let bytes = resp
         .into_body()
         .read_to_vec()

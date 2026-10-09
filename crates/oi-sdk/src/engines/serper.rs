@@ -1,13 +1,18 @@
 use oi_types::{SearchEngine, SearchParams, SearchResultItem};
+use std::sync::atomic::{AtomicBool, Ordering};
 
 /// Serper.dev Google Search API adapter — requires an API key.
 pub struct Serper {
     api_key: String,
+    quota_exhausted: AtomicBool,
 }
 
 impl Serper {
     pub fn new(api_key: String) -> Self {
-        Self { api_key }
+        Self {
+            api_key,
+            quota_exhausted: AtomicBool::new(false),
+        }
     }
 }
 
@@ -24,7 +29,33 @@ impl SearchEngine for Serper {
         self.search_with_params(query, limit, &SearchParams::default())
     }
 
-    fn search_with_params(&self, query: &str, limit: usize, params: &SearchParams) -> Vec<SearchResultItem> {
+    fn is_available(&self) -> bool {
+        !self.quota_exhausted.load(Ordering::Relaxed)
+    }
+
+    fn search_checked(&self, query: &str, limit: usize) -> Result<Vec<SearchResultItem>, ()> {
+        self.search_with_params_checked(query, limit, &SearchParams::default())
+    }
+
+    fn search_with_params(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> Vec<SearchResultItem> {
+        self.search_with_params_checked(query, limit, params)
+            .unwrap_or_default()
+    }
+
+    fn search_with_params_checked(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> Result<Vec<SearchResultItem>, ()> {
+        if !self.is_available() {
+            return Err(());
+        }
         let q = if let Some(ref site) = params.site {
             format!("site:{site} {query}")
         } else {
@@ -44,26 +75,52 @@ impl SearchEngine for Serper {
         }
         let json_bytes = payload.to_string();
 
-        let agent = super::http_agent();
-        let body = match agent.post("https://google.serper.dev/search")
+        let agent = super::http_agent_status_policy(false);
+        let body = match agent
+            .post("https://google.serper.dev/search")
             .header("X-API-KEY", &self.api_key)
             .header("Content-Type", "application/json")
             .send(json_bytes.as_bytes())
         {
-            Ok(mut resp) => match resp.body_mut().read_to_vec() {
-                Ok(buf) => buf,
-                Err(e) => {
-                    tracing::warn!("Serper response read failed: {e}");
-                    return Vec::new();
+            Ok(mut resp) => {
+                let status = resp.status().as_u16();
+                match resp.body_mut().read_to_vec() {
+                    Ok(buf) => {
+                        if status >= 400 {
+                            let reason = provider_failure_reason(&buf);
+                            if reason == "quota_exhausted" {
+                                self.quota_exhausted.store(true, Ordering::Relaxed);
+                            }
+                            // Never log arbitrary provider bodies or credentials.
+                            tracing::warn!(status, reason, "Serper API request rejected");
+                            return Err(());
+                        }
+                        buf
+                    }
+                    Err(e) => {
+                        tracing::warn!("Serper response read failed: {e}");
+                        return Err(());
+                    }
                 }
-            },
+            }
             Err(e) => {
                 tracing::warn!("Serper search failed: {e}");
-                return Vec::new();
+                return Err(());
             }
         };
 
-        parse_serper_json(&body, limit)
+        if serde_json::from_slice::<serde_json::Value>(&body).is_err() {
+            return Err(());
+        }
+        Ok(parse_serper_json(&body, limit))
+    }
+}
+
+fn provider_failure_reason(body: &[u8]) -> &'static str {
+    let value = serde_json::from_slice::<serde_json::Value>(body).unwrap_or_default();
+    match value.get("message").and_then(|v| v.as_str()) {
+        Some("Not enough credits") => "quota_exhausted",
+        _ => "provider_rejected_request",
     }
 }
 
@@ -87,8 +144,16 @@ fn parse_serper_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
             SearchResultItem {
                 result_id: format!("serper_{rank}"),
                 rank,
-                url: r.get("link").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                title: r.get("title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                url: r
+                    .get("link")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                title: r
+                    .get("title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
                 snippet: r
                     .get("snippet")
                     .and_then(|v| v.as_str())
@@ -118,6 +183,7 @@ fn parse_serper_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
                 domain_url_count: None,
                 domain_reputation_score: None,
                 domain_total_votes: None,
+                decision: None,
             }
         })
         .collect()
@@ -126,6 +192,26 @@ fn parse_serper_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn quota_errors_are_not_successful_empty_searches() {
+        assert_eq!(
+            provider_failure_reason(br#"{"message":"Not enough credits","statusCode":400}"#),
+            "quota_exhausted"
+        );
+        assert_eq!(
+            provider_failure_reason(b"sensitive unknown body"),
+            "provider_rejected_request"
+        );
+        let provider = Serper::new("unit-test-placeholder".into());
+        provider.quota_exhausted.store(true, Ordering::Relaxed);
+        assert!(!provider.is_available());
+        assert!(
+            provider
+                .search_with_params_checked("example", 5, &SearchParams::default())
+                .is_err()
+        );
+    }
 
     #[test]
     fn test_parse_serper_json() {

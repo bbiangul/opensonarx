@@ -4,7 +4,7 @@ use std::fmt;
 /// Configuration for a single search engine adapter.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SearchEngineConfig {
-    /// Engine name: "duckduckgo", "brave", "mojeek", "searxng", "google", "bing", "qwant", "yep", "stract"
+    /// Engine name: "duckduckgo", "brave", "brave-html", "mojeek", "searxng", "google", "bing", "qwant", "yep", "stract"
     pub name: String,
     /// API key (or instance URL for SearXNG)
     pub api_key: Option<String>,
@@ -67,8 +67,14 @@ impl fmt::Debug for SdkConfig {
             .field("wallet_path", &self.wallet_path)
             .field("local_index_path", &self.local_index_path)
             .field("network", &self.network)
-            .field("brave_api_key", &self.brave_api_key.as_ref().map(|_| "[REDACTED]"))
-            .field("serper_api_key", &self.serper_api_key.as_ref().map(|_| "[REDACTED]"))
+            .field(
+                "brave_api_key",
+                &self.brave_api_key.as_ref().map(|_| "[REDACTED]"),
+            )
+            .field(
+                "serper_api_key",
+                &self.serper_api_key.as_ref().map(|_| "[REDACTED]"),
+            )
             .field("search_engines", &self.search_engines)
             .finish()
     }

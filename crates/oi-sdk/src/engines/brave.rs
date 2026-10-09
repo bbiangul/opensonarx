@@ -26,7 +26,12 @@ impl SearchEngine for BraveSearch {
         self.search_with_params(query, limit, &SearchParams::default())
     }
 
-    fn search_with_params(&self, query: &str, limit: usize, params: &SearchParams) -> Vec<SearchResultItem> {
+    fn search_with_params(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> Vec<SearchResultItem> {
         let q = if let Some(ref site) = params.site {
             format!("site:{site} {query}")
         } else {
@@ -42,7 +47,8 @@ impl SearchEngine for BraveSearch {
         }
 
         let agent = super::http_agent();
-        let body = match agent.get(&url)
+        let body = match agent
+            .get(&url)
             .header("Accept", "application/json")
             .header("X-Subscription-Token", &self.api_key)
             .call()
@@ -85,8 +91,16 @@ fn parse_brave_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
             SearchResultItem {
                 result_id: format!("brave_{rank}"),
                 rank,
-                url: r.get("url").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                title: r.get("title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                url: r
+                    .get("url")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                title: r
+                    .get("title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
                 snippet: r
                     .get("description")
                     .and_then(|v| v.as_str())
@@ -116,6 +130,7 @@ fn parse_brave_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
                 domain_url_count: None,
                 domain_reputation_score: None,
                 domain_total_votes: None,
+                decision: None,
             }
         })
         .collect()

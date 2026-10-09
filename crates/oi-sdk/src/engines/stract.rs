@@ -2,7 +2,12 @@ use oi_types::{SearchEngine, SearchResultItem};
 
 use super::urlencoded;
 
-/// Stract JSON API adapter — open-source search engine, no API key needed.
+/// Legacy Stract JSON adapter retained for explicit health diagnostics.
+///
+/// The former public search endpoint is no longer available: the upstream
+/// search repository was archived and the `stract.com` product has changed
+/// scope. This adapter must not be counted as production redundancy unless an
+/// upstream-compatible service is restored and passes the live semantic probe.
 pub struct Stract;
 
 impl SearchEngine for Stract {
@@ -11,13 +16,11 @@ impl SearchEngine for Stract {
     }
 
     fn search(&self, query: &str, limit: usize) -> Vec<SearchResultItem> {
-        let url = format!(
-            "https://stract.com/beta/api/search?q={}",
-            urlencoded(query)
-        );
+        let url = format!("https://stract.com/beta/api/search?q={}", urlencoded(query));
 
         let agent = super::http_agent();
-        let body = match agent.get(&url)
+        let body = match agent
+            .get(&url)
             .header("User-Agent", "Mozilla/5.0 (compatible; OpenSonarX/0.1)")
             .header("Accept", "application/json")
             .call()
@@ -59,8 +62,16 @@ fn parse_stract_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
             SearchResultItem {
                 result_id: format!("stract_{rank}"),
                 rank,
-                url: r.get("url").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                title: r.get("title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                url: r
+                    .get("url")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                title: r
+                    .get("title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
                 snippet: r
                     .get("snippet")
                     .and_then(|v| v.as_str())
@@ -91,6 +102,7 @@ fn parse_stract_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
                 domain_url_count: None,
                 domain_reputation_score: None,
                 domain_total_votes: None,
+                decision: None,
             }
         })
         .collect()

@@ -11,10 +11,33 @@ impl SearchEngine for DuckDuckGo {
     }
 
     fn search(&self, query: &str, limit: usize) -> Vec<SearchResultItem> {
-        self.search_with_params(query, limit, &SearchParams::default())
+        self.search_checked(query, limit).unwrap_or_default()
     }
 
-    fn search_with_params(&self, query: &str, limit: usize, params: &SearchParams) -> Vec<SearchResultItem> {
+    fn search_checked(
+        &self,
+        query: &str,
+        limit: usize,
+    ) -> std::result::Result<Vec<SearchResultItem>, ()> {
+        self.search_with_params_checked(query, limit, &SearchParams::default())
+    }
+
+    fn search_with_params(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> Vec<SearchResultItem> {
+        self.search_with_params_checked(query, limit, params)
+            .unwrap_or_default()
+    }
+
+    fn search_with_params_checked(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> std::result::Result<Vec<SearchResultItem>, ()> {
         let q = if let Some(ref site) = params.site {
             format!("site:{site} {query}")
         } else {
@@ -27,21 +50,22 @@ impl SearchEngine for DuckDuckGo {
         }
 
         let agent = super::http_agent();
-        let body = match agent.get(&url)
+        let body = match agent
+            .get(&url)
             .header("User-Agent", "Mozilla/5.0 (compatible; OpenSonarX/0.1)")
             .call()
         {
             Ok(mut resp) => match resp.body_mut().read_to_vec() {
                 Ok(buf) => String::from_utf8_lossy(&buf).into_owned(),
-                Err(_) => return Vec::new(),
+                Err(_) => return Err(()),
             },
             Err(e) => {
                 tracing::warn!("DuckDuckGo search failed: {e}");
-                return Vec::new();
+                return Err(());
             }
         };
 
-        parse_duckduckgo_html(&body, limit)
+        Ok(parse_duckduckgo_html(&body, limit))
     }
 }
 
@@ -70,15 +94,16 @@ fn parse_duckduckgo_html(html: &str, limit: usize) -> Vec<SearchResultItem> {
             continue;
         }
 
-        let snippet_search_end = (after_marker + 2000).min(html.len());
-        let snippet =
-            if let Some(spos) = html[after_marker..snippet_search_end].find("class=\"result__snippet\"") {
-                let s = after_marker + spos;
-                let text_start = s + "class=\"result__snippet\"".len();
-                strip_html_tags(&extract_tag_text(&html[text_start..]))
-            } else {
-                String::new()
-            };
+        let snippet_search_end = super::bounded_byte_end(html, after_marker, 2000);
+        let snippet = if let Some(spos) =
+            html[after_marker..snippet_search_end].find("class=\"result__snippet\"")
+        {
+            let s = after_marker + spos;
+            let text_start = s + "class=\"result__snippet\"".len();
+            strip_html_tags(&extract_tag_text(&html[text_start..]))
+        } else {
+            String::new()
+        };
 
         let rank = (results.len() + 1) as u32;
         results.push(SearchResultItem {
@@ -111,6 +136,7 @@ fn parse_duckduckgo_html(html: &str, limit: usize) -> Vec<SearchResultItem> {
             domain_url_count: None,
             domain_reputation_score: None,
             domain_total_votes: None,
+            decision: None,
         });
 
         pos = after_marker;
@@ -169,5 +195,22 @@ mod tests {
         assert_eq!(results[0].source, "duckduckgo");
         assert_eq!(results[1].url, "https://doc.rust-lang.org");
         assert_eq!(results[1].rank, 2);
+    }
+
+    #[test]
+    fn test_parser_window_never_splits_utf8() {
+        let marker = "class=\"result__a\"";
+        let mut html =
+            String::from("<a class=\"result__a\" href=\"https://example.com/\">Resultado</a>");
+        let after_marker = html.find(marker).unwrap() + marker.len();
+        let accent_offset = 1_999usize;
+        let current_offset = html.len() - after_marker;
+        html.push_str(&"x".repeat(accent_offset - current_offset));
+        html.push('á');
+        html.push_str("<a class=\"result__snippet\">descrição</a>");
+
+        let results = parse_duckduckgo_html(&html, 1);
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].url, "https://example.com/");
     }
 }

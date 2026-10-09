@@ -26,9 +26,10 @@ pub fn request_magic_link(gateway_url: &str, email: &str) -> Result<()> {
         .content_type("application/json")
         .send(json.as_bytes())
         .map_err(|e| match e {
-            ureq::Error::StatusCode(status) => {
-                Error::protocol(ErrorCode::NodeUnreachable, format!("Gateway returned HTTP {status}"))
-            }
+            ureq::Error::StatusCode(status) => Error::protocol(
+                ErrorCode::NodeUnreachable,
+                format!("Gateway returned HTTP {status}"),
+            ),
             _ => Error::Internal(format!("Magic link request failed: {e}")),
         })?;
 
@@ -59,12 +60,14 @@ pub fn verify_magic_link(gateway_url: &str, token: &str) -> Result<AuthResponse>
         .content_type("application/json")
         .send(json.as_bytes())
         .map_err(|e| match e {
-            ureq::Error::StatusCode(401) => {
-                Error::protocol(ErrorCode::MagicLinkExpired, "Magic link token expired or invalid")
-            }
-            ureq::Error::StatusCode(status) => {
-                Error::protocol(ErrorCode::NodeUnreachable, format!("Gateway returned HTTP {status}"))
-            }
+            ureq::Error::StatusCode(401) => Error::protocol(
+                ErrorCode::MagicLinkExpired,
+                "Magic link token expired or invalid",
+            ),
+            ureq::Error::StatusCode(status) => Error::protocol(
+                ErrorCode::NodeUnreachable,
+                format!("Gateway returned HTTP {status}"),
+            ),
             _ => Error::Internal(format!("Magic link verify failed: {e}")),
         })?;
 

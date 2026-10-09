@@ -2,7 +2,11 @@ use oi_types::{SearchEngine, SearchResultItem};
 
 use super::urlencoded;
 
-/// Yep JSON API adapter — revenue-sharing search engine, no API key needed.
+/// Legacy unauthenticated Yep JSON adapter retained for health diagnostics.
+///
+/// Yep's current supported Search API is authenticated and metered. The old
+/// endpoint below is expected to fail and must not be counted as production
+/// redundancy; a future credentialed adapter should target the documented API.
 pub struct Yep;
 
 impl SearchEngine for Yep {
@@ -17,7 +21,8 @@ impl SearchEngine for Yep {
         );
 
         let agent = super::http_agent();
-        let body = match agent.get(&url)
+        let body = match agent
+            .get(&url)
             .header("User-Agent", "Mozilla/5.0 (compatible; OpenSonarX/0.1)")
             .call()
         {
@@ -60,9 +65,21 @@ fn parse_yep_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
             SearchResultItem {
                 result_id: format!("yep_{rank}"),
                 rank,
-                url: r.get("url").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                title: r.get("title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                snippet: r.get("snippet").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                url: r
+                    .get("url")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                title: r
+                    .get("title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                snippet: r
+                    .get("snippet")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
                 content_md: String::new(),
                 semantic_score: 0.0,
                 bm25_score: 0.0,
@@ -87,6 +104,7 @@ fn parse_yep_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
                 domain_url_count: None,
                 domain_reputation_score: None,
                 domain_total_votes: None,
+                decision: None,
             }
         })
         .collect()

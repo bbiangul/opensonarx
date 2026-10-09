@@ -30,8 +30,12 @@ pub fn verify_domain_ownership(domain: &str, wallet_address: &str) -> bool {
             .header("accept", "application/dns-json")
             .call();
         let Ok(mut resp) = response else { continue };
-        let Ok(body) = resp.body_mut().read_to_vec() else { continue };
-        let Ok(json) = serde_json::from_slice::<serde_json::Value>(&body) else { continue };
+        let Ok(body) = resp.body_mut().read_to_vec() else {
+            continue;
+        };
+        let Ok(json) = serde_json::from_slice::<serde_json::Value>(&body) else {
+            continue;
+        };
         if txt_answers_contain(&json, &expected) {
             return true;
         }

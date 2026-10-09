@@ -31,6 +31,7 @@ struct BreakerState {
     consecutive_failures: u32,
     last_failure: Option<Instant>,
     cooldown: Duration,
+    in_flight: usize,
 }
 
 impl BreakerState {
@@ -40,6 +41,7 @@ impl BreakerState {
             consecutive_failures: 0,
             last_failure: None,
             cooldown: initial_cooldown,
+            in_flight: 0,
         }
     }
 }
@@ -52,6 +54,10 @@ pub struct CircuitBreakerConfig {
     pub initial_cooldown: Duration,
     /// Maximum cooldown after repeated failures (caps exponential backoff).
     pub max_cooldown: Duration,
+    /// Maximum simultaneous calls while the engine is healthy. This bounds
+    /// detached resolver/HTTP workers without dropping all concurrent healthy
+    /// queries behind a provider-wide single-flight lock.
+    pub max_in_flight: usize,
 }
 
 impl Default for CircuitBreakerConfig {
@@ -60,6 +66,7 @@ impl Default for CircuitBreakerConfig {
             failure_threshold: 3,
             initial_cooldown: Duration::from_secs(30),
             max_cooldown: Duration::from_secs(300), // 5 minutes
+            max_in_flight: 4,
         }
     }
 }
@@ -80,12 +87,20 @@ impl CircuitBreakerEngine {
     pub fn new(inner: Arc<dyn SearchEngine>) -> Self {
         let config = CircuitBreakerConfig::default();
         let state = RwLock::new(BreakerState::new(config.initial_cooldown));
-        Self { inner, state, config }
+        Self {
+            inner,
+            state,
+            config,
+        }
     }
 
     pub fn with_config(inner: Arc<dyn SearchEngine>, config: CircuitBreakerConfig) -> Self {
         let state = RwLock::new(BreakerState::new(config.initial_cooldown));
-        Self { inner, state, config }
+        Self {
+            inner,
+            state,
+            config,
+        }
     }
 
     /// Check if a call should proceed. Returns true if allowed, false if blocked.
@@ -93,13 +108,22 @@ impl CircuitBreakerEngine {
         let mut state = self.state.write().unwrap();
 
         match state.state {
-            State::Closed => true,
+            State::Closed => {
+                if state.in_flight >= self.config.max_in_flight.max(1) {
+                    false
+                } else {
+                    state.in_flight += 1;
+                    true
+                }
+            }
             State::Open => {
                 // Check if cooldown has elapsed → transition to HalfOpen
                 if let Some(last_failure) = state.last_failure
                     && last_failure.elapsed() >= state.cooldown
+                    && state.in_flight == 0
                 {
                     state.state = State::HalfOpen;
+                    state.in_flight = 1;
                     tracing::info!(
                         engine = %self.inner.name(),
                         "circuit breaker: half-open, allowing probe"
@@ -124,6 +148,7 @@ impl CircuitBreakerEngine {
             tracing::info!(engine = %self.inner.name(), "circuit breaker: closed (recovered)");
         }
         state.state = State::Closed;
+        state.in_flight = state.in_flight.saturating_sub(1);
         state.consecutive_failures = 0;
         state.cooldown = self.config.initial_cooldown;
     }
@@ -133,6 +158,7 @@ impl CircuitBreakerEngine {
         let mut state = self.state.write().unwrap();
         state.consecutive_failures += 1;
         state.last_failure = Some(Instant::now());
+        state.in_flight = state.in_flight.saturating_sub(1);
 
         if state.state == State::HalfOpen {
             // Probe failed — re-open with doubled cooldown
@@ -157,26 +183,51 @@ impl CircuitBreakerEngine {
     /// Execute a search through the circuit breaker.
     fn execute<F>(&self, f: F) -> Vec<SearchResultItem>
     where
-        F: FnOnce() -> Vec<SearchResultItem>,
+        F: FnOnce() -> std::result::Result<Vec<SearchResultItem>, ()>,
     {
-        if !self.should_allow() {
-            tracing::debug!(
-                engine = %self.inner.name(),
-                "circuit breaker: call blocked (open)"
-            );
-            return Vec::new();
+        // Apply short backpressure when a healthy keyless provider reaches
+        // its concurrency cap. Returning an immediate empty result here made
+        // load look indistinguishable from “the web has no answer”. Four
+        // workers at normal sub-second latency drain a rewrite burst well
+        // inside the outer two-second orchestration deadline.
+        const CAPACITY_WAIT: Duration = Duration::from_millis(1_500);
+        const CAPACITY_POLL: Duration = Duration::from_millis(5);
+        let wait_started = Instant::now();
+        loop {
+            if self.should_allow() {
+                break;
+            }
+            let waiting_for_capacity = self
+                .state
+                .read()
+                .map(|state| {
+                    state.state == State::Closed
+                        && state.in_flight >= self.config.max_in_flight.max(1)
+                })
+                .unwrap_or(false);
+            if !waiting_for_capacity || wait_started.elapsed() >= CAPACITY_WAIT {
+                tracing::debug!(
+                    engine = %self.inner.name(),
+                    "circuit breaker: call blocked (open or capacity deadline)"
+                );
+                return Vec::new();
+            }
+            std::thread::sleep(CAPACITY_POLL);
         }
 
-        let results = f();
-
-        if results.is_empty() {
-            // Empty results from an external engine likely means failure
-            self.record_failure();
-        } else {
-            self.record_success();
+        match f() {
+            Ok(results) => {
+                // Zero matching documents is a healthy search response. Only
+                // an adapter-reported transport/parser error may trip the
+                // circuit; cardinality is not a health signal.
+                self.record_success();
+                results
+            }
+            Err(()) => {
+                self.record_failure();
+                Vec::new()
+            }
         }
-
-        results
     }
 }
 
@@ -186,11 +237,16 @@ impl SearchEngine for CircuitBreakerEngine {
     }
 
     fn search(&self, query: &str, limit: usize) -> Vec<SearchResultItem> {
-        self.execute(|| self.inner.search(query, limit))
+        self.execute(|| self.inner.search_checked(query, limit))
     }
 
-    fn search_with_params(&self, query: &str, limit: usize, params: &SearchParams) -> Vec<SearchResultItem> {
-        self.execute(|| self.inner.search_with_params(query, limit, params))
+    fn search_with_params(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> Vec<SearchResultItem> {
+        self.execute(|| self.inner.search_with_params_checked(query, limit, params))
     }
 
     fn requires_api_key(&self) -> bool {
@@ -220,6 +276,67 @@ mod tests {
         call_count: AtomicUsize,
     }
 
+    struct SlowEngine;
+
+    struct SlowHealthyEngine;
+
+    impl SearchEngine for SlowEngine {
+        fn name(&self) -> &str {
+            "slow"
+        }
+
+        fn search(&self, _query: &str, _limit: usize) -> Vec<SearchResultItem> {
+            std::thread::sleep(Duration::from_millis(100));
+            Vec::new()
+        }
+    }
+
+    impl SearchEngine for SlowHealthyEngine {
+        fn name(&self) -> &str {
+            "slow-healthy"
+        }
+
+        fn search(&self, _query: &str, _limit: usize) -> Vec<SearchResultItem> {
+            std::thread::sleep(Duration::from_millis(50));
+            vec![successful_result()]
+        }
+    }
+
+    fn successful_result() -> SearchResultItem {
+        SearchResultItem {
+            result_id: "r1".to_string(),
+            rank: 1,
+            url: "https://example.com".to_string(),
+            title: "Example".to_string(),
+            snippet: "A snippet".to_string(),
+            content_md: String::new(),
+            semantic_score: 0.0,
+            bm25_score: 0.0,
+            final_score: 0.0,
+            stake_truth: 0,
+            stake_usd: 0,
+            stake_type: "none".to_string(),
+            reputation: 0.0,
+            content_hash: String::new(),
+            extraction_quality: "external".to_string(),
+            source: "failing".to_string(),
+            entity: None,
+            content_kind: None,
+            crawled_at: None,
+            published_at: None,
+            trust_verdict: "external".to_string(),
+            reputation_votes: 0,
+            disputed: false,
+            facts: None,
+            content_relevant: None,
+            domain_first_seen_at: None,
+            domain_url_count: None,
+            domain_reputation_score: None,
+            domain_total_votes: None,
+            decision: None,
+        }
+    }
+
     impl FailingEngine {
         fn new(should_fail: bool) -> Self {
             Self {
@@ -234,44 +351,24 @@ mod tests {
     }
 
     impl SearchEngine for FailingEngine {
-        fn name(&self) -> &str { "failing" }
+        fn name(&self) -> &str {
+            "failing"
+        }
 
         fn search(&self, _query: &str, _limit: usize) -> Vec<SearchResultItem> {
+            self.search_checked(_query, _limit).unwrap_or_default()
+        }
+
+        fn search_checked(
+            &self,
+            _query: &str,
+            _limit: usize,
+        ) -> std::result::Result<Vec<SearchResultItem>, ()> {
             self.call_count.fetch_add(1, Ordering::SeqCst);
             if self.should_fail.load(Ordering::SeqCst) {
-                Vec::new() // empty = failure signal
+                Err(())
             } else {
-                vec![SearchResultItem {
-                    result_id: "r1".to_string(),
-                    rank: 1,
-                    url: "https://example.com".to_string(),
-                    title: "Example".to_string(),
-                    snippet: "A snippet".to_string(),
-                    content_md: String::new(),
-                    semantic_score: 0.0,
-                    bm25_score: 0.0,
-                    final_score: 0.0,
-                    stake_truth: 0,
-                    stake_usd: 0,
-                    stake_type: "none".to_string(),
-                    reputation: 0.0,
-                    content_hash: String::new(),
-                    extraction_quality: "external".to_string(),
-                    source: "failing".to_string(),
-                    entity: None,
-                    content_kind: None,
-                    crawled_at: None,
-                    published_at: None,
-                    trust_verdict: "external".to_string(),
-                    reputation_votes: 0,
-                    disputed: false,
-                    facts: None,
-                    content_relevant: None,
-                    domain_first_seen_at: None,
-                    domain_url_count: None,
-                    domain_reputation_score: None,
-                    domain_total_votes: None,
-                }]
+                Ok(vec![successful_result()])
             }
         }
     }
@@ -287,12 +384,34 @@ mod tests {
     }
 
     #[test]
+    fn test_healthy_engine_serves_multiple_concurrent_queries() {
+        let breaker = Arc::new(CircuitBreakerEngine::new(Arc::new(SlowHealthyEngine)));
+        let barrier = Arc::new(std::sync::Barrier::new(2));
+        let workers: Vec<_> = (0..2)
+            .map(|index| {
+                let breaker = Arc::clone(&breaker);
+                let barrier = Arc::clone(&barrier);
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    breaker.search(&format!("query-{index}"), 5)
+                })
+            })
+            .collect();
+        assert!(
+            workers
+                .into_iter()
+                .all(|worker| !worker.join().unwrap().is_empty())
+        );
+    }
+
+    #[test]
     fn test_circuit_opens_after_threshold() {
         let inner = Arc::new(FailingEngine::new(true));
         let config = CircuitBreakerConfig {
             failure_threshold: 3,
             initial_cooldown: Duration::from_secs(60),
             max_cooldown: Duration::from_secs(300),
+            max_in_flight: 4,
         };
         let cb = CircuitBreakerEngine::with_config(inner.clone(), config);
 
@@ -315,6 +434,7 @@ mod tests {
             failure_threshold: 2,
             initial_cooldown: Duration::from_secs(60),
             max_cooldown: Duration::from_secs(300),
+            max_in_flight: 4,
         };
         let cb = CircuitBreakerEngine::with_config(inner, config);
 
@@ -328,12 +448,30 @@ mod tests {
     }
 
     #[test]
+    fn test_legitimate_empty_results_do_not_open_the_circuit() {
+        let cb = CircuitBreakerEngine::with_config(
+            Arc::new(SlowEngine),
+            CircuitBreakerConfig {
+                failure_threshold: 1,
+                initial_cooldown: Duration::from_secs(60),
+                max_cooldown: Duration::from_secs(300),
+                max_in_flight: 4,
+            },
+        );
+        assert!(cb.search("no matching documents", 10).is_empty());
+        assert!(cb.is_available());
+        assert!(cb.search("still healthy", 10).is_empty());
+        assert!(cb.is_available());
+    }
+
+    #[test]
     fn test_half_open_recovery() {
         let inner = Arc::new(FailingEngine::new(true));
         let config = CircuitBreakerConfig {
             failure_threshold: 2,
             initial_cooldown: Duration::from_millis(0), // instant cooldown for test
             max_cooldown: Duration::from_secs(300),
+            max_in_flight: 4,
         };
         let cb = CircuitBreakerEngine::with_config(inner.clone(), config);
 
@@ -362,12 +500,37 @@ mod tests {
     }
 
     #[test]
+    fn test_configured_in_flight_cap_applies_backpressure() {
+        let breaker = Arc::new(CircuitBreakerEngine::with_config(
+            Arc::new(SlowEngine),
+            CircuitBreakerConfig {
+                failure_threshold: 3,
+                initial_cooldown: Duration::from_secs(30),
+                max_cooldown: Duration::from_secs(300),
+                max_in_flight: 1,
+            },
+        ));
+        let worker = {
+            let breaker = Arc::clone(&breaker);
+            std::thread::spawn(move || breaker.search("first", 5))
+        };
+        std::thread::sleep(Duration::from_millis(10));
+        assert!(breaker.is_available());
+        let started = Instant::now();
+        assert!(breaker.search("second", 5).is_empty());
+        assert!(started.elapsed() >= Duration::from_millis(50));
+        assert!(started.elapsed() < Duration::from_millis(250));
+        worker.join().unwrap();
+    }
+
+    #[test]
     fn test_success_resets_failure_count() {
         let inner = Arc::new(FailingEngine::new(true));
         let config = CircuitBreakerConfig {
             failure_threshold: 3,
             initial_cooldown: Duration::from_secs(60),
             max_cooldown: Duration::from_secs(300),
+            max_in_flight: 4,
         };
         let cb = CircuitBreakerEngine::with_config(inner.clone(), config);
 

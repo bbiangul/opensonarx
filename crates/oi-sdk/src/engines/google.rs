@@ -17,7 +17,8 @@ impl SearchEngine for GoogleScraper {
         );
 
         let agent = super::http_agent();
-        let body = match agent.get(&url)
+        let body = match agent
+            .get(&url)
             .header("User-Agent", "Mozilla/5.0 (compatible; OpenSonarX/0.1)")
             .call()
         {
@@ -51,7 +52,7 @@ fn parse_google_html(html: &str, limit: usize) -> Vec<SearchResultItem> {
         let val_end = html[val_start..]
             .find('&')
             .map(|i| i + val_start)
-            .unwrap_or(html.len().min(val_start + 500));
+            .unwrap_or_else(|| super::bounded_byte_end(html, val_start, 500));
         let raw_url = super::url_decode(&html[val_start..val_end]);
 
         if !raw_url.starts_with("http") {
@@ -60,7 +61,7 @@ fn parse_google_html(html: &str, limit: usize) -> Vec<SearchResultItem> {
         }
 
         // Try to find the title in a nearby <h3> tag
-        let search_end = (val_end + 2000).min(html.len());
+        let search_end = super::bounded_byte_end(html, val_end, 2000);
         let title = if let Some(h3_pos) = html[val_end..search_end].find("<h3") {
             let h3_abs = val_end + h3_pos;
             strip_html_tags(&super::extract_tag_text(&html[h3_abs..]))
@@ -69,7 +70,7 @@ fn parse_google_html(html: &str, limit: usize) -> Vec<SearchResultItem> {
         };
 
         // Try to find snippet in a nearby <span> after the title
-        let snippet_search = (val_end + 3000).min(html.len());
+        let snippet_search = super::bounded_byte_end(html, val_end, 3000);
         let snippet = if let Some(span_pos) = html[val_end..snippet_search].find("data-sncf=") {
             let span_abs = val_end + span_pos;
             strip_html_tags(&super::extract_tag_text(&html[span_abs..]))
@@ -108,6 +109,7 @@ fn parse_google_html(html: &str, limit: usize) -> Vec<SearchResultItem> {
             domain_url_count: None,
             domain_reputation_score: None,
             domain_total_votes: None,
+            decision: None,
         });
 
         pos = val_end;

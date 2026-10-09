@@ -17,7 +17,8 @@ impl SearchEngine for Qwant {
         );
 
         let agent = super::http_agent();
-        let body = match agent.get(&url)
+        let body = match agent
+            .get(&url)
             .header("User-Agent", "Mozilla/5.0 (compatible; OpenSonarX/0.1)")
             .call()
         {
@@ -59,9 +60,21 @@ fn parse_qwant_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
             SearchResultItem {
                 result_id: format!("qwant_{rank}"),
                 rank,
-                url: r.get("url").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                title: r.get("title").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-                snippet: r.get("desc").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+                url: r
+                    .get("url")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                title: r
+                    .get("title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
+                snippet: r
+                    .get("desc")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string(),
                 content_md: String::new(),
                 semantic_score: 0.0,
                 bm25_score: 0.0,
@@ -86,6 +99,7 @@ fn parse_qwant_json(data: &[u8], limit: usize) -> Vec<SearchResultItem> {
                 domain_url_count: None,
                 domain_reputation_score: None,
                 domain_total_votes: None,
+                decision: None,
             }
         })
         .collect()

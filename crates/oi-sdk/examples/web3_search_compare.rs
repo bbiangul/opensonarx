@@ -6,29 +6,27 @@
 //! Usage:
 //!   SERPER_API_KEY=<key> cargo run -p oi-sdk --release --example web3_search_compare
 
+use oi_sdk::config::SearchEngineConfig;
 use oi_sdk::engines::serper::Serper;
 use oi_sdk::{OpenSonarXClient, SdkConfig};
-use oi_sdk::config::SearchEngineConfig;
 use oi_types::traits::SearchEngine;
 use oi_types::{ChunkMeta, ContentChunk, QueryFilters, StakeInfo};
 
 fn main() {
-    let serper_key = std::env::var("SERPER_API_KEY")
-        .expect("Set SERPER_API_KEY env var");
+    let serper_key = std::env::var("SERPER_API_KEY").expect("Set SERPER_API_KEY env var");
 
-    let query = std::env::args().nth(1)
+    let query = std::env::args()
+        .nth(1)
         .unwrap_or_else(|| "AI search engine trust ranking".to_string());
 
     // ── Step 1: Create SDK client with Serper engine (web3 mode) ──
     let config = SdkConfig {
-        search_engines: Some(vec![
-            SearchEngineConfig {
-                name: "serper".to_string(),
-                api_key: Some(serper_key.clone()),
-                enabled: true,
-                priority: 1,
-            },
-        ]),
+        search_engines: Some(vec![SearchEngineConfig {
+            name: "serper".to_string(),
+            api_key: Some(serper_key.clone()),
+            enabled: true,
+            priority: 1,
+        }]),
         ..Default::default()
     };
 
@@ -37,11 +35,43 @@ fn main() {
     // ── Step 2: Seed local content (simulates staked corpus) ──
     let embedder = client.embedder_arc();
 
-    let content_data = [("oi1", "OpenSonarX is a decentralized search protocol where publishers stake TRUTH tokens to vouch for content quality. The hybrid HNSW plus BM25 engine combines vector similarity with keyword matching for accurate retrieval. AI agents can use the API to search and receive full content with trust signals for RAG synthesis. The protocol uses Wilson score reputation and stake-weighted ranking to surface trustworthy results.", "https://opensonarx.com/docs/overview", "OpenSonarX: Trust-Based Search for AI Agents", "opensonarx.com"),
-        ("brave1", "Brave Search is a privacy-focused search engine that uses its own independent index built from scratch. It does not track users or profile their searches. The Brave Search API provides programmatic access to web search results with snippet extraction, relevance ranking, and trust scoring for AI agent integration.", "https://brave.com/search", "Brave Search - Privacy-First Web Search", "brave.com"),
-        ("wiki1", "A web search engine is an information retrieval system designed to help find information stored on the World Wide Web. Search engines provide results based on relevance algorithms that consider keyword matching, link analysis, and content quality signals to rank documents for the user query.", "https://en.wikipedia.org/wiki/Search_engine", "Search engine - Wikipedia", "en.wikipedia.org"),
-        ("blog1", "Building AI-powered search engines requires understanding embeddings, vector databases, and retrieval augmented generation. Modern search goes beyond keywords using semantic understanding to match user intent with relevant documents. Trust and provenance are becoming critical signals for AI agents consuming search results.", "https://techblog.example.com/ai-search-2025", "The Future of AI Search in 2025", "techblog.example.com"),
-        ("spam1", "BEST SEARCH ENGINE EVER click here for amazing deals and free search results buy now limited time offer search engine optimization guaranteed top ranking first page results SEO tricks and hacks for maximum visibility", "https://spammy-seo.biz/search", "Best Search Engine FREE!!!", "spammy-seo.biz")];
+    let content_data = [
+        (
+            "oi1",
+            "OpenSonarX is a decentralized search protocol where publishers stake TRUTH tokens to vouch for content quality. The hybrid HNSW plus BM25 engine combines vector similarity with keyword matching for accurate retrieval. AI agents can use the API to search and receive full content with trust signals for RAG synthesis. The protocol uses Wilson score reputation and stake-weighted ranking to surface trustworthy results.",
+            "https://opensonarx.com/docs/overview",
+            "OpenSonarX: Trust-Based Search for AI Agents",
+            "opensonarx.com",
+        ),
+        (
+            "brave1",
+            "Brave Search is a privacy-focused search engine that uses its own independent index built from scratch. It does not track users or profile their searches. The Brave Search API provides programmatic access to web search results with snippet extraction, relevance ranking, and trust scoring for AI agent integration.",
+            "https://brave.com/search",
+            "Brave Search - Privacy-First Web Search",
+            "brave.com",
+        ),
+        (
+            "wiki1",
+            "A web search engine is an information retrieval system designed to help find information stored on the World Wide Web. Search engines provide results based on relevance algorithms that consider keyword matching, link analysis, and content quality signals to rank documents for the user query.",
+            "https://en.wikipedia.org/wiki/Search_engine",
+            "Search engine - Wikipedia",
+            "en.wikipedia.org",
+        ),
+        (
+            "blog1",
+            "Building AI-powered search engines requires understanding embeddings, vector databases, and retrieval augmented generation. Modern search goes beyond keywords using semantic understanding to match user intent with relevant documents. Trust and provenance are becoming critical signals for AI agents consuming search results.",
+            "https://techblog.example.com/ai-search-2025",
+            "The Future of AI Search in 2025",
+            "techblog.example.com",
+        ),
+        (
+            "spam1",
+            "BEST SEARCH ENGINE EVER click here for amazing deals and free search results buy now limited time offer search engine optimization guaranteed top ranking first page results SEO tricks and hacks for maximum visibility",
+            "https://spammy-seo.biz/search",
+            "Best Search Engine FREE!!!",
+            "spammy-seo.biz",
+        ),
+    ];
 
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -77,44 +107,50 @@ fn main() {
 
     // ── Step 3: Register stakes ──
     let registry = client.stake_registry();
-    registry.add_stake(StakeInfo {
-        domain: "opensonarx.com".to_string(),
-        amount_lamports: 50_000_000_000,
-        amount_usd: 50_000.0,
-        staked_at: now as i64,
-        cooldown_until: None,
-        wallet: "Publisher111111111111111111111111111111111111".to_string(),
-        dns_verified: true,
-        reputation: 1.5,
-        entity: None,
-        disputed: false,
-    }).unwrap();
+    registry
+        .add_stake(StakeInfo {
+            domain: "opensonarx.com".to_string(),
+            amount_lamports: 50_000_000_000,
+            amount_usd: 50_000.0,
+            staked_at: now as i64,
+            cooldown_until: None,
+            wallet: "Publisher111111111111111111111111111111111111".to_string(),
+            dns_verified: true,
+            reputation: 1.5,
+            entity: None,
+            disputed: false,
+        })
+        .unwrap();
 
-    registry.add_stake(StakeInfo {
-        domain: "brave.com".to_string(),
-        amount_lamports: 5_000_000_000,
-        amount_usd: 5_000.0,
-        staked_at: now as i64,
-        cooldown_until: None,
-        wallet: "Brave111111111111111111111111111111111111111".to_string(),
-        dns_verified: true,
-        reputation: 1.3,
-        entity: None,
-        disputed: false,
-    }).unwrap();
+    registry
+        .add_stake(StakeInfo {
+            domain: "brave.com".to_string(),
+            amount_lamports: 5_000_000_000,
+            amount_usd: 5_000.0,
+            staked_at: now as i64,
+            cooldown_until: None,
+            wallet: "Brave111111111111111111111111111111111111111".to_string(),
+            dns_verified: true,
+            reputation: 1.3,
+            entity: None,
+            disputed: false,
+        })
+        .unwrap();
 
-    registry.add_stake(StakeInfo {
-        domain: "en.wikipedia.org".to_string(),
-        amount_lamports: 100_000_000,
-        amount_usd: 100.0,
-        staked_at: now as i64,
-        cooldown_until: None,
-        wallet: "Wiki1111111111111111111111111111111111111111".to_string(),
-        dns_verified: false,
-        reputation: 1.0,
-        entity: None,
-        disputed: false,
-    }).unwrap();
+    registry
+        .add_stake(StakeInfo {
+            domain: "en.wikipedia.org".to_string(),
+            amount_lamports: 100_000_000,
+            amount_usd: 100.0,
+            staked_at: now as i64,
+            cooldown_until: None,
+            wallet: "Wiki1111111111111111111111111111111111111111".to_string(),
+            dns_verified: false,
+            reputation: 1.0,
+            entity: None,
+            disputed: false,
+        })
+        .unwrap();
 
     println!("Registered 3 stakes (opensonarx=$50k, brave=$5k, wikipedia=$100)\n");
 
@@ -124,7 +160,8 @@ fn main() {
 
     // ── Step 5: Run blended search (local + Serper) ──
     let filters = QueryFilters::default();
-    let (blended_results, sources) = client.search_blended(&query, 10, &filters)
+    let (blended_results, sources) = client
+        .search_blended(&query, 10, &filters)
         .expect("blended search failed");
 
     // ── Step 6: Print comparison ──
@@ -136,8 +173,12 @@ fn main() {
     println!();
 
     // Header
-    println!("{:<w$} | {:<w$}", "SERPER (raw Google results)", "OPENINDEX BLENDED (web3)");
-    println!("{:<w$} | {:<w$}",
+    println!(
+        "{:<w$} | {:<w$}",
+        "SERPER (raw Google results)", "OPENINDEX BLENDED (web3)"
+    );
+    println!(
+        "{:<w$} | {:<w$}",
         format!("{} results", serper_results.len()),
         format!("{} results | sources: {:?}", blended_results.len(), sources),
     );
@@ -151,9 +192,7 @@ fn main() {
             let snippet = truncate(&r.snippet, 70);
             format!(
                 "#{:<2} {}\n     {}\n     score={:.3} src={}",
-                r.rank, title,
-                snippet,
-                r.final_score, r.source,
+                r.rank, title, snippet, r.final_score, r.source,
             )
         } else {
             String::new()
@@ -165,9 +204,15 @@ fn main() {
             let has_content = if r.content_md.is_empty() { "no" } else { "YES" };
             format!(
                 "#{:<2} [{}] {}\n     stake=${} rep={:.1} votes={} content={}\n     score={:.4} src={}",
-                r.rank, r.trust_verdict, title,
-                r.stake_usd, r.reputation, r.reputation_votes, has_content,
-                r.final_score, r.source,
+                r.rank,
+                r.trust_verdict,
+                title,
+                r.stake_usd,
+                r.reputation,
+                r.reputation_votes,
+                has_content,
+                r.final_score,
+                r.source,
             )
         } else {
             String::new()

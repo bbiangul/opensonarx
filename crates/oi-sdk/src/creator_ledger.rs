@@ -1,17 +1,17 @@
-//! Creator usage ledger — the payoff leg of the content market.
+//! Creator exposure telemetry — not a billing or settlement ledger.
 //!
 //! Agents answering from indexed content generate no page view, no ad
 //! impression, no revenue for the creator whose work supplied the answer.
-//! This ledger records that usage so it can be settled: every search
-//! attributes the local-content results it served to their domains, accruing
-//! usage credits per creator. Off-chain mirror first (same pattern as
-//! stakes.json); settlement maps onto the existing `SettleChannel` split
-//! (publisher 85% / sentinel 5% / burn 10%) when query fees are live.
+//! This ledger records local-result exposure with heuristic position weights.
+//! It does not prove reading, answer contribution, ownership, licensing,
+//! buyer consent or authorized delivery. Its credits have no monetary value
+//! and must never be fed directly into settlement. A separate authorized
+//! delivery receipt and reconciliation flow are required for payable P0 use.
 //!
 //! Attribution counts SERVED results (what the agent received), weighted by
-//! position: a top-3 placement is what an agent actually reads, the long
-//! tail is exposure. External-engine results are never attributed — we only
-//! owe creators for content WE served from OUR index.
+//! position: top-3 is a placement signal, not observed consumption.
+//! External-engine results are never attributed. Open results and citations
+//! do not create a debt to a publisher merely by appearing in this ledger.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -23,9 +23,9 @@ use std::sync::Mutex;
 pub struct CreatorUsage {
     /// Total times this domain's content appeared in served results.
     pub served: u64,
-    /// Times it appeared in the top 3 (what agents actually consume).
+    /// Times it appeared in the top 3 (placement, not proven consumption).
     pub top3: u64,
-    /// Accrued usage credits (fee-unit denominated; see settlement mapping).
+    /// Non-monetary exposure weight; not fee units or a payable balance.
     pub credits: u64,
     /// Whether the domain was stake-backed at last attribution.
     pub stake_backed: bool,
@@ -33,7 +33,7 @@ pub struct CreatorUsage {
     pub last_used: u64,
 }
 
-/// Credit weights: top-3 placements are consumption, the rest is exposure.
+/// Heuristic exposure weights. Neither position establishes consumption.
 const CREDITS_TOP3: u64 = 10;
 const CREDITS_SERVED: u64 = 2;
 
@@ -74,7 +74,9 @@ impl CreatorLedger {
             .duration_since(std::time::UNIX_EPOCH)
             .map(|d| d.as_secs())
             .unwrap_or(0);
-        let Ok(mut state) = self.state.lock() else { return };
+        let Ok(mut state) = self.state.lock() else {
+            return;
+        };
         state.queries_attributed += 1;
         for (domain, rank, stake_backed) in served {
             if domain.is_empty() {

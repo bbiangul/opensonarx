@@ -64,7 +64,8 @@ mod tests {
     fn test_record_and_query() {
         let lb = InMemoryLeaderboard::new();
 
-        lb.record_query(&["nytimes.com", "bbc.com", "nytimes.com"]).unwrap();
+        lb.record_query(&["nytimes.com", "bbc.com", "nytimes.com"])
+            .unwrap();
         lb.record_query(&["nytimes.com", "cnn.com"]).unwrap();
 
         let top = lb.top_queried(10).unwrap();
@@ -78,10 +79,14 @@ mod tests {
     #[test]
     fn test_entity_detection() {
         let lb = InMemoryLeaderboard::new();
-        lb.record_query(&["youtube.com/c/3blue1brown", "nytimes.com"]).unwrap();
+        lb.record_query(&["youtube.com/c/3blue1brown", "nytimes.com"])
+            .unwrap();
 
         let top = lb.top_queried(10).unwrap();
-        let entity = top.iter().find(|e| e.identifier == "youtube.com/c/3blue1brown").unwrap();
+        let entity = top
+            .iter()
+            .find(|e| e.identifier == "youtube.com/c/3blue1brown")
+            .unwrap();
         assert!(entity.is_entity);
 
         let domain = top.iter().find(|e| e.identifier == "nytimes.com").unwrap();
