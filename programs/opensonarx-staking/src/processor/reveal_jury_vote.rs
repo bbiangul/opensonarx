@@ -35,10 +35,8 @@ pub fn process_reveal_jury_vote(
 
     // Verify dispute PDA
     let nonce_bytes = dispute_nonce.to_le_bytes();
-    let (expected_dispute, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
-        program_id,
-    );
+    let (expected_dispute, _) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], program_id);
     if *dispute_pda.key != expected_dispute {
         return Err(ProgramError::InvalidSeeds);
     }

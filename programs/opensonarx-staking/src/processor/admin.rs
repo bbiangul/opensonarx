@@ -40,8 +40,7 @@ pub fn process_initialize_protocol(
     }
 
     // Derive config PDA
-    let (expected_config, config_bump) =
-        Pubkey::find_program_address(&[CONFIG_SEED], program_id);
+    let (expected_config, config_bump) = Pubkey::find_program_address(&[CONFIG_SEED], program_id);
     if *config_pda.key != expected_config {
         msg!("Invalid config PDA");
         return Err(ProgramError::InvalidSeeds);
@@ -75,7 +74,11 @@ pub fn process_initialize_protocol(
             space as u64,
             program_id,
         ),
-        &[authority.clone(), config_pda.clone(), system_program.clone()],
+        &[
+            authority.clone(),
+            config_pda.clone(),
+            system_program.clone(),
+        ],
         &[&[CONFIG_SEED, &[config_bump]]],
     )?;
 
@@ -85,14 +88,11 @@ pub fn process_initialize_protocol(
     let init_mint_ix = spl_token::instruction::initialize_mint2(
         token_program.key,
         truth_mint.key,
-        &expected_config, // mint authority = config PDA
+        &expected_config,       // mint authority = config PDA
         Some(&expected_config), // freeze authority
-        9, // 9 decimals like SOL
+        9,                      // 9 decimals like SOL
     )?;
-    solana_program::program::invoke(
-        &init_mint_ix,
-        &[truth_mint.clone(), token_program.clone()],
-    )?;
+    solana_program::program::invoke(&init_mint_ix, &[truth_mint.clone(), token_program.clone()])?;
 
     // Initialize reward vault token account
     // The vault account must be pre-created, we initialize it as token account
@@ -104,7 +104,11 @@ pub fn process_initialize_protocol(
     )?;
     solana_program::program::invoke(
         &init_vault_ix,
-        &[reward_vault.clone(), truth_mint.clone(), token_program.clone()],
+        &[
+            reward_vault.clone(),
+            truth_mint.clone(),
+            token_program.clone(),
+        ],
     )?;
 
     // Write config
@@ -130,16 +134,16 @@ pub fn process_initialize_protocol(
         sentinel_reward_per_token: 0,
         total_sentinel_staked: 0,
         min_epoch_duration: 604_800, // M7 fix: 7 days in seconds (prevents rapid epoch exhaustion)
-        epoch_started_at: 0,       // Will be set on first AdvanceEpoch
+        epoch_started_at: 0,         // Will be set on first AdvanceEpoch
         max_total_supply: 1_000_000_000, // 1B $TRUTH hard cap
         total_minted: 0,
-        min_jury_weight: 1_000,        // Minimum jury weight for dispute quorum
+        min_jury_weight: 1_000, // Minimum jury weight for dispute quorum
         burn_pct: 10,
         staker_emission_pct: 70,
         execution_delay_secs: 86_400, // 24-hour timelock after voting ends
-        proposal_deposit: 100,           // 100 $TRUTH deposit to create proposals (anti-spam)
+        proposal_deposit: 100,        // 100 $TRUTH deposit to create proposals (anti-spam)
         curator_yield_cap_bps: 1500,
-        sentinel_fee_pct: 5,              // 5% of channel spend to sentinel reward pool
+        sentinel_fee_pct: 5, // 5% of channel spend to sentinel reward pool
         accumulated_sentinel_fees: 0,
         total_funded: 0,
         total_distributed: 0,
@@ -189,8 +193,7 @@ pub fn process_mint_truth(
     }
 
     // Derive config bump for signing
-    let (expected_config, config_bump) =
-        Pubkey::find_program_address(&[CONFIG_SEED], program_id);
+    let (expected_config, config_bump) = Pubkey::find_program_address(&[CONFIG_SEED], program_id);
     if *config_pda.key != expected_config {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -210,7 +213,12 @@ pub fn process_mint_truth(
     )?;
     invoke_signed(
         &mint_ix,
-        &[truth_mint.clone(), destination.clone(), config_pda.clone(), token_program.clone()],
+        &[
+            truth_mint.clone(),
+            destination.clone(),
+            config_pda.clone(),
+            token_program.clone(),
+        ],
         &[&[CONFIG_SEED, &[config_bump]]],
     )?;
 

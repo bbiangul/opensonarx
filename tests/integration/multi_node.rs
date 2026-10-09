@@ -83,7 +83,10 @@ async fn test_gossip_heartbeat_propagates() {
 
     match found {
         Ok((a, b)) => {
-            assert!(a > 0 || b > 0, "Expected at least one peer discovered (A={a}, B={b})");
+            assert!(
+                a > 0 || b > 0,
+                "Expected at least one peer discovered (A={a}, B={b})"
+            );
         }
         Err(_) => {
             // Gossipsub mesh formation may not complete in time in some environments.

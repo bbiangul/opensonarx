@@ -14,11 +14,16 @@ use borsh::BorshDeserialize;
 use solana_program::program_error::ProgramError;
 
 use crate::error::StakingError;
-use crate::state::{ProtocolConfig, StakeAccountV2, GovernanceProposal, GovernanceLockAccount};
+use crate::state::{GovernanceLockAccount, GovernanceProposal, ProtocolConfig, StakeAccountV2};
 
 /// Check that minting `amount` tokens won't exceed the supply cap, and increment total_minted.
-pub(crate) fn check_and_increment_supply(config: &mut ProtocolConfig, amount: u64) -> Result<(), ProgramError> {
-    let new_total = config.total_minted.checked_add(amount)
+pub(crate) fn check_and_increment_supply(
+    config: &mut ProtocolConfig,
+    amount: u64,
+) -> Result<(), ProgramError> {
+    let new_total = config
+        .total_minted
+        .checked_add(amount)
         .ok_or(StakingError::Overflow)?;
     if new_total > config.max_total_supply {
         return Err(StakingError::SupplyCapExceeded.into());
@@ -137,7 +142,9 @@ pub(crate) fn deser_domain_record(data: &[u8]) -> Result<crate::state::DomainRec
 }
 
 /// Deserialize a DisputeAccount, handling pre-upgrade accounts without jury reward fields.
-pub(crate) fn deser_dispute_account(data: &[u8]) -> Result<crate::state::DisputeAccount, ProgramError> {
+pub(crate) fn deser_dispute_account(
+    data: &[u8],
+) -> Result<crate::state::DisputeAccount, ProgramError> {
     if let Ok(dispute) = deser::<crate::state::DisputeAccount>(data) {
         return Ok(dispute);
     }

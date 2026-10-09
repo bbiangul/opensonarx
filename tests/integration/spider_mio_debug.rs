@@ -17,7 +17,11 @@ async fn debug_mio_ranking() {
     // 1. Build SDK with real ONNX embedder
     let config = SdkConfig::default();
     let sdk = Arc::new(OpenSonarXClient::new(config));
-    assert_eq!(sdk.embedder_arc().dimension(), 384, "Need MiniLM ONNX embedder");
+    assert_eq!(
+        sdk.embedder_arc().dimension(),
+        384,
+        "Need MiniLM ONNX embedder"
+    );
 
     // 2. Spider docs.rs/tokio — same as main test
     let distiller = Arc::new(Distiller::new().with_embedder(sdk.embedder_arc()));
@@ -58,7 +62,10 @@ async fn debug_mio_ranking() {
         let chunk_count = o.chunks.len();
         println!(
             "  {} — {} chunks, markdown={} chars, hash={}",
-            o.url, chunk_count, md_len, &o.content_hash[..12]
+            o.url,
+            chunk_count,
+            md_len,
+            &o.content_hash[..12]
         );
     }
 
@@ -79,7 +86,11 @@ async fn debug_mio_ranking() {
             println!("  Chunk {i}: {} chars", chunk.content.len());
             println!("  Text: {}", &chunk.content[..chunk.content.len().min(500)]);
             if let Some(ref emb) = chunk.embedding {
-                println!("  Embedding: {}-dim, first 5 values: {:?}", emb.len(), &emb[..5.min(emb.len())]);
+                println!(
+                    "  Embedding: {}-dim, first 5 values: {:?}",
+                    emb.len(),
+                    &emb[..5.min(emb.len())]
+                );
             } else {
                 println!("  Embedding: NONE");
             }
@@ -110,7 +121,11 @@ async fn debug_mio_ranking() {
     println!("  Top 10 chunks by cosine similarity to \"{query}\":\n");
     for (rank, (url, idx, sim, preview)) in sims.iter().take(10).enumerate() {
         let is_mio = if url.contains("mio") { " <-- MIO" } else { "" };
-        println!("  #{}: sim={:.4} [{url} chunk {idx}]{is_mio}", rank + 1, sim);
+        println!(
+            "  #{}: sim={:.4} [{url} chunk {idx}]{is_mio}",
+            rank + 1,
+            sim
+        );
         println!("      {preview}...");
         println!();
     }
@@ -128,10 +143,19 @@ async fn debug_mio_ranking() {
     let results = sdk.search(query, 10, &filters).expect("search");
     println!("\n=== FULL SEARCH RESULTS for \"{query}\" (top 10) ===");
     for (i, r) in results.iter().enumerate() {
-        let is_mio = if r.url.contains("mio") { " <-- MIO" } else { "" };
+        let is_mio = if r.url.contains("mio") {
+            " <-- MIO"
+        } else {
+            ""
+        };
         println!(
             "  #{}: final={:.4} sem={:.4} bm25={:.4} — {} [{}]{is_mio}",
-            i + 1, r.final_score, r.semantic_score, r.bm25_score, r.title, r.url
+            i + 1,
+            r.final_score,
+            r.semantic_score,
+            r.bm25_score,
+            r.title,
+            r.url
         );
     }
 }

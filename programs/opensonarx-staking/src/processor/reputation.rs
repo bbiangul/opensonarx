@@ -56,8 +56,7 @@ pub fn process_commit_reputation_root(
     }
 
     // Validate reputation PDA
-    let (expected_pda, bump) =
-        Pubkey::find_program_address(&[REPUTATION_ROOT_SEED], program_id);
+    let (expected_pda, bump) = Pubkey::find_program_address(&[REPUTATION_ROOT_SEED], program_id);
     if *reputation_pda.key != expected_pda {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -69,7 +68,11 @@ pub fn process_commit_reputation_root(
         // Account exists — validate epoch is increasing
         if let Ok(existing) = deser::<ReputationRootAccount>(&reputation_pda.data.borrow()) {
             if existing.is_initialized && epoch <= existing.epoch {
-                msg!("Epoch {} is not greater than current {}", epoch, existing.epoch);
+                msg!(
+                    "Epoch {} is not greater than current {}",
+                    epoch,
+                    existing.epoch
+                );
                 return Err(StakingError::StaleEpoch.into());
             }
         }

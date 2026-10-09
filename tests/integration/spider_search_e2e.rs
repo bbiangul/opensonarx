@@ -25,9 +25,7 @@ async fn spider_ingest_then_search() {
     assert_eq!(dim, 384, "Expected MiniLM 384-dim embedder, got {dim}-dim (likely MockEmbedder). Build with onnx feature.");
 
     // 2. Build a Spider with the same embedder as the SDK (so embeddings match)
-    let distiller = Arc::new(
-        Distiller::new().with_embedder(sdk.embedder_arc()),
-    );
+    let distiller = Arc::new(Distiller::new().with_embedder(sdk.embedder_arc()));
     let spider_config = SpiderConfig {
         max_depth: 1,
         max_pages: 10,
@@ -94,7 +92,9 @@ async fn spider_ingest_then_search() {
     println!("{}", "=".repeat(80));
 
     for query in &queries {
-        let results = sdk.search(query, 5, &filters).expect("search should succeed");
+        let results = sdk
+            .search(query, 5, &filters)
+            .expect("search should succeed");
         println!("\n┌──────────────────────────────────────────────────────────────");
         println!("│ Query: \"{query}\"");
         println!("│ Results: {}", results.len());
@@ -106,7 +106,10 @@ async fn spider_ingest_then_search() {
                 println!("│");
                 println!("│  #{} — {}", i + 1, r.title);
                 println!("│  URL:       {}", r.url);
-                println!("│  Scores:    final={:.4}  semantic={:.4}  bm25={:.4}", r.final_score, r.semantic_score, r.bm25_score);
+                println!(
+                    "│  Scores:    final={:.4}  semantic={:.4}  bm25={:.4}",
+                    r.final_score, r.semantic_score, r.bm25_score
+                );
                 // Snippet: first 300 chars
                 let snippet: String = r.snippet.chars().take(300).collect();
                 if !snippet.is_empty() {

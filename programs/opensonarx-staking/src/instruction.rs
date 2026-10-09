@@ -3,7 +3,6 @@ use borsh::{BorshDeserialize, BorshSerialize};
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub enum StakingInstruction {
     // ── Legacy (kept for backwards compat) ──
-
     /// Stake SOL for a domain (legacy V1).
     ///
     /// Accounts:
@@ -30,7 +29,6 @@ pub enum StakingInstruction {
     WithdrawV1 { domain: String },
 
     // ── Phase 0: Foundation ──
-
     /// Initialize protocol config and $TRUTH mint.
     /// M7: min_epoch_duration defaults to 604800 (7 days).
     ///
@@ -62,7 +60,6 @@ pub enum StakingInstruction {
     MintTruth { amount: u64 },
 
     // ── Phase 1: SPL Token Staking ──
-
     /// Stake $TRUTH for a domain.
     ///
     /// Accounts:
@@ -120,7 +117,6 @@ pub enum StakingInstruction {
     ClaimReward { domain: String },
 
     // ── Phase 2: DNS & Domain Management ──
-
     /// Admin/oracle verifies DNS for a domain.
     ///
     /// Accounts:
@@ -150,7 +146,6 @@ pub enum StakingInstruction {
     SetUgcPlatform { domain: String, is_ugc: bool },
 
     // ── Phase 3: Disputes & Slashing ──
-
     /// Open a dispute against a domain.
     ///
     /// Accounts:
@@ -214,7 +209,7 @@ pub enum StakingInstruction {
     RevealJuryVote {
         domain: String,
         dispute_nonce: u64,
-        verdict: u8,      // 0=Guilty, 1=Innocent
+        verdict: u8, // 0=Guilty, 1=Innocent
         salt: [u8; 32],
     },
 
@@ -230,13 +225,9 @@ pub enum StakingInstruction {
     ///   6. `[]` Config PDA
     ///   7. `[]` Token Program
     ///   8. `[]` Clock sysvar
-    ResolveDispute {
-        domain: String,
-        dispute_nonce: u64,
-    },
+    ResolveDispute { domain: String, dispute_nonce: u64 },
 
     // ── Phase 4: Rewards ──
-
     /// Fund the reward vault with $TRUTH.
     ///
     /// Accounts:
@@ -255,7 +246,6 @@ pub enum StakingInstruction {
     UpdateRewardIndex { funded_amount: u64 },
 
     // ── Phase 5: DAO Governance ──
-
     /// Create a governance proposal. If `proposal_deposit > 0`, accounts 5-7 are required.
     ///
     /// Accounts:
@@ -302,7 +292,6 @@ pub enum StakingInstruction {
     ExecuteProposal { proposal_nonce: u64 },
 
     // ── Phase 6: State Channels ──
-
     /// Open a state channel with $TRUTH deposit.
     ///
     /// Accounts:
@@ -340,7 +329,6 @@ pub enum StakingInstruction {
     },
 
     // ── Phase 7: Sentinel Nodes ──
-
     /// Stake $TRUTH globally as a Sentinel (crawler node).
     ///
     /// Accounts:
@@ -403,10 +391,7 @@ pub enum StakingInstruction {
     ///   0. `[signer]` Authority (must match config.authority)
     ///   1. `[writable]` SentinelAccount PDA
     ///   2. `[]` Config PDA
-    SlashSentinel {
-        sentinel: [u8; 32],
-        amount: u64,
-    },
+    SlashSentinel { sentinel: [u8; 32], amount: u64 },
 
     /// Claim jury reward for a resolved dispute (winning side).
     /// Mints flat jury_vote_reward from supply (no proportional pool share).
@@ -419,13 +404,9 @@ pub enum StakingInstruction {
     ///   4. `[writable]` $TRUTH Mint
     ///   5. `[writable]` Config PDA (total_minted updated)
     ///   6. `[]` Token Program
-    ClaimJuryReward {
-        domain: String,
-        dispute_nonce: u64,
-    },
+    ClaimJuryReward { domain: String, dispute_nonce: u64 },
 
     // ── Reputation ──
-
     /// Commit a Merkle root of domain reputation scores on-chain.
     /// Only the protocol authority can submit, and epoch must be monotonically increasing.
     ///
@@ -434,8 +415,5 @@ pub enum StakingInstruction {
     ///   1. `[writable]` ReputationRootAccount PDA
     ///   2. `[]` Config PDA
     ///   3. `[]` System Program
-    CommitReputationRoot {
-        merkle_root: [u8; 32],
-        epoch: u64,
-    },
+    CommitReputationRoot { merkle_root: [u8; 32], epoch: u64 },
 }

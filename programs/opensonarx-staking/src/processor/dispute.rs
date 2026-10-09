@@ -79,10 +79,8 @@ pub fn process_open_dispute(
     let nonce_bytes = nonce.to_le_bytes();
 
     // Derive dispute PDA
-    let (expected_dispute, dispute_bump) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
-        program_id,
-    );
+    let (expected_dispute, dispute_bump) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], program_id);
     if *dispute_pda.key != expected_dispute {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -97,8 +95,8 @@ pub fn process_open_dispute(
     let mut bond = config.dispute_bond;
     let trusted_threshold = config.jury_min_stake.saturating_mul(10);
     if let Some(sentinel_pda) = sentinel_pda {
-        let (expected_sentinel, _) = Pubkey::find_program_address(
-            &[SENTINEL_SEED, reporter.key.as_ref()], program_id);
+        let (expected_sentinel, _) =
+            Pubkey::find_program_address(&[SENTINEL_SEED, reporter.key.as_ref()], program_id);
         if *sentinel_pda.key == expected_sentinel
             && sentinel_pda.data_len() > 0
             && sentinel_pda.lamports() > 0
@@ -125,7 +123,12 @@ pub fn process_open_dispute(
     )?;
     invoke(
         &transfer_ix,
-        &[reporter_token.clone(), vault_token.clone(), reporter.clone(), token_program.clone()],
+        &[
+            reporter_token.clone(),
+            vault_token.clone(),
+            reporter.clone(),
+            token_program.clone(),
+        ],
     )?;
 
     // Create dispute PDA
@@ -139,8 +142,17 @@ pub fn process_open_dispute(
             space as u64,
             program_id,
         ),
-        &[reporter.clone(), dispute_pda.clone(), system_program.clone()],
-        &[&[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes, &[dispute_bump]]],
+        &[
+            reporter.clone(),
+            dispute_pda.clone(),
+            system_program.clone(),
+        ],
+        &[&[
+            DISPUTE_SEED,
+            domain.as_bytes(),
+            &nonce_bytes,
+            &[dispute_bump],
+        ]],
     )?;
 
     let three_days: i64 = 3 * 24 * 3600;
@@ -179,7 +191,8 @@ pub fn process_open_dispute(
         if new_lamports > current_lamports {
             let diff = new_lamports - current_lamports;
             // Fund from reporter
-            **reporter.lamports.borrow_mut() = reporter.lamports()
+            **reporter.lamports.borrow_mut() = reporter
+                .lamports()
                 .checked_sub(diff)
                 .ok_or(StakingError::Overflow)?;
             **domain_pda.lamports.borrow_mut() = current_lamports
@@ -235,10 +248,8 @@ pub fn process_cast_jury_vote(
 
     // Verify dispute PDA
     let nonce_bytes = dispute_nonce.to_le_bytes();
-    let (expected_dispute, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
-        program_id,
-    );
+    let (expected_dispute, _) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], program_id);
     if *dispute_pda.key != expected_dispute {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -319,7 +330,12 @@ pub fn process_cast_jury_vote(
             program_id,
         ),
         &[voter.clone(), jury_pda.clone(), system_program.clone()],
-        &[&[JURY_SEED, dispute_pda.key.as_ref(), voter.key.as_ref(), &[jury_bump]]],
+        &[&[
+            JURY_SEED,
+            dispute_pda.key.as_ref(),
+            voter.key.as_ref(),
+            &[jury_bump],
+        ]],
     )?;
 
     let weight = voter_stake.amount;
@@ -366,7 +382,8 @@ pub fn process_resolve_dispute(
     let clock_sysvar = next_account_info(accounts_iter)?;
 
     // Validate config PDA
-    let (expected_resolve_config, config_bump) = Pubkey::find_program_address(&[CONFIG_SEED], program_id);
+    let (expected_resolve_config, config_bump) =
+        Pubkey::find_program_address(&[CONFIG_SEED], program_id);
     if *config_pda.key != expected_resolve_config {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -383,10 +400,8 @@ pub fn process_resolve_dispute(
 
     // Verify dispute PDA
     let nonce_bytes = dispute_nonce.to_le_bytes();
-    let (expected_dispute, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
-        program_id,
-    );
+    let (expected_dispute, _) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], program_id);
     if *dispute_pda.key != expected_dispute {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -449,7 +464,12 @@ pub fn process_resolve_dispute(
             )?;
             invoke_signed(
                 &transfer_ix,
-                &[vault_token.clone(), reporter_token.clone(), config_pda.clone(), token_program.clone()],
+                &[
+                    vault_token.clone(),
+                    reporter_token.clone(),
+                    config_pda.clone(),
+                    token_program.clone(),
+                ],
                 &[&[CONFIG_SEED, &[config_bump]]],
             )?;
         }
@@ -461,7 +481,11 @@ pub fn process_resolve_dispute(
         }
         borsh::to_writer(&mut &mut dispute_pda.data.borrow_mut()[..], &dispute)?;
         clear_domain_dispute(domain_pda)?;
-        msg!("Dispute quorum not met ({} < {}), bond returned to reporter", total_jury_weight, config.min_jury_weight);
+        msg!(
+            "Dispute quorum not met ({} < {}), bond returned to reporter",
+            total_jury_weight,
+            config.min_jury_weight
+        );
         return Ok(());
     }
 
@@ -487,7 +511,12 @@ pub fn process_resolve_dispute(
             )?;
             invoke_signed(
                 &transfer_ix,
-                &[vault_token.clone(), reporter_token.clone(), config_pda.clone(), token_program.clone()],
+                &[
+                    vault_token.clone(),
+                    reporter_token.clone(),
+                    config_pda.clone(),
+                    token_program.clone(),
+                ],
                 &[&[CONFIG_SEED, &[config_bump]]],
             )?;
         }
@@ -533,7 +562,10 @@ pub fn process_resolve_dispute(
         dispute.jury_reward_pool = 0;
         dispute.jury_reward_claimed = 0;
         clear_domain_dispute(domain_pda)?;
-        msg!("Dispute resolved: INNOCENT for {}. Bond stays in vault as protocol revenue.", domain);
+        msg!(
+            "Dispute resolved: INNOCENT for {}. Bond stays in vault as protocol revenue.",
+            domain
+        );
     }
 
     // Realloc dispute PDA if pre-upgrade

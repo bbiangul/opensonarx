@@ -52,8 +52,10 @@ pub fn validate_entity_ref(domain: &str) -> ProgramResult {
     };
 
     // Reject leading/trailing dot or dash in domain
-    if domain_part.starts_with('.') || domain_part.ends_with('.')
-        || domain_part.starts_with('-') || domain_part.ends_with('-')
+    if domain_part.starts_with('.')
+        || domain_part.ends_with('.')
+        || domain_part.starts_with('-')
+        || domain_part.ends_with('-')
     {
         msg!("Domain cannot start or end with '.' or '-'");
         return Err(ProgramError::InvalidArgument);
@@ -164,7 +166,12 @@ pub fn process_stake_v2(
     )?;
     invoke(
         &transfer_ix,
-        &[staker_token.clone(), vault_token.clone(), staker.clone(), token_program.clone()],
+        &[
+            staker_token.clone(),
+            vault_token.clone(),
+            staker.clone(),
+            token_program.clone(),
+        ],
     )?;
 
     // Create StakeAccountV2 PDA
@@ -179,7 +186,12 @@ pub fn process_stake_v2(
             program_id,
         ),
         &[staker.clone(), stake_pda.clone(), system_program.clone()],
-        &[&[STAKE_SEED, domain.as_bytes(), staker.key.as_ref(), &[stake_bump]]],
+        &[&[
+            STAKE_SEED,
+            domain.as_bytes(),
+            staker.key.as_ref(),
+            &[stake_bump],
+        ]],
     )?;
 
     let stake_account = StakeAccountV2 {
@@ -242,7 +254,9 @@ pub fn process_stake_v2(
         if record.blacklisted {
             return Err(StakingError::DomainBlacklisted.into());
         }
-        record.total_staked = record.total_staked.checked_add(amount)
+        record.total_staked = record
+            .total_staked
+            .checked_add(amount)
             .ok_or(StakingError::Overflow)?;
         match stake_type {
             StakeType::Publisher => record.publisher_count += 1,
@@ -253,10 +267,18 @@ pub fn process_stake_v2(
     }
 
     // Update total_staked in config
-    config.total_staked = config.total_staked.checked_add(amount).ok_or(StakingError::Overflow)?;
+    config.total_staked = config
+        .total_staked
+        .checked_add(amount)
+        .ok_or(StakingError::Overflow)?;
     borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
 
-    msg!("StakeV2: {} $TRUTH for {} by {}", amount, domain, staker.key);
+    msg!(
+        "StakeV2: {} $TRUTH for {} by {}",
+        amount,
+        domain,
+        staker.key
+    );
     Ok(())
 }
 
@@ -311,8 +333,8 @@ pub fn process_unstake_v2(
     let clock = Clock::from_account_info(clock_sysvar)?;
 
     // S1 fix: block unstaking while domain has an active dispute
-    let (expected_domain, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()], program_id);
+    let (expected_domain, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], program_id);
     if *domain_pda.key != expected_domain {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -324,8 +346,8 @@ pub fn process_unstake_v2(
     }
 
     // S2 fix: per-wallet governance lock check — cannot unstake while any vote lock is active
-    let (expected_gov_lock, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, staker.key.as_ref()], program_id);
+    let (expected_gov_lock, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, staker.key.as_ref()], program_id);
     if *gov_lock_pda.key != expected_gov_lock {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -343,7 +365,11 @@ pub fn process_unstake_v2(
     config.total_staked = config.total_staked.saturating_sub(account.amount);
     borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
 
-    msg!("UnstakeV2 initiated for {}, cooldown until {}", domain, account.cooldown_until);
+    msg!(
+        "UnstakeV2 initiated for {}, cooldown until {}",
+        domain,
+        account.cooldown_until
+    );
     Ok(())
 }
 
@@ -442,7 +468,8 @@ pub fn process_withdraw(
     }
 
     // Transfer $TRUTH from vault back to staker (minus slashed)
-    let withdraw_amount = account.amount
+    let withdraw_amount = account
+        .amount
         .saturating_sub(account.slashed_amount)
         .saturating_sub(slash_amount);
     if withdraw_amount > 0 {
@@ -456,7 +483,12 @@ pub fn process_withdraw(
         )?;
         invoke_signed(
             &transfer_ix,
-            &[vault_token.clone(), staker_token.clone(), config_pda.clone(), token_program.clone()],
+            &[
+                vault_token.clone(),
+                staker_token.clone(),
+                config_pda.clone(),
+                token_program.clone(),
+            ],
             &[&[CONFIG_SEED, &[config_bump]]],
         )?;
     }
@@ -478,10 +510,19 @@ pub fn process_withdraw(
             )?;
             invoke_signed(
                 &burn_ix,
-                &[vault_token.clone(), truth_mint.clone(), config_pda.clone(), token_program.clone()],
+                &[
+                    vault_token.clone(),
+                    truth_mint.clone(),
+                    config_pda.clone(),
+                    token_program.clone(),
+                ],
                 &[&[CONFIG_SEED, &[config_bump]]],
             )?;
-            msg!("Slash burn: {} $TRUTH burned, {} retained as protocol revenue", burn_half, slash_amount - burn_half);
+            msg!(
+                "Slash burn: {} $TRUTH burned, {} retained as protocol revenue",
+                burn_half,
+                slash_amount - burn_half
+            );
         }
     }
 
@@ -495,8 +536,12 @@ pub fn process_withdraw(
             if record.is_initialized {
                 record.total_staked = record.total_staked.saturating_sub(account.amount);
                 match account.stake_type {
-                    StakeType::Publisher => record.publisher_count = record.publisher_count.saturating_sub(1),
-                    StakeType::Curator => record.curator_count = record.curator_count.saturating_sub(1),
+                    StakeType::Publisher => {
+                        record.publisher_count = record.publisher_count.saturating_sub(1)
+                    }
+                    StakeType::Curator => {
+                        record.curator_count = record.curator_count.saturating_sub(1)
+                    }
                     StakeType::Sentinel => {} // Sentinels are global, not per-domain
                 }
                 borsh::to_writer(&mut &mut domain_pda.data.borrow_mut()[..], &record)?;
@@ -520,7 +565,12 @@ pub fn process_withdraw(
         *byte = 0;
     }
 
-    msg!("Withdrew {} $TRUTH for {} (slashed: {})", withdraw_amount, domain, slash_amount);
+    msg!(
+        "Withdrew {} $TRUTH for {} (slashed: {})",
+        withdraw_amount,
+        domain,
+        slash_amount
+    );
     Ok(())
 }
 
@@ -577,7 +627,8 @@ pub fn process_claim_reward(
     // Synthetix-style reward math
     let pending = (account.amount as u128)
         .checked_mul(
-            config.reward_per_token_stored
+            config
+                .reward_per_token_stored
                 .checked_sub(account.reward_debt)
                 .ok_or(StakingError::Overflow)?,
         )
@@ -598,7 +649,9 @@ pub fn process_claim_reward(
     };
 
     if capped_pending > 0 {
-        let payout: u64 = capped_pending.try_into().map_err(|_| StakingError::Overflow)?;
+        let payout: u64 = capped_pending
+            .try_into()
+            .map_err(|_| StakingError::Overflow)?;
 
         // Enforce supply cap before minting
         super::check_and_increment_supply(&mut config, payout)?;
@@ -614,7 +667,12 @@ pub fn process_claim_reward(
         )?;
         invoke_signed(
             &mint_ix,
-            &[truth_mint.clone(), staker_token.clone(), config_pda.clone(), token_program.clone()],
+            &[
+                truth_mint.clone(),
+                staker_token.clone(),
+                config_pda.clone(),
+                token_program.clone(),
+            ],
             &[&[CONFIG_SEED, &[config_bump]]],
         )?;
     }

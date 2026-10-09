@@ -57,11 +57,17 @@ pub fn process_fund_rewards(
     )?;
     invoke(
         &transfer_ix,
-        &[funder_token.clone(), vault_token.clone(), funder.clone(), token_program.clone()],
+        &[
+            funder_token.clone(),
+            vault_token.clone(),
+            funder.clone(),
+            token_program.clone(),
+        ],
     )?;
 
     // M3 fix: track cumulative funded amount for permissionless distribution cap
-    config.total_funded = config.total_funded
+    config.total_funded = config
+        .total_funded
         .checked_add(amount)
         .ok_or(StakingError::Overflow)?;
     borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
@@ -113,7 +119,11 @@ pub fn process_update_reward_index(
     let capped_amount = capped_amount.min(supply_headroom);
 
     if capped_amount == 0 {
-        msg!("Epoch {} emission cap reached ({}), no more funding allowed", config.current_epoch, epoch_cap);
+        msg!(
+            "Epoch {} emission cap reached ({}), no more funding allowed",
+            config.current_epoch,
+            epoch_cap
+        );
         borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
         return Ok(());
     }
@@ -147,7 +157,10 @@ pub fn process_update_reward_index(
             .checked_add(increment)
             .ok_or(StakingError::Overflow)?;
     } else if staker_portion > 0 {
-        msg!("Warning: {} staker emissions skipped (no stakers), not counted against cap", staker_portion);
+        msg!(
+            "Warning: {} staker emissions skipped (no stakers), not counted against cap",
+            staker_portion
+        );
     }
 
     // Update sentinel reward index (skip if no sentinels — emissions would be lost)
@@ -163,7 +176,10 @@ pub fn process_update_reward_index(
             .checked_add(sentinel_increment)
             .ok_or(StakingError::Overflow)?;
     } else if sentinel_portion > 0 {
-        msg!("Warning: {} sentinel emissions skipped (no sentinels), not counted against cap", sentinel_portion);
+        msg!(
+            "Warning: {} sentinel emissions skipped (no sentinels), not counted against cap",
+            sentinel_portion
+        );
     }
 
     // Only count successfully distributed EMISSIONS against the cap.
@@ -178,19 +194,24 @@ pub fn process_update_reward_index(
         actually_funded = actually_funded.saturating_add(sentinel_emission);
     }
 
-    config.epoch_funded_amount = config.epoch_funded_amount
+    config.epoch_funded_amount = config
+        .epoch_funded_amount
         .checked_add(actually_funded)
         .ok_or(StakingError::Overflow)?;
 
     // M3 fix: track cumulative distributed amount
-    config.total_distributed = config.total_distributed
+    config.total_distributed = config
+        .total_distributed
         .checked_add(actually_funded)
         .ok_or(StakingError::Overflow)?;
 
     borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
     msg!(
         "Reward index updated: {} staker / {} sentinel (epoch {} cap={})",
-        staker_portion, sentinel_portion, config.current_epoch, epoch_cap
+        staker_portion,
+        sentinel_portion,
+        config.current_epoch,
+        epoch_cap
     );
 
     Ok(())
@@ -204,10 +225,7 @@ pub fn process_update_reward_index(
 ///   0. `[signer]` Authority
 ///   1. `[writable]` Config PDA
 ///   2. `[]` Clock sysvar
-pub fn process_advance_epoch(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-) -> ProgramResult {
+pub fn process_advance_epoch(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
     let authority = next_account_info(accounts_iter)?;
     let config_pda = next_account_info(accounts_iter)?;
@@ -249,14 +267,18 @@ pub fn process_advance_epoch(
     let mut emission = 10_000_000u64;
     for _ in 0..config.current_epoch {
         emission = emission * 985 / 1000;
-        if emission == 0 { break; }
+        if emission == 0 {
+            break;
+        }
     }
     config.epoch_max_emission = emission;
 
     borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
     msg!(
         "Advanced from epoch {} to epoch {} (max emission: {})",
-        prev_epoch, config.current_epoch, config.epoch_max_emission
+        prev_epoch,
+        config.current_epoch,
+        config.epoch_max_emission
     );
 
     Ok(())

@@ -63,7 +63,9 @@ fn test_ner_portuguese() {
         "should find Lula, got: {mentions:?}"
     );
     assert!(
-        mentions.iter().any(|m| m.contains("São Paulo") || m.contains("Paulo")),
+        mentions
+            .iter()
+            .any(|m| m.contains("São Paulo") || m.contains("Paulo")),
         "should find São Paulo, got: {mentions:?}"
     );
     assert_no_panic_and_valid(&ext, text, "pt");
@@ -72,7 +74,8 @@ fn test_ner_portuguese() {
 #[test]
 fn test_ner_spanish() {
     let ext = MockFactExtractor::new();
-    let text = "Felipe VI inauguró la nueva terminal del aeropuerto de Madrid junto con Pedro Sánchez.";
+    let text =
+        "Felipe VI inauguró la nueva terminal del aeropuerto de Madrid junto con Pedro Sánchez.";
     let result = ext.extract(text).unwrap();
     let mentions: Vec<&str> = result.entities.iter().map(|e| e.mention.as_str()).collect();
     assert!(
@@ -152,7 +155,10 @@ fn test_multilingual_no_panic() {
         ("en", "The United Nations General Assembly met in New York."),
         ("pt", "O Flamengo venceu o Palmeiras no Maracanã."),
         ("es", "El Real Madrid ganó la Liga de Campeones."),
-        ("de", "Bayern München besiegte Borussia Dortmund in der Allianz Arena."),
+        (
+            "de",
+            "Bayern München besiegte Borussia Dortmund in der Allianz Arena.",
+        ),
         ("fr", "Kylian Mbappé a marqué un but au Parc des Princes."),
         ("zh", "腾讯公司总部位于深圳。"),
         ("ja", "トヨタ自動車は愛知県豊田市に本社を置く。"),

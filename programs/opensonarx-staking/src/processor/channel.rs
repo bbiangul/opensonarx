@@ -56,10 +56,8 @@ fn verify_ed25519_ticket(
     if current_ix_index == 0 {
         return Err(StakingError::InvalidSignature.into());
     }
-    let ed25519_ix = ix_sysvar::load_instruction_at_checked(
-        (current_ix_index - 1) as usize,
-        ix_sysvar_info,
-    )?;
+    let ed25519_ix =
+        ix_sysvar::load_instruction_at_checked((current_ix_index - 1) as usize, ix_sysvar_info)?;
 
     // Verify it's the Ed25519 program
     if ed25519_ix.program_id != solana_program::ed25519_program::id() {
@@ -91,7 +89,9 @@ fn verify_ed25519_ticket(
     }
     let pubkey_bytes = &ix_data[pubkey_offset..pubkey_offset + 32];
     let signer_pubkey = Pubkey::new_from_array(
-        pubkey_bytes.try_into().map_err(|_| StakingError::InvalidSignature)?
+        pubkey_bytes
+            .try_into()
+            .map_err(|_| StakingError::InvalidSignature)?,
     );
 
     // Verify signer is the expected payer
@@ -170,7 +170,12 @@ pub fn process_open_channel(
     )?;
     invoke(
         &transfer_ix,
-        &[payer_token.clone(), vault_token.clone(), payer.clone(), token_program.clone()],
+        &[
+            payer_token.clone(),
+            vault_token.clone(),
+            payer.clone(),
+            token_program.clone(),
+        ],
     )?;
 
     // Create channel account
@@ -186,7 +191,12 @@ pub fn process_open_channel(
             program_id,
         ),
         &[payer.clone(), channel_pda.clone(), system_program.clone()],
-        &[&[CHANNEL_SEED, payer.key.as_ref(), payee.as_ref(), &[channel_bump]]],
+        &[&[
+            CHANNEL_SEED,
+            payer.key.as_ref(),
+            payee.as_ref(),
+            &[channel_bump],
+        ]],
     )?;
 
     let channel = StateChannelAccount {
@@ -201,7 +211,12 @@ pub fn process_open_channel(
     };
     borsh::to_writer(&mut &mut channel_pda.data.borrow_mut()[..], &channel)?;
 
-    msg!("Channel opened: {} → {} for {} $TRUTH", payer.key, payee, amount);
+    msg!(
+        "Channel opened: {} → {} for {} $TRUTH",
+        payer.key,
+        payee,
+        amount
+    );
     Ok(())
 }
 
@@ -258,7 +273,8 @@ pub fn process_settle_channel(
         channel_pda.key.as_ref(),
         &spent.to_le_bytes(),
         &nonce.to_le_bytes(),
-    ].concat();
+    ]
+    .concat();
     verify_ed25519_ticket(ix_sysvar, &payer_key, &expected_msg)?;
 
     // Derive channel PDA
@@ -307,7 +323,8 @@ pub fn process_settle_channel(
         settlement_shares(actual_spent, config.burn_pct, config.sentinel_fee_pct)?;
 
     // Sentinel fee stays in vault; accumulate for distribution via UpdateRewardIndex
-    config.accumulated_sentinel_fees = config.accumulated_sentinel_fees
+    config.accumulated_sentinel_fees = config
+        .accumulated_sentinel_fees
         .checked_add(sentinel_fee)
         .ok_or(StakingError::Overflow)?;
 
@@ -323,7 +340,12 @@ pub fn process_settle_channel(
         )?;
         invoke_signed(
             &transfer_ix,
-            &[vault_token.clone(), payee_token.clone(), config_pda.clone(), token_program.clone()],
+            &[
+                vault_token.clone(),
+                payee_token.clone(),
+                config_pda.clone(),
+                token_program.clone(),
+            ],
             &[&[CONFIG_SEED, &[config_bump]]],
         )?;
     }
@@ -343,7 +365,12 @@ pub fn process_settle_channel(
         )?;
         invoke_signed(
             &burn_ix,
-            &[vault_token.clone(), truth_mint.clone(), config_pda.clone(), token_program.clone()],
+            &[
+                vault_token.clone(),
+                truth_mint.clone(),
+                config_pda.clone(),
+                token_program.clone(),
+            ],
             &[&[CONFIG_SEED, &[config_bump]]],
         )?;
         msg!("Burned {} $TRUTH from query fees", burn_amount);
@@ -361,7 +388,12 @@ pub fn process_settle_channel(
         )?;
         invoke_signed(
             &refund_ix,
-            &[vault_token.clone(), payer_token.clone(), config_pda.clone(), token_program.clone()],
+            &[
+                vault_token.clone(),
+                payer_token.clone(),
+                config_pda.clone(),
+                token_program.clone(),
+            ],
             &[&[CONFIG_SEED, &[config_bump]]],
         )?;
     }
@@ -383,7 +415,10 @@ pub fn process_settle_channel(
 
     msg!(
         "Channel settled: {} to payee, {} burned, {} sentinel fee, {} refund",
-        payee_amount, burn_amount, sentinel_fee, refund
+        payee_amount,
+        burn_amount,
+        sentinel_fee,
+        refund
     );
     Ok(())
 }

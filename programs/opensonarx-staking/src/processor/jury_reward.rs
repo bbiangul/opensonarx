@@ -57,10 +57,8 @@ pub fn process_claim_jury_reward(
 
     // Verify dispute PDA
     let nonce_bytes = dispute_nonce.to_le_bytes();
-    let (expected_dispute, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
-        program_id,
-    );
+    let (expected_dispute, _) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], program_id);
     if *dispute_pda.key != expected_dispute {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -138,7 +136,12 @@ pub fn process_claim_jury_reward(
     )?;
     invoke_signed(
         &mint_ix,
-        &[truth_mint.clone(), voter_token.clone(), config_pda.clone(), token_program.clone()],
+        &[
+            truth_mint.clone(),
+            voter_token.clone(),
+            config_pda.clone(),
+            token_program.clone(),
+        ],
         &[&[CONFIG_SEED, &[config_bump]]],
     )?;
 
@@ -159,6 +162,10 @@ pub fn process_claim_jury_reward(
     }
     borsh::to_writer(&mut &mut jury_pda.data.borrow_mut()[..], &jury_vote)?;
 
-    msg!("Jury reward claimed: {} $TRUTH minted for voter {}", payout, voter.key);
+    msg!(
+        "Jury reward claimed: {} $TRUTH minted for voter {}",
+        payout,
+        voter.key
+    );
     Ok(())
 }

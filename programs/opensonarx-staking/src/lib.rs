@@ -40,9 +40,7 @@ pub fn process_instruction(
         StakingInstruction::Stake { domain, amount } => {
             process_stake(program_id, accounts, &domain, amount)
         }
-        StakingInstruction::Unstake { domain } => {
-            process_unstake(program_id, accounts, &domain)
-        }
+        StakingInstruction::Unstake { domain } => process_unstake(program_id, accounts, &domain),
 
         // Legacy V1 Withdraw
         StakingInstruction::WithdrawV1 { domain } => {
@@ -58,16 +56,25 @@ pub fn process_instruction(
             reward_rate,
             jury_min_stake,
         } => processor::admin::process_initialize_protocol(
-            program_id, accounts, min_stake, cooldown_secs, dispute_bond, slash_pct, reward_rate, jury_min_stake,
+            program_id,
+            accounts,
+            min_stake,
+            cooldown_secs,
+            dispute_bond,
+            slash_pct,
+            reward_rate,
+            jury_min_stake,
         ),
         StakingInstruction::MintTruth { amount } => {
             processor::admin::process_mint_truth(program_id, accounts, amount)
         }
 
         // Phase 1: SPL Token Staking
-        StakingInstruction::StakeV2 { domain, amount, stake_type } => {
-            processor::stake::process_stake_v2(program_id, accounts, &domain, amount, stake_type)
-        }
+        StakingInstruction::StakeV2 {
+            domain,
+            amount,
+            stake_type,
+        } => processor::stake::process_stake_v2(program_id, accounts, &domain, amount, stake_type),
         StakingInstruction::UnstakeV2 { domain } => {
             processor::stake::process_unstake_v2(program_id, accounts, &domain)
         }
@@ -90,21 +97,61 @@ pub fn process_instruction(
         }
 
         // Phase 3: Disputes & Slashing
-        StakingInstruction::OpenDispute { domain, reason_hash, severity } => {
-            processor::dispute::process_open_dispute(program_id, accounts, &domain, reason_hash, severity)
-        }
-        StakingInstruction::CastJuryVote { domain, dispute_nonce, verdict } => {
-            processor::dispute::process_cast_jury_vote(program_id, accounts, &domain, dispute_nonce, verdict)
-        }
-        StakingInstruction::CommitJuryVote { domain, dispute_nonce, commit_hash } => {
-            processor::commit_jury_vote::process_commit_jury_vote(program_id, accounts, &domain, dispute_nonce, commit_hash)
-        }
-        StakingInstruction::RevealJuryVote { domain, dispute_nonce, verdict, salt } => {
-            processor::reveal_jury_vote::process_reveal_jury_vote(program_id, accounts, &domain, dispute_nonce, verdict, salt)
-        }
-        StakingInstruction::ResolveDispute { domain, dispute_nonce } => {
-            processor::dispute::process_resolve_dispute(program_id, accounts, &domain, dispute_nonce)
-        }
+        StakingInstruction::OpenDispute {
+            domain,
+            reason_hash,
+            severity,
+        } => processor::dispute::process_open_dispute(
+            program_id,
+            accounts,
+            &domain,
+            reason_hash,
+            severity,
+        ),
+        StakingInstruction::CastJuryVote {
+            domain,
+            dispute_nonce,
+            verdict,
+        } => processor::dispute::process_cast_jury_vote(
+            program_id,
+            accounts,
+            &domain,
+            dispute_nonce,
+            verdict,
+        ),
+        StakingInstruction::CommitJuryVote {
+            domain,
+            dispute_nonce,
+            commit_hash,
+        } => processor::commit_jury_vote::process_commit_jury_vote(
+            program_id,
+            accounts,
+            &domain,
+            dispute_nonce,
+            commit_hash,
+        ),
+        StakingInstruction::RevealJuryVote {
+            domain,
+            dispute_nonce,
+            verdict,
+            salt,
+        } => processor::reveal_jury_vote::process_reveal_jury_vote(
+            program_id,
+            accounts,
+            &domain,
+            dispute_nonce,
+            verdict,
+            salt,
+        ),
+        StakingInstruction::ResolveDispute {
+            domain,
+            dispute_nonce,
+        } => processor::dispute::process_resolve_dispute(
+            program_id,
+            accounts,
+            &domain,
+            dispute_nonce,
+        ),
 
         // Phase 4: Rewards
         StakingInstruction::FundRewards { amount } => {
@@ -115,23 +162,50 @@ pub fn process_instruction(
         }
 
         // Phase 5: DAO Governance
-        StakingInstruction::CreateProposal { description_hash, param_key, param_value } => {
-            processor::governance::process_create_proposal(program_id, accounts, description_hash, &param_key, param_value)
-        }
-        StakingInstruction::CastGovernanceVote { proposal_nonce, vote } => {
-            processor::governance::process_cast_governance_vote(program_id, accounts, proposal_nonce, vote)
-        }
+        StakingInstruction::CreateProposal {
+            description_hash,
+            param_key,
+            param_value,
+        } => processor::governance::process_create_proposal(
+            program_id,
+            accounts,
+            description_hash,
+            &param_key,
+            param_value,
+        ),
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce,
+            vote,
+        } => processor::governance::process_cast_governance_vote(
+            program_id,
+            accounts,
+            proposal_nonce,
+            vote,
+        ),
         StakingInstruction::ExecuteProposal { proposal_nonce } => {
             processor::governance::process_execute_proposal(program_id, accounts, proposal_nonce)
         }
 
         // Phase 6: State Channels
-        StakingInstruction::OpenChannel { payee, amount, expiry_slot } => {
-            processor::channel::process_open_channel(program_id, accounts, payee, amount, expiry_slot)
-        }
-        StakingInstruction::SettleChannel { payer_key, payee_key, spent, nonce } => {
-            processor::channel::process_settle_channel(program_id, accounts, payer_key, payee_key, spent, nonce)
-        }
+        StakingInstruction::OpenChannel {
+            payee,
+            amount,
+            expiry_slot,
+        } => processor::channel::process_open_channel(
+            program_id,
+            accounts,
+            payee,
+            amount,
+            expiry_slot,
+        ),
+        StakingInstruction::SettleChannel {
+            payer_key,
+            payee_key,
+            spent,
+            nonce,
+        } => processor::channel::process_settle_channel(
+            program_id, accounts, payer_key, payee_key, spent, nonce,
+        ),
 
         // Phase 7: Sentinel Nodes
         StakingInstruction::StakeSentinel { amount } => {
@@ -154,13 +228,24 @@ pub fn process_instruction(
         }
 
         // Phase 9: Jury Incentives
-        StakingInstruction::ClaimJuryReward { domain, dispute_nonce } => {
-            processor::jury_reward::process_claim_jury_reward(program_id, accounts, &domain, dispute_nonce)
-        }
+        StakingInstruction::ClaimJuryReward {
+            domain,
+            dispute_nonce,
+        } => processor::jury_reward::process_claim_jury_reward(
+            program_id,
+            accounts,
+            &domain,
+            dispute_nonce,
+        ),
 
         // Reputation
         StakingInstruction::CommitReputationRoot { merkle_root, epoch } => {
-            processor::reputation::process_commit_reputation_root(program_id, accounts, merkle_root, epoch)
+            processor::reputation::process_commit_reputation_root(
+                program_id,
+                accounts,
+                merkle_root,
+                epoch,
+            )
         }
     }
 }
@@ -279,11 +364,7 @@ fn process_withdraw_v1(
     Ok(())
 }
 
-fn process_unstake(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-    domain: &str,
-) -> ProgramResult {
+fn process_unstake(program_id: &Pubkey, accounts: &[AccountInfo], domain: &str) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
     let staker = next_account_info(accounts_iter)?;
     let stake_pda = next_account_info(accounts_iter)?;
@@ -299,9 +380,8 @@ fn process_unstake(
         return Err(ProgramError::InvalidSeeds);
     }
 
-    let mut account =
-        StakeAccount::deserialize_reader(&mut &stake_pda.data.borrow()[..])
-            .map_err(|_| ProgramError::InvalidAccountData)?;
+    let mut account = StakeAccount::deserialize_reader(&mut &stake_pda.data.borrow()[..])
+        .map_err(|_| ProgramError::InvalidAccountData)?;
     if !account.is_initialized {
         msg!("Account not initialized");
         return Err(ProgramError::UninitializedAccount);

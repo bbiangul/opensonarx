@@ -49,10 +49,8 @@ pub fn process_commit_jury_vote(
 
     // Verify dispute PDA
     let nonce_bytes = dispute_nonce.to_le_bytes();
-    let (expected_dispute, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
-        program_id,
-    );
+    let (expected_dispute, _) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], program_id);
     if *dispute_pda.key != expected_dispute {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -131,7 +129,12 @@ pub fn process_commit_jury_vote(
             program_id,
         ),
         &[voter.clone(), jury_pda.clone(), system_program.clone()],
-        &[&[JURY_SEED, dispute_pda.key.as_ref(), voter.key.as_ref(), &[jury_bump]]],
+        &[&[
+            JURY_SEED,
+            dispute_pda.key.as_ref(),
+            voter.key.as_ref(),
+            &[jury_bump],
+        ]],
     )?;
 
     let weight = voter_stake.amount;

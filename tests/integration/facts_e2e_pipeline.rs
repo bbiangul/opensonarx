@@ -48,32 +48,26 @@ struct QueryTrace {
 const TEST_URLS: &[(&str, &str)] = &[
     ("https://en.wikipedia.org/wiki/Microsoft", "en"),
     ("https://pt.wikipedia.org/wiki/Petrobras", "pt"),
-    ("https://es.wikipedia.org/wiki/Real_Madrid_Club_de_F%C3%BAtbol", "es"),
+    (
+        "https://es.wikipedia.org/wiki/Real_Madrid_Club_de_F%C3%BAtbol",
+        "es",
+    ),
     ("https://de.wikipedia.org/wiki/Volkswagen", "de"),
     ("https://fr.wikipedia.org/wiki/Tour_Eiffel", "fr"),
 ];
 
 const TEST_QUERIES: &[(&str, &[&str])] = &[
-    (
-        "Microsoft founders Bill Gates",
-        &["person", "organization"],
-    ),
+    ("Microsoft founders Bill Gates", &["person", "organization"]),
     (
         "Petrobras oil company Brazil",
         &["organization", "location"],
     ),
-    (
-        "Real Madrid Champions League",
-        &["organization", "event"],
-    ),
+    ("Real Madrid Champions League", &["organization", "event"]),
     (
         "Volkswagen automobile Germany",
         &["organization", "location"],
     ),
-    (
-        "Eiffel Tower Paris France",
-        &["location"],
-    ),
+    ("Eiffel Tower Paris France", &["location"]),
 ];
 
 // ── Helper: run the crawl pipeline for a single URL ─────────────────────
@@ -222,6 +216,7 @@ async fn crawl_url_with_tracing(
 // ── Main E2E test ───────────────────────────────────────────────────────
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "live integration test requires public network access"]
 async fn test_facts_e2e_pipeline() {
     let embedder = MiniLmEmbedder::new().expect("Failed to load MiniLM model");
     let factifier = MockFactExtractor::new();
@@ -236,7 +231,9 @@ async fn test_facts_e2e_pipeline() {
     for &(url, lang) in TEST_URLS {
         println!("Crawling [{lang}] {url}...");
 
-        if let Some((trace, chunks)) = crawl_url_with_tracing(url, lang, &embedder, &factifier).await {
+        if let Some((trace, chunks)) =
+            crawl_url_with_tracing(url, lang, &embedder, &factifier).await
+        {
             println!(
                 "  OK: {} chunks, {} entities, {} facts ({:.0}ms total)",
                 trace.chunk_count, trace.entity_count, trace.fact_count, trace.total_crawl_ms,
@@ -290,7 +287,9 @@ async fn test_facts_e2e_pipeline() {
     // Index WITHOUT facts
     let index_without_facts = HybridIndex::with_config(dim, config);
     let t = Instant::now();
-    index_without_facts.ingest(&all_chunks_without_facts).unwrap();
+    index_without_facts
+        .ingest(&all_chunks_without_facts)
+        .unwrap();
     let ingest_without_facts_ms = t.elapsed().as_secs_f64() * 1000.0;
 
     println!(
@@ -337,10 +336,7 @@ async fn test_facts_e2e_pipeline() {
                 total_entities += facts.entities.len();
                 total_facts += facts.facts.len();
                 for entity in facts.entities.iter().take(3) {
-                    top_entities.push(format!(
-                        "[{}] {}",
-                        entity.entity_type, entity.mention
-                    ));
+                    top_entities.push(format!("[{}] {}", entity.entity_type, entity.mention));
                 }
             }
         }
@@ -416,7 +412,9 @@ async fn test_facts_e2e_pipeline() {
         // Verify at least some expected entity types are found
         if !top_entities.is_empty() {
             let found_expected = expected_types.iter().any(|t| {
-                top_entities.iter().any(|e| e.starts_with(&format!("[{t}]")))
+                top_entities
+                    .iter()
+                    .any(|e| e.starts_with(&format!("[{t}]")))
             });
             // This is a soft check — MockFactExtractor assigns types by hash, not semantics
             if found_expected {
@@ -493,10 +491,7 @@ async fn test_facts_e2e_pipeline() {
         } else {
             0.0
         };
-        let short_url = trace
-            .url
-            .strip_prefix("https://")
-            .unwrap_or(&trace.url);
+        let short_url = trace.url.strip_prefix("https://").unwrap_or(&trace.url);
         println!(
             "{:<45} {:>15} {:>15} {:>9.1}%",
             short_url, trace.markdown_len, facts_tokens, reduction,

@@ -49,10 +49,8 @@ pub fn process_create_proposal(
     let nonce_bytes = nonce.to_le_bytes();
 
     // Derive proposal PDA
-    let (expected_proposal, proposal_bump) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        program_id,
-    );
+    let (expected_proposal, proposal_bump) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], program_id);
     if *proposal_pda.key != expected_proposal {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -71,7 +69,11 @@ pub fn process_create_proposal(
             space as u64,
             program_id,
         ),
-        &[proposer.clone(), proposal_pda.clone(), system_program.clone()],
+        &[
+            proposer.clone(),
+            proposal_pda.clone(),
+            system_program.clone(),
+        ],
         &[&[PROPOSAL_SEED, &nonce_bytes, &[proposal_bump]]],
     )?;
 
@@ -101,9 +103,17 @@ pub fn process_create_proposal(
         )?;
         invoke(
             &transfer_ix,
-            &[proposer_token.clone(), vault_token.clone(), proposer.clone(), token_program.clone()],
+            &[
+                proposer_token.clone(),
+                vault_token.clone(),
+                proposer.clone(),
+                token_program.clone(),
+            ],
         )?;
-        msg!("Proposal deposit collected: {} $TRUTH", config.proposal_deposit);
+        msg!(
+            "Proposal deposit collected: {} $TRUTH",
+            config.proposal_deposit
+        );
         (config.proposal_deposit, *proposer_token.key)
     } else {
         (0u64, Pubkey::default())
@@ -132,7 +142,12 @@ pub fn process_create_proposal(
     config.proposal_nonce = nonce.checked_add(1).ok_or(StakingError::Overflow)?;
     borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
 
-    msg!("Proposal created: {} = {} (nonce={})", param_key, param_value, nonce);
+    msg!(
+        "Proposal created: {} = {} (nonce={})",
+        param_key,
+        param_value,
+        nonce
+    );
     Ok(())
 }
 
@@ -164,10 +179,8 @@ pub fn process_cast_governance_vote(
 
     // Verify proposal PDA
     let nonce_bytes = proposal_nonce.to_le_bytes();
-    let (expected_proposal, _) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        program_id,
-    );
+    let (expected_proposal, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], program_id);
     if *proposal_pda.key != expected_proposal {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -235,7 +248,12 @@ pub fn process_cast_governance_vote(
             program_id,
         ),
         &[voter.clone(), gov_vote_pda.clone(), system_program.clone()],
-        &[&[GOV_VOTE_SEED, proposal_pda.key.as_ref(), voter.key.as_ref(), &[vote_bump]]],
+        &[&[
+            GOV_VOTE_SEED,
+            proposal_pda.key.as_ref(),
+            voter.key.as_ref(),
+            &[vote_bump],
+        ]],
     )?;
 
     let gov_vote = GovernanceVote {
@@ -250,13 +268,15 @@ pub fn process_cast_governance_vote(
     // Update proposal tallies
     match vote_choice {
         GovernanceVoteChoice::For => proposal.votes_for = proposal.votes_for.saturating_add(weight),
-        GovernanceVoteChoice::Against => proposal.votes_against = proposal.votes_against.saturating_add(weight),
+        GovernanceVoteChoice::Against => {
+            proposal.votes_against = proposal.votes_against.saturating_add(weight)
+        }
     }
     borsh::to_writer(&mut &mut proposal_pda.data.borrow_mut()[..], &proposal)?;
 
     // S2 fix: per-wallet governance lock — lock the wallet (not just this stake) until voting_ends
-    let (expected_gov_lock, gov_lock_bump) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, voter.key.as_ref()], program_id);
+    let (expected_gov_lock, gov_lock_bump) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, voter.key.as_ref()], program_id);
     if *gov_lock_pda.key != expected_gov_lock {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -290,7 +310,11 @@ pub fn process_cast_governance_vote(
         borsh::to_writer(&mut &mut gov_lock_pda.data.borrow_mut()[..], &lock_account)?;
     }
 
-    msg!("Governance vote cast: {:?} with weight {}", vote_choice, weight);
+    msg!(
+        "Governance vote cast: {:?} with weight {}",
+        vote_choice,
+        weight
+    );
     Ok(())
 }
 
@@ -308,10 +332,8 @@ pub fn process_execute_proposal(
 
     // Verify proposal PDA
     let nonce_bytes = proposal_nonce.to_le_bytes();
-    let (expected_proposal, _) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        program_id,
-    );
+    let (expected_proposal, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], program_id);
     if *proposal_pda.key != expected_proposal {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -346,7 +368,11 @@ pub fn process_execute_proposal(
     if !quorum_met {
         proposal.status = ProposalStatus::Failed;
         borsh::to_writer(&mut &mut proposal_pda.data.borrow_mut()[..], &proposal)?;
-        msg!("Proposal failed: quorum not met ({} < {})", total_votes, quorum_threshold);
+        msg!(
+            "Proposal failed: quorum not met ({} < {})",
+            total_votes,
+            quorum_threshold
+        );
         return Ok(());
     }
 
@@ -355,19 +381,22 @@ pub fn process_execute_proposal(
         // Apply parameter change
         match proposal.param_key.as_str() {
             "min_stake" => {
-                if proposal.param_value > 1_000_000_000 { // max 1B tokens
+                if proposal.param_value > 1_000_000_000 {
+                    // max 1B tokens
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.min_stake = proposal.param_value;
             }
             "cooldown_secs" => {
-                if proposal.param_value > 31_536_000 { // max 365 days
+                if proposal.param_value > 31_536_000 {
+                    // max 365 days
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.cooldown_secs = proposal.param_value as i64;
             }
             "dispute_bond" => {
-                if proposal.param_value > 1_000_000_000 { // max 1B tokens
+                if proposal.param_value > 1_000_000_000 {
+                    // max 1B tokens
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.dispute_bond = proposal.param_value;
@@ -379,20 +408,24 @@ pub fn process_execute_proposal(
                 config.slash_pct = proposal.param_value as u8;
             }
             "reward_rate" => {
-                if proposal.param_value > 1_000_000_000 { // max 1B tokens
+                if proposal.param_value > 1_000_000_000 {
+                    // max 1B tokens
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.reward_rate = proposal.param_value;
             }
             "jury_min_stake" => {
-                if proposal.param_value > 1_000_000_000 { // max 1B tokens
+                if proposal.param_value > 1_000_000_000 {
+                    // max 1B tokens
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.jury_min_stake = proposal.param_value;
             }
             "burn_pct" => {
                 if proposal.param_value > 100
-                    || (proposal.param_value as u8).checked_add(config.sentinel_fee_pct).is_none_or(|sum| sum > 100)
+                    || (proposal.param_value as u8)
+                        .checked_add(config.sentinel_fee_pct)
+                        .is_none_or(|sum| sum > 100)
                 {
                     return Err(StakingError::ParamOutOfRange.into());
                 }
@@ -405,7 +438,8 @@ pub fn process_execute_proposal(
                 config.staker_emission_pct = proposal.param_value as u8;
             }
             "min_epoch_duration" => {
-                if proposal.param_value > 31_536_000 { // max 365 days
+                if proposal.param_value > 31_536_000 {
+                    // max 365 days
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.min_epoch_duration = proposal.param_value as i64;
@@ -414,25 +448,32 @@ pub fn process_execute_proposal(
                 if proposal.param_value < config.total_minted {
                     proposal.status = ProposalStatus::Failed;
                     borsh::to_writer(&mut &mut proposal_pda.data.borrow_mut()[..], &proposal)?;
-                    msg!("Proposal failed: max_total_supply {} < total_minted {}", proposal.param_value, config.total_minted);
+                    msg!(
+                        "Proposal failed: max_total_supply {} < total_minted {}",
+                        proposal.param_value,
+                        config.total_minted
+                    );
                     return Ok(());
                 }
                 config.max_total_supply = proposal.param_value;
             }
             "min_jury_weight" => {
-                if proposal.param_value > 10_000_000_000 { // max 10B
+                if proposal.param_value > 10_000_000_000 {
+                    // max 10B
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.min_jury_weight = proposal.param_value;
             }
             "execution_delay_secs" => {
-                if proposal.param_value < 3_600 || proposal.param_value > 2_592_000 { // min 1 hour, max 30 days
+                if proposal.param_value < 3_600 || proposal.param_value > 2_592_000 {
+                    // min 1 hour, max 30 days
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.execution_delay_secs = proposal.param_value as i64;
             }
             "proposal_deposit" => {
-                if proposal.param_value > 1_000_000_000 { // max 1B tokens
+                if proposal.param_value > 1_000_000_000 {
+                    // max 1B tokens
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.proposal_deposit = proposal.param_value;
@@ -447,19 +488,24 @@ pub fn process_execute_proposal(
                 if proposal.param_value > 50 {
                     return Err(StakingError::ParamOutOfRange.into());
                 }
-                if (proposal.param_value as u8).checked_add(config.burn_pct).is_none_or(|sum| sum > 100) {
+                if (proposal.param_value as u8)
+                    .checked_add(config.burn_pct)
+                    .is_none_or(|sum| sum > 100)
+                {
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.sentinel_fee_pct = proposal.param_value as u8;
             }
             "jury_vote_reward" => {
-                if proposal.param_value > 1_000_000_000 { // max 1B
+                if proposal.param_value > 1_000_000_000 {
+                    // max 1B
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.jury_vote_reward = proposal.param_value;
             }
             "max_jury_rewards_per_epoch" => {
-                if proposal.param_value > 1_000_000_000 { // max 1B
+                if proposal.param_value > 1_000_000_000 {
+                    // max 1B
                     return Err(StakingError::ParamOutOfRange.into());
                 }
                 config.max_jury_rewards_per_epoch = proposal.param_value;
@@ -473,7 +519,11 @@ pub fn process_execute_proposal(
         }
         proposal.status = ProposalStatus::Executed;
         borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
-        msg!("Proposal executed: {} = {}", proposal.param_key, proposal.param_value);
+        msg!(
+            "Proposal executed: {} = {}",
+            proposal.param_key,
+            proposal.param_value
+        );
     } else {
         proposal.status = ProposalStatus::Failed;
         msg!("Proposal failed: insufficient votes for");
@@ -507,10 +557,18 @@ pub fn process_execute_proposal(
         )?;
         invoke_signed(
             &refund_ix,
-            &[vault_token.clone(), depositor_token.clone(), config_pda.clone(), token_program.clone()],
+            &[
+                vault_token.clone(),
+                depositor_token.clone(),
+                config_pda.clone(),
+                token_program.clone(),
+            ],
             &[&[CONFIG_SEED, &[config_bump]]],
         )?;
-        msg!("Proposal deposit refunded: {} $TRUTH", proposal.deposit_amount);
+        msg!(
+            "Proposal deposit refunded: {} $TRUTH",
+            proposal.deposit_amount
+        );
     }
 
     borsh::to_writer(&mut &mut proposal_pda.data.borrow_mut()[..], &proposal)?;

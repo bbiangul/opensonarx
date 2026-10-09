@@ -31,7 +31,11 @@ fn make_entity_stake(key: &str, usd: f64) -> StakeInfo {
         wallet: "11111111111111111111111111111111".to_string(),
         dns_verified: false,
         reputation: 1.0,
-        entity: if key.contains('/') { Some(key.to_string()) } else { None },
+        entity: if key.contains('/') {
+            Some(key.to_string())
+        } else {
+            None
+        },
         disputed: false,
     }
 }
@@ -170,7 +174,10 @@ fn test_entity_stake_enrichment_e2e() {
         .unwrap();
 
     assert_eq!(results.len(), 1);
-    assert!(results[0].stake_truth > 0, "entity stake should enrich result");
+    assert!(
+        results[0].stake_truth > 0,
+        "entity stake should enrich result"
+    );
     assert_eq!(results[0].stake_type, "entity");
     assert_eq!(results[0].content_kind.as_deref(), Some("video"));
     assert_eq!(
@@ -400,7 +407,10 @@ fn test_gossip_entity_round_trip() {
     let decoded_empty = oi_network::gossip::decode_gossip(&encoded_empty).unwrap();
     match decoded_empty.payload.unwrap() {
         Payload::ContentAnnouncement(ca) => {
-            assert!(ca.entity.is_empty(), "empty entity should round-trip as empty");
+            assert!(
+                ca.entity.is_empty(),
+                "empty entity should round-trip as empty"
+            );
         }
         _ => panic!("expected ContentAnnouncement"),
     }
@@ -413,27 +423,31 @@ fn test_entities_from_stake_events_cross_crate() {
     // Feed events with twitter/x aliases, case variations, invalid refs
     let events = vec![
         ("twitter.com/elonmusk".to_string(), 10_000u64),
-        ("x.com/ElonMusk".to_string(), 5_000u64),          // alias + case → same canonical
+        ("x.com/ElonMusk".to_string(), 5_000u64), // alias + case → same canonical
         ("youtube.com/c/3Blue1Brown".to_string(), 20_000),
-        ("youtube.com/c/3blue1brown".to_string(), 5_000),   // case variation → merges
-        ("".to_string(), 1_000),                             // invalid: empty
-        ("no-dot".to_string(), 1_000),                       // invalid: no dot
+        ("youtube.com/c/3blue1brown".to_string(), 5_000), // case variation → merges
+        ("".to_string(), 1_000),                          // invalid: empty
+        ("no-dot".to_string(), 1_000),                    // invalid: no dot
         ("reddit.com/r/Rust".to_string(), 8_000),
     ];
 
     let entities = oi_crawl::daemon::entities_from_stake_events(&events);
 
     // Should have 3 valid entities: x.com/elonmusk, youtube.com/c/3blue1brown, reddit.com/r/rust
-    assert_eq!(entities.len(), 3, "invalid refs should be skipped, aliases merged");
+    assert_eq!(
+        entities.len(),
+        3,
+        "invalid refs should be skipped, aliases merged"
+    );
 
     // Build a lookup by canonical key
-    let map: HashMap<String, &oi_crawl::daemon::MonitoredEntity> = entities
-        .iter()
-        .map(|e| (e.entity.canonical(), e))
-        .collect();
+    let map: HashMap<String, &oi_crawl::daemon::MonitoredEntity> =
+        entities.iter().map(|e| (e.entity.canonical(), e)).collect();
 
     // twitter.com → x.com normalization should merge
-    let x = map.get("x.com/elonmusk").expect("x.com/elonmusk should exist");
+    let x = map
+        .get("x.com/elonmusk")
+        .expect("x.com/elonmusk should exist");
     assert_eq!(x.stake_amount, 15_000, "twitter + x should merge to 15k");
     assert!(x.entity.is_ugc_platform());
 

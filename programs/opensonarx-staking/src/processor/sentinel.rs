@@ -69,10 +69,8 @@ pub fn process_stake_sentinel(
     }
 
     // Derive sentinel PDA: ["sentinel", sentinel_pubkey]
-    let (expected_sentinel, sentinel_bump) = Pubkey::find_program_address(
-        &[SENTINEL_SEED, sentinel.key.as_ref()],
-        program_id,
-    );
+    let (expected_sentinel, sentinel_bump) =
+        Pubkey::find_program_address(&[SENTINEL_SEED, sentinel.key.as_ref()], program_id);
     if *sentinel_pda.key != expected_sentinel {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -91,7 +89,12 @@ pub fn process_stake_sentinel(
     )?;
     invoke(
         &transfer_ix,
-        &[sentinel_token.clone(), vault_token.clone(), sentinel.clone(), token_program.clone()],
+        &[
+            sentinel_token.clone(),
+            vault_token.clone(),
+            sentinel.clone(),
+            token_program.clone(),
+        ],
     )?;
 
     // Create SentinelAccount PDA
@@ -105,7 +108,11 @@ pub fn process_stake_sentinel(
             space as u64,
             program_id,
         ),
-        &[sentinel.clone(), sentinel_pda.clone(), system_program.clone()],
+        &[
+            sentinel.clone(),
+            sentinel_pda.clone(),
+            system_program.clone(),
+        ],
         &[&[SENTINEL_SEED, sentinel.key.as_ref(), &[sentinel_bump]]],
     )?;
 
@@ -119,10 +126,14 @@ pub fn process_stake_sentinel(
         slashed_amount: 0,
         bump: sentinel_bump,
     };
-    borsh::to_writer(&mut &mut sentinel_pda.data.borrow_mut()[..], &sentinel_account)?;
+    borsh::to_writer(
+        &mut &mut sentinel_pda.data.borrow_mut()[..],
+        &sentinel_account,
+    )?;
 
     // Update config
-    config.total_sentinel_staked = config.total_sentinel_staked
+    config.total_sentinel_staked = config
+        .total_sentinel_staked
         .checked_add(amount)
         .ok_or(StakingError::Overflow)?;
     borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
@@ -138,10 +149,7 @@ pub fn process_stake_sentinel(
 ///   1. `[writable]` SentinelAccount PDA
 ///   2. `[]` Config PDA
 ///   3. `[]` Clock sysvar
-pub fn process_unstake_sentinel(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-) -> ProgramResult {
+pub fn process_unstake_sentinel(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
     let sentinel = next_account_info(accounts_iter)?;
     let sentinel_pda = next_account_info(accounts_iter)?;
@@ -163,10 +171,8 @@ pub fn process_unstake_sentinel(
         return Err(ProgramError::UninitializedAccount);
     }
 
-    let (expected_sentinel, _) = Pubkey::find_program_address(
-        &[SENTINEL_SEED, sentinel.key.as_ref()],
-        program_id,
-    );
+    let (expected_sentinel, _) =
+        Pubkey::find_program_address(&[SENTINEL_SEED, sentinel.key.as_ref()], program_id);
     if *sentinel_pda.key != expected_sentinel {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -190,7 +196,10 @@ pub fn process_unstake_sentinel(
     config.total_sentinel_staked = config.total_sentinel_staked.saturating_sub(account.amount);
     borsh::to_writer(&mut &mut config_pda.data.borrow_mut()[..], &config)?;
 
-    msg!("Sentinel unstake initiated, cooldown until {}", account.cooldown_until);
+    msg!(
+        "Sentinel unstake initiated, cooldown until {}",
+        account.cooldown_until
+    );
     Ok(())
 }
 
@@ -206,10 +215,7 @@ pub fn process_unstake_sentinel(
 ///   5. `[]` Token Program
 ///   6. `[]` Clock sysvar
 ///   7. `[writable]` $TRUTH Mint (required — used for slash burn)
-pub fn process_withdraw_sentinel(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-) -> ProgramResult {
+pub fn process_withdraw_sentinel(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
     let sentinel = next_account_info(accounts_iter)?;
     let sentinel_pda = next_account_info(accounts_iter)?;
@@ -240,10 +246,8 @@ pub fn process_withdraw_sentinel(
     }
 
     // Validate sentinel PDA
-    let (expected_sentinel, _) = Pubkey::find_program_address(
-        &[SENTINEL_SEED, sentinel.key.as_ref()],
-        program_id,
-    );
+    let (expected_sentinel, _) =
+        Pubkey::find_program_address(&[SENTINEL_SEED, sentinel.key.as_ref()], program_id);
     if *sentinel_pda.key != expected_sentinel {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -277,7 +281,12 @@ pub fn process_withdraw_sentinel(
         )?;
         invoke_signed(
             &transfer_ix,
-            &[vault_token.clone(), sentinel_token.clone(), config_pda.clone(), token_program.clone()],
+            &[
+                vault_token.clone(),
+                sentinel_token.clone(),
+                config_pda.clone(),
+                token_program.clone(),
+            ],
             &[&[CONFIG_SEED, &[config_bump]]],
         )?;
     }
@@ -299,10 +308,19 @@ pub fn process_withdraw_sentinel(
             )?;
             invoke_signed(
                 &burn_ix,
-                &[vault_token.clone(), truth_mint.clone(), config_pda.clone(), token_program.clone()],
+                &[
+                    vault_token.clone(),
+                    truth_mint.clone(),
+                    config_pda.clone(),
+                    token_program.clone(),
+                ],
                 &[&[CONFIG_SEED, &[config_bump]]],
             )?;
-            msg!("Sentinel slash burn: {} $TRUTH burned, {} retained as protocol revenue", burn_half, account.slashed_amount - burn_half);
+            msg!(
+                "Sentinel slash burn: {} $TRUTH burned, {} retained as protocol revenue",
+                burn_half,
+                account.slashed_amount - burn_half
+            );
         }
     }
 
@@ -322,7 +340,11 @@ pub fn process_withdraw_sentinel(
         *byte = 0;
     }
 
-    msg!("Sentinel withdrew {} $TRUTH (slashed: {})", withdraw_amount, account.slashed_amount);
+    msg!(
+        "Sentinel withdrew {} $TRUTH (slashed: {})",
+        withdraw_amount,
+        account.slashed_amount
+    );
     Ok(())
 }
 
@@ -357,10 +379,8 @@ pub fn process_claim_sentinel_reward(
         return Err(ProgramError::InvalidSeeds);
     }
 
-    let (expected_sentinel, _) = Pubkey::find_program_address(
-        &[SENTINEL_SEED, sentinel.key.as_ref()],
-        program_id,
-    );
+    let (expected_sentinel, _) =
+        Pubkey::find_program_address(&[SENTINEL_SEED, sentinel.key.as_ref()], program_id);
     if *sentinel_pda.key != expected_sentinel {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -386,7 +406,8 @@ pub fn process_claim_sentinel_reward(
     // Sentinel-specific Synthetix reward math
     let pending = (account.amount as u128)
         .checked_mul(
-            config.sentinel_reward_per_token
+            config
+                .sentinel_reward_per_token
                 .checked_sub(account.reward_debt)
                 .ok_or(StakingError::Overflow)?,
         )
@@ -409,7 +430,12 @@ pub fn process_claim_sentinel_reward(
         )?;
         invoke_signed(
             &mint_ix,
-            &[truth_mint.clone(), sentinel_token.clone(), config_pda.clone(), token_program.clone()],
+            &[
+                truth_mint.clone(),
+                sentinel_token.clone(),
+                config_pda.clone(),
+                token_program.clone(),
+            ],
             &[&[CONFIG_SEED, &[config_bump]]],
         )?;
     }
@@ -459,10 +485,8 @@ pub fn process_slash_sentinel(
 
     // Validate sentinel PDA
     let sentinel_key = Pubkey::new_from_array(sentinel_bytes);
-    let (expected_sentinel, _) = Pubkey::find_program_address(
-        &[SENTINEL_SEED, sentinel_key.as_ref()],
-        program_id,
-    );
+    let (expected_sentinel, _) =
+        Pubkey::find_program_address(&[SENTINEL_SEED, sentinel_key.as_ref()], program_id);
     if *sentinel_pda.key != expected_sentinel {
         return Err(ProgramError::InvalidSeeds);
     }
@@ -478,6 +502,11 @@ pub fn process_slash_sentinel(
     account.slashed_amount = account.slashed_amount.saturating_add(actual_slash);
     borsh::to_writer(&mut &mut sentinel_pda.data.borrow_mut()[..], &account)?;
 
-    msg!("Sentinel {} slashed by {} (total slashed: {})", sentinel_key, actual_slash, account.slashed_amount);
+    msg!(
+        "Sentinel {} slashed by {} (total slashed: {})",
+        sentinel_key,
+        actual_slash,
+        account.slashed_amount
+    );
     Ok(())
 }

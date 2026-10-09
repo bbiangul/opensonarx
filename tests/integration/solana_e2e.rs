@@ -17,10 +17,7 @@ use solana_sdk::{
     transaction::Transaction,
 };
 
-use opensonarx_staking::{
-    instruction::StakingInstruction,
-    state::*,
-};
+use opensonarx_staking::{instruction::StakingInstruction, state::*};
 
 use oi_types::traits::{SearchIndex, StakeRegistry};
 use oi_types::{ContentChunk, QueryFilters, StakeInfo};
@@ -43,11 +40,7 @@ fn make_program_test() -> (Pubkey, ProgramTest) {
 // Helper: create a pre-allocated account for mint/token accounts
 // ──────────────────────────────────────────────
 
-fn add_spl_token_account(
-    pt: &mut ProgramTest,
-    pubkey: &Pubkey,
-    size: usize,
-) {
+fn add_spl_token_account(pt: &mut ProgramTest, pubkey: &Pubkey, size: usize) {
     let rent = Rent::default();
     let lamports = rent.minimum_balance(size);
     pt.add_account(
@@ -89,7 +82,8 @@ async fn create_token_account(
         &account.pubkey(),
         mint,
         owner,
-    ).unwrap();
+    )
+    .unwrap();
 
     let tx = Transaction::new_signed_with_payer(
         &[create_ix, init_ix],
@@ -115,7 +109,8 @@ fn make_ed25519_settle_ix(
         channel_pda.as_ref(),
         &spent.to_le_bytes(),
         &nonce.to_le_bytes(),
-    ].concat();
+    ]
+    .concat();
     let sig = payer.sign_message(&msg);
     let sig_bytes: [u8; 64] = sig.into();
     let pubkey_bytes: [u8; 32] = payer.pubkey().to_bytes();
@@ -246,8 +241,8 @@ async fn test_full_pipeline_with_solana() {
         .unwrap();
 
     // -- 7. Ingest into HybridIndex with stake enrichment --
-    let index =
-        oi_index::HybridIndex::new(dim).with_stake_registry(Arc::new(registry) as Arc<dyn StakeRegistry>);
+    let index = oi_index::HybridIndex::new(dim)
+        .with_stake_registry(Arc::new(registry) as Arc<dyn StakeRegistry>);
     index.ingest(&chunks).unwrap();
     assert!(index.doc_count() > 0);
 
@@ -308,10 +303,8 @@ fn test_stake_pda_derivation() {
     let program_id = Pubkey::new_unique();
     let domain = "test.example.com";
 
-    let (pda1, bump1) =
-        Pubkey::find_program_address(&[STAKE_SEED, domain.as_bytes()], &program_id);
-    let (pda2, bump2) =
-        Pubkey::find_program_address(&[STAKE_SEED, domain.as_bytes()], &program_id);
+    let (pda1, bump1) = Pubkey::find_program_address(&[STAKE_SEED, domain.as_bytes()], &program_id);
+    let (pda2, bump2) = Pubkey::find_program_address(&[STAKE_SEED, domain.as_bytes()], &program_id);
 
     assert_eq!(pda1, pda2, "PDA should be deterministic");
     assert_eq!(bump1, bump2);
@@ -355,7 +348,11 @@ async fn test_initialize_protocol() {
     let truth_mint = Keypair::new();
     let reward_vault = Keypair::new();
     add_spl_token_account(&mut pt, &truth_mint.pubkey(), spl_token::state::Mint::LEN);
-    add_spl_token_account(&mut pt, &reward_vault.pubkey(), spl_token::state::Account::LEN);
+    add_spl_token_account(
+        &mut pt,
+        &reward_vault.pubkey(),
+        spl_token::state::Account::LEN,
+    );
 
     let (banks, payer, blockhash) = pt.start().await;
 
@@ -387,12 +384,7 @@ async fn test_initialize_protocol() {
         data: ix_data,
     };
 
-    let tx = Transaction::new_signed_with_payer(
-        &[ix],
-        Some(&payer.pubkey()),
-        &[&payer],
-        blockhash,
-    );
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Verify config PDA
@@ -413,7 +405,11 @@ async fn test_mint_truth() {
     let truth_mint = Keypair::new();
     let reward_vault = Keypair::new();
     add_spl_token_account(&mut pt, &truth_mint.pubkey(), spl_token::state::Mint::LEN);
-    add_spl_token_account(&mut pt, &reward_vault.pubkey(), spl_token::state::Account::LEN);
+    add_spl_token_account(
+        &mut pt,
+        &reward_vault.pubkey(),
+        spl_token::state::Account::LEN,
+    );
 
     let (mut banks, payer, blockhash) = pt.start().await;
     let (config_pda, _) = Pubkey::find_program_address(&[CONFIG_SEED], &program_id);
@@ -445,12 +441,8 @@ async fn test_mint_truth() {
         data: ix_data,
     };
 
-    let tx = Transaction::new_signed_with_payer(
-        &[init_ix],
-        Some(&payer.pubkey()),
-        &[&payer],
-        blockhash,
-    );
+    let tx =
+        Transaction::new_signed_with_payer(&[init_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Create destination token account
@@ -460,7 +452,8 @@ async fn test_mint_truth() {
         blockhash,
         &truth_mint.pubkey(),
         &payer.pubkey(),
-    ).await;
+    )
+    .await;
 
     // Mint 500M $TRUTH (within the 1B max_total_supply default)
     let mut ix_data = Vec::new();
@@ -483,12 +476,8 @@ async fn test_mint_truth() {
     };
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(
-        &[mint_ix],
-        Some(&payer.pubkey()),
-        &[&payer],
-        blockhash,
-    );
+    let tx =
+        Transaction::new_signed_with_payer(&[mint_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Verify token balance
@@ -504,7 +493,11 @@ async fn test_mint_truth_unauthorized_fails() {
     let truth_mint = Keypair::new();
     let reward_vault = Keypair::new();
     add_spl_token_account(&mut pt, &truth_mint.pubkey(), spl_token::state::Mint::LEN);
-    add_spl_token_account(&mut pt, &reward_vault.pubkey(), spl_token::state::Account::LEN);
+    add_spl_token_account(
+        &mut pt,
+        &reward_vault.pubkey(),
+        spl_token::state::Account::LEN,
+    );
 
     let (mut banks, payer, blockhash) = pt.start().await;
     let (config_pda, _) = Pubkey::find_program_address(&[CONFIG_SEED], &program_id);
@@ -536,12 +529,8 @@ async fn test_mint_truth_unauthorized_fails() {
         data: ix_data,
     };
 
-    let tx = Transaction::new_signed_with_payer(
-        &[init_ix],
-        Some(&payer.pubkey()),
-        &[&payer],
-        blockhash,
-    );
+    let tx =
+        Transaction::new_signed_with_payer(&[init_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Create token account for unauthorized user
@@ -552,17 +541,15 @@ async fn test_mint_truth_unauthorized_fails() {
         blockhash,
         &truth_mint.pubkey(),
         &unauthorized.pubkey(),
-    ).await;
+    )
+    .await;
 
     // Fund unauthorized to pay for tx
-    let fund_ix = system_instruction::transfer(&payer.pubkey(), &unauthorized.pubkey(), 1_000_000_000);
+    let fund_ix =
+        system_instruction::transfer(&payer.pubkey(), &unauthorized.pubkey(), 1_000_000_000);
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(
-        &[fund_ix],
-        Some(&payer.pubkey()),
-        &[&payer],
-        blockhash,
-    );
+    let tx =
+        Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Try to mint with unauthorized signer
@@ -646,23 +633,22 @@ async fn init_protocol_and_mint(
         data: ix_data,
     };
 
-    let tx = Transaction::new_signed_with_payer(
-        &[init_ix],
-        Some(&payer.pubkey()),
-        &[payer],
-        blockhash,
-    );
+    let tx =
+        Transaction::new_signed_with_payer(&[init_ix], Some(&payer.pubkey()), &[payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Create staker token account
-    let staker_token = create_token_account(banks, payer, blockhash, truth_mint, &payer.pubkey()).await;
+    let staker_token =
+        create_token_account(banks, payer, blockhash, truth_mint, &payer.pubkey()).await;
 
     // Mint tokens
     if mint_amount > 0 {
         let mut ix_data = Vec::new();
-        StakingInstruction::MintTruth { amount: mint_amount }
-            .serialize(&mut ix_data)
-            .unwrap();
+        StakingInstruction::MintTruth {
+            amount: mint_amount,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
 
         let mint_ix = Instruction {
             program_id: *program_id,
@@ -698,8 +684,14 @@ async fn test_stake_v2_publisher() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+    )
+    .await;
 
     let domain = "test.com";
     let stake_amount = 50_000_000u64;
@@ -708,10 +700,8 @@ async fn test_stake_v2_publisher() {
         &[STAKE_SEED, domain.as_bytes(), payer.pubkey().as_ref()],
         &program_id,
     );
-    let (domain_pda, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        &program_id,
-    );
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
 
     let mut ix_data = Vec::new();
     StakingInstruction::StakeV2 {
@@ -739,12 +729,7 @@ async fn test_stake_v2_publisher() {
     };
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(
-        &[ix],
-        Some(&payer.pubkey()),
-        &[&payer],
-        blockhash,
-    );
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Verify stake account
@@ -773,18 +758,22 @@ async fn test_stake_v2_curator() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+    )
+    .await;
 
     let domain = "curated.com";
     let (stake_pda, _) = Pubkey::find_program_address(
         &[STAKE_SEED, domain.as_bytes(), payer.pubkey().as_ref()],
         &program_id,
     );
-    let (domain_pda, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        &program_id,
-    );
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
 
     let mut ix_data = Vec::new();
     StakingInstruction::StakeV2 {
@@ -812,12 +801,7 @@ async fn test_stake_v2_curator() {
     };
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(
-        &[ix],
-        Some(&payer.pubkey()),
-        &[&payer],
-        blockhash,
-    );
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     let stake_account = banks.get_account(stake_pda).await.unwrap().unwrap();
@@ -839,18 +823,22 @@ async fn test_stake_v2_below_minimum_fails() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+    )
+    .await;
 
     let domain = "small.com";
     let (stake_pda, _) = Pubkey::find_program_address(
         &[STAKE_SEED, domain.as_bytes(), payer.pubkey().as_ref()],
         &program_id,
     );
-    let (domain_pda, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        &program_id,
-    );
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
 
     let mut ix_data = Vec::new();
     StakingInstruction::StakeV2 {
@@ -878,12 +866,7 @@ async fn test_stake_v2_below_minimum_fails() {
     };
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(
-        &[ix],
-        Some(&payer.pubkey()),
-        &[&payer],
-        blockhash,
-    );
+    let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer.pubkey()), &[&payer], blockhash);
     let result = banks.process_transaction(tx).await;
     assert!(result.is_err(), "staking below minimum should fail");
 }
@@ -897,18 +880,22 @@ async fn test_unstake_v2_and_cooldown() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+    )
+    .await;
 
     let domain = "unstake.com";
     let (stake_pda, _) = Pubkey::find_program_address(
         &[STAKE_SEED, domain.as_bytes(), payer.pubkey().as_ref()],
         &program_id,
     );
-    let (domain_pda, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        &program_id,
-    );
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
 
     // Stake first
     let mut ix_data = Vec::new();
@@ -941,10 +928,8 @@ async fn test_unstake_v2_and_cooldown() {
     banks.process_transaction(tx).await.unwrap();
 
     // Unstake
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, payer.pubkey().as_ref()], &program_id);
 
     let mut ix_data = Vec::new();
     StakingInstruction::UnstakeV2 {
@@ -1249,14 +1234,10 @@ fn test_dispute_pda_uses_nonce() {
     let nonce0 = 0u64.to_le_bytes();
     let nonce1 = 1u64.to_le_bytes();
 
-    let (pda0, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce0],
-        &program_id,
-    );
-    let (pda1, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce1],
-        &program_id,
-    );
+    let (pda0, _) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce0], &program_id);
+    let (pda1, _) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce1], &program_id);
     assert_ne!(pda0, pda1, "Different nonces should give different PDAs");
 }
 
@@ -1266,14 +1247,10 @@ fn test_channel_pda_uses_both_parties() {
     let payer = Pubkey::new_unique();
     let payee = Pubkey::new_unique();
 
-    let (pda1, _) = Pubkey::find_program_address(
-        &[CHANNEL_SEED, payer.as_ref(), payee.as_ref()],
-        &program_id,
-    );
-    let (pda2, _) = Pubkey::find_program_address(
-        &[CHANNEL_SEED, payee.as_ref(), payer.as_ref()],
-        &program_id,
-    );
+    let (pda1, _) =
+        Pubkey::find_program_address(&[CHANNEL_SEED, payer.as_ref(), payee.as_ref()], &program_id);
+    let (pda2, _) =
+        Pubkey::find_program_address(&[CHANNEL_SEED, payee.as_ref(), payer.as_ref()], &program_id);
     assert_ne!(pda1, pda2, "Swapped payer/payee should give different PDAs");
 }
 
@@ -1302,7 +1279,13 @@ fn test_stake_type_roundtrip() {
 
 #[test]
 fn test_dispute_status_roundtrip() {
-    for s in [DisputeStatus::Active, DisputeStatus::ResolvedGuilty, DisputeStatus::ResolvedInnocent, DisputeStatus::CommitPhase, DisputeStatus::RevealPhase] {
+    for s in [
+        DisputeStatus::Active,
+        DisputeStatus::ResolvedGuilty,
+        DisputeStatus::ResolvedInnocent,
+        DisputeStatus::CommitPhase,
+        DisputeStatus::RevealPhase,
+    ] {
         let mut buf = Vec::new();
         s.serialize(&mut buf).unwrap();
         let decoded = DisputeStatus::deserialize_reader(&mut &buf[..]).unwrap();
@@ -1312,7 +1295,11 @@ fn test_dispute_status_roundtrip() {
 
 #[test]
 fn test_proposal_status_roundtrip() {
-    for s in [ProposalStatus::Active, ProposalStatus::Executed, ProposalStatus::Failed] {
+    for s in [
+        ProposalStatus::Active,
+        ProposalStatus::Executed,
+        ProposalStatus::Failed,
+    ] {
         let mut buf = Vec::new();
         s.serialize(&mut buf).unwrap();
         let decoded = ProposalStatus::deserialize_reader(&mut &buf[..]).unwrap();
@@ -1418,32 +1405,81 @@ fn test_seed_constants() {
 #[test]
 fn test_instruction_serialize_roundtrip() {
     let instructions: Vec<StakingInstruction> = vec![
-        StakingInstruction::Stake { domain: "a.com".to_string(), amount: 100 },
-        StakingInstruction::Unstake { domain: "a.com".to_string() },
+        StakingInstruction::Stake {
+            domain: "a.com".to_string(),
+            amount: 100,
+        },
+        StakingInstruction::Unstake {
+            domain: "a.com".to_string(),
+        },
         StakingInstruction::InitializeProtocol {
-            min_stake: 1000, cooldown_secs: 86400, dispute_bond: 5000,
-            slash_pct: 10, reward_rate: 100, jury_min_stake: 2000,
+            min_stake: 1000,
+            cooldown_secs: 86400,
+            dispute_bond: 5000,
+            slash_pct: 10,
+            reward_rate: 100,
+            jury_min_stake: 2000,
         },
         StakingInstruction::MintTruth { amount: 1_000_000 },
-        StakingInstruction::StakeV2 { domain: "b.com".to_string(), amount: 500, stake_type: 0 },
-        StakingInstruction::UnstakeV2 { domain: "b.com".to_string() },
-        StakingInstruction::Withdraw { domain: "b.com".to_string() },
-        StakingInstruction::ClaimReward { domain: "b.com".to_string() },
-        StakingInstruction::VerifyDns { domain: "c.com".to_string(), dns_wallet: [1u8; 32] },
-        StakingInstruction::BlacklistDomain { domain: "c.com".to_string() },
-        StakingInstruction::OpenDispute { domain: "d.com".to_string(), reason_hash: [2u8; 32], severity: 1 },
-        StakingInstruction::CastJuryVote { domain: "d.com".to_string(), dispute_nonce: 0, verdict: 0 },
-        StakingInstruction::ResolveDispute { domain: "d.com".to_string(), dispute_nonce: 0 },
-        StakingInstruction::FundRewards { amount: 100_000 },
-        StakingInstruction::UpdateRewardIndex { funded_amount: 50_000 },
-        StakingInstruction::CreateProposal {
-            description_hash: [3u8; 32], param_key: "min_stake".to_string(), param_value: 2000,
+        StakingInstruction::StakeV2 {
+            domain: "b.com".to_string(),
+            amount: 500,
+            stake_type: 0,
         },
-        StakingInstruction::CastGovernanceVote { proposal_nonce: 0, vote: 0 },
+        StakingInstruction::UnstakeV2 {
+            domain: "b.com".to_string(),
+        },
+        StakingInstruction::Withdraw {
+            domain: "b.com".to_string(),
+        },
+        StakingInstruction::ClaimReward {
+            domain: "b.com".to_string(),
+        },
+        StakingInstruction::VerifyDns {
+            domain: "c.com".to_string(),
+            dns_wallet: [1u8; 32],
+        },
+        StakingInstruction::BlacklistDomain {
+            domain: "c.com".to_string(),
+        },
+        StakingInstruction::OpenDispute {
+            domain: "d.com".to_string(),
+            reason_hash: [2u8; 32],
+            severity: 1,
+        },
+        StakingInstruction::CastJuryVote {
+            domain: "d.com".to_string(),
+            dispute_nonce: 0,
+            verdict: 0,
+        },
+        StakingInstruction::ResolveDispute {
+            domain: "d.com".to_string(),
+            dispute_nonce: 0,
+        },
+        StakingInstruction::FundRewards { amount: 100_000 },
+        StakingInstruction::UpdateRewardIndex {
+            funded_amount: 50_000,
+        },
+        StakingInstruction::CreateProposal {
+            description_hash: [3u8; 32],
+            param_key: "min_stake".to_string(),
+            param_value: 2000,
+        },
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce: 0,
+            vote: 0,
+        },
         StakingInstruction::ExecuteProposal { proposal_nonce: 0 },
-        StakingInstruction::OpenChannel { payee: [4u8; 32], amount: 1000, expiry_slot: 999 },
+        StakingInstruction::OpenChannel {
+            payee: [4u8; 32],
+            amount: 1000,
+            expiry_slot: 999,
+        },
         StakingInstruction::SettleChannel {
-            payer_key: [5u8; 32], payee_key: [6u8; 32], spent: 500, nonce: 1,
+            payer_key: [5u8; 32],
+            payee_key: [6u8; 32],
+            spent: 500,
+            nonce: 1,
         },
     ];
 
@@ -1509,10 +1545,8 @@ async fn stake_v2_helper(
         &[STAKE_SEED, domain.as_bytes(), payer.pubkey().as_ref()],
         program_id,
     );
-    let (domain_pda, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        program_id,
-    );
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], program_id);
 
     let mut ix_data = Vec::new();
     StakingInstruction::StakeV2 {
@@ -1558,14 +1592,10 @@ async fn unstake_v2_helper(
         &[STAKE_SEED, domain.as_bytes(), payer.pubkey().as_ref()],
         program_id,
     );
-    let (domain_pda, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        program_id,
-    );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, payer.pubkey().as_ref()],
-        program_id,
-    );
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], program_id);
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, payer.pubkey().as_ref()], program_id);
 
     let mut ix_data = Vec::new();
     StakingInstruction::UnstakeV2 {
@@ -1633,16 +1663,20 @@ async fn init_protocol_custom_cooldown(
         data: ix_data,
     };
 
-    let tx = Transaction::new_signed_with_payer(
-        &[init_ix], Some(&payer.pubkey()), &[payer], blockhash,
-    );
+    let tx =
+        Transaction::new_signed_with_payer(&[init_ix], Some(&payer.pubkey()), &[payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
-    let staker_token = create_token_account(banks, payer, blockhash, truth_mint, &payer.pubkey()).await;
+    let staker_token =
+        create_token_account(banks, payer, blockhash, truth_mint, &payer.pubkey()).await;
 
     if mint_amount > 0 {
         let mut ix_data = Vec::new();
-        StakingInstruction::MintTruth { amount: mint_amount }.serialize(&mut ix_data).unwrap();
+        StakingInstruction::MintTruth {
+            amount: mint_amount,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let mint_ix = Instruction {
             program_id: *program_id,
             accounts: vec![
@@ -1655,7 +1689,12 @@ async fn init_protocol_custom_cooldown(
             data: ix_data,
         };
         let blockhash = banks.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[mint_ix], Some(&payer.pubkey()), &[payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[mint_ix],
+            Some(&payer.pubkey()),
+            &[payer],
+            blockhash,
+        );
         banks.process_transaction(tx).await.unwrap();
     }
 
@@ -1673,17 +1712,32 @@ async fn test_withdraw_after_cooldown() {
     // cooldown_secs = 0 so cooldown_until = clock + 0 = clock, and withdraw checks
     // clock < cooldown_until which is false → withdraw succeeds immediately.
     let (config_pda, staker_token) = init_protocol_custom_cooldown(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+        0,
+    )
+    .await;
 
     let domain = "withdraw-ok.com";
     let stake_amount = 10_000_000u64;
 
     // Stake
     let (stake_pda, domain_pda) = stake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, stake_amount, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        stake_amount,
+        0,
+    )
+    .await;
 
     // Unstake (starts cooldown — with cooldown_secs=0, cooldown_until == current clock)
     unstake_v2_helper(&mut banks, &payer, &program_id, &config_pda, domain).await;
@@ -1721,7 +1775,10 @@ async fn test_withdraw_after_cooldown() {
     match stake_account {
         None => {} // PDA closed entirely
         Some(acct) => {
-            assert!(acct.data.iter().all(|b| *b == 0), "stake PDA data should be zeroed");
+            assert!(
+                acct.data.iter().all(|b| *b == 0),
+                "stake PDA data should be zeroed"
+            );
         }
     }
 
@@ -1771,13 +1828,25 @@ async fn test_withdraw_before_cooldown_fails() {
         data: ix_data,
     };
 
-    let tx = Transaction::new_signed_with_payer(&[init_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx =
+        Transaction::new_signed_with_payer(&[init_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Create staker token account + mint tokens
-    let staker_token = create_token_account(&mut banks, &payer, blockhash, &truth_mint.pubkey(), &payer.pubkey()).await;
+    let staker_token = create_token_account(
+        &mut banks,
+        &payer,
+        blockhash,
+        &truth_mint.pubkey(),
+        &payer.pubkey(),
+    )
+    .await;
     let mut ix_data = Vec::new();
-    StakingInstruction::MintTruth { amount: 100_000_000 }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::MintTruth {
+        amount: 100_000_000,
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
     let mint_ix = Instruction {
         program_id,
         accounts: vec![
@@ -1790,21 +1859,34 @@ async fn test_withdraw_before_cooldown_fails() {
         data: ix_data,
     };
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[mint_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx =
+        Transaction::new_signed_with_payer(&[mint_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     let domain = "withdraw-fail.com";
     let (stake_pda, domain_pda) = stake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 10_000_000, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        10_000_000,
+        0,
+    )
+    .await;
 
     // Unstake (starts 7-day cooldown)
     unstake_v2_helper(&mut banks, &payer, &program_id, &config_pda, domain).await;
 
     // Immediately try to withdraw → should fail with CooldownNotExpired
     let mut ix_data = Vec::new();
-    StakingInstruction::Withdraw { domain: domain.to_string() }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::Withdraw {
+        domain: domain.to_string(),
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
 
     let ix = Instruction {
         program_id,
@@ -1837,21 +1919,37 @@ async fn test_claim_reward() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "reward.com";
     let stake_amount = 50_000_000u64;
 
     // Stake
     let (stake_pda, _) = stake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, stake_amount, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        stake_amount,
+        0,
+    )
+    .await;
 
     // Fund rewards: transfer $TRUTH into vault
     let mut ix_data = Vec::new();
-    StakingInstruction::FundRewards { amount: 10_000_000 }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::FundRewards { amount: 10_000_000 }
+        .serialize(&mut ix_data)
+        .unwrap();
     let fund_ix = Instruction {
         program_id,
         accounts: vec![
@@ -1864,12 +1962,17 @@ async fn test_claim_reward() {
         data: ix_data,
     };
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx =
+        Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // UpdateRewardIndex: admin updates the cumulative reward_per_token
     let mut ix_data = Vec::new();
-    StakingInstruction::UpdateRewardIndex { funded_amount: 10_000_000 }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::UpdateRewardIndex {
+        funded_amount: 10_000_000,
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
     let update_ix = Instruction {
         program_id,
         accounts: vec![
@@ -1879,12 +1982,21 @@ async fn test_claim_reward() {
         data: ix_data,
     };
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[update_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[update_ix],
+        Some(&payer.pubkey()),
+        &[&payer],
+        blockhash,
+    );
     banks.process_transaction(tx).await.unwrap();
 
     // ClaimReward
     let mut ix_data = Vec::new();
-    StakingInstruction::ClaimReward { domain: domain.to_string() }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::ClaimReward {
+        domain: domain.to_string(),
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
     let claim_ix = Instruction {
         program_id,
         accounts: vec![
@@ -1898,7 +2010,12 @@ async fn test_claim_reward() {
         data: ix_data,
     };
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[claim_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[claim_ix],
+        Some(&payer.pubkey()),
+        &[&payer],
+        blockhash,
+    );
     banks.process_transaction(tx).await.unwrap();
 
     // With total_staked fix, UpdateRewardIndex should now calculate a real reward_per_token.
@@ -1910,13 +2027,22 @@ async fn test_claim_reward() {
     //         = 10_000_000
     let stake_account = banks.get_account(stake_pda).await.unwrap().unwrap();
     let stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
-    assert!(stake.is_initialized, "stake account should still be initialized after claim");
-    assert!(stake.reward_debt > 0, "reward_debt should be updated after claim");
+    assert!(
+        stake.is_initialized,
+        "stake account should still be initialized after claim"
+    );
+    assert!(
+        stake.reward_debt > 0,
+        "reward_debt should be updated after claim"
+    );
 
     // Verify config.total_staked was updated by StakeV2
     let config_account = banks.get_account(config_pda).await.unwrap().unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
-    assert_eq!(config.total_staked, stake_amount, "total_staked should equal stake amount");
+    assert_eq!(
+        config.total_staked, stake_amount,
+        "total_staked should equal stake amount"
+    );
 }
 
 // ══════════════════════════════════════════════
@@ -1932,19 +2058,38 @@ async fn test_verify_dns_sets_flag() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+    )
+    .await;
 
     let domain = "dns-test.com";
     let (_, domain_pda) = stake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 10_000_000, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        10_000_000,
+        0,
+    )
+    .await;
 
     // VerifyDns
     let dns_wallet = payer.pubkey().to_bytes();
     let mut ix_data = Vec::new();
-    StakingInstruction::VerifyDns { domain: domain.to_string(), dns_wallet }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::VerifyDns {
+        domain: domain.to_string(),
+        dns_wallet,
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
     let ix = Instruction {
         program_id,
         accounts: vec![
@@ -1962,7 +2107,10 @@ async fn test_verify_dns_sets_flag() {
     // Verify dns_verified = true
     let domain_account = banks.get_account(domain_pda).await.unwrap().unwrap();
     let record = DomainRecord::deserialize_reader(&mut &domain_account.data[..]).unwrap();
-    assert!(record.dns_verified, "dns_verified should be true after VerifyDns");
+    assert!(
+        record.dns_verified,
+        "dns_verified should be true after VerifyDns"
+    );
     assert_eq!(record.dns_wallet, payer.pubkey());
 }
 
@@ -1975,18 +2123,36 @@ async fn test_blacklist_domain() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+    )
+    .await;
 
     let domain = "bad-domain.com";
     let (_, domain_pda) = stake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 10_000_000, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        10_000_000,
+        0,
+    )
+    .await;
 
     // BlacklistDomain
     let mut ix_data = Vec::new();
-    StakingInstruction::BlacklistDomain { domain: domain.to_string() }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::BlacklistDomain {
+        domain: domain.to_string(),
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
     let ix = Instruction {
         program_id,
         accounts: vec![
@@ -2016,21 +2182,40 @@ async fn test_stake_on_blacklisted_domain_fails() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "blacklisted.com";
 
     // First stake to create the domain record
     stake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 10_000_000, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        10_000_000,
+        0,
+    )
+    .await;
 
     // Blacklist it
-    let (domain_pda, _) = Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
     let mut ix_data = Vec::new();
-    StakingInstruction::BlacklistDomain { domain: domain.to_string() }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::BlacklistDomain {
+        domain: domain.to_string(),
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
     let ix = Instruction {
         program_id,
         accounts: vec![
@@ -2051,15 +2236,25 @@ async fn test_stake_on_blacklisted_domain_fails() {
     // Fund staker2
     let fund_ix = system_instruction::transfer(&payer.pubkey(), &staker2.pubkey(), 2_000_000_000);
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx =
+        Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Create staker2 token account and mint tokens
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let staker2_token = create_token_account(&mut banks, &payer, blockhash, &truth_mint.pubkey(), &staker2.pubkey()).await;
+    let staker2_token = create_token_account(
+        &mut banks,
+        &payer,
+        blockhash,
+        &truth_mint.pubkey(),
+        &staker2.pubkey(),
+    )
+    .await;
 
     let mut ix_data = Vec::new();
-    StakingInstruction::MintTruth { amount: 50_000_000 }.serialize(&mut ix_data).unwrap();
+    StakingInstruction::MintTruth { amount: 50_000_000 }
+        .serialize(&mut ix_data)
+        .unwrap();
     let mint_ix = Instruction {
         program_id,
         accounts: vec![
@@ -2072,7 +2267,8 @@ async fn test_stake_on_blacklisted_domain_fails() {
         data: ix_data,
     };
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[mint_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx =
+        Transaction::new_signed_with_payer(&[mint_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Staker2 tries to stake on blacklisted domain
@@ -2107,7 +2303,8 @@ async fn test_stake_on_blacklisted_domain_fails() {
     };
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ix], Some(&staker2.pubkey()), &[&staker2], blockhash);
+    let tx =
+        Transaction::new_signed_with_payer(&[ix], Some(&staker2.pubkey()), &[&staker2], blockhash);
     let result = banks.process_transaction(tx).await;
     assert!(result.is_err(), "staking on blacklisted domain should fail");
 }
@@ -2130,9 +2327,17 @@ async fn setup_dispute(
 ) -> (Pubkey, u64, Pubkey) {
     // Stake to create domain record
     let (_, domain_pda) = stake_v2_helper(
-        banks, payer, program_id, config_pda, staker_token,
-        reward_vault, domain, 10_000_000, 0,
-    ).await;
+        banks,
+        payer,
+        program_id,
+        config_pda,
+        staker_token,
+        reward_vault,
+        domain,
+        10_000_000,
+        0,
+    )
+    .await;
 
     // Read current dispute_nonce from config
     let config_account = banks.get_account(*config_pda).await.unwrap().unwrap();
@@ -2140,16 +2345,19 @@ async fn setup_dispute(
     let nonce = config.dispute_nonce;
     let nonce_bytes = nonce.to_le_bytes();
 
-    let (dispute_pda, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
-        program_id,
-    );
+    let (dispute_pda, _) =
+        Pubkey::find_program_address(&[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], program_id);
 
     // OpenDispute
     let reason_hash = [42u8; 32];
     let mut ix_data = Vec::new();
-    StakingInstruction::OpenDispute { domain: domain.to_string(), reason_hash, severity: 1 }
-        .serialize(&mut ix_data).unwrap();
+    StakingInstruction::OpenDispute {
+        domain: domain.to_string(),
+        reason_hash,
+        severity: 1,
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
 
     let ix = Instruction {
         program_id: *program_id,
@@ -2183,14 +2391,27 @@ async fn test_open_dispute() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "disputed.com";
     let (dispute_pda, _, _) = setup_dispute(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Verify dispute account created
     let dispute_account = banks.get_account(dispute_pda).await.unwrap().unwrap();
@@ -2199,7 +2420,10 @@ async fn test_open_dispute() {
     assert_eq!(dispute.domain, domain);
     assert_eq!(dispute.status, DisputeStatus::CommitPhase);
     assert_eq!(dispute.reason_hash, [42u8; 32]);
-    assert!(dispute.deadline > dispute.created_at, "deadline should be after created_at");
+    assert!(
+        dispute.deadline > dispute.created_at,
+        "deadline should be after created_at"
+    );
     let expected_deadline = dispute.created_at + 7 * 24 * 3600;
     assert_eq!(dispute.deadline, expected_deadline);
     let expected_commit_deadline = dispute.created_at + 3 * 24 * 3600;
@@ -2216,26 +2440,52 @@ async fn test_cast_jury_vote() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Open dispute on "disputed.com"
     let domain = "disputed2.com";
     let (dispute_pda, dispute_nonce, _) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Stake as juror on a DIFFERENT domain (to avoid conflict of interest)
     let juror_domain = "juror-domain.com";
     let (juror_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), juror_domain, 10_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        juror_domain,
+        10_000_000,
+        0,
+    )
+    .await;
 
     // Patch juror stake: set staked_at to 8 days ago (satisfies 7-day minimum)
     {
-        let stake_account = ctx.banks_client.get_account(juror_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(juror_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -2282,11 +2532,21 @@ async fn test_cast_jury_vote() {
     };
 
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     // Verify JuryVote PDA was created with commit hash
-    let jury_account = ctx.banks_client.get_account(jury_pda).await.unwrap().unwrap();
+    let jury_account = ctx
+        .banks_client
+        .get_account(jury_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let vote = JuryVote::deserialize_reader(&mut &jury_account.data[..]).unwrap();
     assert!(vote.is_initialized);
     assert_eq!(vote.commit_hash, commit_hash);
@@ -2294,10 +2554,18 @@ async fn test_cast_jury_vote() {
     assert_eq!(vote.voted_at, 0, "voted_at should be 0 until reveal");
 
     // Verify dispute jury_count updated (tallies NOT updated until reveal)
-    let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+    let dispute_account = ctx
+        .banks_client
+        .get_account(dispute_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
     assert_eq!(dispute.jury_count, 1);
-    assert_eq!(dispute.votes_guilty, 0, "tallies should be 0 until reveal phase");
+    assert_eq!(
+        dispute.votes_guilty, 0,
+        "tallies should be 0 until reveal phase"
+    );
 }
 
 #[tokio::test]
@@ -2309,14 +2577,27 @@ async fn test_jury_conflict_of_interest_fails() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "conflict.com";
     let (dispute_pda, dispute_nonce, _) = setup_dispute(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // The payer is ALREADY staked on the disputed domain (from setup_dispute → stake_v2_helper).
     // Trying to commit a vote on own domain should fail with ConflictOfInterest.
@@ -2356,7 +2637,10 @@ async fn test_jury_conflict_of_interest_fails() {
     let blockhash = banks.get_latest_blockhash().await.unwrap();
     let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer.pubkey()), &[&payer], blockhash);
     let result = banks.process_transaction(tx).await;
-    assert!(result.is_err(), "juror staked on disputed domain should fail with ConflictOfInterest");
+    assert!(
+        result.is_err(),
+        "juror staked on disputed domain should fail with ConflictOfInterest"
+    );
 }
 
 #[tokio::test]
@@ -2368,19 +2652,36 @@ async fn test_resolve_dispute_before_deadline_fails() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "early-resolve.com";
     let (dispute_pda, dispute_nonce, domain_pda) = setup_dispute(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Try to resolve immediately (deadline is 7 days away)
     let mut ix_data = Vec::new();
-    StakingInstruction::ResolveDispute { domain: domain.to_string(), dispute_nonce }
-        .serialize(&mut ix_data).unwrap();
+    StakingInstruction::ResolveDispute {
+        domain: domain.to_string(),
+        dispute_nonce,
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
 
     let ix = Instruction {
         program_id,
@@ -2401,7 +2702,10 @@ async fn test_resolve_dispute_before_deadline_fails() {
     let blockhash = banks.get_latest_blockhash().await.unwrap();
     let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer.pubkey()), &[&payer], blockhash);
     let result = banks.process_transaction(tx).await;
-    assert!(result.is_err(), "resolving dispute before deadline should fail");
+    assert!(
+        result.is_err(),
+        "resolving dispute before deadline should fail"
+    );
 }
 
 // ══════════════════════════════════════════════
@@ -2417,19 +2721,38 @@ async fn test_create_and_execute_proposal() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake a large amount — needed for quorum (10% of total_staked)
     let domain = "gov.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch stake: set staked_at to 8 days ago (satisfies 7-day governance voting minimum)
     {
-        let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(voter_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -2443,7 +2766,12 @@ async fn test_create_and_execute_proposal() {
 
     // Patch config: set execution_delay_secs to 0 for this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.execution_delay_secs = 0;
@@ -2457,15 +2785,18 @@ async fn test_create_and_execute_proposal() {
     }
 
     // Read config to get proposal nonce
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
 
-    let (proposal_pda, _) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        &program_id,
-    );
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     // CreateProposal: change cooldown_secs to 86400
     let mut ix_data = Vec::new();
@@ -2490,11 +2821,21 @@ async fn test_create_and_execute_proposal() {
     };
 
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     // Verify proposal created
-    let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+    let proposal_account = ctx
+        .banks_client
+        .get_account(proposal_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
     assert!(proposal.is_initialized);
     assert_eq!(proposal.param_key, "cooldown_secs");
@@ -2503,17 +2844,23 @@ async fn test_create_and_execute_proposal() {
 
     // CastGovernanceVote: For
     let (gov_vote_pda, _) = Pubkey::find_program_address(
-        &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            GOV_VOTE_SEED,
+            proposal_pda.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
 
     let mut ix_data = Vec::new();
-    StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-        .serialize(&mut ix_data).unwrap();
+    StakingInstruction::CastGovernanceVote {
+        proposal_nonce: nonce,
+        vote: 0,
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
 
     let ix = Instruction {
         program_id,
@@ -2530,11 +2877,21 @@ async fn test_create_and_execute_proposal() {
     };
 
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     // Verify vote recorded
-    let vote_account = ctx.banks_client.get_account(gov_vote_pda).await.unwrap().unwrap();
+    let vote_account = ctx
+        .banks_client
+        .get_account(gov_vote_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let vote = GovernanceVote::deserialize_reader(&mut &vote_account.data[..]).unwrap();
     assert_eq!(vote.vote, GovernanceVoteChoice::For);
     assert_eq!(vote.weight, 100_000_000);
@@ -2549,12 +2906,23 @@ async fn test_proposal_fails_no_quorum() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Patch config: proposal_deposit = 0 for this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.proposal_deposit = 0;
@@ -2569,20 +2937,31 @@ async fn test_proposal_fails_no_quorum() {
     // Stake a small amount
     let domain = "gov-fail.com";
     let (_voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 5_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        5_000_000,
+        0,
+    )
+    .await;
 
     // Read config for nonce
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
 
-    let (proposal_pda, _) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        &program_id,
-    );
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     // CreateProposal
     let mut ix_data = Vec::new();
@@ -2607,13 +2986,21 @@ async fn test_proposal_fails_no_quorum() {
     };
 
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     // Try to execute immediately — should fail because voting period is still active
     let mut ix_data = Vec::new();
-    StakingInstruction::ExecuteProposal { proposal_nonce: nonce }
-        .serialize(&mut ix_data).unwrap();
+    StakingInstruction::ExecuteProposal {
+        proposal_nonce: nonce,
+    }
+    .serialize(&mut ix_data)
+    .unwrap();
 
     let ix = Instruction {
         program_id,
@@ -2627,9 +3014,17 @@ async fn test_proposal_fails_no_quorum() {
     };
 
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     let result = ctx.banks_client.process_transaction(tx).await;
-    assert!(result.is_err(), "executing proposal during voting period should fail");
+    assert!(
+        result.is_err(),
+        "executing proposal during voting period should fail"
+    );
 }
 
 // ══════════════════════════════════════════════
@@ -2645,25 +3040,43 @@ async fn test_open_and_settle_channel() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let payee = Keypair::new();
     // Fund payee for rent
     let fund_ix = system_instruction::transfer(&payer.pubkey(), &payee.pubkey(), 1_000_000_000);
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx =
+        Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     // Create payee token account
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let payee_token = create_token_account(&mut banks, &payer, blockhash, &truth_mint.pubkey(), &payee.pubkey()).await;
+    let payee_token = create_token_account(
+        &mut banks,
+        &payer,
+        blockhash,
+        &truth_mint.pubkey(),
+        &payee.pubkey(),
+    )
+    .await;
 
     let channel_amount = 50_000_000u64;
     let payee_bytes = payee.pubkey().to_bytes();
 
     let (channel_pda, _) = Pubkey::find_program_address(
-        &[CHANNEL_SEED, payer.pubkey().as_ref(), payee.pubkey().as_ref()],
+        &[
+            CHANNEL_SEED,
+            payer.pubkey().as_ref(),
+            payee.pubkey().as_ref(),
+        ],
         &program_id,
     );
 
@@ -2738,7 +3151,12 @@ async fn test_open_and_settle_channel() {
     };
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ed25519_ix, ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ed25519_ix, ix],
+        Some(&payer.pubkey()),
+        &[&payer],
+        blockhash,
+    );
     banks.process_transaction(tx).await.unwrap();
 
     // Verify channel PDA is closed
@@ -2746,7 +3164,10 @@ async fn test_open_and_settle_channel() {
     match channel_account {
         None => {} // fully closed
         Some(acct) => {
-            assert!(acct.data.iter().all(|b| *b == 0), "channel PDA should be zeroed");
+            assert!(
+                acct.data.iter().all(|b| *b == 0),
+                "channel PDA should be zeroed"
+            );
         }
     }
 
@@ -2768,21 +3189,39 @@ async fn test_settle_stale_nonce_fails() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let payee = Keypair::new();
     let fund_ix = system_instruction::transfer(&payer.pubkey(), &payee.pubkey(), 1_000_000_000);
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx =
+        Transaction::new_signed_with_payer(&[fund_ix], Some(&payer.pubkey()), &[&payer], blockhash);
     banks.process_transaction(tx).await.unwrap();
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let payee_token = create_token_account(&mut banks, &payer, blockhash, &truth_mint.pubkey(), &payee.pubkey()).await;
+    let payee_token = create_token_account(
+        &mut banks,
+        &payer,
+        blockhash,
+        &truth_mint.pubkey(),
+        &payee.pubkey(),
+    )
+    .await;
 
     let payee_bytes = payee.pubkey().to_bytes();
     let (channel_pda, _) = Pubkey::find_program_address(
-        &[CHANNEL_SEED, payer.pubkey().as_ref(), payee.pubkey().as_ref()],
+        &[
+            CHANNEL_SEED,
+            payer.pubkey().as_ref(),
+            payee.pubkey().as_ref(),
+        ],
         &program_id,
     );
 
@@ -2845,7 +3284,12 @@ async fn test_settle_stale_nonce_fails() {
     };
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ed25519_ix, ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ed25519_ix, ix],
+        Some(&payer.pubkey()),
+        &[&payer],
+        blockhash,
+    );
     banks.process_transaction(tx).await.unwrap();
 
     // Second settle with nonce=3 (stale) — should fail because channel was already closed.
@@ -2879,9 +3323,17 @@ async fn test_settle_stale_nonce_fails() {
     };
 
     let blockhash = banks.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ed25519_ix2, ix], Some(&payer.pubkey()), &[&payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ed25519_ix2, ix],
+        Some(&payer.pubkey()),
+        &[&payer],
+        blockhash,
+    );
     let result = banks.process_transaction(tx).await;
-    assert!(result.is_err(), "settling with stale nonce on closed channel should fail");
+    assert!(
+        result.is_err(),
+        "settling with stale nonce on closed channel should fail"
+    );
 }
 
 // ══════════════════════════════════════════════
@@ -2899,12 +3351,22 @@ async fn test_supply_cap_enforcement() {
     let mut ctx = pt.start_with_context().await;
 
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+    )
+    .await;
 
     // Verify total_minted tracks the initial mint
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     assert_eq!(config.total_minted, 100_000_000);
 
@@ -2924,7 +3386,9 @@ async fn test_supply_cap_enforcement() {
     // Mint 50M more → should succeed (total_minted = 150M = cap)
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::MintTruth { amount: 50_000_000 }.serialize(&mut ix_data).unwrap();
+        StakingInstruction::MintTruth { amount: 50_000_000 }
+            .serialize(&mut ix_data)
+            .unwrap();
         let mint_ix = Instruction {
             program_id,
             accounts: vec![
@@ -2938,20 +3402,30 @@ async fn test_supply_cap_enforcement() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[mint_ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[mint_ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify total_minted = 150_000_000
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     assert_eq!(config.total_minted, 150_000_000);
 
     // Mint 1 more → should fail (SupplyCapExceeded)
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::MintTruth { amount: 1 }.serialize(&mut ix_data).unwrap();
+        StakingInstruction::MintTruth { amount: 1 }
+            .serialize(&mut ix_data)
+            .unwrap();
         let mint_ix = Instruction {
             program_id,
             accounts: vec![
@@ -2965,7 +3439,10 @@ async fn test_supply_cap_enforcement() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[mint_ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[mint_ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         let result = ctx.banks_client.process_transaction(tx).await;
         assert!(result.is_err(), "minting beyond supply cap should fail");
@@ -2983,12 +3460,22 @@ async fn test_epoch_advance_and_emission_halving() {
     let mut ctx = pt.start_with_context().await;
 
     let (config_pda, _) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        0,
+    )
+    .await;
 
     // Verify initial state: epoch 0, max emission = 10M, new fields have defaults
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     assert_eq!(config.current_epoch, 0);
     assert_eq!(config.epoch_max_emission, 10_000_000);
@@ -3001,7 +3488,12 @@ async fn test_epoch_advance_and_emission_halving() {
 
     // Patch config: set min_epoch_duration=0 for this test (focus on halving, not timing)
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.min_epoch_duration = 0;
@@ -3015,7 +3507,9 @@ async fn test_epoch_advance_and_emission_halving() {
 
     // AdvanceEpoch (min_epoch_duration=0 → no timing check, Clock not needed)
     let mut ix_data = Vec::new();
-    StakingInstruction::AdvanceEpoch.serialize(&mut ix_data).unwrap();
+    StakingInstruction::AdvanceEpoch
+        .serialize(&mut ix_data)
+        .unwrap();
     let ix = Instruction {
         program_id,
         accounts: vec![
@@ -3025,22 +3519,40 @@ async fn test_epoch_advance_and_emission_halving() {
         data: ix_data,
     };
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     // Verify epoch advanced to 1 with halved emission
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     assert_eq!(config.current_epoch, 1);
-    assert_eq!(config.epoch_max_emission, 9_850_000, "epoch 1 should decay emission by 1.5% to 9.85M");
-    assert_eq!(config.epoch_funded_amount, 0, "epoch_funded_amount should reset to 0");
+    assert_eq!(
+        config.epoch_max_emission, 9_850_000,
+        "epoch 1 should decay emission by 1.5% to 9.85M"
+    );
+    assert_eq!(
+        config.epoch_funded_amount, 0,
+        "epoch_funded_amount should reset to 0"
+    );
 
     // Warp slot so blockhash changes (avoids duplicate tx detection)
     ctx.warp_to_slot(100).unwrap();
 
     // Advance again → epoch 2 with 2.5M emission
     let mut ix_data = Vec::new();
-    StakingInstruction::AdvanceEpoch.serialize(&mut ix_data).unwrap();
+    StakingInstruction::AdvanceEpoch
+        .serialize(&mut ix_data)
+        .unwrap();
     let ix = Instruction {
         program_id,
         accounts: vec![
@@ -3050,13 +3562,26 @@ async fn test_epoch_advance_and_emission_halving() {
         data: ix_data,
     };
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     assert_eq!(config.current_epoch, 2);
-    assert_eq!(config.epoch_max_emission, 9_702_250, "epoch 2 should decay emission by 1.5% to ~9.7M");
+    assert_eq!(
+        config.epoch_max_emission, 9_702_250,
+        "epoch 2 should decay emission by 1.5% to ~9.7M"
+    );
 }
 
 /// Verify SlashSentinel reduces the amount received on WithdrawSentinel.
@@ -3071,24 +3596,31 @@ async fn test_slash_sentinel() {
 
     // Init with cooldown_secs = 0 for immediate withdraw
     let (config_pda, staker_token) = init_protocol_custom_cooldown(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        100_000_000,
+        0,
+    )
+    .await;
 
     let sentinel_pubkey = ctx.payer.pubkey();
     let stake_amount = 10_000_000u64;
     let slash_amount = 3_000_000u64;
 
-    let (sentinel_pda, _) = Pubkey::find_program_address(
-        &[SENTINEL_SEED, sentinel_pubkey.as_ref()],
-        &program_id,
-    );
+    let (sentinel_pda, _) =
+        Pubkey::find_program_address(&[SENTINEL_SEED, sentinel_pubkey.as_ref()], &program_id);
 
     // StakeSentinel
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::StakeSentinel { amount: stake_amount }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::StakeSentinel {
+            amount: stake_amount,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3105,13 +3637,21 @@ async fn test_slash_sentinel() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&sentinel_pubkey), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&sentinel_pubkey),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify sentinel staked
-    let sentinel_account = ctx.banks_client.get_account(sentinel_pda).await.unwrap().unwrap();
+    let sentinel_account = ctx
+        .banks_client
+        .get_account(sentinel_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let sentinel = SentinelAccount::deserialize_reader(&mut &sentinel_account.data[..]).unwrap();
     assert!(sentinel.is_initialized);
     assert_eq!(sentinel.amount, stake_amount);
@@ -3124,7 +3664,8 @@ async fn test_slash_sentinel() {
             sentinel: sentinel_pubkey.to_bytes(),
             amount: slash_amount,
         }
-        .serialize(&mut ix_data).unwrap();
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3136,20 +3677,30 @@ async fn test_slash_sentinel() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify slashed amount recorded
-    let sentinel_account = ctx.banks_client.get_account(sentinel_pda).await.unwrap().unwrap();
+    let sentinel_account = ctx
+        .banks_client
+        .get_account(sentinel_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let sentinel = SentinelAccount::deserialize_reader(&mut &sentinel_account.data[..]).unwrap();
     assert_eq!(sentinel.slashed_amount, slash_amount);
 
     // UnstakeSentinel
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UnstakeSentinel.serialize(&mut ix_data).unwrap();
+        StakingInstruction::UnstakeSentinel
+            .serialize(&mut ix_data)
+            .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3162,21 +3713,33 @@ async fn test_slash_sentinel() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&sentinel_pubkey), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&sentinel_pubkey),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Get token balance before withdraw
     let token_before = {
-        let acct = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
-        spl_token::state::Account::unpack(&acct.data).unwrap().amount
+        let acct = ctx
+            .banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap();
+        spl_token::state::Account::unpack(&acct.data)
+            .unwrap()
+            .amount
     };
 
     // WithdrawSentinel
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::WithdrawSentinel.serialize(&mut ix_data).unwrap();
+        StakingInstruction::WithdrawSentinel
+            .serialize(&mut ix_data)
+            .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3193,15 +3756,25 @@ async fn test_slash_sentinel() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&sentinel_pubkey), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&sentinel_pubkey),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify sentinel got back (stake_amount - slash_amount)
     let token_after = {
-        let acct = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
-        spl_token::state::Account::unpack(&acct.data).unwrap().amount
+        let acct = ctx
+            .banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap();
+        spl_token::state::Account::unpack(&acct.data)
+            .unwrap()
+            .amount
     };
     let expected_return = stake_amount - slash_amount;
     // 50% of slashed tokens are burned, but sentinel still receives stake minus full slash
@@ -3223,13 +3796,23 @@ async fn test_governable_burn_pct() {
     let mut ctx = pt.start_with_context().await;
 
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Patch config: set burn_pct = 20, sentinel_fee_pct = 0 (isolate burn test)
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.burn_pct = 20;
@@ -3247,20 +3830,31 @@ async fn test_governable_burn_pct() {
     let fund_ix = system_instruction::transfer(&ctx.payer.pubkey(), &payee.pubkey(), 1_000_000_000);
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
     let tx = Transaction::new_signed_with_payer(
-        &[fund_ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+        &[fund_ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
     );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
     let payee_token = create_token_account(
-        &mut ctx.banks_client, &ctx.payer, blockhash,
-        &truth_mint.pubkey(), &payee.pubkey(),
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        blockhash,
+        &truth_mint.pubkey(),
+        &payee.pubkey(),
+    )
+    .await;
 
     let payee_bytes = payee.pubkey().to_bytes();
     let channel_amount = 50_000_000u64;
     let (channel_pda, _) = Pubkey::find_program_address(
-        &[CHANNEL_SEED, ctx.payer.pubkey().as_ref(), payee.pubkey().as_ref()],
+        &[
+            CHANNEL_SEED,
+            ctx.payer.pubkey().as_ref(),
+            payee.pubkey().as_ref(),
+        ],
         &program_id,
     );
 
@@ -3272,7 +3866,8 @@ async fn test_governable_burn_pct() {
             amount: channel_amount,
             expiry_slot: 10000,
         }
-        .serialize(&mut ix_data).unwrap();
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3289,7 +3884,10 @@ async fn test_governable_burn_pct() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
@@ -3305,7 +3903,8 @@ async fn test_governable_burn_pct() {
             spent,
             nonce: 1,
         }
-        .serialize(&mut ix_data).unwrap();
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3323,7 +3922,10 @@ async fn test_governable_burn_pct() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ed25519_ix, ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ed25519_ix, ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
@@ -3331,9 +3933,17 @@ async fn test_governable_burn_pct() {
     // Verify payee got 80% of spent (burn_pct = 20)
     // burn = 20_000_000 * 20 / 100 = 4_000_000
     // payee = 20_000_000 - 4_000_000 = 16_000_000
-    let payee_account = ctx.banks_client.get_account(payee_token).await.unwrap().unwrap();
+    let payee_account = ctx
+        .banks_client
+        .get_account(payee_token)
+        .await
+        .unwrap()
+        .unwrap();
     let payee_data = spl_token::state::Account::unpack(&payee_account.data).unwrap();
-    assert_eq!(payee_data.amount, 16_000_000, "payee should get 80% when burn_pct=20");
+    assert_eq!(
+        payee_data.amount, 16_000_000,
+        "payee should get 80% when burn_pct=20"
+    );
 }
 
 /// Verify dispute resolution with quorum not met results in QuorumFailed.
@@ -3347,20 +3957,37 @@ async fn test_dispute_quorum() {
     let mut ctx = pt.start_with_context().await;
 
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Open dispute
     let domain = "quorum-test.com";
     let (dispute_pda, dispute_nonce, domain_pda) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Patch config: set min_jury_weight very high (quorum impossible to meet)
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.min_jury_weight = 1_000_000_000;
@@ -3374,9 +4001,15 @@ async fn test_dispute_quorum() {
 
     // Patch dispute: set deadline = 0 (so resolution can proceed past deadline check)
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.deadline = 0;
         let mut buf = Vec::new();
         dispute.serialize(&mut buf).unwrap();
@@ -3393,7 +4026,8 @@ async fn test_dispute_quorum() {
             domain: domain.to_string(),
             dispute_nonce,
         }
-        .serialize(&mut ix_data).unwrap();
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3411,16 +4045,25 @@ async fn test_dispute_quorum() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify dispute status is QuorumFailed
-    let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+    let dispute_account = ctx
+        .banks_client
+        .get_account(dispute_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
     assert_eq!(
-        dispute.status, DisputeStatus::QuorumFailed,
+        dispute.status,
+        DisputeStatus::QuorumFailed,
         "dispute should be QuorumFailed when jury weight is below threshold"
     );
 }
@@ -3439,14 +4082,27 @@ async fn test_one_dispute_per_domain() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "one-dispute.com";
     let (_dispute_pda, _dispute_nonce, _domain_pda) = setup_dispute(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Read config for the next nonce
     let config_account = banks.get_account(config_pda).await.unwrap().unwrap();
@@ -3454,10 +4110,8 @@ async fn test_one_dispute_per_domain() {
     let nonce2 = config.dispute_nonce;
     let nonce2_bytes = nonce2.to_le_bytes();
 
-    let (domain_pda2, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        &program_id,
-    );
+    let (domain_pda2, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
     let (dispute_pda2, _) = Pubkey::find_program_address(
         &[DISPUTE_SEED, domain.as_bytes(), &nonce2_bytes],
         &program_id,
@@ -3470,7 +4124,8 @@ async fn test_one_dispute_per_domain() {
         reason_hash: [99u8; 32],
         severity: 0,
     }
-    .serialize(&mut ix_data).unwrap();
+    .serialize(&mut ix_data)
+    .unwrap();
 
     let ix = Instruction {
         program_id,
@@ -3491,7 +4146,10 @@ async fn test_one_dispute_per_domain() {
     let blockhash = banks.get_latest_blockhash().await.unwrap();
     let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer.pubkey()), &[&payer], blockhash);
     let result = banks.process_transaction(tx).await;
-    assert!(result.is_err(), "second dispute on same domain should fail with DisputeAlreadyActive");
+    assert!(
+        result.is_err(),
+        "second dispute on same domain should fail with DisputeAlreadyActive"
+    );
 }
 
 /// Fix 3: Slash percentage monotonicity — a lower-severity guilty verdict
@@ -3505,20 +4163,37 @@ async fn test_slash_pct_monotonic() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Open first dispute (severity 2 = high)
     let domain = "slash-mono.com";
     let (dispute_pda, dispute_nonce, domain_pda) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Patch config: min_jury_weight = 0 so any vote counts for quorum
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.min_jury_weight = 0;
@@ -3532,9 +4207,15 @@ async fn test_slash_pct_monotonic() {
 
     // Patch dispute: deadline=0, severity=2, votes_guilty=1 (force guilty outcome)
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.deadline = 0;
         dispute.reveal_deadline = 0;
         dispute.severity = 2;
@@ -3550,8 +4231,12 @@ async fn test_slash_pct_monotonic() {
     // Resolve first dispute → guilty (severity 2, slash_pct=10 → effective=15)
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ResolveDispute { domain: domain.to_string(), dispute_nonce }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ResolveDispute {
+            domain: domain.to_string(),
+            dispute_nonce,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3569,19 +4254,39 @@ async fn test_slash_pct_monotonic() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify effective_slash_pct = 15 (severity 2: 10*3/2=15)
-    let domain_account = ctx.banks_client.get_account(domain_pda).await.unwrap().unwrap();
+    let domain_account = ctx
+        .banks_client
+        .get_account(domain_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let record = DomainRecord::deserialize_reader(&mut &domain_account.data[..]).unwrap();
-    assert_eq!(record.effective_slash_pct, 15, "severity-2 should set slash to 15%");
-    assert_eq!(record.active_dispute_nonce, u64::MAX, "dispute nonce should be cleared after resolution");
+    assert_eq!(
+        record.effective_slash_pct, 15,
+        "severity-2 should set slash to 15%"
+    );
+    assert_eq!(
+        record.active_dispute_nonce,
+        u64::MAX,
+        "dispute nonce should be cleared after resolution"
+    );
 
     // Now open second dispute with severity 0 (low)
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce2 = config.dispute_nonce;
     let nonce2_bytes = nonce2.to_le_bytes();
@@ -3597,7 +4302,8 @@ async fn test_slash_pct_monotonic() {
             reason_hash: [55u8; 32],
             severity: 0,
         }
-        .serialize(&mut ix_data).unwrap();
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3615,16 +4321,25 @@ async fn test_slash_pct_monotonic() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Patch second dispute: deadline=0, votes_guilty=1 (force guilty)
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda2).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda2)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.deadline = 0;
         dispute.reveal_deadline = 0;
         dispute.votes_guilty = 1;
@@ -3640,8 +4355,12 @@ async fn test_slash_pct_monotonic() {
     // But effective_slash_pct should stay at 15 due to max() monotonicity
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ResolveDispute { domain: domain.to_string(), dispute_nonce: nonce2 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ResolveDispute {
+            domain: domain.to_string(),
+            dispute_nonce: nonce2,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3659,15 +4378,26 @@ async fn test_slash_pct_monotonic() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify effective_slash_pct is still 15 (max(15, 5) = 15)
-    let domain_account = ctx.banks_client.get_account(domain_pda).await.unwrap().unwrap();
+    let domain_account = ctx
+        .banks_client
+        .get_account(domain_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let record = DomainRecord::deserialize_reader(&mut &domain_account.data[..]).unwrap();
-    assert_eq!(record.effective_slash_pct, 15, "slash pct should be monotonic: max(15, 5) = 15");
+    assert_eq!(
+        record.effective_slash_pct, 15,
+        "slash pct should be monotonic: max(15, 5) = 15"
+    );
 }
 
 /// Fix 6: Fresh stake (< 7 days) cannot commit jury votes.
@@ -3680,21 +4410,42 @@ async fn test_jury_stake_age() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "age-check.com";
     let (dispute_pda, dispute_nonce, _) = setup_dispute(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Fresh stake as juror on a different domain
     let juror_domain = "fresh-juror.com";
     let (juror_stake_pda, _) = stake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), juror_domain, 10_000_000, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        juror_domain,
+        10_000_000,
+        0,
+    )
+    .await;
 
     let (jury_pda, _) = Pubkey::find_program_address(
         &[JURY_SEED, dispute_pda.as_ref(), payer.pubkey().as_ref()],
@@ -3708,7 +4459,8 @@ async fn test_jury_stake_age() {
         dispute_nonce,
         commit_hash,
     }
-    .serialize(&mut ix_data).unwrap();
+    .serialize(&mut ix_data)
+    .unwrap();
 
     let ix = Instruction {
         program_id,
@@ -3727,7 +4479,10 @@ async fn test_jury_stake_age() {
     let blockhash = banks.get_latest_blockhash().await.unwrap();
     let tx = Transaction::new_signed_with_payer(&[ix], Some(&payer.pubkey()), &[&payer], blockhash);
     let result = banks.process_transaction(tx).await;
-    assert!(result.is_err(), "fresh stake (< 7 days) should fail jury vote with JuryNotEligible");
+    assert!(
+        result.is_err(),
+        "fresh stake (< 7 days) should fail jury vote with JuryNotEligible"
+    );
 }
 
 /// Fix 7: Governance parameter range guards reject out-of-range values at execution.
@@ -3740,20 +4495,38 @@ async fn test_governance_param_range() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Stake to have voting weight
     let domain = "gov-range.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch stake: set staked_at to 8 days ago (satisfies 7-day governance voting minimum)
     {
-        let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(voter_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -3767,7 +4540,12 @@ async fn test_governance_param_range() {
 
     // Patch config: set execution_delay_secs to 0 for this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.execution_delay_secs = 0;
@@ -3781,14 +4559,17 @@ async fn test_governance_param_range() {
     }
 
     // Read config for proposal nonce
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        &program_id,
-    );
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     // Create proposal: cooldown_secs = 100_000_000 (> 31_536_000 max)
     {
@@ -3798,7 +4579,8 @@ async fn test_governance_param_range() {
             param_key: "cooldown_secs".to_string(),
             param_value: 100_000_000,
         }
-        .serialize(&mut ix_data).unwrap();
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3812,24 +4594,33 @@ async fn test_governance_param_range() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Vote for it
     let (gov_vote_pda, _) = Pubkey::find_program_address(
-        &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            GOV_VOTE_SEED,
+            proposal_pda.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce: nonce,
+            vote: 0,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3845,16 +4636,25 @@ async fn test_governance_param_range() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Patch proposal: voting_ends=0, executable_after=0 (bypass timelock)
     {
-        let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+        let proposal_account = ctx
+            .banks_client
+            .get_account(proposal_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = proposal_account.data.len();
-        let mut proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
+        let mut proposal =
+            GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
         proposal.voting_ends = 0;
         proposal.executable_after = 0;
         let mut buf = Vec::new();
@@ -3868,8 +4668,11 @@ async fn test_governance_param_range() {
     // Execute proposal — should fail with ParamOutOfRange
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ExecuteProposal { proposal_nonce: nonce }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ExecuteProposal {
+            proposal_nonce: nonce,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3882,10 +4685,16 @@ async fn test_governance_param_range() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         let result = ctx.banks_client.process_transaction(tx).await;
-        assert!(result.is_err(), "executing proposal with cooldown_secs > 365 days should fail with ParamOutOfRange");
+        assert!(
+            result.is_err(),
+            "executing proposal with cooldown_secs > 365 days should fail with ParamOutOfRange"
+        );
     }
 }
 
@@ -3899,20 +4708,38 @@ async fn test_max_supply_below_minted() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Stake to have voting weight
     let domain = "max-supply.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch stake: set staked_at to 8 days ago (satisfies 7-day governance voting minimum)
     {
-        let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(voter_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -3926,7 +4753,12 @@ async fn test_max_supply_below_minted() {
 
     // Patch config: set execution_delay_secs to 0 for this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.execution_delay_secs = 0;
@@ -3939,14 +4771,17 @@ async fn test_max_supply_below_minted() {
         ctx.set_account(&config_pda, &patched);
     }
 
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        &program_id,
-    );
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     // Create proposal: max_total_supply = 1 (way below total_minted = 200M)
     {
@@ -3956,7 +4791,8 @@ async fn test_max_supply_below_minted() {
             param_key: "max_total_supply".to_string(),
             param_value: 1,
         }
-        .serialize(&mut ix_data).unwrap();
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -3970,24 +4806,33 @@ async fn test_max_supply_below_minted() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Vote for it
     let (gov_vote_pda, _) = Pubkey::find_program_address(
-        &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            GOV_VOTE_SEED,
+            proposal_pda.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce: nonce,
+            vote: 0,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4003,16 +4848,25 @@ async fn test_max_supply_below_minted() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Patch proposal: voting_ends=0, executable_after=0
     {
-        let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+        let proposal_account = ctx
+            .banks_client
+            .get_account(proposal_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = proposal_account.data.len();
-        let mut proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
+        let mut proposal =
+            GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
         proposal.voting_ends = 0;
         proposal.executable_after = 0;
         let mut buf = Vec::new();
@@ -4026,8 +4880,11 @@ async fn test_max_supply_below_minted() {
     // Execute proposal — should succeed but proposal status = Failed
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ExecuteProposal { proposal_nonce: nonce }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ExecuteProposal {
+            proposal_nonce: nonce,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4040,16 +4897,27 @@ async fn test_max_supply_below_minted() {
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify proposal status is Failed (not Executed)
-    let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+    let proposal_account = ctx
+        .banks_client
+        .get_account(proposal_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
-    assert_eq!(proposal.status, ProposalStatus::Failed,
-        "max_total_supply below total_minted should fail gracefully");
+    assert_eq!(
+        proposal.status,
+        ProposalStatus::Failed,
+        "max_total_supply below total_minted should fail gracefully"
+    );
 }
 
 /// Fix 4+8: Winning-side juror can claim correct share of jury reward pool.
@@ -4062,22 +4930,40 @@ async fn test_claim_jury_reward() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "jury-claim.com";
     let (dispute_pda, dispute_nonce, _domain_pda) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Patch dispute: ResolvedGuilty (jury_reward_pool=0 in new model, but still need resolved status)
     // votes_guilty = 10_000_000 (total winning weight)
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.status = DisputeStatus::ResolvedGuilty;
         dispute.votes_guilty = 10_000_000;
         dispute.votes_innocent = 0;
@@ -4093,7 +4979,12 @@ async fn test_claim_jury_reward() {
 
     // Patch config: set jury_vote_reward = 1000
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.jury_vote_reward = 1_000;
@@ -4138,7 +5029,12 @@ async fn test_claim_jury_reward() {
     }
 
     // Record staker token balance before claim
-    let before_account = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
+    let before_account = ctx
+        .banks_client
+        .get_account(staker_token)
+        .await
+        .unwrap()
+        .unwrap();
     let before = spl_token::state::Account::unpack(&before_account.data).unwrap();
     let balance_before = before.amount;
 
@@ -4149,7 +5045,8 @@ async fn test_claim_jury_reward() {
             domain: domain.to_string(),
             dispute_nonce,
         }
-        .serialize(&mut ix_data).unwrap();
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4157,26 +5054,43 @@ async fn test_claim_jury_reward() {
                 AccountMeta::new(jury_pda, false),
                 AccountMeta::new(dispute_pda, false),
                 AccountMeta::new(staker_token, false),
-                AccountMeta::new(truth_mint.pubkey(), false),  // $TRUTH Mint (was vault)
-                AccountMeta::new(config_pda, false),           // Config (now writable)
+                AccountMeta::new(truth_mint.pubkey(), false), // $TRUTH Mint (was vault)
+                AccountMeta::new(config_pda, false),          // Config (now writable)
                 AccountMeta::new_readonly(spl_token::id(), false),
             ],
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
         let tx = Transaction::new_signed_with_payer(
-            &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
         );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify payout: flat jury_vote_reward = 1_000 minted
-    let after_account = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
+    let after_account = ctx
+        .banks_client
+        .get_account(staker_token)
+        .await
+        .unwrap()
+        .unwrap();
     let after = spl_token::state::Account::unpack(&after_account.data).unwrap();
-    assert_eq!(after.amount - balance_before, 1_000, "juror should receive flat jury_vote_reward (1000)");
+    assert_eq!(
+        after.amount - balance_before,
+        1_000,
+        "juror should receive flat jury_vote_reward (1000)"
+    );
 
     // Verify jury vote marked as claimed
-    let jury_account = ctx.banks_client.get_account(jury_pda).await.unwrap().unwrap();
+    let jury_account = ctx
+        .banks_client
+        .get_account(jury_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let vote = JuryVote::deserialize_reader(&mut &jury_account.data[..]).unwrap();
     assert!(vote.reward_claimed, "jury vote should be marked as claimed");
 }
@@ -4191,21 +5105,39 @@ async fn test_claim_jury_reward_loser_fails() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "loser-claim.com";
     let (dispute_pda, dispute_nonce, _) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Patch dispute: ResolvedGuilty
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.status = DisputeStatus::ResolvedGuilty;
         dispute.votes_guilty = 5_000_000;
         dispute.votes_innocent = 10_000_000;
@@ -4221,7 +5153,12 @@ async fn test_claim_jury_reward_loser_fails() {
 
     // Patch config: set jury_vote_reward = 1000
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.jury_vote_reward = 1_000;
@@ -4270,7 +5207,8 @@ async fn test_claim_jury_reward_loser_fails() {
         domain: domain.to_string(),
         dispute_nonce,
     }
-    .serialize(&mut ix_data).unwrap();
+    .serialize(&mut ix_data)
+    .unwrap();
     let ix = Instruction {
         program_id,
         accounts: vec![
@@ -4278,18 +5216,24 @@ async fn test_claim_jury_reward_loser_fails() {
             AccountMeta::new(jury_pda, false),
             AccountMeta::new(dispute_pda, false),
             AccountMeta::new(staker_token, false),
-            AccountMeta::new(truth_mint.pubkey(), false),  // $TRUTH Mint (was vault)
-            AccountMeta::new(config_pda, false),           // Config (now writable)
+            AccountMeta::new(truth_mint.pubkey(), false), // $TRUTH Mint (was vault)
+            AccountMeta::new(config_pda, false),          // Config (now writable)
             AccountMeta::new_readonly(spl_token::id(), false),
         ],
         data: ix_data,
     };
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
     let tx = Transaction::new_signed_with_payer(
-        &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
     );
     let result = ctx.banks_client.process_transaction(tx).await;
-    assert!(result.is_err(), "losing-side juror should not be able to claim jury reward");
+    assert!(
+        result.is_err(),
+        "losing-side juror should not be able to claim jury reward"
+    );
 }
 
 /// Fix 9: Unstake decrements config.total_staked (not withdraw).
@@ -4302,32 +5246,50 @@ async fn test_cooldown_dilution_fix() {
 
     let (mut banks, payer, _) = pt.start().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut banks, &payer, &program_id, &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let domain = "dilution.com";
     let stake_amount = 50_000_000u64;
     let (_stake_pda, _domain_pda) = stake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, stake_amount, 0,
-    ).await;
+        &mut banks,
+        &payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        stake_amount,
+        0,
+    )
+    .await;
 
     // Verify total_staked includes our stake
     let config_account = banks.get_account(config_pda).await.unwrap().unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let total_before = config.total_staked;
-    assert!(total_before >= stake_amount, "total_staked should include staked amount");
+    assert!(
+        total_before >= stake_amount,
+        "total_staked should include staked amount"
+    );
 
     // Unstake — should decrement total_staked immediately
-    let _stake_pda = unstake_v2_helper(
-        &mut banks, &payer, &program_id, &config_pda, domain,
-    ).await;
+    let _stake_pda = unstake_v2_helper(&mut banks, &payer, &program_id, &config_pda, domain).await;
 
     // Verify total_staked decremented at unstake time (not waiting for withdraw)
     let config_account = banks.get_account(config_pda).await.unwrap().unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
-    assert_eq!(config.total_staked, total_before - stake_amount,
-        "total_staked should be decremented at unstake time, not withdraw");
+    assert_eq!(
+        config.total_staked,
+        total_before - stake_amount,
+        "total_staked should be decremented at unstake time, not withdraw"
+    );
 }
 
 /// HIGH-1: Proposal deposit is collected when config.proposal_deposit > 0.
@@ -4340,15 +5302,25 @@ async fn test_proposal_deposit_collected() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     let deposit_amount = 5_000_000u64;
 
     // Patch config to set proposal_deposit > 0
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.proposal_deposit = deposit_amount;
@@ -4362,21 +5334,38 @@ async fn test_proposal_deposit_collected() {
 
     // Record balances before
     let before_staker = spl_token::state::Account::unpack(
-        &ctx.banks_client.get_account(staker_token).await.unwrap().unwrap().data
-    ).unwrap().amount;
+        &ctx.banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap()
+            .data,
+    )
+    .unwrap()
+    .amount;
     let before_vault = spl_token::state::Account::unpack(
-        &ctx.banks_client.get_account(reward_vault.pubkey()).await.unwrap().unwrap().data
-    ).unwrap().amount;
+        &ctx.banks_client
+            .get_account(reward_vault.pubkey())
+            .await
+            .unwrap()
+            .unwrap()
+            .data,
+    )
+    .unwrap()
+    .amount;
 
     // Read config for proposal nonce
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        &program_id,
-    );
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     // Create proposal with the 3 extra accounts for deposit
     let mut ix_data = Vec::new();
@@ -4385,7 +5374,8 @@ async fn test_proposal_deposit_collected() {
         param_key: "min_stake".to_string(),
         param_value: 2_000_000,
     }
-    .serialize(&mut ix_data).unwrap();
+    .serialize(&mut ix_data)
+    .unwrap();
     let ix = Instruction {
         program_id,
         accounts: vec![
@@ -4403,20 +5393,45 @@ async fn test_proposal_deposit_collected() {
     };
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
     let tx = Transaction::new_signed_with_payer(
-        &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
     );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     // Verify deposit was transferred
     let after_staker = spl_token::state::Account::unpack(
-        &ctx.banks_client.get_account(staker_token).await.unwrap().unwrap().data
-    ).unwrap().amount;
+        &ctx.banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap()
+            .data,
+    )
+    .unwrap()
+    .amount;
     let after_vault = spl_token::state::Account::unpack(
-        &ctx.banks_client.get_account(reward_vault.pubkey()).await.unwrap().unwrap().data
-    ).unwrap().amount;
+        &ctx.banks_client
+            .get_account(reward_vault.pubkey())
+            .await
+            .unwrap()
+            .unwrap()
+            .data,
+    )
+    .unwrap()
+    .amount;
 
-    assert_eq!(before_staker - after_staker, deposit_amount, "proposer should pay deposit");
-    assert_eq!(after_vault - before_vault, deposit_amount, "vault should receive deposit");
+    assert_eq!(
+        before_staker - after_staker,
+        deposit_amount,
+        "proposer should pay deposit"
+    );
+    assert_eq!(
+        after_vault - before_vault,
+        deposit_amount,
+        "vault should receive deposit"
+    );
 }
 
 /// HIGH-1: CreateProposal without deposit accounts fails when deposit > 0.
@@ -4429,13 +5444,23 @@ async fn test_proposal_deposit_missing_accounts() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, _staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Patch config to set proposal_deposit > 0
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.proposal_deposit = 5_000_000;
@@ -4447,14 +5472,17 @@ async fn test_proposal_deposit_missing_accounts() {
         ctx.set_account(&config_pda, &patched);
     }
 
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(
-        &[PROPOSAL_SEED, &nonce_bytes],
-        &program_id,
-    );
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     // Try without deposit accounts — should fail
     let mut ix_data = Vec::new();
@@ -4463,7 +5491,8 @@ async fn test_proposal_deposit_missing_accounts() {
         param_key: "min_stake".to_string(),
         param_value: 2_000_000,
     }
-    .serialize(&mut ix_data).unwrap();
+    .serialize(&mut ix_data)
+    .unwrap();
     let ix = Instruction {
         program_id,
         accounts: vec![
@@ -4478,10 +5507,16 @@ async fn test_proposal_deposit_missing_accounts() {
     };
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
     let tx = Transaction::new_signed_with_payer(
-        &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+        &[ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
     );
     let result = ctx.banks_client.process_transaction(tx).await;
-    assert!(result.is_err(), "creating proposal without deposit accounts should fail when deposit > 0");
+    assert!(
+        result.is_err(),
+        "creating proposal without deposit accounts should fail when deposit > 0"
+    );
 }
 
 /// HIGH-2: Extended range guards for dispute_bond, reward_rate, jury_min_stake, min_jury_weight, min_epoch_duration.
@@ -4494,20 +5529,38 @@ async fn test_governance_range_guards_extended() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Stake to have voting weight
     let domain = "range-ext.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch stake: set staked_at to 8 days ago (satisfies 7-day governance voting minimum)
     {
-        let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(voter_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -4521,7 +5574,12 @@ async fn test_governance_range_guards_extended() {
 
     // Patch config: set execution_delay_secs to 0 for this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.execution_delay_secs = 0;
@@ -4537,22 +5595,25 @@ async fn test_governance_range_guards_extended() {
     // Test each parameter that now has a range guard
     let params_to_test = [
         ("dispute_bond", 2_000_000_000u64),  // > 1B max
-        ("reward_rate", 2_000_000_000),       // > 1B max
-        ("jury_min_stake", 2_000_000_000),    // > 1B max
-        ("min_jury_weight", 20_000_000_000),  // > 10B max
-        ("min_epoch_duration", 50_000_000),   // > 365 days max
+        ("reward_rate", 2_000_000_000),      // > 1B max
+        ("jury_min_stake", 2_000_000_000),   // > 1B max
+        ("min_jury_weight", 20_000_000_000), // > 10B max
+        ("min_epoch_duration", 50_000_000),  // > 365 days max
     ];
 
     for (param_key, bad_value) in &params_to_test {
         // Read config for proposal nonce
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         let nonce = config.proposal_nonce;
         let nonce_bytes = nonce.to_le_bytes();
-        let (proposal_pda, _) = Pubkey::find_program_address(
-            &[PROPOSAL_SEED, &nonce_bytes],
-            &program_id,
-        );
+        let (proposal_pda, _) =
+            Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
         // Create proposal
         {
@@ -4562,7 +5623,8 @@ async fn test_governance_range_guards_extended() {
                 param_key: param_key.to_string(),
                 param_value: *bad_value,
             }
-            .serialize(&mut ix_data).unwrap();
+            .serialize(&mut ix_data)
+            .unwrap();
             let ix = Instruction {
                 program_id,
                 accounts: vec![
@@ -4576,14 +5638,21 @@ async fn test_governance_range_guards_extended() {
             };
             let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
             let tx = Transaction::new_signed_with_payer(
-                &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+                &[ix],
+                Some(&ctx.payer.pubkey()),
+                &[&ctx.payer],
+                blockhash,
             );
             ctx.banks_client.process_transaction(tx).await.unwrap();
         }
 
         // Vote for it
         let (gov_vote_pda, _) = Pubkey::find_program_address(
-            &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+            &[
+                GOV_VOTE_SEED,
+                proposal_pda.as_ref(),
+                ctx.payer.pubkey().as_ref(),
+            ],
             &program_id,
         );
         let (gov_lock_pda, _) = Pubkey::find_program_address(
@@ -4592,8 +5661,12 @@ async fn test_governance_range_guards_extended() {
         );
         {
             let mut ix_data = Vec::new();
-            StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-                .serialize(&mut ix_data).unwrap();
+            StakingInstruction::CastGovernanceVote {
+                proposal_nonce: nonce,
+                vote: 0,
+            }
+            .serialize(&mut ix_data)
+            .unwrap();
             let ix = Instruction {
                 program_id,
                 accounts: vec![
@@ -4609,16 +5682,25 @@ async fn test_governance_range_guards_extended() {
             };
             let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
             let tx = Transaction::new_signed_with_payer(
-                &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+                &[ix],
+                Some(&ctx.payer.pubkey()),
+                &[&ctx.payer],
+                blockhash,
             );
             ctx.banks_client.process_transaction(tx).await.unwrap();
         }
 
         // Patch proposal: bypass timelock
         {
-            let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+            let proposal_account = ctx
+                .banks_client
+                .get_account(proposal_pda)
+                .await
+                .unwrap()
+                .unwrap();
             let orig_len = proposal_account.data.len();
-            let mut proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
+            let mut proposal =
+                GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
             proposal.voting_ends = 0;
             proposal.executable_after = 0;
             let mut buf = Vec::new();
@@ -4632,8 +5714,11 @@ async fn test_governance_range_guards_extended() {
         // Execute proposal — should fail with ParamOutOfRange
         {
             let mut ix_data = Vec::new();
-            StakingInstruction::ExecuteProposal { proposal_nonce: nonce }
-                .serialize(&mut ix_data).unwrap();
+            StakingInstruction::ExecuteProposal {
+                proposal_nonce: nonce,
+            }
+            .serialize(&mut ix_data)
+            .unwrap();
             let ix = Instruction {
                 program_id,
                 accounts: vec![
@@ -4646,10 +5731,17 @@ async fn test_governance_range_guards_extended() {
             };
             let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
             let tx = Transaction::new_signed_with_payer(
-                &[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash,
+                &[ix],
+                Some(&ctx.payer.pubkey()),
+                &[&ctx.payer],
+                blockhash,
             );
             let result = ctx.banks_client.process_transaction(tx).await;
-            assert!(result.is_err(), "executing proposal with out-of-range {} should fail", param_key);
+            assert!(
+                result.is_err(),
+                "executing proposal with out-of-range {} should fail",
+                param_key
+            );
         }
     }
 }
@@ -4669,13 +5761,23 @@ async fn test_sentinel_fee_routing() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Patch config: sentinel_fee_pct=10, burn_pct=10 (default)
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.sentinel_fee_pct = 10;
@@ -4691,22 +5793,43 @@ async fn test_sentinel_fee_routing() {
     let payee = Keypair::new();
     let fund_ix = system_instruction::transfer(&ctx.payer.pubkey(), &payee.pubkey(), 1_000_000_000);
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[fund_ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[fund_ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let payee_token = create_token_account(&mut ctx.banks_client, &ctx.payer, blockhash, &truth_mint.pubkey(), &payee.pubkey()).await;
+    let payee_token = create_token_account(
+        &mut ctx.banks_client,
+        &ctx.payer,
+        blockhash,
+        &truth_mint.pubkey(),
+        &payee.pubkey(),
+    )
+    .await;
 
     // Open channel with 100M deposit
     let payee_bytes = payee.pubkey().to_bytes();
     let (channel_pda, _) = Pubkey::find_program_address(
-        &[CHANNEL_SEED, ctx.payer.pubkey().as_ref(), payee.pubkey().as_ref()],
+        &[
+            CHANNEL_SEED,
+            ctx.payer.pubkey().as_ref(),
+            payee.pubkey().as_ref(),
+        ],
         &program_id,
     );
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::OpenChannel { payee: payee_bytes, amount: 100_000_000, expiry_slot: 10000 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::OpenChannel {
+            payee: payee_bytes,
+            amount: 100_000_000,
+            expiry_slot: 10000,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4722,7 +5845,12 @@ async fn test_sentinel_fee_routing() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
@@ -4735,7 +5863,9 @@ async fn test_sentinel_fee_routing() {
             payee_key: payee_bytes,
             spent: 100_000_000,
             nonce: 1,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4752,19 +5882,40 @@ async fn test_sentinel_fee_routing() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ed25519_ix, ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ed25519_ix, ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify: burn=10M, sentinel_fee=10M, payee=80M
-    let payee_account = ctx.banks_client.get_account(payee_token).await.unwrap().unwrap();
+    let payee_account = ctx
+        .banks_client
+        .get_account(payee_token)
+        .await
+        .unwrap()
+        .unwrap();
     let payee_data = spl_token::state::Account::unpack(&payee_account.data).unwrap();
-    assert_eq!(payee_data.amount, 80_000_000, "payee should get 80% (100% - 10% burn - 10% sentinel)");
+    assert_eq!(
+        payee_data.amount, 80_000_000,
+        "payee should get 80% (100% - 10% burn - 10% sentinel)"
+    );
 
     // Verify accumulated_sentinel_fees = 10M in config
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
-    assert_eq!(config.accumulated_sentinel_fees, 10_000_000, "sentinel fees should accumulate");
+    assert_eq!(
+        config.accumulated_sentinel_fees, 10_000_000,
+        "sentinel fees should accumulate"
+    );
 }
 
 /// M1: Accumulated sentinel fees flow into sentinel reward index on UpdateRewardIndex.
@@ -4777,20 +5928,38 @@ async fn test_sentinel_fee_distribution() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake as publisher (for total_staked)
     let domain = "sentinel-test.com";
     let (_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch config: set accumulated_sentinel_fees=5M, total_sentinel_staked=50M, total_funded=10M
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.accumulated_sentinel_fees = 5_000_000;
@@ -4807,8 +5976,11 @@ async fn test_sentinel_fee_distribution() {
     // UpdateRewardIndex with funded_amount=10M
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UpdateRewardIndex { funded_amount: 10_000_000 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::UpdateRewardIndex {
+            funded_amount: 10_000_000,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4818,16 +5990,32 @@ async fn test_sentinel_fee_distribution() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify accumulated_sentinel_fees drained to 0
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
-    assert_eq!(config.accumulated_sentinel_fees, 0, "accumulated fees should be drained");
+    assert_eq!(
+        config.accumulated_sentinel_fees, 0,
+        "accumulated fees should be drained"
+    );
     // sentinel_reward_per_token should have increased (sentinel_portion = 30% of 10M + 5M bonus)
-    assert!(config.sentinel_reward_per_token > 0, "sentinel reward index should increase");
+    assert!(
+        config.sentinel_reward_per_token > 0,
+        "sentinel reward index should increase"
+    );
 }
 
 /// M2: Vote on a proposal, then try to unstake before voting_ends → GovernanceLockActive.
@@ -4840,20 +6028,38 @@ async fn test_governance_vote_lock() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake
     let domain = "lock-test.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch stake: set staked_at to 8 days ago (satisfies 7-day governance voting minimum)
     {
-        let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(voter_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -4867,7 +6073,12 @@ async fn test_governance_vote_lock() {
 
     // Patch config: set execution_delay_secs to 0 so proposal can execute without timelock in this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.execution_delay_secs = 0;
@@ -4881,11 +6092,17 @@ async fn test_governance_vote_lock() {
     }
 
     // Create proposal
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     {
         let mut ix_data = Vec::new();
@@ -4893,7 +6110,9 @@ async fn test_governance_vote_lock() {
             description_hash: [1u8; 32],
             param_key: "min_stake".to_string(),
             param_value: 500_000,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4906,23 +6125,34 @@ async fn test_governance_vote_lock() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Cast vote
     let (gov_vote_pda, _) = Pubkey::find_program_address(
-        &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            GOV_VOTE_SEED,
+            proposal_pda.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce: nonce,
+            vote: 0,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4937,24 +6167,38 @@ async fn test_governance_vote_lock() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify per-wallet governance lock is set
-    let lock_account = ctx.banks_client.get_account(gov_lock_pda).await.unwrap().unwrap();
+    let lock_account = ctx
+        .banks_client
+        .get_account(gov_lock_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let lock = GovernanceLockAccount::deserialize_reader(&mut &lock_account.data[..]).unwrap();
-    assert!(lock.lock_until > 0, "governance lock should be set after voting");
+    assert!(
+        lock.lock_until > 0,
+        "governance lock should be set after voting"
+    );
 
     // Try to unstake → should fail with GovernanceLockActive
-    let (domain_pda, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        &program_id,
-    );
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UnstakeV2 { domain: domain.to_string() }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::UnstakeV2 {
+            domain: domain.to_string(),
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -4968,9 +6212,17 @@ async fn test_governance_vote_lock() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         let result = ctx.banks_client.process_transaction(tx).await;
-        assert!(result.is_err(), "unstaking while governance lock is active should fail");
+        assert!(
+            result.is_err(),
+            "unstaking while governance lock is active should fail"
+        );
     }
 }
 
@@ -4984,20 +6236,38 @@ async fn test_governance_vote_lock_expires() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake
     let domain = "lock-expire.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch stake: set staked_at to 8 days ago (satisfies 7-day governance voting minimum)
     {
-        let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(voter_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -5011,7 +6281,12 @@ async fn test_governance_vote_lock_expires() {
 
     // Patch config: set execution_delay_secs to 0 so proposal can execute without timelock in this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.execution_delay_secs = 0;
@@ -5025,11 +6300,17 @@ async fn test_governance_vote_lock_expires() {
     }
 
     // Create proposal
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     {
         let mut ix_data = Vec::new();
@@ -5037,7 +6318,9 @@ async fn test_governance_vote_lock_expires() {
             description_hash: [2u8; 32],
             param_key: "min_stake".to_string(),
             param_value: 500_000,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5050,23 +6333,34 @@ async fn test_governance_vote_lock_expires() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Cast vote
     let (gov_vote_pda, _) = Pubkey::find_program_address(
-        &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            GOV_VOTE_SEED,
+            proposal_pda.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce: nonce,
+            vote: 0,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5081,15 +6375,26 @@ async fn test_governance_vote_lock_expires() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Patch per-wallet governance lock: set lock_until to past (simulate time passing)
     {
-        let lock_account = ctx.banks_client.get_account(gov_lock_pda).await.unwrap().unwrap();
+        let lock_account = ctx
+            .banks_client
+            .get_account(gov_lock_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = lock_account.data.len();
-        let mut lock = GovernanceLockAccount::deserialize_reader(&mut &lock_account.data[..]).unwrap();
+        let mut lock =
+            GovernanceLockAccount::deserialize_reader(&mut &lock_account.data[..]).unwrap();
         lock.lock_until = 0; // lock expired
         let mut buf = Vec::new();
         lock.serialize(&mut buf).unwrap();
@@ -5100,14 +6405,15 @@ async fn test_governance_vote_lock_expires() {
     }
 
     // Unstake → should succeed now that lock expired
-    let (domain_pda, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain.as_bytes()],
-        &program_id,
-    );
+    let (domain_pda, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain.as_bytes()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UnstakeV2 { domain: domain.to_string() }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::UnstakeV2 {
+            domain: domain.to_string(),
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5121,14 +6427,27 @@ async fn test_governance_vote_lock_expires() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify cooldown is set (unstake succeeded)
-    let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+    let stake_account = ctx
+        .banks_client
+        .get_account(voter_stake_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
-    assert!(stake.cooldown_until > 0, "unstake should succeed and set cooldown");
+    assert!(
+        stake.cooldown_until > 0,
+        "unstake should succeed and set cooldown"
+    );
 }
 
 /// M3: Non-admin calls UpdateRewardIndex, succeeds up to funded amount.
@@ -5141,20 +6460,38 @@ async fn test_permissionless_reward_update() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake (needed for total_staked > 0)
     let domain = "permissionless.com";
     let (_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch config: set total_funded=5M so there's distributable budget
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.total_funded = 5_000_000;
@@ -5169,15 +6506,24 @@ async fn test_permissionless_reward_update() {
     // Non-admin calls UpdateRewardIndex with a random keypair
     let non_admin = Keypair::new();
     // Fund non-admin with SOL for tx fees
-    let fund_ix = system_instruction::transfer(&ctx.payer.pubkey(), &non_admin.pubkey(), 1_000_000_000);
+    let fund_ix =
+        system_instruction::transfer(&ctx.payer.pubkey(), &non_admin.pubkey(), 1_000_000_000);
     let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-    let tx = Transaction::new_signed_with_payer(&[fund_ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+    let tx = Transaction::new_signed_with_payer(
+        &[fund_ix],
+        Some(&ctx.payer.pubkey()),
+        &[&ctx.payer],
+        blockhash,
+    );
     ctx.banks_client.process_transaction(tx).await.unwrap();
 
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UpdateRewardIndex { funded_amount: 5_000_000 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::UpdateRewardIndex {
+            funded_amount: 5_000_000,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5187,15 +6533,31 @@ async fn test_permissionless_reward_update() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&non_admin.pubkey()), &[&non_admin], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&non_admin.pubkey()),
+            &[&non_admin],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify reward_per_token increased
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
-    assert!(config.reward_per_token_stored > 0, "reward index should increase from permissionless call");
-    assert!(config.total_distributed > 0, "total_distributed should track");
+    assert!(
+        config.reward_per_token_stored > 0,
+        "reward index should increase from permissionless call"
+    );
+    assert!(
+        config.total_distributed > 0,
+        "total_distributed should track"
+    );
 }
 
 /// M3: funded_amount > distributable is capped to distributable.
@@ -5208,20 +6570,38 @@ async fn test_reward_update_caps_at_funded() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake
     let domain = "cap-test.com";
     let (_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch config: total_funded=2M, total_distributed=0 → distributable=2M
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.total_funded = 2_000_000;
@@ -5237,8 +6617,11 @@ async fn test_reward_update_caps_at_funded() {
     // Try to distribute 10M but only 2M funded → capped at 2M
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UpdateRewardIndex { funded_amount: 10_000_000 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::UpdateRewardIndex {
+            funded_amount: 10_000_000,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5248,16 +6631,29 @@ async fn test_reward_update_caps_at_funded() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify total_distributed = 2M (capped, not 10M)
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     // Staker portion = 2M * 70% = 1.4M, sentinel portion = 0.6M (but no sentinels → skipped)
     // actually_funded = staker portion only (since total_sentinel_staked = 0)
-    assert_eq!(config.total_distributed, 1_400_000, "total_distributed should be capped at staker portion of distributable");
+    assert_eq!(
+        config.total_distributed, 1_400_000,
+        "total_distributed should be capped at staker portion of distributable"
+    );
 }
 
 /// M4: Create proposal with deposit, execute (quorum met), verify deposit returned.
@@ -5270,13 +6666,23 @@ async fn test_proposal_deposit_refund() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Patch config: proposal_deposit = 1_000_000, execution_delay_secs = 0
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.proposal_deposit = 1_000_000;
@@ -5292,13 +6698,26 @@ async fn test_proposal_deposit_refund() {
     // Stake for governance weight
     let domain = "deposit-test.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch stake: set staked_at to 8 days ago (satisfies 7-day governance voting minimum)
     {
-        let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(voter_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -5312,16 +6731,29 @@ async fn test_proposal_deposit_refund() {
 
     // Check staker token balance before proposal
     let token_before = {
-        let acct = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
-        spl_token::state::Account::unpack(&acct.data).unwrap().amount
+        let acct = ctx
+            .banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap();
+        spl_token::state::Account::unpack(&acct.data)
+            .unwrap()
+            .amount
     };
 
     // Create proposal with deposit
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     {
         let mut ix_data = Vec::new();
@@ -5329,7 +6761,9 @@ async fn test_proposal_deposit_refund() {
             description_hash: [3u8; 32],
             param_key: "min_stake".to_string(),
             param_value: 500_000,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5345,36 +6779,63 @@ async fn test_proposal_deposit_refund() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify deposit taken
     let token_after_deposit = {
-        let acct = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
-        spl_token::state::Account::unpack(&acct.data).unwrap().amount
+        let acct = ctx
+            .banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap();
+        spl_token::state::Account::unpack(&acct.data)
+            .unwrap()
+            .amount
     };
-    assert_eq!(token_before - token_after_deposit, 1_000_000, "deposit should be taken");
+    assert_eq!(
+        token_before - token_after_deposit,
+        1_000_000,
+        "deposit should be taken"
+    );
 
     // Verify proposal stores deposit info
-    let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+    let proposal_account = ctx
+        .banks_client
+        .get_account(proposal_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
     assert_eq!(proposal.deposit_amount, 1_000_000);
     assert_eq!(proposal.depositor_token, staker_token);
 
     // Cast vote (for quorum + majority)
     let (gov_vote_pda, _) = Pubkey::find_program_address(
-        &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            GOV_VOTE_SEED,
+            proposal_pda.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce: nonce,
+            vote: 0,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5389,15 +6850,26 @@ async fn test_proposal_deposit_refund() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Patch proposal: set voting_ends and executable_after to past so we can execute
     {
-        let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+        let proposal_account = ctx
+            .banks_client
+            .get_account(proposal_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = proposal_account.data.len();
-        let mut proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
+        let mut proposal =
+            GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
         proposal.voting_ends = 0;
         proposal.executable_after = 0;
         let mut buf = Vec::new();
@@ -5411,8 +6883,11 @@ async fn test_proposal_deposit_refund() {
     // Execute proposal — with deposit refund accounts
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ExecuteProposal { proposal_nonce: nonce }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ExecuteProposal {
+            proposal_nonce: nonce,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5427,16 +6902,32 @@ async fn test_proposal_deposit_refund() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify deposit refunded
     let token_after_refund = {
-        let acct = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
-        spl_token::state::Account::unpack(&acct.data).unwrap().amount
+        let acct = ctx
+            .banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap();
+        spl_token::state::Account::unpack(&acct.data)
+            .unwrap()
+            .amount
     };
-    assert_eq!(token_after_refund, token_after_deposit + 1_000_000, "deposit should be refunded after quorum met");
+    assert_eq!(
+        token_after_refund,
+        token_after_deposit + 1_000_000,
+        "deposit should be refunded after quorum met"
+    );
 }
 
 /// M4: Create proposal with deposit, execute without quorum → deposit stays in vault.
@@ -5449,20 +6940,38 @@ async fn test_proposal_deposit_no_refund_no_quorum() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake a small amount first (before raising min_stake for quorum check)
     let domain = "noquorum.com";
     let (_voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 5_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        5_000_000,
+        0,
+    )
+    .await;
 
     // Patch config: proposal_deposit = 1_000_000, min_stake high for quorum
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.proposal_deposit = 1_000_000;
@@ -5476,16 +6985,29 @@ async fn test_proposal_deposit_no_refund_no_quorum() {
     }
 
     let token_before = {
-        let acct = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
-        spl_token::state::Account::unpack(&acct.data).unwrap().amount
+        let acct = ctx
+            .banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap();
+        spl_token::state::Account::unpack(&acct.data)
+            .unwrap()
+            .amount
     };
 
     // Create proposal with deposit
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     {
         let mut ix_data = Vec::new();
@@ -5493,7 +7015,9 @@ async fn test_proposal_deposit_no_refund_no_quorum() {
             description_hash: [4u8; 32],
             param_key: "cooldown_secs".to_string(),
             param_value: 1000,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5509,21 +7033,39 @@ async fn test_proposal_deposit_no_refund_no_quorum() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     let token_after_deposit = {
-        let acct = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
-        spl_token::state::Account::unpack(&acct.data).unwrap().amount
+        let acct = ctx
+            .banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap();
+        spl_token::state::Account::unpack(&acct.data)
+            .unwrap()
+            .amount
     };
     assert_eq!(token_before - token_after_deposit, 1_000_000);
 
     // Patch proposal: set voting_ends to past
     {
-        let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+        let proposal_account = ctx
+            .banks_client
+            .get_account(proposal_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = proposal_account.data.len();
-        let mut proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
+        let mut proposal =
+            GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
         proposal.voting_ends = 0;
         proposal.executable_after = 0;
         let mut buf = Vec::new();
@@ -5538,8 +7080,11 @@ async fn test_proposal_deposit_no_refund_no_quorum() {
     // No refund accounts needed since quorum fails → early return
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ExecuteProposal { proposal_nonce: nonce }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ExecuteProposal {
+            proposal_nonce: nonce,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5551,21 +7096,41 @@ async fn test_proposal_deposit_no_refund_no_quorum() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify proposal marked as Failed
-    let proposal_account = ctx.banks_client.get_account(proposal_pda).await.unwrap().unwrap();
+    let proposal_account = ctx
+        .banks_client
+        .get_account(proposal_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let proposal = GovernanceProposal::deserialize_reader(&mut &proposal_account.data[..]).unwrap();
     assert_eq!(proposal.status, ProposalStatus::Failed);
 
     // Verify deposit NOT refunded (quorum not met)
     let token_after_execute = {
-        let acct = ctx.banks_client.get_account(staker_token).await.unwrap().unwrap();
-        spl_token::state::Account::unpack(&acct.data).unwrap().amount
+        let acct = ctx
+            .banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap();
+        spl_token::state::Account::unpack(&acct.data)
+            .unwrap()
+            .amount
     };
-    assert_eq!(token_after_execute, token_after_deposit, "deposit should not be refunded when quorum fails");
+    assert_eq!(
+        token_after_execute, token_after_deposit,
+        "deposit should not be refunded when quorum fails"
+    );
 }
 
 // ══════════════════════════════════════════════
@@ -5582,24 +7147,44 @@ async fn test_unstake_blocked_during_active_dispute() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake
     let domain = "s1-dispute.com";
     let (stake_pda, domain_pda) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Open dispute on the domain
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.dispute_nonce;
     let nonce_bytes = nonce.to_le_bytes();
     let (dispute_pda, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], &program_id);
+        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
+        &program_id,
+    );
 
     {
         let mut ix_data = Vec::new();
@@ -5607,7 +7192,9 @@ async fn test_unstake_blocked_during_active_dispute() {
             domain: domain.to_string(),
             reason_hash: [1u8; 32],
             severity: 1,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5624,22 +7211,39 @@ async fn test_unstake_blocked_during_active_dispute() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify domain has active dispute
-    let domain_account = ctx.banks_client.get_account(domain_pda).await.unwrap().unwrap();
+    let domain_account = ctx
+        .banks_client
+        .get_account(domain_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let domain_record = DomainRecord::deserialize_reader(&mut &domain_account.data[..]).unwrap();
-    assert_ne!(domain_record.active_dispute_nonce, u64::MAX, "dispute should be active");
+    assert_ne!(
+        domain_record.active_dispute_nonce,
+        u64::MAX,
+        "dispute should be active"
+    );
 
     // Try to unstake → should fail with DisputeAlreadyActive
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UnstakeV2 { domain: domain.to_string() }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::UnstakeV2 {
+            domain: domain.to_string(),
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5653,9 +7257,17 @@ async fn test_unstake_blocked_during_active_dispute() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         let result = ctx.banks_client.process_transaction(tx).await;
-        assert!(result.is_err(), "unstaking during active dispute should fail");
+        assert!(
+            result.is_err(),
+            "unstaking during active dispute should fail"
+        );
     }
 }
 
@@ -5669,24 +7281,44 @@ async fn test_unstake_succeeds_after_dispute_resolved() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake
     let domain = "s1-resolve.com";
     let (_stake_pda, domain_pda) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Open dispute
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.dispute_nonce;
     let nonce_bytes = nonce.to_le_bytes();
     let (dispute_pda, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], &program_id);
+        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
+        &program_id,
+    );
 
     {
         let mut ix_data = Vec::new();
@@ -5694,7 +7326,9 @@ async fn test_unstake_succeeds_after_dispute_resolved() {
             domain: domain.to_string(),
             reason_hash: [2u8; 32],
             severity: 1,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5711,13 +7345,23 @@ async fn test_unstake_succeeds_after_dispute_resolved() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Patch domain record: clear active dispute (simulate resolution)
     {
-        let domain_account = ctx.banks_client.get_account(domain_pda).await.unwrap().unwrap();
+        let domain_account = ctx
+            .banks_client
+            .get_account(domain_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = domain_account.data.len();
         let mut record = DomainRecord::deserialize_reader(&mut &domain_account.data[..]).unwrap();
         record.active_dispute_nonce = u64::MAX; // no active dispute
@@ -5731,8 +7375,13 @@ async fn test_unstake_succeeds_after_dispute_resolved() {
 
     // Unstake → should succeed
     unstake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        domain,
+    )
+    .await;
 }
 
 /// S2: Stake on 2 domains, vote with domain A, try unstake domain B → GovernanceLockActive.
@@ -5745,13 +7394,23 @@ async fn test_governance_lock_per_wallet() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Patch config: zero out proposal_deposit so CreateProposal doesn't need deposit accounts
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.proposal_deposit = 0;
@@ -5766,20 +7425,41 @@ async fn test_governance_lock_per_wallet() {
     // Stake on domain A
     let domain_a = "wallet-lock-a.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain_a, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain_a,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Stake on domain B
     let domain_b = "wallet-lock-b.com";
     let (stake_pda_b, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain_b, 50_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain_b,
+        50_000_000,
+        0,
+    )
+    .await;
 
     // Patch stake A: set staked_at to 8 days ago (satisfies 7-day governance voting minimum)
     {
-        let stake_account = ctx.banks_client.get_account(voter_stake_pda).await.unwrap().unwrap();
+        let stake_account = ctx
+            .banks_client
+            .get_account(voter_stake_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = stake_account.data.len();
         let mut stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
         stake.staked_at -= 8 * 24 * 3600;
@@ -5792,11 +7472,17 @@ async fn test_governance_lock_per_wallet() {
     }
 
     // Create proposal
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     {
         let mut ix_data = Vec::new();
@@ -5804,7 +7490,9 @@ async fn test_governance_lock_per_wallet() {
             description_hash: [1u8; 32],
             param_key: "min_stake".to_string(),
             param_value: 500_000,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5817,23 +7505,34 @@ async fn test_governance_lock_per_wallet() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Vote using domain A's stake
     let (gov_vote_pda, _) = Pubkey::find_program_address(
-        &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            GOV_VOTE_SEED,
+            proposal_pda.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce: nonce,
+            vote: 0,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5848,17 +7547,25 @@ async fn test_governance_lock_per_wallet() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Try to unstake domain B → should fail (per-wallet lock applies to ALL positions)
-    let (domain_pda_b, _) = Pubkey::find_program_address(
-        &[DOMAIN_SEED, domain_b.as_bytes()], &program_id);
+    let (domain_pda_b, _) =
+        Pubkey::find_program_address(&[DOMAIN_SEED, domain_b.as_bytes()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UnstakeV2 { domain: domain_b.to_string() }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::UnstakeV2 {
+            domain: domain_b.to_string(),
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5872,9 +7579,17 @@ async fn test_governance_lock_per_wallet() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         let result = ctx.banks_client.process_transaction(tx).await;
-        assert!(result.is_err(), "unstaking domain B should fail — per-wallet governance lock applies");
+        assert!(
+            result.is_err(),
+            "unstaking domain B should fail — per-wallet governance lock applies"
+        );
     }
 }
 
@@ -5888,32 +7603,58 @@ async fn test_claim_reward_during_cooldown() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake
     let domain = "m8-cooldown.com";
     let (stake_pda, _domain_pda) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Unstake (starts cooldown)
     unstake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        domain,
+    )
+    .await;
 
     // Verify cooldown is set
-    let stake_account = ctx.banks_client.get_account(stake_pda).await.unwrap().unwrap();
+    let stake_account = ctx
+        .banks_client
+        .get_account(stake_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let stake = StakeAccountV2::deserialize_reader(&mut &stake_account.data[..]).unwrap();
     assert!(stake.cooldown_until > 0, "cooldown should be set");
 
     // Claim reward during cooldown → should succeed (M8 fix)
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ClaimReward { domain: domain.to_string() }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ClaimReward {
+            domain: domain.to_string(),
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5927,7 +7668,12 @@ async fn test_claim_reward_during_cooldown() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         // Should succeed (no error) — M8 allows claims during cooldown
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
@@ -5943,20 +7689,38 @@ async fn test_reward_index_capped_at_supply_headroom() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Stake (needed for total_staked > 0)
     let domain = "m5-headroom.com";
     let (_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // Patch config: max_total_supply just above total_minted, with large funded budget
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.max_total_supply = config.total_minted + 100; // only 100 tokens of headroom
@@ -5972,8 +7736,11 @@ async fn test_reward_index_capped_at_supply_headroom() {
     // UpdateRewardIndex with 5M → should be capped at 100 (supply headroom)
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::UpdateRewardIndex { funded_amount: 5_000_000 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::UpdateRewardIndex {
+            funded_amount: 5_000_000,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -5983,17 +7750,33 @@ async fn test_reward_index_capped_at_supply_headroom() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify: epoch_funded_amount should be at most 100 (the supply headroom)
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
-    assert!(config.epoch_funded_amount <= 100,
-        "epoch_funded_amount ({}) should be capped at supply headroom (100)", config.epoch_funded_amount);
-    assert!(config.total_distributed <= 100,
-        "total_distributed ({}) should be capped at supply headroom (100)", config.total_distributed);
+    assert!(
+        config.epoch_funded_amount <= 100,
+        "epoch_funded_amount ({}) should be capped at supply headroom (100)",
+        config.epoch_funded_amount
+    );
+    assert!(
+        config.total_distributed <= 100,
+        "total_distributed ({}) should be capped at supply headroom (100)",
+        config.total_distributed
+    );
 }
 
 // ══════════════════════════════════════════════
@@ -6011,13 +7794,23 @@ async fn test_emission_decay_curve() {
     let mut ctx = pt.start_with_context().await;
 
     let (config_pda, _) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        0,
+    )
+    .await;
 
     // Patch config: set min_epoch_duration=0 for this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.min_epoch_duration = 0;
@@ -6040,7 +7833,12 @@ async fn test_emission_decay_curve() {
     ];
 
     // Verify epoch 0
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     assert_eq!(config.epoch_max_emission, expected_emissions[0]);
 
@@ -6048,7 +7846,9 @@ async fn test_emission_decay_curve() {
         ctx.warp_to_slot(100 * i as u64).unwrap();
 
         let mut ix_data = Vec::new();
-        StakingInstruction::AdvanceEpoch.serialize(&mut ix_data).unwrap();
+        StakingInstruction::AdvanceEpoch
+            .serialize(&mut ix_data)
+            .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6058,14 +7858,26 @@ async fn test_emission_decay_curve() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
 
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         assert_eq!(config.current_epoch, i as u64);
-        assert_eq!(config.epoch_max_emission, expected_emission,
-            "epoch {i} emission should be {expected_emission}");
+        assert_eq!(
+            config.epoch_max_emission, expected_emission,
+            "epoch {i} emission should be {expected_emission}"
+        );
     }
 }
 
@@ -6080,16 +7892,26 @@ async fn test_trusted_reporter_bond_discount() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     let sentinel_pubkey = ctx.payer.pubkey();
-    let (sentinel_pda, _) = Pubkey::find_program_address(
-        &[SENTINEL_SEED, sentinel_pubkey.as_ref()], &program_id);
+    let (sentinel_pda, _) =
+        Pubkey::find_program_address(&[SENTINEL_SEED, sentinel_pubkey.as_ref()], &program_id);
 
     // Read config to get jury_min_stake and dispute_bond
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let dispute_bond = config.dispute_bond;
     let trusted_threshold = config.jury_min_stake.saturating_mul(10);
@@ -6097,8 +7919,11 @@ async fn test_trusted_reporter_bond_discount() {
     // Stake as sentinel with amount >= trusted threshold
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::StakeSentinel { amount: trusted_threshold }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::StakeSentinel {
+            amount: trusted_threshold,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6114,28 +7939,55 @@ async fn test_trusted_reporter_bond_discount() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Create domain and open dispute WITH sentinel PDA → should get discounted bond
     let domain = "trusted-reporter.com";
     let (_stake_pda, domain_pda) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 10_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        10_000_000,
+        0,
+    )
+    .await;
 
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.dispute_nonce;
     let nonce_bytes = nonce.to_le_bytes();
     let (dispute_pda, _) = Pubkey::find_program_address(
-        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes], &program_id);
+        &[DISPUTE_SEED, domain.as_bytes(), &nonce_bytes],
+        &program_id,
+    );
 
     // Record vault balance before dispute
     let vault_before = spl_token::state::Account::unpack(
-        &ctx.banks_client.get_account(reward_vault.pubkey()).await.unwrap().unwrap().data
-    ).unwrap().amount;
+        &ctx.banks_client
+            .get_account(reward_vault.pubkey())
+            .await
+            .unwrap()
+            .unwrap()
+            .data,
+    )
+    .unwrap()
+    .amount;
 
     {
         let mut ix_data = Vec::new();
@@ -6143,7 +7995,9 @@ async fn test_trusted_reporter_bond_discount() {
             domain: domain.to_string(),
             reason_hash: [1u8; 32],
             severity: 1,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6161,22 +8015,48 @@ async fn test_trusted_reporter_bond_discount() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify bond was halved
     let vault_after = spl_token::state::Account::unpack(
-        &ctx.banks_client.get_account(reward_vault.pubkey()).await.unwrap().unwrap().data
-    ).unwrap().amount;
+        &ctx.banks_client
+            .get_account(reward_vault.pubkey())
+            .await
+            .unwrap()
+            .unwrap()
+            .data,
+    )
+    .unwrap()
+    .amount;
     let bond_paid = vault_after - vault_before;
-    assert_eq!(bond_paid, dispute_bond / 2,
-        "trusted reporter should pay half bond: expected {}, got {}", dispute_bond / 2, bond_paid);
+    assert_eq!(
+        bond_paid,
+        dispute_bond / 2,
+        "trusted reporter should pay half bond: expected {}, got {}",
+        dispute_bond / 2,
+        bond_paid
+    );
 
     // Verify dispute account records the halved bond
-    let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+    let dispute_account = ctx
+        .banks_client
+        .get_account(dispute_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
-    assert_eq!(dispute.bond, dispute_bond / 2, "dispute should record halved bond");
+    assert_eq!(
+        dispute.bond,
+        dispute_bond / 2,
+        "dispute should record halved bond"
+    );
 }
 
 /// Fix 3: Jury reward minted flat fee — resolve dispute, claim → exact jury_vote_reward amount.
@@ -6189,13 +8069,23 @@ async fn test_jury_reward_minted_flat_fee() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Set jury_vote_reward to 5000
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.jury_vote_reward = 5_000;
@@ -6209,15 +8099,28 @@ async fn test_jury_reward_minted_flat_fee() {
 
     let domain = "flat-fee-jury.com";
     let (dispute_pda, dispute_nonce, _) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Patch dispute: ResolvedGuilty
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.status = DisputeStatus::ResolvedGuilty;
         dispute.votes_guilty = 10_000_000;
         dispute.votes_innocent = 0;
@@ -6264,13 +8167,27 @@ async fn test_jury_reward_minted_flat_fee() {
 
     // Record balance before
     let before = spl_token::state::Account::unpack(
-        &ctx.banks_client.get_account(staker_token).await.unwrap().unwrap().data
-    ).unwrap().amount;
+        &ctx.banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap()
+            .data,
+    )
+    .unwrap()
+    .amount;
 
     // Record total_minted before
     let config_before = ProtocolConfig::deserialize_reader(
-        &mut &ctx.banks_client.get_account(config_pda).await.unwrap().unwrap().data[..]
-    ).unwrap();
+        &mut &ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap()
+            .data[..],
+    )
+    .unwrap();
     let minted_before = config_before.total_minted;
 
     // ClaimJuryReward
@@ -6279,7 +8196,9 @@ async fn test_jury_reward_minted_flat_fee() {
         StakingInstruction::ClaimJuryReward {
             domain: domain.to_string(),
             dispute_nonce,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6294,22 +8213,48 @@ async fn test_jury_reward_minted_flat_fee() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify exactly 5000 minted
     let after = spl_token::state::Account::unpack(
-        &ctx.banks_client.get_account(staker_token).await.unwrap().unwrap().data
-    ).unwrap().amount;
-    assert_eq!(after - before, 5_000, "should receive flat jury_vote_reward of 5000");
+        &ctx.banks_client
+            .get_account(staker_token)
+            .await
+            .unwrap()
+            .unwrap()
+            .data,
+    )
+    .unwrap()
+    .amount;
+    assert_eq!(
+        after - before,
+        5_000,
+        "should receive flat jury_vote_reward of 5000"
+    );
 
     // Verify total_minted incremented
     let config_after = ProtocolConfig::deserialize_reader(
-        &mut &ctx.banks_client.get_account(config_pda).await.unwrap().unwrap().data[..]
-    ).unwrap();
-    assert_eq!(config_after.total_minted, minted_before + 5_000,
-        "total_minted should increment by jury_vote_reward");
+        &mut &ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap()
+            .data[..],
+    )
+    .unwrap();
+    assert_eq!(
+        config_after.total_minted,
+        minted_before + 5_000,
+        "total_minted should increment by jury_vote_reward"
+    );
 }
 
 /// Fix 3: jury_reward_pool is 0 on both guilty and innocent outcomes.
@@ -6322,20 +8267,37 @@ async fn test_jury_no_profit_from_verdict() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // === Test Guilty verdict: jury_reward_pool should be 0 ===
     let domain_guilty = "no-profit-guilty.com";
     let (dispute_pda_g, dispute_nonce_g, domain_pda_g) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain_guilty,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain_guilty,
+    )
+    .await;
 
     // Patch: min_jury_weight=0, deadline=0, votes_guilty=1 (force guilty)
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.min_jury_weight = 0;
@@ -6347,9 +8309,15 @@ async fn test_jury_no_profit_from_verdict() {
         ctx.set_account(&config_pda, &patched);
     }
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda_g).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda_g)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.deadline = 0;
         dispute.reveal_deadline = 0;
         dispute.votes_guilty = 1;
@@ -6364,8 +8332,12 @@ async fn test_jury_no_profit_from_verdict() {
     // Resolve → Guilty
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ResolveDispute { domain: domain_guilty.to_string(), dispute_nonce: dispute_nonce_g }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ResolveDispute {
+            domain: domain_guilty.to_string(),
+            dispute_nonce: dispute_nonce_g,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6382,29 +8354,55 @@ async fn test_jury_no_profit_from_verdict() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
-    let dispute_account = ctx.banks_client.get_account(dispute_pda_g).await.unwrap().unwrap();
+    let dispute_account = ctx
+        .banks_client
+        .get_account(dispute_pda_g)
+        .await
+        .unwrap()
+        .unwrap();
     let dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
     assert_eq!(dispute.status, DisputeStatus::ResolvedGuilty);
-    assert_eq!(dispute.jury_reward_pool, 0, "guilty: jury_reward_pool should be 0");
+    assert_eq!(
+        dispute.jury_reward_pool, 0,
+        "guilty: jury_reward_pool should be 0"
+    );
 
     // === Test Innocent verdict: jury_reward_pool should be 0 ===
     ctx.warp_to_slot(200).unwrap();
 
     let domain_innocent = "no-profit-innocent.com";
     let (dispute_pda_i, dispute_nonce_i, domain_pda_i) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain_innocent,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain_innocent,
+    )
+    .await;
 
     // Patch: deadline=0, votes_innocent=1 (force innocent)
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda_i).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda_i)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.deadline = 0;
         dispute.reveal_deadline = 0;
         dispute.votes_innocent = 1;
@@ -6419,8 +8417,12 @@ async fn test_jury_no_profit_from_verdict() {
     // Resolve → Innocent
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::ResolveDispute { domain: domain_innocent.to_string(), dispute_nonce: dispute_nonce_i }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::ResolveDispute {
+            domain: domain_innocent.to_string(),
+            dispute_nonce: dispute_nonce_i,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6437,14 +8439,27 @@ async fn test_jury_no_profit_from_verdict() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
-    let dispute_account = ctx.banks_client.get_account(dispute_pda_i).await.unwrap().unwrap();
+    let dispute_account = ctx
+        .banks_client
+        .get_account(dispute_pda_i)
+        .await
+        .unwrap()
+        .unwrap();
     let dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
     assert_eq!(dispute.status, DisputeStatus::ResolvedInnocent);
-    assert_eq!(dispute.jury_reward_pool, 0, "innocent: jury_reward_pool should be 0");
+    assert_eq!(
+        dispute.jury_reward_pool, 0,
+        "innocent: jury_reward_pool should be 0"
+    );
 }
 
 /// Jury reward epoch cap: claiming more than max_jury_rewards_per_epoch fails.
@@ -6457,14 +8472,24 @@ async fn test_jury_reward_epoch_cap() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 200_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        200_000_000,
+    )
+    .await;
 
     // Set jury_vote_reward = 3000, max_jury_rewards_per_epoch = 5000
     // (so only 1 claim fits, the 2nd would exceed budget)
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.jury_vote_reward = 3_000;
@@ -6479,15 +8504,28 @@ async fn test_jury_reward_epoch_cap() {
 
     let domain = "epoch-cap-jury.com";
     let (dispute_pda, dispute_nonce, _) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain,
+    )
+    .await;
 
     // Patch dispute: ResolvedGuilty
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.status = DisputeStatus::ResolvedGuilty;
         dispute.votes_guilty = 10_000_000;
         dispute.votes_innocent = 0;
@@ -6538,7 +8576,9 @@ async fn test_jury_reward_epoch_cap() {
         StakingInstruction::ClaimJuryReward {
             domain: domain.to_string(),
             dispute_nonce,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6553,28 +8593,56 @@ async fn test_jury_reward_epoch_cap() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Verify jury_rewards_this_epoch = 3000
     let config_after = ProtocolConfig::deserialize_reader(
-        &mut &ctx.banks_client.get_account(config_pda).await.unwrap().unwrap().data[..]
-    ).unwrap();
-    assert_eq!(config_after.jury_rewards_this_epoch, 3_000, "epoch counter should track claimed amount");
+        &mut &ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap()
+            .data[..],
+    )
+    .unwrap();
+    assert_eq!(
+        config_after.jury_rewards_this_epoch, 3_000,
+        "epoch counter should track claimed amount"
+    );
 
     // Set up a second dispute + jury vote for a second claim attempt
     let domain2 = "epoch-cap-jury2.com";
     let (dispute_pda2, dispute_nonce2, _) = setup_dispute(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), &truth_mint.pubkey(), domain2,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        &truth_mint.pubkey(),
+        domain2,
+    )
+    .await;
 
     // Patch dispute2: ResolvedGuilty
     {
-        let dispute_account = ctx.banks_client.get_account(dispute_pda2).await.unwrap().unwrap();
+        let dispute_account = ctx
+            .banks_client
+            .get_account(dispute_pda2)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = dispute_account.data.len();
-        let mut dispute = DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
+        let mut dispute =
+            DisputeAccount::deserialize_reader(&mut &dispute_account.data[..]).unwrap();
         dispute.status = DisputeStatus::ResolvedGuilty;
         dispute.votes_guilty = 10_000_000;
         dispute.votes_innocent = 0;
@@ -6589,7 +8657,11 @@ async fn test_jury_reward_epoch_cap() {
     }
 
     let (jury_pda2, jury_bump2) = Pubkey::find_program_address(
-        &[JURY_SEED, dispute_pda2.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            JURY_SEED,
+            dispute_pda2.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
     {
@@ -6624,7 +8696,9 @@ async fn test_jury_reward_epoch_cap() {
         StakingInstruction::ClaimJuryReward {
             domain: domain2.to_string(),
             dispute_nonce: dispute_nonce2,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6639,9 +8713,17 @@ async fn test_jury_reward_epoch_cap() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         let result = ctx.banks_client.process_transaction(tx).await;
-        assert!(result.is_err(), "second jury claim should fail: epoch budget exhausted");
+        assert!(
+            result.is_err(),
+            "second jury claim should fail: epoch budget exhausted"
+        );
     }
 }
 
@@ -6655,13 +8737,23 @@ async fn test_governance_stake_age_requirement() {
 
     let mut ctx = pt.start_with_context().await;
     let (config_pda, staker_token) = init_protocol_and_mint(
-        &mut ctx.banks_client, &ctx.payer, &program_id,
-        &truth_mint.pubkey(), &reward_vault.pubkey(), 500_000_000,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &truth_mint.pubkey(),
+        &reward_vault.pubkey(),
+        500_000_000,
+    )
+    .await;
 
     // Patch config: execution_delay_secs = 0 for this test
     {
-        let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+        let config_account = ctx
+            .banks_client
+            .get_account(config_pda)
+            .await
+            .unwrap()
+            .unwrap();
         let orig_len = config_account.data.len();
         let mut config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
         config.execution_delay_secs = 0;
@@ -6677,18 +8769,32 @@ async fn test_governance_stake_age_requirement() {
     // Stake (staked_at will be ~0, fresh stake)
     let domain = "fresh-gov.com";
     let (voter_stake_pda, _) = stake_v2_helper(
-        &mut ctx.banks_client, &ctx.payer, &program_id, &config_pda, &staker_token,
-        &reward_vault.pubkey(), domain, 100_000_000, 0,
-    ).await;
+        &mut ctx.banks_client,
+        &ctx.payer,
+        &program_id,
+        &config_pda,
+        &staker_token,
+        &reward_vault.pubkey(),
+        domain,
+        100_000_000,
+        0,
+    )
+    .await;
 
     // DO NOT patch staked_at — leave it fresh
 
     // Create proposal
-    let config_account = ctx.banks_client.get_account(config_pda).await.unwrap().unwrap();
+    let config_account = ctx
+        .banks_client
+        .get_account(config_pda)
+        .await
+        .unwrap()
+        .unwrap();
     let config = ProtocolConfig::deserialize_reader(&mut &config_account.data[..]).unwrap();
     let nonce = config.proposal_nonce;
     let nonce_bytes = nonce.to_le_bytes();
-    let (proposal_pda, _) = Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
+    let (proposal_pda, _) =
+        Pubkey::find_program_address(&[PROPOSAL_SEED, &nonce_bytes], &program_id);
 
     {
         let mut ix_data = Vec::new();
@@ -6696,7 +8802,9 @@ async fn test_governance_stake_age_requirement() {
             description_hash: [99u8; 32],
             param_key: "min_stake".to_string(),
             param_value: 500_000,
-        }.serialize(&mut ix_data).unwrap();
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6709,23 +8817,34 @@ async fn test_governance_stake_age_requirement() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         ctx.banks_client.process_transaction(tx).await.unwrap();
     }
 
     // Try to vote with fresh stake → should fail
     let (gov_vote_pda, _) = Pubkey::find_program_address(
-        &[GOV_VOTE_SEED, proposal_pda.as_ref(), ctx.payer.pubkey().as_ref()],
+        &[
+            GOV_VOTE_SEED,
+            proposal_pda.as_ref(),
+            ctx.payer.pubkey().as_ref(),
+        ],
         &program_id,
     );
-    let (gov_lock_pda, _) = Pubkey::find_program_address(
-        &[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()],
-        &program_id,
-    );
+    let (gov_lock_pda, _) =
+        Pubkey::find_program_address(&[GOV_LOCK_SEED, ctx.payer.pubkey().as_ref()], &program_id);
     {
         let mut ix_data = Vec::new();
-        StakingInstruction::CastGovernanceVote { proposal_nonce: nonce, vote: 0 }
-            .serialize(&mut ix_data).unwrap();
+        StakingInstruction::CastGovernanceVote {
+            proposal_nonce: nonce,
+            vote: 0,
+        }
+        .serialize(&mut ix_data)
+        .unwrap();
         let ix = Instruction {
             program_id,
             accounts: vec![
@@ -6740,8 +8859,16 @@ async fn test_governance_stake_age_requirement() {
             data: ix_data,
         };
         let blockhash = ctx.banks_client.get_latest_blockhash().await.unwrap();
-        let tx = Transaction::new_signed_with_payer(&[ix], Some(&ctx.payer.pubkey()), &[&ctx.payer], blockhash);
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&ctx.payer.pubkey()),
+            &[&ctx.payer],
+            blockhash,
+        );
         let result = ctx.banks_client.process_transaction(tx).await;
-        assert!(result.is_err(), "fresh stake (< 7 days) should fail governance voting with StakeTooYoungForGovernance");
+        assert!(
+            result.is_err(),
+            "fresh stake (< 7 days) should fail governance voting with StakeTooYoungForGovernance"
+        );
     }
 }

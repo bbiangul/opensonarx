@@ -28,7 +28,13 @@ fn fetch_html(url: &str) -> Option<String> {
 const CRITICAL_TS_PAGES: &[(&str, &[&str])] = &[
     (
         "https://www.typescriptlang.org/docs/handbook/2/narrowing.html",
-        &["typeof", "instanceof", "narrowing", "type guard", "discriminated"],
+        &[
+            "typeof",
+            "instanceof",
+            "narrowing",
+            "type guard",
+            "discriminated",
+        ],
     ),
     (
         "https://www.typescriptlang.org/docs/handbook/enums.html",
@@ -110,7 +116,11 @@ fn debug_ts_extraction() {
         }
 
         pages_with_content += 1;
-        println!("OK ({} chars extracted from {} bytes HTML)", md.len(), html.len());
+        println!(
+            "OK ({} chars extracted from {} bytes HTML)",
+            md.len(),
+            html.len()
+        );
 
         // Check each keyword
         let mut found = Vec::new();

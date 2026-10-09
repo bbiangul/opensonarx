@@ -97,8 +97,8 @@ pub struct ProtocolConfig {
     pub min_stake: u64,
     pub cooldown_secs: i64,
     pub dispute_bond: u64,
-    pub slash_pct: u8, // 0-100
-    pub reward_rate: u64,             // DEPRECATED: vestigial field, kept for layout compat
+    pub slash_pct: u8,    // 0-100
+    pub reward_rate: u64, // DEPRECATED: vestigial field, kept for layout compat
     pub jury_min_stake: u64,
     pub blacklist_authority: Pubkey,
     pub reward_vault: Pubkey,
@@ -109,28 +109,28 @@ pub struct ProtocolConfig {
     pub bump: u8,
     // ── Epoch tracking (added for Sentinel economics) ──
     pub current_epoch: u64,
-    pub epoch_funded_amount: u64,     // Tokens funded in current epoch
-    pub epoch_max_emission: u64,      // Max emission for current epoch (1.5% decay per epoch)
+    pub epoch_funded_amount: u64, // Tokens funded in current epoch
+    pub epoch_max_emission: u64,  // Max emission for current epoch (1.5% decay per epoch)
     pub sentinel_reward_per_token: u128, // Separate reward index for Sentinels
-    pub total_sentinel_staked: u64,   // Total $TRUTH staked by Sentinels
+    pub total_sentinel_staked: u64, // Total $TRUTH staked by Sentinels
     // ── Governable economic parameters (Phase: Economic Fixes) ──
-    pub min_epoch_duration: i64,      // Minimum seconds between epoch advances (0 = no constraint)
-    pub epoch_started_at: i64,        // Timestamp when current epoch started
-    pub max_total_supply: u64,        // Hard cap on total minted $TRUTH (u64::MAX = uncapped)
-    pub total_minted: u64,            // Cumulative tokens minted across all operations
-    pub min_jury_weight: u64,         // Minimum total jury weight for dispute quorum (0 = no quorum)
-    pub burn_pct: u8,                 // Burn percentage for channel settlement (0-100, default 10)
-    pub staker_emission_pct: u8,      // Staker share of emissions (0-100, default 70)
-    pub execution_delay_secs: i64,    // Governance timelock delay after voting ends
-    pub proposal_deposit: u64,        // $TRUTH deposit required to create a proposal (0 = free)
-    pub curator_yield_cap_bps: u64,   // Curator yield cap in basis points (1500 = 15.00% APY)
+    pub min_epoch_duration: i64, // Minimum seconds between epoch advances (0 = no constraint)
+    pub epoch_started_at: i64,   // Timestamp when current epoch started
+    pub max_total_supply: u64,   // Hard cap on total minted $TRUTH (u64::MAX = uncapped)
+    pub total_minted: u64,       // Cumulative tokens minted across all operations
+    pub min_jury_weight: u64,    // Minimum total jury weight for dispute quorum (0 = no quorum)
+    pub burn_pct: u8,            // Burn percentage for channel settlement (0-100, default 10)
+    pub staker_emission_pct: u8, // Staker share of emissions (0-100, default 70)
+    pub execution_delay_secs: i64, // Governance timelock delay after voting ends
+    pub proposal_deposit: u64,   // $TRUTH deposit required to create a proposal (0 = free)
+    pub curator_yield_cap_bps: u64, // Curator yield cap in basis points (1500 = 15.00% APY)
     // ── Medium Economic Fixes ──
-    pub sentinel_fee_pct: u8,           // % of channel spend routed to sentinel reward pool (initializer default 5)
+    pub sentinel_fee_pct: u8, // % of channel spend routed to sentinel reward pool (initializer default 5)
     pub accumulated_sentinel_fees: u64, // Sentinel fees awaiting distribution
-    pub total_funded: u64,              // Cumulative tokens funded to vault via FundRewards
-    pub total_distributed: u64,         // Cumulative tokens distributed via UpdateRewardIndex
-    pub jury_vote_reward: u64,           // Flat $TRUTH minted per winning jury vote (default 1000)
-    pub jury_rewards_this_epoch: u64,    // Cumulative jury rewards minted in current epoch (reset on advance)
+    pub total_funded: u64,    // Cumulative tokens funded to vault via FundRewards
+    pub total_distributed: u64, // Cumulative tokens distributed via UpdateRewardIndex
+    pub jury_vote_reward: u64, // Flat $TRUTH minted per winning jury vote (default 1000)
+    pub jury_rewards_this_epoch: u64, // Cumulative jury rewards minted in current epoch (reset on advance)
     pub max_jury_rewards_per_epoch: u64, // Cap on total jury rewards mintable per epoch (0 = uncapped)
 }
 
@@ -148,7 +148,7 @@ pub struct StakeAccountV2 {
     pub is_initialized: bool,
     pub staker: Pubkey,
     pub domain: String,
-    pub amount: u64,         // $TRUTH tokens (smallest unit)
+    pub amount: u64, // $TRUTH tokens (smallest unit)
     pub staked_at: i64,
     pub cooldown_until: i64, // 0 = active
     pub stake_type: StakeType,
@@ -261,7 +261,7 @@ pub struct GovernanceProposal {
     pub is_initialized: bool,
     pub proposer: Pubkey,
     pub description_hash: [u8; 32],
-    pub param_key: String,  // e.g. "cooldown_secs", "slash_pct"
+    pub param_key: String, // e.g. "cooldown_secs", "slash_pct"
     pub param_value: u64,
     pub votes_for: u64,
     pub votes_against: u64,
@@ -273,7 +273,7 @@ pub struct GovernanceProposal {
     /// Earliest timestamp at which this proposal can be executed (voting_ends + execution_delay).
     pub executable_after: i64,
     // ── Medium Economic Fixes ──
-    pub deposit_amount: u64,    // $TRUTH deposited (for refund tracking)
+    pub deposit_amount: u64,     // $TRUTH deposited (for refund tracking)
     pub depositor_token: Pubkey, // Proposer's token account (refund destination)
 }
 
@@ -309,7 +309,7 @@ impl GovernanceVote {
 pub struct SentinelAccount {
     pub is_initialized: bool,
     pub sentinel: Pubkey,
-    pub amount: u64,         // $TRUTH tokens staked
+    pub amount: u64, // $TRUTH tokens staked
     pub staked_at: i64,
     pub cooldown_until: i64, // 0 = active
     pub reward_debt: u128,   // Sentinel-specific reward index snapshot
@@ -350,11 +350,11 @@ impl StateChannelAccount {
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
 pub struct ReputationRootAccount {
-    pub is_initialized: bool,   // 1
-    pub merkle_root: [u8; 32],  // 32
-    pub epoch: u64,             // 8
-    pub timestamp: i64,         // 8
-    pub bump: u8,               // 1
+    pub is_initialized: bool,  // 1
+    pub merkle_root: [u8; 32], // 32
+    pub epoch: u64,            // 8
+    pub timestamp: i64,        // 8
+    pub bump: u8,              // 1
 }
 
 impl ReputationRootAccount {
@@ -369,10 +369,10 @@ impl ReputationRootAccount {
 
 #[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
 pub struct GovernanceLockAccount {
-    pub is_initialized: bool,   // 1
-    pub wallet: Pubkey,         // 32
-    pub lock_until: i64,        // 8
-    pub bump: u8,               // 1
+    pub is_initialized: bool, // 1
+    pub wallet: Pubkey,       // 32
+    pub lock_until: i64,      // 8
+    pub bump: u8,             // 1
 }
 
 impl GovernanceLockAccount {

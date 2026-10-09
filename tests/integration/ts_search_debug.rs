@@ -55,24 +55,78 @@ const TS_URLS: &[&str] = &[
 
 /// Failing TypeScript queries from the benchmark.
 const FAILING_QUERIES: &[(&str, &[&str])] = &[
-    ("What are utility types like Partial, Required, and Pick in TypeScript?", &["Partial", "Required", "Pick"]),
-    ("How do you use enums in TypeScript?", &["enum", "const enum"]),
-    ("How do you define an async function in TypeScript?", &["async", "await", "Promise"]),
-    ("What is the unknown type in TypeScript and how does it differ from any?", &["unknown", "type guard", "any"]),
-    ("How do you use type guards in TypeScript?", &["typeof", "instanceof", "narrowing"]),
-    ("How do you create a mapped type in TypeScript?", &["in keyof", "mapped", "Record"]),
-    ("What are conditional types in TypeScript?", &["extends", "infer", "conditional"]),
-    ("How do you use decorators in TypeScript?", &["decorator", "@"]),
-    ("What is the difference between type assertion and type casting in TypeScript?", &["as", "assertion"]),
-    ("How do you use template literal types in TypeScript?", &["template literal", "backtick"]),
-    ("What is the never type in TypeScript?", &["never", "exhaustive"]),
-    ("How do you configure tsconfig.json strict mode?", &["strict", "strictNullChecks", "tsconfig"]),
-    ("What is the keyof operator in TypeScript?", &["keyof", "index type"]),
-    ("How do you use type narrowing with the in operator?", &["in", "narrowing", "property check"]),
-    ("How do you use the Omit utility type in TypeScript?", &["Omit", "Exclude"]),
-    ("How do you write a type-safe event emitter in TypeScript?", &["EventEmitter", "generic", "emit"]),
-    ("What are index signatures in TypeScript?", &["index signature", "[key: string]"]),
-    ("How do you use satisfies operator in TypeScript?", &["satisfies", "type check"]),
+    (
+        "What are utility types like Partial, Required, and Pick in TypeScript?",
+        &["Partial", "Required", "Pick"],
+    ),
+    (
+        "How do you use enums in TypeScript?",
+        &["enum", "const enum"],
+    ),
+    (
+        "How do you define an async function in TypeScript?",
+        &["async", "await", "Promise"],
+    ),
+    (
+        "What is the unknown type in TypeScript and how does it differ from any?",
+        &["unknown", "type guard", "any"],
+    ),
+    (
+        "How do you use type guards in TypeScript?",
+        &["typeof", "instanceof", "narrowing"],
+    ),
+    (
+        "How do you create a mapped type in TypeScript?",
+        &["in keyof", "mapped", "Record"],
+    ),
+    (
+        "What are conditional types in TypeScript?",
+        &["extends", "infer", "conditional"],
+    ),
+    (
+        "How do you use decorators in TypeScript?",
+        &["decorator", "@"],
+    ),
+    (
+        "What is the difference between type assertion and type casting in TypeScript?",
+        &["as", "assertion"],
+    ),
+    (
+        "How do you use template literal types in TypeScript?",
+        &["template literal", "backtick"],
+    ),
+    (
+        "What is the never type in TypeScript?",
+        &["never", "exhaustive"],
+    ),
+    (
+        "How do you configure tsconfig.json strict mode?",
+        &["strict", "strictNullChecks", "tsconfig"],
+    ),
+    (
+        "What is the keyof operator in TypeScript?",
+        &["keyof", "index type"],
+    ),
+    (
+        "How do you use type narrowing with the in operator?",
+        &["in", "narrowing", "property check"],
+    ),
+    (
+        "How do you use the Omit utility type in TypeScript?",
+        &["Omit", "Exclude"],
+    ),
+    (
+        "How do you write a type-safe event emitter in TypeScript?",
+        &["EventEmitter", "generic", "emit"],
+    ),
+    (
+        "What are index signatures in TypeScript?",
+        &["index signature", "[key: string]"],
+    ),
+    (
+        "How do you use satisfies operator in TypeScript?",
+        &["satisfies", "type check"],
+    ),
 ];
 
 fn get_embedder() -> Arc<dyn EmbeddingPipeline> {
@@ -112,8 +166,14 @@ async fn debug_ts_ingestion() {
 
     // Check that key content pages have chunks
     let key_pages = [
-        "utility-types", "enums", "narrowing", "mapped-types",
-        "keyof-types", "conditional-types", "decorators", "template-literal",
+        "utility-types",
+        "enums",
+        "narrowing",
+        "mapped-types",
+        "keyof-types",
+        "conditional-types",
+        "decorators",
+        "template-literal",
     ];
     println!("\n--- Key pages ---");
     for page in &key_pages {
@@ -161,7 +221,9 @@ async fn debug_ts_search_ranking() {
 
     for (query, expected_keywords) in FAILING_QUERIES {
         let embedding = embedder.embed_query(query).expect("embed should work");
-        let results = index.query(&embedding, query, &filters, 5).expect("search should work");
+        let results = index
+            .query(&embedding, query, &filters, 5)
+            .expect("search should work");
 
         println!("─── Q: {query}");
         println!("    Expected: {expected_keywords:?}");
@@ -175,16 +237,24 @@ async fn debug_ts_search_ranking() {
             // Check if this result contains any expected keyword
             let content_lower = r.content_md.to_lowercase();
             let title_lower = r.title.to_lowercase();
-            let kw_found: Vec<&&str> = expected_keywords.iter()
-                .filter(|kw| content_lower.contains(&kw.to_lowercase()) || title_lower.contains(&kw.to_lowercase()))
+            let kw_found: Vec<&&str> = expected_keywords
+                .iter()
+                .filter(|kw| {
+                    content_lower.contains(&kw.to_lowercase())
+                        || title_lower.contains(&kw.to_lowercase())
+                })
                 .collect();
 
             let relevance_tag = if kw_found.is_empty() { "MISS" } else { "HIT " };
-            if !kw_found.is_empty() { has_relevant = true; }
+            if !kw_found.is_empty() {
+                has_relevant = true;
+            }
 
             println!(
                 "    [{relevance_tag}] #{} score={:.4} | {} | {preview_clean}...",
-                i + 1, r.final_score, r.url,
+                i + 1,
+                r.final_score,
+                r.url,
             );
             if !kw_found.is_empty() {
                 println!("           keywords found: {kw_found:?}");

@@ -47,13 +47,8 @@ fn test_end_to_end_ingest_and_search() {
         Lifetime annotations express relationships between references for the borrow checker to verify. \
         Smart pointers like Box, Rc, and Arc provide heap allocation and reference counting.</p>\
         </body></html>".to_string();
-    let crawl_output = oi_crawl::pipeline::process_html(
-        "https://example.com/rust",
-        &html,
-        512,
-        128,
-    )
-    .unwrap();
+    let crawl_output =
+        oi_crawl::pipeline::process_html("https://example.com/rust", &html, 512, 128).unwrap();
 
     assert!(!crawl_output.chunks.is_empty());
     assert_eq!(crawl_output.metadata.title, Some("Rust Guide".to_string()));
@@ -115,12 +110,8 @@ fn test_crawl_quality_gate() {
             .map(|i| format!("<p>https://example.com/{i}</p>"))
             .collect::<String>()
     );
-    let result = oi_crawl::pipeline::process_html(
-        "https://example.com/links",
-        &links_html,
-        512,
-        128,
-    );
+    let result =
+        oi_crawl::pipeline::process_html("https://example.com/links", &links_html, 512, 128);
     assert!(result.is_err());
 }
 
@@ -160,6 +151,9 @@ fn test_error_codes() {
     use oi_types::error::ExitCode;
     assert_eq!(ErrorCode::QueryNoResults.exit_code(), ExitCode::Success);
     assert_eq!(ErrorCode::QueryTimeout.exit_code(), ExitCode::NetworkError);
-    assert_eq!(ErrorCode::InsufficientBalance.exit_code(), ExitCode::InsufficientFunds);
+    assert_eq!(
+        ErrorCode::InsufficientBalance.exit_code(),
+        ExitCode::InsufficientFunds
+    );
     assert_eq!(ErrorCode::InvalidWallet.exit_code(), ExitCode::Unauthorized);
 }
