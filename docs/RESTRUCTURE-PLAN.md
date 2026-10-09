@@ -5,11 +5,11 @@
 | Fase | Estado |
 |---|---|
 | 0 — Salvar | Feito localmente (commits na branch). **Push não feito.** |
-| 1 — Rede de segurança | Parcial: `oi-bench answer-eval` com 20 casos e importador do SQuAD 2.0 pronto. Falta baixar e rodar o conjunto externo; XNLI-pt e FEVER pendentes. |
+| 1 — Rede de segurança | `oi-bench answer-eval` com 20 casos e três amostras do SQuAD 2.0 rodadas com modelo hospedado. XNLI-pt, FEVER e português pendentes. |
 | 2 — Costuras | Feito, mas sem a implementação `legacy_lexical`: por decisão do dono, as regras foram apagadas em vez de preservadas atrás dos traits. |
-| 3 — Modelos | Extração e stance por modelo, feitos. `IntentRouter` por embedding e agrupamento de afirmações por NLI pendentes. |
+| 3 — Modelos | Extração, stance e responsividade por modelo (Ollama local ou OpenRouter), feitos. `IntentRouter` por embedding e agrupamento de afirmações por NLI pendentes. |
 | 4 — Apagar o legado | Feito. Teste de vazamento de queries de benchmark roda no CI. |
-| 5 — Revalidar | Pendente: holdout selado, latência contra os gates. README e CLAUDE.md atualizados. |
+| 5 — Revalidar | Parcial: caminho de resposta medido em dados externos (17% de respostas indevidas em perguntas sem resposta). Falta ponta a ponta, latência contra os gates e a avaliação de 1.000 consultas. |
 
 Medições e perdas conscientes: [experiments/RESTRUCTURE-2026-10-09.md](experiments/RESTRUCTURE-2026-10-09.md).
 O texto abaixo é o plano original.

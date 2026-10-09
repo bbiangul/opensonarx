@@ -63,7 +63,7 @@ docker compose up   # builds, seeds the starter corpus, serves on :8001
 
 **Transparent for agents.** Every result carries comparable absolute scores (semantic + BM25 + final), full Markdown content, query-relevant extracted spans, and Stage-2 decision metadata.
 
-**Answers only from retained evidence.** With a model configured (`OI_ANSWER_MODEL`), `oi search "<query>" --answer --explain` fetches the top results, has the model propose claims with quotes and judge each source's stance, and then verifies every quote verbatim against the retained text before citing it. A claim needs matching quotes from two distinct source families to be presented as an answer; a contradicting source makes it `contested`. Reading language is the model's job; there are no keyword, phrase, or domain lists deciding what a query means or which sources count. Without a model, `--answer` returns the result slate and claims nothing.
+**Answers only from retained evidence.** With a model configured (`OI_ANSWER_MODEL`, served locally by Ollama or hosted via `OI_ANSWER_PROVIDER=openrouter`), `oi search "<query>" --answer --explain` fetches the top results, has the model propose claims with quotes, judge each source's stance, and check that each claim answers what was asked, and then verifies every quote verbatim against the retained text before citing it. A claim needs matching quotes from two distinct source families to be presented as an answer; a contradicting source makes it `contested`. Reading language is the model's job; there are no keyword, phrase, or domain lists deciding what a query means or which sources count. Without a model, `--answer` returns the result slate and claims nothing.
 
 **Trust is claim-specific, never purchased rank.** Domain stake, reputation, and DNS verification never move retrieval scores. Experimental OpenUncertainty reports support, conflict, and ignorance per claim and never invents a probability; a missing critical requirement blocks a complete answer no matter how many pages agree. Two pages of one registrable domain count as one source. Cash has zero effect on any estimate. Legacy `trust_verdict` / `--min-trust` remains compatibility metadata, not calibrated confidence. See the [MVP-1 protocol](docs/OPENUNCERTAINTY-MVP1.md), [scoped pilot and stop gates](docs/experiments/PILOT-GATES-2026-10-08.md), [historical poll experiment](docs/experiments/BRAZIL-ELECTION-POLLS-2026-08-21.md), and [security economics](docs/SECURITY-ECONOMICS.md).
 
@@ -133,15 +133,16 @@ crates/
 | BEIR nfcorpus nDCG@10 | 0.3322 |
 | Agent retrieval, keyword match in top 5 (50 q, 2026-10-09) | 47/50 (94%) |
 | 100k-passage ingest | ~1,400 docs/s; idempotent re-ingest 0.6s |
-| Answer path on 20 fixed cases, local `gpt-oss:20b` (2026-10-09) | 20/20 as expected; 9/9 answerable; 0/10 unsupported answers emitted; p50 5.8s. Development regression: cases written and inspected by the implementer |
+| Answer path, 20 development cases, `claude-haiku-5.5` (2026-10-09) | 20/20 as expected. Cases written and inspected by the implementer |
+| Answer path, SQuAD 2.0 holdout C, 200 unseen cases, one source each (2026-10-09) | Answerable: 87 of 100 matched a gold answer, 4 abstained. Unanswerable: **17 of 100 were answered anyway** |
 
 Results measured before 9 October 2026 on the retired keyword-rule answer layer (the 96-request matrices, the Google and Serper comparisons, the MS MARCO holdouts v1–v13) are kept as history in [docs/experiments/](docs/experiments/). They describe code that no longer exists and are not claims about the current system.
 
 ## Status & honest limitations
 
 - **General superiority over market search is not demonstrated.** That claim still needs the pre-registered gate: at least 1,000 queries in eight strata judged by two independent external reviewers ([pilot gates](docs/experiments/PILOT-GATES-2026-10-08.md)).
-- **The answer path is new and lightly validated.** It has a 20-case development regression and three live end-to-end queries, all with one local model. No sealed holdout has been run on it yet ([record](docs/experiments/RESTRUCTURE-2026-10-09.md)).
-- **Answer latency depends on the model.** With a local 20B model on a laptop, an answered search took 22–41 s end to end; the proposed ceiling is 5 s. Plain search is unaffected.
+- **The answer path still answers some questions it should not.** On SQuAD 2.0 questions the source text cannot answer, it emitted an answer 17% of the time (22% without the responsiveness check). Those answers quote real text about something close to what was asked. Three disjoint 200-case samples, English, one model, one source per case ([record](docs/experiments/RESTRUCTURE-2026-10-09.md)).
+- **Answer latency depends on the model.** The answer path alone took a median of 4–6 s per question with a hosted small model and 22–41 s end to end with a local 20B model; the proposed ceiling is 5 s end to end, which has not been measured with the hosted model. Plain search is unaffected.
 - **Model output is evidence, not fact.** Quotes are verified verbatim, so a model cannot cite text that is not there, but whether a quote supports a claim is still a model judgement. Source independence is reported as unresolved unless identical wording shows a shared origin.
 - Freshness for uncovered topics depends on external engines (credential-free Bing, Brave public HTML, and DuckDuckGo; authenticated Serper or Brave API when configured). The keyless engines rate-limit under sustained load; production should configure an authenticated provider.
 - The P2P network is young: replication is integrity-verified but not yet signature-authenticated; run peering with nodes you trust.

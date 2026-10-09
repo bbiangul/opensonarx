@@ -142,16 +142,84 @@ Não decidem significado, mas são dados embutidos em código:
 
 Suíte depois disso: 990 passam, 0 falham.
 
+## Avaliação externa com modelo hospedado
+
+Backend do OpenRouter adicionado (`ChatModel`, chave lida de
+`OPENROUTER_API_KEY`, fora da configuração serializável). Modelo:
+`anthropic/claude-haiku-5.5`. O modelo local não foi mais usado.
+
+Dados: SQuAD 2.0 dev (11.873 perguntas, sha256 `80a5225e…182d8`). Cada amostra
+tem 200 casos, 100 com resposta no parágrafo e 100 sem, sorteados pelo hash
+do id com um rótulo; as três amostras não se intersectam. Cada caso tem um
+documento só, então a política rodou com 1 família de fonte em vez de 2. Os
+arquivos de casos ficam em `bench/datasets/` (fora do git, texto CC BY-SA);
+os relatórios estão em `outputs/validation-20261009/`.
+
+| Amostra | Pipeline | Com resposta: corretas / string diferente / abstenções | Sem resposta: respondidas mesmo assim |
+|---|---|---|---|
+| A | extração + stance | 85 / 7 / 8 | **34** de 100 |
+| B | extração + stance | 92 / 2 / 6 | 24 de 100 |
+| B | + responsividade v1 | 71 / 7 / 22 | 15 de 100 |
+| C | extração + stance | 87 / 9 / 4 | 22 de 100 |
+| C | + responsividade v2 | 87 / 9 / 4 | **17** de 100 |
+
+"String diferente" são respostas emitidas cujo texto não contém a resposta
+de referência. Na amostra A, as 7 foram lidas: todas eram paráfrases com a
+referência dentro do trecho citado. Em B e C a referência está no trecho
+citado em 93 a 97 de 100 casos.
+
+O que as amostras mostraram:
+
+1. **A (primeira rodada).** O sistema acha a resposta quando ela está no
+   texto. O problema é o inverso: em 34 de 100 perguntas que o parágrafo não
+   responde, ele respondeu. Nos casos lidos, a afirmação era verdadeira e
+   citada literalmente, mas sobre algo parecido com o perguntado ("testes de
+   Mersenne" → "primos de Mersenne"; "Australian" → "Austrian"), e o próprio
+   extrator anotava que não respondia à pergunta. Citações inventadas quase
+   não aparecem: 2 rejeitadas em 200 casos.
+2. **B (responsividade v1).** Um terceiro julgamento, "a afirmação responde
+   ao que foi perguntado?", tirou 9 respostas indevidas e derrubou 22
+   corretas. Rejeitava só pela redação ("as secreções são chamadas de tinta"
+   para "como as secreções são chamadas?"). Resultado negativo, mantido.
+3. **C (responsividade v2).** A rejeição passou a exigir o par de termos
+   divergentes, um copiado da pergunta e outro da afirmação, e o código
+   descarta a rejeição se os dois não existirem literalmente. Na comparação
+   pareada: 6 respostas indevidas removidas, 1 nova; nas perguntas com
+   resposta, 2 perdidas e 2 ganhas, que é a variação entre execuções.
+
+A afirmação rejeitada não some: fica na lista com status `off_request`, como
+evidência relacionada, e não pode ser apresentada como a resposta.
+
+Regressão de desenvolvimento (20 casos) com o modelo hospedado: 20/20 nas
+três versões. Latência por caso no harness: p50 de 4 a 6 s, p95 de 7 a 13 s.
+
+### Limites desta avaliação
+
+- **17 a 22% das perguntas sem resposta ainda são respondidas.** O SQuAD 2.0
+  constrói essas perguntas para parecerem respondíveis, então é um teste
+  duro, mas o número é o que foi medido.
+- Com uma fonte por caso, a regra de duas famílias não foi exercida. Não se
+  sabe quanto ela reduziria as respostas indevidas.
+- 100 casos por grupo: a diferença de 22 para 17 está dentro do que uma
+  amostra desse tamanho distingue mal. A amostra C só foi lida em agregado.
+- As perguntas do SQuAD foram escritas olhando o parágrafo e muitas dependem
+  dele ("qual era a mais importante dessas cidades?"). Consultas reais são
+  autocontidas; o efeito disso não foi medido.
+- Inglês, um modelo, uma execução por configuração. O modelo pode ter visto o
+  SQuAD no treino; a exigência de citação literal limita, mas não elimina,
+  esse efeito.
+- A latência de ponta a ponta com o modelo hospedado (busca + coleta +
+  modelo) não foi medida, só a do caminho de resposta.
+
 ## Próximos passos
 
-1. Baixar o SQuAD 2.0 dev, gerar uma amostra com rótulo novo e rodar o
-   `answer-eval` nela sem inspecionar os casos antes. Precisa de um modelo;
-   o local deixa a máquina lenta.
-2. Decidir onde o modelo roda. Com o local, uma resposta leva 22 a 41 s.
-3. Checagem de responsividade (a afirmação responde à pergunta?) como
-   julgamento próprio, em vez de depender só do prompt do extrator.
-4. Julgar o stance de todas as afirmações numa chamada só. Muda o prompt,
-   então exige nova medição.
-5. Roteador de intenção por embedding, para não chamar o modelo em consultas
+1. Reduzir as respostas a perguntas sem resposta (hoje 17 a 22%). Medir um
+   modelo maior no papel de extrator e medir o efeito da regra de duas
+   fontes com um conjunto multi-documento.
+2. Medir latência de ponta a ponta com o modelo hospedado contra o teto de
+   5 s.
+3. Avaliação em português e conjuntos para stance (XNLI-pt, FEVER).
+4. Roteador de intenção por embedding, para não chamar o modelo em consultas
    de destino. Precisa de um conjunto rotulado externo.
-6. Conjuntos para stance (XNLI-pt, FEVER) e para português.
+5. Julgar o stance de todas as afirmações numa chamada só. Muda o prompt,
+   então exige nova medição.
