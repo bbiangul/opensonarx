@@ -16,7 +16,7 @@ pub use earnings::{EarningsSnapshot, EarningsTracker};
 pub use error::{Error, ErrorCode, Result};
 pub use evidence::{
     ClaimExtraction, ClaimExtractor, EvidencePassage, ProposedClaim, ProposedQuote, RequestKind,
-    ResponsivenessJudge, StanceJudge, StanceJudgment, StanceLabel,
+    ResponsivenessJudge, ResponsivenessVerdict, StanceJudge, StanceJudgment, StanceLabel,
 };
 pub use gateway::*;
 pub use reputation::*;

@@ -7,7 +7,9 @@
 //! and how many model quotes failed verbatim verification. Cases are data: a
 //! new failure mode is a new line in the case file, not a new rule in code.
 
-use oi_sdk::answer::{assemble_answer, build_passages, merge_repeated_claims, ClaimJudgments};
+use oi_sdk::answer::{
+    assemble_answer, build_passages, merge_repeated_claims, verify_responsiveness, ClaimJudgments,
+};
 use oi_sdk::{AnswerModelConfig, AnswerPolicy, ChatModel};
 use oi_types::{ClaimExtractor, ResponsivenessJudge, SearchResultItem, StanceJudge};
 use serde::{Deserialize, Serialize};
@@ -237,6 +239,7 @@ fn evaluate(
             .answers_request(&case.query, &claim_texts)
             .map_err(|error| model_error = Some(error.to_string()))
             .ok()
+            .map(|verdicts| verify_responsiveness(&case.query, &claim_texts, &verdicts).0)
     } else {
         None
     };

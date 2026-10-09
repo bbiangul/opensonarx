@@ -947,11 +947,22 @@ impl OpenSonarXClient {
                                     .map_err(|error| trace.model_error = Some(error.to_string()))
                                     .ok()
                             });
-                            let responsive = responsive.and_then(|judged| {
-                                judged
-                                    .map_err(|error| trace.model_error = Some(error.to_string()))
-                                    .ok()
-                            });
+                            let responsive = responsive
+                                .and_then(|judged| {
+                                    judged
+                                        .map_err(|error| {
+                                            trace.model_error = Some(error.to_string())
+                                        })
+                                        .ok()
+                                })
+                                .map(|verdicts| {
+                                    let (decisions, discarded) =
+                                        crate::answer::verify_responsiveness(
+                                            query, &claims, &verdicts,
+                                        );
+                                    trace.unshown_rejections = discarded;
+                                    decisions
+                                });
                             trace.stance_ms = elapsed_ms(started);
                             let (answer, checklist, stats) = crate::answer::assemble_answer(
                                 &results,
@@ -2219,8 +2230,21 @@ mod tests {
     }
 
     impl ResponsivenessJudge for ScriptedResponsiveness {
-        fn answers_request(&self, _query: &str, claims: &[&str]) -> Result<Vec<bool>> {
-            Ok(vec![self.answers; claims.len()])
+        fn answers_request(
+            &self,
+            _query: &str,
+            claims: &[&str],
+        ) -> Result<Vec<oi_types::ResponsivenessVerdict>> {
+            // A rejection names "Robotics" in the request and "company" in
+            // the claim, both of which occur literally in the test inputs.
+            Ok(vec![
+                oi_types::ResponsivenessVerdict {
+                    answers: self.answers,
+                    request_term: (!self.answers).then(|| "Robotics".to_string()),
+                    claim_term: (!self.answers).then(|| "company".to_string()),
+                };
+                claims.len()
+            ])
         }
 
         fn model_version(&self) -> String {

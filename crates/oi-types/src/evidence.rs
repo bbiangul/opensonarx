@@ -108,6 +108,17 @@ pub trait StanceJudge: Send + Sync {
     fn model_version(&self) -> String;
 }
 
+/// A responsiveness verdict for one claim. A rejection must name the
+/// mismatch: the term the request uses and the different term the claim uses
+/// in its place. The caller checks that both occur literally and discards a
+/// rejection that cannot show them.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ResponsivenessVerdict {
+    pub answers: bool,
+    pub request_term: Option<String>,
+    pub claim_term: Option<String>,
+}
+
 /// Judges whether each claim answers the request as it was asked.
 ///
 /// A claim can be true, quoted verbatim and supported by every source and
@@ -115,9 +126,8 @@ pub trait StanceJudge: Send + Sync {
 /// period, or the opposite of what was asked. Faithfulness to the passages is
 /// the stance judge's concern; this judgement is about the request.
 pub trait ResponsivenessJudge: Send + Sync {
-    /// One verdict per claim, in order: `true` when the claim answers the
-    /// request as asked.
-    fn answers_request(&self, query: &str, claims: &[&str]) -> Result<Vec<bool>>;
+    /// One verdict per claim, in order.
+    fn answers_request(&self, query: &str, claims: &[&str]) -> Result<Vec<ResponsivenessVerdict>>;
 
     fn model_version(&self) -> String;
 }

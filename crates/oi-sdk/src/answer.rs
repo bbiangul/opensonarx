@@ -145,6 +145,10 @@ pub struct AnswerTrace {
     /// Supported claims set aside because they do not answer the request.
     #[serde(default)]
     pub off_request_claims: usize,
+    /// Responsiveness rejections discarded because the judge did not show a
+    /// literal mismatch between the request and the claim.
+    #[serde(default)]
+    pub unshown_rejections: usize,
     /// Quotes proposed by a model that were not found verbatim.
     pub rejected_quotes: usize,
     pub hydration_requested: usize,
@@ -324,6 +328,54 @@ pub fn merge_repeated_claims(extraction: &mut ClaimExtraction) {
         }
     }
     extraction.claims = merged;
+}
+
+/// Turn responsiveness verdicts into one decision per claim: `true` when the
+/// claim stands as an answer to `query`.
+///
+/// A rejection is accepted only if it names a term that occurs literally in
+/// the request and a different term that occurs literally in the claim. A
+/// rejection that cannot show that pair is discarded and the claim stands, so
+/// a judge that merely dislikes the wording cannot remove an answer. Returns
+/// the decisions and the number of rejections discarded.
+pub fn verify_responsiveness(
+    query: &str,
+    claims: &[&str],
+    verdicts: &[oi_types::ResponsivenessVerdict],
+) -> (Vec<bool>, usize) {
+    let folded_query = format!(" {} ", crate::text::fold_text(query));
+    let mut discarded = 0;
+    let decisions = claims
+        .iter()
+        .enumerate()
+        .map(|(index, claim)| {
+            let Some(verdict) = verdicts.get(index) else {
+                return true;
+            };
+            if verdict.answers {
+                return true;
+            }
+            let term = |term: &Option<String>| {
+                term.as_deref()
+                    .map(crate::text::fold_text)
+                    .filter(|term| !term.is_empty())
+            };
+            let shown = match (term(&verdict.request_term), term(&verdict.claim_term)) {
+                (Some(request_term), Some(claim_term)) => {
+                    request_term != claim_term
+                        && folded_query.contains(&format!(" {request_term} "))
+                        && format!(" {} ", crate::text::fold_text(claim))
+                            .contains(&format!(" {claim_term} "))
+                }
+                _ => false,
+            };
+            if !shown {
+                discarded += 1;
+            }
+            !shown
+        })
+        .collect();
+    (decisions, discarded)
 }
 
 struct Located<'a> {
@@ -1099,6 +1151,53 @@ mod tests {
         assert_eq!(roles, vec!["supports", "contradicts"]);
         assert!(answer.claims[0].conflict > 0.0);
         assert!(!checklist.complete_answer_supported);
+    }
+
+    fn verdict(answers: bool, request: &str, claim: &str) -> oi_types::ResponsivenessVerdict {
+        oi_types::ResponsivenessVerdict {
+            answers,
+            request_term: (!request.is_empty()).then(|| request.to_string()),
+            claim_term: (!claim.is_empty()).then(|| claim.to_string()),
+        }
+    }
+
+    #[test]
+    fn a_rejection_stands_only_when_it_shows_the_mismatched_terms() {
+        let query = "Of what form are Mersenne tests?";
+        let claims = ["Mersenne primes are prime numbers of the form 2p − 1."];
+        let shown = verify_responsiveness(
+            query,
+            &claims,
+            &[verdict(false, "Mersenne tests", "Mersenne primes")],
+        );
+        assert_eq!(shown, (vec![false], 0));
+
+        // No terms, a term absent from the request, a term absent from the
+        // claim, or the same term twice: the rejection is discarded.
+        for unsupported in [
+            verdict(false, "", ""),
+            verdict(false, "Fermat tests", "Mersenne primes"),
+            verdict(false, "Mersenne tests", "Fermat primes"),
+            verdict(false, "Mersenne", "mersenne"),
+            verdict(false, "Mersenne tests", ""),
+        ] {
+            assert_eq!(
+                verify_responsiveness(query, &claims, &[unsupported.clone()]),
+                (vec![true], 1),
+                "{unsupported:?}"
+            );
+        }
+        assert_eq!(
+            verify_responsiveness(query, &claims, &[verdict(true, "", "")]),
+            (vec![true], 0)
+        );
+        // A claim without a verdict stands.
+        assert_eq!(verify_responsiveness(query, &claims, &[]), (vec![true], 0));
+        // Terms match on word boundaries: "test" is not "tests".
+        assert_eq!(
+            verify_responsiveness(query, &claims, &[verdict(false, "test", "primes")]),
+            (vec![true], 1)
+        );
     }
 
     #[test]
