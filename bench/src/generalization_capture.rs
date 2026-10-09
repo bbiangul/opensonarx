@@ -606,6 +606,66 @@ fn print_table(report: &CaptureReport) {
     println!("manifest sha256: {}", report.manifest_sha256);
 }
 
+const DEVELOPMENT_QUERIES: &str = include_str!("../fixtures/development-queries-seen.json");
+
+/// Queries already inspected during development. A holdout that repeats one
+/// of them is not a holdout.
+fn development_query_texts() -> Result<Vec<String>, String> {
+    #[derive(serde::Deserialize)]
+    struct Seen {
+        queries: Vec<String>,
+    }
+    serde_json::from_str::<Seen>(DEVELOPMENT_QUERIES)
+        .map(|seen| seen.queries)
+        .map_err(|error| format!("development query fixture is invalid: {error}"))
+}
+
+pub(crate) fn nonempty_env(name: &str) -> Option<String> {
+    std::env::var(name)
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+}
+
+pub(crate) fn parse_engine_override(
+    engine_override: Option<&str>,
+) -> Result<Option<Vec<oi_sdk::config::SearchEngineConfig>>, String> {
+    let Some(raw) = engine_override else {
+        return Ok(None);
+    };
+    let mut configs = Vec::new();
+    for (index, name) in raw
+        .split(',')
+        .map(str::trim)
+        .filter(|name| !name.is_empty())
+        .enumerate()
+    {
+        let canonical = name.to_ascii_lowercase();
+        let api_key = match canonical.as_str() {
+            "brave" => Some(
+                nonempty_env("BRAVE_API_KEY")
+                    .ok_or_else(|| "--engines brave requires BRAVE_API_KEY".to_string())?,
+            ),
+            "serper" => Some(
+                nonempty_env("SERPER_API_KEY")
+                    .ok_or_else(|| "--engines serper requires SERPER_API_KEY".to_string())?,
+            ),
+            "bing" | "brave-html" | "brave_html" | "duckduckgo" | "ddg" | "google" | "qwant"
+            | "stract" | "yep" => None,
+            _ => return Err(format!("unknown --engines adapter: {name}")),
+        };
+        configs.push(oi_sdk::config::SearchEngineConfig {
+            name: canonical,
+            api_key,
+            enabled: true,
+            priority: (index + 1) as u32,
+        });
+    }
+    if configs.is_empty() {
+        return Err("--engines requires at least one adapter".to_string());
+    }
+    Ok(Some(configs))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -676,64 +736,4 @@ mod tests {
         validate_no_overlap_with_prior(&current.queries, &prior.queries, "prior.json")
             .expect("disjoint prior manifest must pass");
     }
-}
-
-const DEVELOPMENT_QUERIES: &str = include_str!("../fixtures/development-queries-seen.json");
-
-/// Queries already inspected during development. A holdout that repeats one
-/// of them is not a holdout.
-fn development_query_texts() -> Result<Vec<String>, String> {
-    #[derive(serde::Deserialize)]
-    struct Seen {
-        queries: Vec<String>,
-    }
-    serde_json::from_str::<Seen>(DEVELOPMENT_QUERIES)
-        .map(|seen| seen.queries)
-        .map_err(|error| format!("development query fixture is invalid: {error}"))
-}
-
-pub(crate) fn nonempty_env(name: &str) -> Option<String> {
-    std::env::var(name)
-        .ok()
-        .filter(|value| !value.trim().is_empty())
-}
-
-pub(crate) fn parse_engine_override(
-    engine_override: Option<&str>,
-) -> Result<Option<Vec<oi_sdk::config::SearchEngineConfig>>, String> {
-    let Some(raw) = engine_override else {
-        return Ok(None);
-    };
-    let mut configs = Vec::new();
-    for (index, name) in raw
-        .split(',')
-        .map(str::trim)
-        .filter(|name| !name.is_empty())
-        .enumerate()
-    {
-        let canonical = name.to_ascii_lowercase();
-        let api_key = match canonical.as_str() {
-            "brave" => Some(
-                nonempty_env("BRAVE_API_KEY")
-                    .ok_or_else(|| "--engines brave requires BRAVE_API_KEY".to_string())?,
-            ),
-            "serper" => Some(
-                nonempty_env("SERPER_API_KEY")
-                    .ok_or_else(|| "--engines serper requires SERPER_API_KEY".to_string())?,
-            ),
-            "bing" | "brave-html" | "brave_html" | "duckduckgo" | "ddg" | "google" | "qwant"
-            | "stract" | "yep" => None,
-            _ => return Err(format!("unknown --engines adapter: {name}")),
-        };
-        configs.push(oi_sdk::config::SearchEngineConfig {
-            name: canonical,
-            api_key,
-            enabled: true,
-            priority: (index + 1) as u32,
-        });
-    }
-    if configs.is_empty() {
-        return Err("--engines requires at least one adapter".to_string());
-    }
-    Ok(Some(configs))
 }

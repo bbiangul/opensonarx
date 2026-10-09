@@ -7,7 +7,7 @@
 //! and how many model quotes failed verbatim verification. Cases are data: a
 //! new failure mode is a new line in the case file, not a new rule in code.
 
-use oi_sdk::answer::{assemble_answer, build_passages};
+use oi_sdk::answer::{assemble_answer, build_passages, merge_repeated_claims};
 use oi_sdk::{AnswerModelConfig, AnswerPolicy, OllamaChatModel};
 use oi_types::{ClaimExtractor, SearchResultItem, StanceJudge};
 use serde::{Deserialize, Serialize};
@@ -61,6 +61,8 @@ struct CaseReport {
     summary: String,
     claims: Vec<ClaimReport>,
     proposed_claims: usize,
+    /// What the model said the documents lack for a complete answer.
+    model_reported_gaps: Vec<String>,
     rejected_quotes: usize,
     complete_answer_supported: bool,
     model_error: Option<String>,
@@ -155,12 +157,14 @@ fn evaluate(case: &Case, model: &OllamaChatModel, policy: &AnswerPolicy) -> Case
         .collect();
 
     let mut model_error = None;
-    let extraction = model
+    let mut extraction = model
         .extract(&case.query, &passages)
         .unwrap_or_else(|error| {
             model_error = Some(error.to_string());
             Default::default()
         });
+    let proposed_claims = extraction.claims.len();
+    merge_repeated_claims(&mut extraction);
     let judgments: Option<Vec<_>> = extraction
         .claims
         .iter()
@@ -245,7 +249,8 @@ fn evaluate(case: &Case, model: &OllamaChatModel, policy: &AnswerPolicy) -> Case
                 }
             })
             .collect(),
-        proposed_claims: extraction.claims.len(),
+        proposed_claims,
+        model_reported_gaps: extraction.missing.clone(),
         rejected_quotes: stats.rejected_quotes,
         complete_answer_supported: checklist.complete_answer_supported,
         model_error,

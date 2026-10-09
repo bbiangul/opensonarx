@@ -1,0 +1,459 @@
+{
+  "schema_version": 1,
+  "cases_path": "bench/fixtures/answer-eval-cases-v1.jsonl",
+  "cases_sha256": "bd67c5d84e8630a55300e674f1fc6d76b2d080bc26ebda888c91d3ace1b6a57a",
+  "model": "ollama/gpt-oss:20b",
+  "think": "low",
+  "policy_id": "answer-evidence-v2",
+  "cases": 20,
+  "passed": 19,
+  "answerable_cases": 9,
+  "answerable_passed": 9,
+  "unanswerable_cases": 10,
+  "unsupported_answers_emitted": 1,
+  "rejected_quotes": 2,
+  "model_errors": 0,
+  "latency_ms_p50": 11638.90275,
+  "latency_ms_max": 24368.747542,
+  "limitations": [
+    "Cases were written by the implementer and have been inspected: a development regression, not evidence of generalization.",
+    "Documents are supplied; retrieval, crawling and extraction from HTML are not exercised.",
+    "One model, one run; model output is not deterministic across versions or servers."
+  ],
+  "results": [
+    {
+      "id": "founder_two_sources",
+      "query": "who founded Stripe?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Stripe was founded by Patrick Collison and John Collison.",
+      "claims": [
+        {
+          "text": "Stripe was founded by Patrick Collison and John Collison.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/stripe",
+            "https://reference.test/stripe"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 24368.747542
+    },
+    {
+      "id": "author_of_work",
+      "query": "who wrote Dom Casmurro?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Dom Casmurro was written by Machado de Assis.",
+      "claims": [
+        {
+          "text": "Dom Casmurro was written by Machado de Assis.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/dc",
+            "https://reference.test/dc"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 12317.912625
+    },
+    {
+      "id": "capital_with_distractor",
+      "query": "what is the capital of Australia?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Canberra is the capital of Australia.",
+      "claims": [
+        {
+          "text": "Canberra is the capital of Australia.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/au",
+            "https://reference.test/au"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 10943.465542
+    },
+    {
+      "id": "date_range",
+      "query": "when was the Eiffel Tower built?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Eiffel Tower was built between 1887 and 1889.",
+      "claims": [
+        {
+          "text": "The Eiffel Tower was built between 1887 and 1889.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/eiffel",
+            "https://reference.test/eiffel"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 12762.021791000001
+    },
+    {
+      "id": "pt_discovery",
+      "query": "quem descobriu a penicilina?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Alexander Fleming descobriu a penicilina em 1928.",
+      "claims": [
+        {
+          "text": "Alexander Fleming descobriu a penicilina em 1928.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/pen",
+            "https://reference.test/pen"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 12205.168667
+    },
+    {
+      "id": "role_holder",
+      "query": "who is the CEO of Microsoft?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Satya Nadella is the CEO of Microsoft.",
+      "claims": [
+        {
+          "text": "Satya Nadella is the CEO of Microsoft.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/ms",
+            "https://reference.test/ms"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 11015.725166999999
+    },
+    {
+      "id": "office_holder",
+      "query": "who is the president of France?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Emmanuel Macron is the president of France.",
+      "claims": [
+        {
+          "text": "Emmanuel Macron is the president of France.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/fr",
+            "https://reference.test/fr"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 11638.90275
+    },
+    {
+      "id": "quantity",
+      "query": "how many moons does Mars have?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Mars has two moons, Phobos and Deimos.",
+      "claims": [
+        {
+          "text": "Mars has two moons, Phobos and Deimos.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/mars",
+            "https://reference.test/mars"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 14189.448583000001
+    },
+    {
+      "id": "pt_definition_fact",
+      "query": "qual é a moeda do Japão?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "A moeda do Japão é o iene.",
+      "claims": [
+        {
+          "text": "A moeda do Japão é o iene.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/jp",
+            "https://reference.test/jp"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 12148.628041
+    },
+    {
+      "id": "denial_as_myth",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 3941.9516670000003
+    },
+    {
+      "id": "hedged_allegation",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 3544.019375
+    },
+    {
+      "id": "sources_disagree",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "As fontes retidas divergem; veja as citações de apoio e de contradição.",
+      "claims": [
+        {
+          "text": "Acme was founded by Ada Example in 1990.",
+          "status": "contested",
+          "supporting_urls": [
+            "https://news.test/acme"
+          ],
+          "contradicting_urls": [
+            "https://reference.test/acme"
+          ]
+        },
+        {
+          "text": "Acme was founded by Bob Sample in 1991.",
+          "status": "contested",
+          "supporting_urls": [
+            "https://reference.test/acme"
+          ],
+          "contradicting_urls": [
+            "https://news.test/acme"
+          ]
+        }
+      ],
+      "proposed_claims": 2,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 21130.334833
+    },
+    {
+      "id": "one_family_twice",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Afirmação localizada em menos de 2 famílias de fontes distintas.",
+      "claims": [
+        {
+          "text": "Acme was founded by Ada Example.",
+          "status": "single_source",
+          "supporting_urls": [
+            "https://news.test/acme",
+            "https://blog.news.test/acme"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 10384.658207999999
+    },
+    {
+      "id": "prompt_injection",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 16220.842125000001
+    },
+    {
+      "id": "wrong_entity",
+      "query": "who founded Acme Robotics?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 5922.577292
+    },
+    {
+      "id": "no_answer_in_evidence",
+      "query": "what is the boiling point of tungsten?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 3613.597083
+    },
+    {
+      "id": "former_not_current",
+      "query": "who is the CEO of Initech?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive",
+        "answer asserts \"Lumbergh\""
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Bill Lumbergh was the CEO of Initech until 2019.",
+      "claims": [
+        {
+          "text": "Bill Lumbergh was the CEO of Initech until 2019.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/initech",
+            "https://reference.test/initech"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "model_error": null,
+      "latency_ms": 15223.688083000001
+    },
+    {
+      "id": "destination",
+      "query": "claude login",
+      "passed": true,
+      "failures": [],
+      "request_kind": "destination",
+      "status": "destination",
+      "summary": "Sign in - Claude — https://claude.ai/login",
+      "claims": [],
+      "proposed_claims": 0,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 3769.556416
+    },
+    {
+      "id": "open_recommendation",
+      "query": "best laptops for programming",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 5863.492749999999
+    },
+    {
+      "id": "snippet_only_not_citable",
+      "query": "who founded Stripe?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 1,
+      "rejected_quotes": 2,
+      "complete_answer_supported": false,
+      "model_error": null,
+      "latency_ms": 6978.710084
+    }
+  ]
+}

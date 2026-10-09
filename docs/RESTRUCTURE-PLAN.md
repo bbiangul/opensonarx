@@ -1,6 +1,18 @@
 # Plano de reestruturação — camada de evidência e resposta
 
-**9 de outubro de 2026. Status: proposta, nada executado.**
+**9 de outubro de 2026. Status: em execução na branch `restructure`.**
+
+| Fase | Estado |
+|---|---|
+| 0 — Salvar | Feito localmente (commits na branch). **Push não feito.** |
+| 1 — Rede de segurança | Parcial: `oi-bench answer-eval` com 20 casos. Conjuntos externos (NQ, XNLI-pt, FEVER) pendentes. |
+| 2 — Costuras | Feito, mas sem a implementação `legacy_lexical`: por decisão do dono, as regras foram apagadas em vez de preservadas atrás dos traits. |
+| 3 — Modelos | Extração e stance por modelo, feitos. `IntentRouter` por embedding e agrupamento de afirmações por NLI pendentes. |
+| 4 — Apagar o legado | Feito. CI com lint de strings de benchmark pendente. |
+| 5 — Revalidar | Pendente: holdout selado, latência contra os gates. README e CLAUDE.md atualizados. |
+
+Medições e perdas conscientes: [experiments/RESTRUCTURE-2026-10-09.md](experiments/RESTRUCTURE-2026-10-09.md).
+O texto abaixo é o plano original.
 
 ## 1. A missão, como eu a entendi
 

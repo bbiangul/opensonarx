@@ -38,34 +38,6 @@ fn write_lock<T>(lock: &RwLock<T>) -> Result<std::sync::RwLockWriteGuard<'_, T>>
         .map_err(|e| oi_types::Error::Internal(format!("lock poisoned: {e}")))
 }
 
-/// Boost factor for chunks whose domain matches a technology keyword in the query.
-/// Addresses cross-corpus confusion where e.g. Rust "enum" docs outrank TypeScript "enum"
-/// docs for a TypeScript-specific query.
-fn query_domain_boost(query_lower: &str, domain: &str) -> f64 {
-    const AFFINITIES: &[(&str, &[&str])] = &[
-        ("typescript", &["typescriptlang.org"]),
-        ("tsconfig", &["typescriptlang.org"]),
-        ("rust", &["rust-lang.org", "docs.rs"]),
-        ("react", &["react.dev", "reactjs.org"]),
-        ("python", &["python.org"]),
-        ("javascript", &["javascript.info", "developer.mozilla.org"]),
-        ("nodejs", &["nodejs.org"]),
-        ("node.js", &["nodejs.org"]),
-        ("go ", &["go.dev", "golang.org"]),
-        ("golang", &["go.dev", "golang.org"]),
-    ];
-
-    let domain_lower = domain.to_lowercase();
-
-    for &(keyword, patterns) in AFFINITIES {
-        if query_lower.contains(keyword) && patterns.iter().any(|p| domain_lower.contains(p)) {
-            return 1.5;
-        }
-    }
-
-    1.0
-}
-
 /// NaN-safe total ordering for f64. NaN sorts last (smallest).
 fn total_cmp_desc(a: f64, b: f64) -> std::cmp::Ordering {
     b.partial_cmp(&a).unwrap_or_else(|| {
@@ -1023,18 +995,6 @@ impl HybridIndex {
         query_text: &str,
         dedup_urls: bool,
     ) -> Vec<SearchResultItem> {
-        // Apply domain affinity boost BEFORE sorting so that domain-matching
-        // candidates can overtake cross-language competitors.
-        let query_lower = query_text.to_lowercase();
-        for c in &mut candidates {
-            let domain = meta_store
-                .get(&c.id)
-                .map(|m| m.domain.as_str())
-                .unwrap_or("");
-            let boost = query_domain_boost(&query_lower, domain);
-            c.preliminary_score *= boost;
-        }
-
         candidates.sort_by(|a, b| total_cmp_desc(a.preliminary_score, b.preliminary_score));
 
         // Document-level dedup: keep only best chunk per URL.

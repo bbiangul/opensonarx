@@ -300,6 +300,25 @@ pub fn locate_quote(passage: &str, quote: &str, min_chars: usize) -> Option<Stri
     Some(passage[from..to].to_string())
 }
 
+/// Merge proposed claims whose text is identical after folding, keeping the
+/// first and pooling their quotes. Only character-identical repeats are
+/// merged; whether two differently worded claims say the same thing is a
+/// question for a model, not for this function.
+pub fn merge_repeated_claims(extraction: &mut ClaimExtraction) {
+    let mut merged: Vec<oi_types::ProposedClaim> = Vec::new();
+    for claim in std::mem::take(&mut extraction.claims) {
+        let key = crate::text::fold_text(&claim.text);
+        match merged
+            .iter_mut()
+            .find(|kept| crate::text::fold_text(&kept.text) == key)
+        {
+            Some(kept) => kept.quotes.extend(claim.quotes),
+            None => merged.push(claim),
+        }
+    }
+    extraction.claims = merged;
+}
+
 struct Located<'a> {
     passage: &'a EvidencePassage,
     excerpt: String,
@@ -1117,14 +1136,36 @@ mod tests {
     }
 
     #[test]
+    fn repeated_claims_are_merged_and_their_quotes_pooled() {
+        let mut extraction = question(vec![
+            claim("Ada Example started the company.", &[("p1", "quote one")]),
+            claim("ada example started the company", &[("p2", "quote two")]),
+            claim(
+                "Ada Example started the company in Recife.",
+                &[("p1", "quote three")],
+            ),
+        ]);
+        merge_repeated_claims(&mut extraction);
+        assert_eq!(extraction.claims.len(), 2);
+        assert_eq!(
+            extraction.claims[0].text,
+            "Ada Example started the company."
+        );
+        assert_eq!(extraction.claims[0].quotes.len(), 2);
+        assert_eq!(extraction.claims[1].quotes.len(), 1);
+    }
+
+    #[test]
     fn claims_beyond_the_policy_limit_are_not_assembled() {
         let results = two_sources();
         let passages = build_passages(&results, &AnswerPolicy::default());
-        let one = claim(
-            "Ada Example started the company.",
-            &[("p2", "the company was started by Ada Example")],
-        );
-        let extraction = question(vec![one.clone(), one.clone(), one.clone(), one]);
+        let numbered = |n: usize| {
+            claim(
+                &format!("Ada Example started the company ({n})."),
+                &[("p2", "the company was started by Ada Example")],
+            )
+        };
+        let extraction = question((1..=4).map(numbered).collect());
         let (answer, _, _) = assemble_answer(
             &results,
             &passages,

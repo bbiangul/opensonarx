@@ -115,7 +115,7 @@ pub enum Commands {
         /// Print a concise execution path and phase latencies to stderr
         #[arg(long)]
         explain: bool,
-        /// Build a retained-evidence answer; claim-bearing queries may crawl and run a second pass
+        /// Answer from retained evidence using the model in OI_ANSWER_MODEL; without one, returns the slate
         #[arg(long)]
         answer: bool,
     },

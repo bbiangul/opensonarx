@@ -58,9 +58,11 @@ request_kind:
 - \"destination\": the request seeks a specific website, or an action on one (log in, download, pricing page).
 - \"exploration\": the request is open-ended (an overview, a recommendation, how-to guidance, browsing news).
 
-claims (questions only): each statement that answers the request, as one self-contained sentence in the \
-language of the request. If the passages give different answers, output one claim per answer. If no \
-passage answers the request, output no claims. Never use your own knowledge.
+claims (questions only): each statement that answers the request as asked — the same entity and the \
+same time frame — as one self-contained sentence in the language of the request. A related fact that \
+does not answer the request belongs in `missing`, not in `claims`. If the passages give different \
+answers, output one claim per distinct answer and never repeat a claim. If no passage answers the \
+request, output no claims. Never use your own knowledge.
 
 quotes: for each claim, every passage that states it. `quote` is contiguous text copied \
 character-for-character from that passage, one or two sentences, with no omissions and no rewording. \

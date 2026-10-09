@@ -884,8 +884,9 @@ impl OpenSonarXClient {
                         trace.model_error = Some(error.to_string());
                         crate::answer::results_only(policy)
                     }
-                    Ok(extraction) => {
+                    Ok(mut extraction) => {
                         trace.proposed_claims = extraction.claims.len();
+                        crate::answer::merge_repeated_claims(&mut extraction);
                         let started = std::time::Instant::now();
                         let judgments = self.stance_judge.as_ref().and_then(|judge| {
                             trace.stance_model = Some(judge.model_version());

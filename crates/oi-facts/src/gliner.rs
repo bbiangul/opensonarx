@@ -462,17 +462,10 @@ impl FactExtractionPipeline for GlinerFactExtractor {
 
         let entities = self.extract_entities(text)?;
 
-        // Create relation triplets between consecutive entity pairs
-        // (real relation extraction would use the multitask model)
-        let mut facts = Vec::new();
-        for pair in entities.windows(2) {
-            facts.push(Fact {
-                subject: pair[0].clone(),
-                predicate: "related_to".to_string(),
-                object: pair[1].clone(),
-                confidence: (pair[0].confidence + pair[1].confidence) / 2.0,
-            });
-        }
+        // This model recognizes entities. It does not extract relations, so
+        // no fact triplet is produced: adjacency in a sentence is not a
+        // relation between two entities.
+        let facts = Vec::new();
 
         let elapsed = start.elapsed().as_secs_f64() * 1000.0;
 
