@@ -8,12 +8,14 @@
 //! new failure mode is a new line in the case file, not a new rule in code.
 
 use oi_sdk::answer::{
-    assemble_answer, build_passages, merge_repeated_claims, verify_responsiveness, ClaimJudgments,
+    assemble_answer, build_passages, merge_repeated_claims, responsiveness_decisions,
+    ClaimJudgments, SearchAnswer,
 };
 use oi_sdk::{AnswerModelConfig, AnswerPolicy, ChatModel};
 use oi_types::{ClaimExtractor, ResponsivenessJudge, SearchResultItem, StanceJudge};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use std::collections::BTreeMap;
 use std::time::Instant;
 
 #[derive(Debug, Deserialize)]
@@ -71,12 +73,30 @@ struct CaseReport {
     model_reported_gaps: Vec<String>,
     rejected_quotes: usize,
     complete_answer_supported: bool,
+    /// The same model outputs assembled with and without each
+    /// responsiveness source. `full` is the reported pipeline.
+    variants: BTreeMap<String, VariantOutcome>,
     /// For cases with alternative gold answers: whether a gold answer occurs
     /// in a span the pipeline cited as support. A diagnostic for paraphrased
     /// claims; it never decides `passed`.
     gold_in_cited_span: Option<bool>,
     model_error: Option<String>,
     latency_ms: f64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct VariantOutcome {
+    status: String,
+    passed: bool,
+}
+
+/// Per-variant totals over all cases.
+#[derive(Debug, Default, Serialize)]
+struct VariantTotals {
+    answerable_correct: usize,
+    answerable_other_wording: usize,
+    answerable_abstained: usize,
+    unanswerable_answered: usize,
 }
 
 #[derive(Debug, Serialize)]
@@ -122,6 +142,8 @@ struct Report {
     responsiveness_judge: bool,
     /// Claims set aside as supported but not answering the request.
     off_request_claims: usize,
+    /// Totals per assembly variant, all from the same model outputs.
+    variants: BTreeMap<String, VariantTotals>,
     limitations: Vec<&'static str>,
     results: Vec<CaseReport>,
 }
@@ -193,6 +215,57 @@ fn result_item(rank: usize, document: &Document) -> SearchResultItem {
     }
 }
 
+/// What a case expected and the answer did not deliver.
+fn expectation_failures(case: &Case, answer: &SearchAnswer) -> Vec<String> {
+    let answer_text = std::iter::once(answer.summary.as_str())
+        .chain(
+            answer
+                .claims
+                .iter()
+                .filter(|claim| claim.status != "off_request")
+                .map(|claim| claim.text.as_str()),
+        )
+        .collect::<Vec<_>>()
+        .join(" ")
+        .to_lowercase();
+    let mut failures = Vec::new();
+    if case
+        .expect
+        .status
+        .as_ref()
+        .is_some_and(|status| &answer.status != status)
+    {
+        failures.push(format!(
+            "status {} != expected {}",
+            answer.status,
+            case.expect.status.as_deref().unwrap_or_default()
+        ));
+    }
+    if case.expect.not_status.as_ref() == Some(&answer.status) {
+        failures.push(format!("status must not be {}", answer.status));
+    }
+    for needle in &case.expect.answer_contains {
+        if !answer_text.contains(&needle.to_lowercase()) {
+            failures.push(format!("answer lacks {needle:?}"));
+        }
+    }
+    let alternatives = &case.expect.answer_contains_any;
+    if !alternatives.is_empty() && !contains_gold(&answer_text, alternatives) {
+        failures.push(format!("answer has none of {alternatives:?}"));
+    }
+    for needle in &case.expect.answer_excludes {
+        if answer.status == "extractive" && answer_text.contains(&needle.to_lowercase()) {
+            failures.push(format!("answer asserts {needle:?}"));
+        }
+    }
+    if let Some(status) = &case.expect.claim_status {
+        if !answer.claims.iter().any(|claim| &claim.status == status) {
+            failures.push(format!("no claim with status {status}"));
+        }
+    }
+    failures
+}
+
 fn evaluate(
     case: &Case,
     model: &ChatModel,
@@ -231,65 +304,68 @@ fn evaluate(
         .collect::<Result<_, _>>()
         .map_err(|error| model_error = Some(error.to_string()))
         .ok();
-    let claim_texts: Vec<&str> = extraction
-        .claims
-        .iter()
-        .take(policy.max_claims)
-        .map(|claim| claim.text.as_str())
-        .collect();
-    let responsive = if responsiveness && !claim_texts.is_empty() {
+    let considered = &extraction.claims[..extraction.claims.len().min(policy.max_claims)];
+    let claim_texts: Vec<&str> = considered.iter().map(|claim| claim.text.as_str()).collect();
+    let verdicts = if responsiveness && !claim_texts.is_empty() {
         judge
             .answers_request(&case.query, &claim_texts)
             .map_err(|error| model_error = Some(error.to_string()))
             .ok()
-            .map(|verdicts| verify_responsiveness(&case.query, &claim_texts, &verdicts).0)
     } else {
         None
     };
-    let (answer, checklist, stats) = assemble_answer(
-        &results,
-        &passages,
-        &extraction,
-        ClaimJudgments {
-            stance: judgments.as_deref(),
-            responsive: responsive.as_deref(),
-        },
-        policy,
-    );
 
-    let answer_text = std::iter::once(answer.summary.as_str())
-        .chain(answer.claims.iter().map(|claim| claim.text.as_str()))
-        .collect::<Vec<_>>()
-        .join(" ")
-        .to_lowercase();
-    let mut failures = Vec::new();
+    // One model pass, several assemblies: each variant decides responsiveness
+    // from a different subset of the same model outputs, so the variants
+    // differ only by what the pipeline does with them.
+    let assemble = |use_substitution: bool, use_judge: bool| {
+        let mut claims = considered.to_vec();
+        if !use_substitution {
+            for claim in &mut claims {
+                claim.substitution = None;
+            }
+        }
+        let (decisions, _) = responsiveness_decisions(
+            &case.query,
+            &claims,
+            verdicts.as_deref().filter(|_| use_judge),
+        );
+        assemble_answer(
+            &results,
+            &passages,
+            &extraction,
+            ClaimJudgments {
+                stance: judgments.as_deref(),
+                responsive: &decisions,
+            },
+            policy,
+        )
+    };
+    let variants: BTreeMap<String, VariantOutcome> = [
+        ("stance_only", false, false),
+        ("plus_substitution", true, false),
+        ("plus_judge", false, true),
+        ("full", true, true),
+    ]
+    .into_iter()
+    .map(|(name, use_substitution, use_judge)| {
+        let (answer, _, _) = assemble(use_substitution, use_judge);
+        (
+            name.to_string(),
+            VariantOutcome {
+                passed: expectation_failures(case, &answer).is_empty(),
+                status: answer.status,
+            },
+        )
+    })
+    .collect();
+    let (answer, checklist, stats) = assemble(true, true);
+
+    let mut failures = expectation_failures(case, &answer);
     if let Some(error) = &model_error {
         failures.push(format!("model error: {error}"));
     }
-    if case
-        .expect
-        .status
-        .as_ref()
-        .is_some_and(|status| &answer.status != status)
-    {
-        failures.push(format!(
-            "status {} != expected {}",
-            answer.status,
-            case.expect.status.as_deref().unwrap_or_default()
-        ));
-    }
-    if case.expect.not_status.as_ref() == Some(&answer.status) {
-        failures.push(format!("status must not be {}", answer.status));
-    }
-    for needle in &case.expect.answer_contains {
-        if !answer_text.contains(&needle.to_lowercase()) {
-            failures.push(format!("answer lacks {needle:?}"));
-        }
-    }
     let alternatives = &case.expect.answer_contains_any;
-    if !alternatives.is_empty() && !contains_gold(&answer_text, alternatives) {
-        failures.push(format!("answer has none of {alternatives:?}"));
-    }
     let gold_in_cited_span = (!alternatives.is_empty()).then(|| {
         answer
             .claims
@@ -299,16 +375,6 @@ fn evaluate(
             .filter_map(|citation| citation.evidence_excerpt.as_deref())
             .any(|excerpt| contains_gold(excerpt, alternatives))
     });
-    for needle in &case.expect.answer_excludes {
-        if answer.status == "extractive" && answer_text.contains(&needle.to_lowercase()) {
-            failures.push(format!("answer asserts {needle:?}"));
-        }
-    }
-    if let Some(status) = &case.expect.claim_status {
-        if !answer.claims.iter().any(|claim| &claim.status == status) {
-            failures.push(format!("no claim with status {status}"));
-        }
-    }
 
     CaseReport {
         id: case.id.clone(),
@@ -342,6 +408,7 @@ fn evaluate(
         model_reported_gaps: extraction.missing.clone(),
         rejected_quotes: stats.rejected_quotes,
         complete_answer_supported: checklist.complete_answer_supported,
+        variants,
         gold_in_cited_span,
         model_error,
         latency_ms: started.elapsed().as_secs_f64() * 1_000.0,
@@ -439,6 +506,22 @@ pub fn run(
     let expects_answer = |case: &Case| case.expect.status.as_deref() == Some("extractive");
     let supports_no_answer = |case: &Case| case.expect.not_status.as_deref() == Some("extractive");
     let paired = || cases.iter().zip(&results);
+    let mut variant_totals: BTreeMap<String, VariantTotals> = BTreeMap::new();
+    for (case, result) in paired() {
+        for (name, outcome) in &result.variants {
+            let totals = variant_totals.entry(name.clone()).or_default();
+            let answered = outcome.status == "extractive";
+            if expects_answer(case) {
+                match (answered, outcome.passed) {
+                    (_, true) => totals.answerable_correct += 1,
+                    (true, false) => totals.answerable_other_wording += 1,
+                    (false, false) => totals.answerable_abstained += 1,
+                }
+            } else if supports_no_answer(case) && answered {
+                totals.unanswerable_answered += 1;
+            }
+        }
+    }
     let mut latencies: Vec<f64> = results.iter().map(|result| result.latency_ms).collect();
     latencies.sort_by(f64::total_cmp);
     let report = Report {
@@ -489,6 +572,7 @@ pub fn run(
             .flat_map(|result| &result.claims)
             .filter(|claim| claim.status == "off_request")
             .count(),
+        variants: variant_totals,
         limitations: vec![
             "Documents are supplied; retrieval, crawling and extraction from HTML are not exercised.",
             "One model, one run; model output is not deterministic across versions or servers.",
@@ -514,6 +598,15 @@ pub fn run(
         report.latency_ms_p95 / 1_000.0,
         report.latency_ms_max / 1_000.0,
     );
+    for (name, totals) in &report.variants {
+        println!(
+            "  variant {name:<18} answerable: {} correct, {} other wording, {} abstained | unanswerable answered: {}",
+            totals.answerable_correct,
+            totals.answerable_other_wording,
+            totals.answerable_abstained,
+            totals.unanswerable_answered,
+        );
+    }
     Ok(())
 }
 

@@ -323,56 +323,91 @@ pub fn merge_repeated_claims(extraction: &mut ClaimExtraction) {
             .iter_mut()
             .find(|kept| crate::text::fold_text(&kept.text) == key)
         {
-            Some(kept) => kept.quotes.extend(claim.quotes),
+            Some(kept) => {
+                kept.quotes.extend(claim.quotes);
+                kept.substitution = kept.substitution.take().or(claim.substitution);
+            }
             None => merged.push(claim),
         }
     }
     extraction.claims = merged;
 }
 
-/// Turn responsiveness verdicts into one decision per claim: `true` when the
-/// claim stands as an answer to `query`.
-///
-/// A rejection is accepted only if it names a term that occurs literally in
-/// the request and a different term that occurs literally in the claim. A
-/// rejection that cannot show that pair is discarded and the claim stands, so
-/// a judge that merely dislikes the wording cannot remove an answer. Returns
-/// the decisions and the number of rejections discarded.
-pub fn verify_responsiveness(
+/// Whether a claimed mismatch is shown: `request_term` occurs literally in
+/// the request, `claim_term` occurs literally in the claim (or, when given,
+/// in one of its quotes), and the two differ. Terms match on word boundaries
+/// after folding.
+fn mismatch_is_shown(
     query: &str,
-    claims: &[&str],
-    verdicts: &[oi_types::ResponsivenessVerdict],
-) -> (Vec<bool>, usize) {
-    let folded_query = format!(" {} ", crate::text::fold_text(query));
+    claim: &oi_types::ProposedClaim,
+    request_term: &str,
+    claim_term: &str,
+    search_quotes: bool,
+) -> bool {
+    let request_term = crate::text::fold_text(request_term);
+    let claim_term = crate::text::fold_text(claim_term);
+    if request_term.is_empty() || claim_term.is_empty() || request_term == claim_term {
+        return false;
+    }
+    let contains = |text: &str, term: &str| {
+        format!(" {} ", crate::text::fold_text(text)).contains(&format!(" {term} "))
+    };
+    contains(query, &request_term)
+        && (contains(&claim.text, &claim_term)
+            || (search_quotes
+                && claim
+                    .quotes
+                    .iter()
+                    .any(|quote| contains(&quote.quote, &claim_term))))
+}
+
+/// Decide, per claim, whether it stands as an answer to `query`:
+/// `Some(false)` when a mismatch with the request is shown, `Some(true)` when
+/// a judge examined it and none is shown, `None` when nobody examined it.
+///
+/// Two sources can show a mismatch. The extractor may declare that a claim
+/// reads a term of the request as a different term (`substitution`), and a
+/// responsiveness judge may reject a claim. Either one counts only if it
+/// names a term that occurs literally in the request and a different term
+/// that occurs literally in the claim; a rejection that cannot show that pair
+/// is discarded and the claim stands. Returns the decisions and the number of
+/// rejections discarded.
+pub fn responsiveness_decisions(
+    query: &str,
+    claims: &[oi_types::ProposedClaim],
+    verdicts: Option<&[oi_types::ResponsivenessVerdict]>,
+) -> (Vec<Option<bool>>, usize) {
     let mut discarded = 0;
     let decisions = claims
         .iter()
         .enumerate()
         .map(|(index, claim)| {
-            let Some(verdict) = verdicts.get(index) else {
-                return true;
-            };
-            if verdict.answers {
-                return true;
+            if let Some(substitution) = &claim.substitution {
+                if mismatch_is_shown(
+                    query,
+                    claim,
+                    &substitution.request_term,
+                    &substitution.claim_term,
+                    true,
+                ) {
+                    return Some(false);
+                }
+                discarded += 1;
             }
-            let term = |term: &Option<String>| {
-                term.as_deref()
-                    .map(crate::text::fold_text)
-                    .filter(|term| !term.is_empty())
-            };
-            let shown = match (term(&verdict.request_term), term(&verdict.claim_term)) {
+            let verdict = verdicts?.get(index)?;
+            if verdict.answers {
+                return Some(true);
+            }
+            let shown = match (&verdict.request_term, &verdict.claim_term) {
                 (Some(request_term), Some(claim_term)) => {
-                    request_term != claim_term
-                        && folded_query.contains(&format!(" {request_term} "))
-                        && format!(" {} ", crate::text::fold_text(claim))
-                            .contains(&format!(" {claim_term} "))
+                    mismatch_is_shown(query, claim, request_term, claim_term, false)
                 }
                 _ => false,
             };
             if !shown {
                 discarded += 1;
             }
-            !shown
+            Some(!shown)
         })
         .collect();
     (decisions, discarded)
@@ -391,8 +426,9 @@ pub struct ClaimJudgments<'a> {
     /// Per claim, each retained passage's stance. Without it a claim rests on
     /// its extractor quotes alone and contradiction is unknown.
     pub stance: Option<&'a [Vec<StanceJudgment>]>,
-    /// Per claim, whether it answers the request as asked.
-    pub responsive: Option<&'a [bool]>,
+    /// Per claim, whether it answers the request as asked, from
+    /// `responsiveness_decisions`. `None` for a claim nobody examined.
+    pub responsive: &'a [Option<bool>],
 }
 
 /// Assemble the answer from model proposals and judgments.
@@ -529,10 +565,7 @@ pub fn assemble_answer(
             .map(BTreeSet::len)
             .sum();
 
-        let responsive = judged
-            .responsive
-            .and_then(|verdicts| verdicts.get(index))
-            .copied();
+        let responsive = judged.responsive.get(index).copied().flatten();
         let status = if responsive == Some(false) {
             "off_request"
         } else if !contradicting_families.is_empty() {
@@ -848,6 +881,7 @@ mod tests {
                     quote: quote.to_string(),
                 })
                 .collect(),
+            substitution: None,
         }
     }
 
@@ -969,7 +1003,7 @@ mod tests {
             &extraction,
             ClaimJudgments {
                 stance: Some(&judgments),
-                responsive: Some(&[true]),
+                responsive: &[Some(true)],
             },
             &AnswerPolicy::default(),
         );
@@ -1137,7 +1171,7 @@ mod tests {
             &extraction,
             ClaimJudgments {
                 stance: Some(&judgments),
-                responsive: None,
+                responsive: &[],
             },
             &AnswerPolicy::default(),
         );
@@ -1164,13 +1198,17 @@ mod tests {
     #[test]
     fn a_rejection_stands_only_when_it_shows_the_mismatched_terms() {
         let query = "Of what form are Mersenne tests?";
-        let claims = ["Mersenne primes are prime numbers of the form 2p − 1."];
-        let shown = verify_responsiveness(
-            query,
-            &claims,
-            &[verdict(false, "Mersenne tests", "Mersenne primes")],
+        let claims = [claim(
+            "Mersenne primes are prime numbers of the form 2p − 1.",
+            &[],
+        )];
+        let decide = |v: oi_types::ResponsivenessVerdict| {
+            responsiveness_decisions(query, &claims, Some(&[v]))
+        };
+        assert_eq!(
+            decide(verdict(false, "Mersenne tests", "Mersenne primes")),
+            (vec![Some(false)], 0)
         );
-        assert_eq!(shown, (vec![false], 0));
 
         // No terms, a term absent from the request, a term absent from the
         // claim, or the same term twice: the rejection is discarded.
@@ -1180,23 +1218,72 @@ mod tests {
             verdict(false, "Mersenne tests", "Fermat primes"),
             verdict(false, "Mersenne", "mersenne"),
             verdict(false, "Mersenne tests", ""),
+            // Terms match on word boundaries: "test" is not "tests".
+            verdict(false, "test", "primes"),
         ] {
             assert_eq!(
-                verify_responsiveness(query, &claims, &[unsupported.clone()]),
-                (vec![true], 1),
+                decide(unsupported.clone()),
+                (vec![Some(true)], 1),
                 "{unsupported:?}"
             );
         }
+        assert_eq!(decide(verdict(true, "", "")), (vec![Some(true)], 0));
+        // Nobody examined the claim: the decision is unknown, not "answers".
         assert_eq!(
-            verify_responsiveness(query, &claims, &[verdict(true, "", "")]),
-            (vec![true], 0)
+            responsiveness_decisions(query, &claims, None),
+            (vec![None], 0)
         );
-        // A claim without a verdict stands.
-        assert_eq!(verify_responsiveness(query, &claims, &[]), (vec![true], 0));
-        // Terms match on word boundaries: "test" is not "tests".
         assert_eq!(
-            verify_responsiveness(query, &claims, &[verdict(false, "test", "primes")]),
-            (vec![true], 1)
+            responsiveness_decisions(query, &claims, Some(&[])),
+            (vec![None], 0)
+        );
+    }
+
+    #[test]
+    fn a_substitution_declared_by_the_extractor_sets_the_claim_aside_without_a_judge() {
+        let query = "What have Bloc's sidewalks done?";
+        let substituted = |request: &str, term: &str| {
+            let mut proposed = claim(
+                "In Warsaw, sidewalks have improved markedly.",
+                &[(
+                    "p1",
+                    "sidewalks and sanitation facilities in the capital improved",
+                )],
+            );
+            proposed.substitution = Some(oi_types::TermSubstitution {
+                request_term: request.to_string(),
+                claim_term: term.to_string(),
+            });
+            vec![proposed]
+        };
+        assert_eq!(
+            responsiveness_decisions(query, &substituted("Bloc's", "Warsaw"), None),
+            (vec![Some(false)], 0)
+        );
+        // The substituted term may sit in a quote rather than in the claim.
+        assert_eq!(
+            responsiveness_decisions(query, &substituted("Bloc's", "the capital"), None),
+            (vec![Some(false)], 0)
+        );
+        // A declared substitution that cannot be shown is discarded; with no
+        // judge the claim is then unexamined, and a judge can still accept it.
+        let unshown = substituted("Eastern Europe", "Warsaw");
+        assert_eq!(
+            responsiveness_decisions(query, &unshown, None),
+            (vec![None], 1)
+        );
+        assert_eq!(
+            responsiveness_decisions(query, &unshown, Some(&[verdict(true, "", "")])),
+            (vec![Some(true)], 1)
+        );
+        // A shown substitution outranks a judge that accepted the claim.
+        assert_eq!(
+            responsiveness_decisions(
+                query,
+                &substituted("Bloc's", "Warsaw"),
+                Some(&[verdict(true, "", "")])
+            ),
+            (vec![Some(false)], 0)
         );
     }
 
@@ -1215,7 +1302,7 @@ mod tests {
             &extraction,
             ClaimJudgments {
                 stance: None,
-                responsive: Some(&[false]),
+                responsive: &[Some(false)],
             },
             &AnswerPolicy::default(),
         );
@@ -1264,7 +1351,7 @@ mod tests {
             &extraction,
             ClaimJudgments {
                 stance: Some(&judgments),
-                responsive: Some(&[true, false]),
+                responsive: &[Some(true), Some(false)],
             },
             &AnswerPolicy::default(),
         );
@@ -1305,7 +1392,7 @@ mod tests {
             &extraction,
             ClaimJudgments {
                 stance: Some(&judgments),
-                responsive: None,
+                responsive: &[],
             },
             &AnswerPolicy::default(),
         );
@@ -1335,7 +1422,7 @@ mod tests {
             &extraction,
             ClaimJudgments {
                 stance: Some(&judgments),
-                responsive: None,
+                responsive: &[],
             },
             &AnswerPolicy::default(),
         );
@@ -1426,8 +1513,16 @@ mod tests {
                 &[("p1", "quote three")],
             ),
         ]);
+        extraction.claims[1].substitution = Some(oi_types::TermSubstitution {
+            request_term: "firm".to_string(),
+            claim_term: "company".to_string(),
+        });
         merge_repeated_claims(&mut extraction);
         assert_eq!(extraction.claims.len(), 2);
+        assert!(
+            extraction.claims[0].substitution.is_some(),
+            "a merged repeat keeps it"
+        );
         assert_eq!(
             extraction.claims[0].text,
             "Ada Example started the company."

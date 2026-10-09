@@ -17,6 +17,7 @@ pub use error::{Error, ErrorCode, Result};
 pub use evidence::{
     ClaimExtraction, ClaimExtractor, EvidencePassage, ProposedClaim, ProposedQuote, RequestKind,
     ResponsivenessJudge, ResponsivenessVerdict, StanceJudge, StanceJudgment, StanceLabel,
+    TermSubstitution,
 };
 pub use gateway::*;
 pub use reputation::*;

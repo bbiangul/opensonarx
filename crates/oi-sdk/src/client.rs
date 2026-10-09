@@ -947,22 +947,17 @@ impl OpenSonarXClient {
                                     .map_err(|error| trace.model_error = Some(error.to_string()))
                                     .ok()
                             });
-                            let responsive = responsive
-                                .and_then(|judged| {
-                                    judged
-                                        .map_err(|error| {
-                                            trace.model_error = Some(error.to_string())
-                                        })
-                                        .ok()
-                                })
-                                .map(|verdicts| {
-                                    let (decisions, discarded) =
-                                        crate::answer::verify_responsiveness(
-                                            query, &claims, &verdicts,
-                                        );
-                                    trace.unshown_rejections = discarded;
-                                    decisions
-                                });
+                            let verdicts = responsive.and_then(|judged| {
+                                judged
+                                    .map_err(|error| trace.model_error = Some(error.to_string()))
+                                    .ok()
+                            });
+                            let (responsive, discarded) = crate::answer::responsiveness_decisions(
+                                query,
+                                &extraction.claims[..claims.len()],
+                                verdicts.as_deref(),
+                            );
+                            trace.unshown_rejections = discarded;
                             trace.stance_ms = elapsed_ms(started);
                             let (answer, checklist, stats) = crate::answer::assemble_answer(
                                 &results,
@@ -970,7 +965,7 @@ impl OpenSonarXClient {
                                 &extraction,
                                 crate::answer::ClaimJudgments {
                                     stance: judgments.as_deref(),
-                                    responsive: responsive.as_deref(),
+                                    responsive: &responsive,
                                 },
                                 policy,
                             );
@@ -2147,6 +2142,8 @@ mod tests {
         calls: AtomicUsize,
         fail: bool,
         claims: usize,
+        /// Declare that the claim reads "Acme" in the request as "company".
+        substitutes: bool,
     }
 
     impl ScriptedExtractor {
@@ -2156,6 +2153,7 @@ mod tests {
                 calls: AtomicUsize::new(0),
                 fail: false,
                 claims: 1,
+                substitutes: false,
             })
         }
     }
@@ -2183,6 +2181,10 @@ mod tests {
                                 quote: self.quote.to_string(),
                             })
                             .collect(),
+                        substitution: self.substitutes.then(|| oi_types::TermSubstitution {
+                            request_term: "Acme".to_string(),
+                            claim_term: "company".to_string(),
+                        }),
                     })
                     .collect(),
                 ..Default::default()
@@ -2412,12 +2414,31 @@ mod tests {
     }
 
     #[test]
+    fn a_substitution_declared_by_the_extractor_keeps_the_claim_out_of_the_answer() {
+        let client = client_with_two_sources().with_claim_extractor(Arc::new(ScriptedExtractor {
+            quote: SPAN,
+            calls: AtomicUsize::new(0),
+            fail: false,
+            claims: 1,
+            substitutes: true,
+        }));
+        let answered = client
+            .search_answered("who started Acme", 5, &QueryFilters::default())
+            .unwrap();
+        assert_eq!(answered.answer.status, "insufficient_evidence");
+        assert_eq!(answered.answer.claims[0].status, "off_request");
+        assert_eq!(answered.trace.off_request_claims, 1);
+        assert_eq!(answered.trace.unshown_rejections, 0);
+    }
+
+    #[test]
     fn answered_search_survives_a_model_failure_and_does_not_cache_it() {
         let extractor = Arc::new(ScriptedExtractor {
             quote: SPAN,
             calls: AtomicUsize::new(0),
             fail: true,
             claims: 1,
+            substitutes: false,
         });
         let client = client_with_two_sources().with_claim_extractor(extractor.clone());
         for _ in 0..2 {
@@ -2524,6 +2545,7 @@ mod tests {
                 calls: AtomicUsize::new(0),
                 fail: false,
                 claims: 3,
+                substitutes: false,
             }))
             .with_stance_judge(judge.clone());
         let answered = client

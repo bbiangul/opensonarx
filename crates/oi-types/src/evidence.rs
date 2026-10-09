@@ -63,6 +63,17 @@ pub struct ProposedQuote {
 pub struct ProposedClaim {
     pub text: String,
     pub quotes: Vec<ProposedQuote>,
+    /// Declared by the extractor when the claim answers the request only by
+    /// reading one of its terms as a different term the passages use.
+    #[serde(default)]
+    pub substitution: Option<TermSubstitution>,
+}
+
+/// A term of the request and the different term a claim uses in its place.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TermSubstitution {
+    pub request_term: String,
+    pub claim_term: String,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]

@@ -10,7 +10,7 @@
 use oi_types::{
     ClaimExtraction, ClaimExtractor, Error, EvidencePassage, ProposedClaim, ProposedQuote,
     RequestKind, ResponsivenessJudge, ResponsivenessVerdict, Result, StanceJudge, StanceJudgment,
-    StanceLabel,
+    StanceLabel, TermSubstitution,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -106,6 +106,12 @@ quotes: for each claim, every passage that states it. `quote` is contiguous text
 character-for-character from that passage, one or two sentences, with no omissions and no rewording. \
 Quote only passages marked retained=true. A passage that denies the statement, doubts it, or reports it \
 as a rumor or allegation does not state it and must not be quoted for it.
+
+substitution: null when the claim answers the request in the request's own terms. If the claim answers \
+only by reading a term of the request as a different term that the passages use — a different name, a \
+different kind of thing, a different period, or the opposite polarity — give request_term copied exactly \
+from the request and claim_term copied exactly from your claim. A plain synonym or a more specific \
+wording is not a substitution.
 
 destination_passage_id: for a destination request, the id of the passage whose URL is the requested \
 site (a passage with retained=false is a valid destination); otherwise null.
@@ -321,9 +327,23 @@ fn extraction_schema() -> Value {
                                 "required": ["passage_id", "quote"],
                                 "additionalProperties": false
                             }
+                        },
+                        "substitution": {
+                            "anyOf": [
+                                { "type": "null" },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "request_term": { "type": "string" },
+                                        "claim_term": { "type": "string" }
+                                    },
+                                    "required": ["request_term", "claim_term"],
+                                    "additionalProperties": false
+                                }
+                            ]
                         }
                     },
-                    "required": ["text", "quotes"],
+                    "required": ["text", "quotes", "substitution"],
                     "additionalProperties": false
                 }
             },
@@ -445,6 +465,14 @@ struct RawClaim {
     text: String,
     #[serde(default)]
     quotes: Vec<RawQuote>,
+    #[serde(default)]
+    substitution: Option<RawSubstitution>,
+}
+
+#[derive(Deserialize)]
+struct RawSubstitution {
+    request_term: String,
+    claim_term: String,
 }
 
 #[derive(Deserialize)]
@@ -501,6 +529,16 @@ fn parse_extraction(value: Value) -> Result<ClaimExtraction> {
                         quote: quote.quote,
                     })
                     .collect(),
+                substitution: claim
+                    .substitution
+                    .filter(|substitution| {
+                        !substitution.request_term.trim().is_empty()
+                            && !substitution.claim_term.trim().is_empty()
+                    })
+                    .map(|substitution| TermSubstitution {
+                        request_term: substitution.request_term,
+                        claim_term: substitution.claim_term,
+                    }),
             })
             .collect(),
         destination_passage_id: raw
@@ -637,7 +675,10 @@ mod tests {
         let extraction = parse_extraction(json!({
             "request_kind": "question",
             "claims": [
-                { "text": "Ada started it.", "quotes": [{ "passage_id": " [p1] ", "quote": "started by Ada" }] },
+                { "text": "Ada started it.", "quotes": [{ "passage_id": " [p1] ", "quote": "started by Ada" }],
+                  "substitution": { "request_term": "the firm", "claim_term": "it" } },
+                { "text": "Bob joined later.", "quotes": [], "substitution": null },
+                { "text": "Cy left.", "quotes": [], "substitution": { "request_term": " ", "claim_term": "x" } },
                 { "text": "  ", "quotes": [] }
             ],
             "destination_passage_id": "",
@@ -645,8 +686,16 @@ mod tests {
         }))
         .unwrap();
         assert_eq!(extraction.request_kind, RequestKind::Question);
-        assert_eq!(extraction.claims.len(), 1);
+        assert_eq!(extraction.claims.len(), 3);
         assert_eq!(extraction.claims[0].quotes[0].passage_id, "p1");
+        let substitution = extraction.claims[0].substitution.as_ref().unwrap();
+        assert_eq!(substitution.request_term, "the firm");
+        assert_eq!(substitution.claim_term, "it");
+        assert!(extraction.claims[1].substitution.is_none());
+        assert!(
+            extraction.claims[2].substitution.is_none(),
+            "an empty term is no substitution"
+        );
         assert_eq!(extraction.destination_passage_id, None);
         assert_eq!(extraction.missing, vec!["founding year"]);
     }
