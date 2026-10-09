@@ -42,6 +42,10 @@ struct Expectation {
     /// Every string must occur in the summary or a claim (case-insensitive).
     #[serde(default)]
     answer_contains: Vec<String>,
+    /// At least one string must occur in the summary or a claim
+    /// (case-insensitive). Used when a dataset lists alternative gold answers.
+    #[serde(default)]
+    answer_contains_any: Vec<String>,
     /// No string may occur in the summary or a claim (case-insensitive).
     #[serde(default)]
     answer_excludes: Vec<String>,
@@ -210,6 +214,14 @@ fn evaluate(case: &Case, model: &OllamaChatModel, policy: &AnswerPolicy) -> Case
             failures.push(format!("answer lacks {needle:?}"));
         }
     }
+    let alternatives = &case.expect.answer_contains_any;
+    if !alternatives.is_empty()
+        && !alternatives
+            .iter()
+            .any(|needle| answer_text.contains(&needle.to_lowercase()))
+    {
+        failures.push(format!("answer has none of {alternatives:?}"));
+    }
     for needle in &case.expect.answer_excludes {
         if answer.status == "extractive" && answer_text.contains(&needle.to_lowercase()) {
             failures.push(format!("answer asserts {needle:?}"));
@@ -263,6 +275,7 @@ pub fn run(
     model: &str,
     base_url: Option<&str>,
     think: Option<&str>,
+    min_source_families: Option<usize>,
     output: &str,
 ) -> Result<(), String> {
     let raw = std::fs::read_to_string(cases_path)
@@ -286,7 +299,17 @@ pub fn run(
     }
     config.think = think.map(str::to_string);
     let chat_model = OllamaChatModel::new(config);
-    let policy = AnswerPolicy::default();
+    let mut policy = AnswerPolicy::default();
+    if let Some(families) = min_source_families {
+        // Single-document datasets cannot meet the default two-family rule;
+        // the override is recorded in the report's policy fields.
+        policy.min_source_families = families.max(1);
+        policy.policy_id = format!(
+            "{}+min_source_families={}",
+            policy.policy_id,
+            families.max(1)
+        );
+    }
 
     let mut results = Vec::with_capacity(cases.len());
     for case in &cases {
@@ -357,4 +380,47 @@ pub fn run(
         report.latency_ms_max / 1_000.0,
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn imported_squad_cases_load_as_eval_cases() {
+        let raw = r#"{"data":[{"title":"T","paragraphs":[{"context":"The bridge opened in 1932.","qas":[
+            {"id":"a","question":"When did the bridge open?","is_impossible":false,"answers":[{"text":"1932"}]},
+            {"id":"u","question":"Who built the bridge?","is_impossible":true,"answers":[]}]}]}]}"#;
+        let cases: Vec<Case> = crate::answer_eval_squad::convert(raw, 2, "v1")
+            .unwrap()
+            .iter()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect();
+        assert_eq!(cases.len(), 2);
+        let answerable = cases.iter().find(|case| case.id == "squad2:a").unwrap();
+        assert_eq!(answerable.expect.status.as_deref(), Some("extractive"));
+        assert_eq!(answerable.expect.answer_contains_any, vec!["1932"]);
+        assert_eq!(
+            answerable.documents[0].content,
+            "The bridge opened in 1932."
+        );
+        let unanswerable = cases.iter().find(|case| case.id == "squad2:u").unwrap();
+        assert_eq!(
+            unanswerable.expect.not_status.as_deref(),
+            Some("extractive")
+        );
+        assert!(unanswerable.expect.answer_contains_any.is_empty());
+    }
+
+    #[test]
+    fn the_bundled_case_file_parses() {
+        let raw = include_str!("../fixtures/answer-eval-cases-v1.jsonl");
+        let cases: Vec<Case> = raw
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect();
+        assert_eq!(cases.len(), 20);
+        assert!(cases.iter().all(|case| !case.documents.is_empty()));
+    }
 }

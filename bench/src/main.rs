@@ -8,6 +8,7 @@
 
 mod agent_cost;
 mod answer_eval;
+mod answer_eval_squad;
 mod beir;
 mod bench_quality;
 mod dataset;
@@ -281,8 +282,32 @@ enum Command {
         #[arg(long)]
         think: Option<String>,
 
+        /// Override the answer policy's distinct-source requirement (use 1
+        /// for single-document datasets such as SQuAD)
+        #[arg(long)]
+        min_source_families: Option<usize>,
+
         /// Output JSON report
         #[arg(long, default_value = "answer_eval_results.json")]
+        output: String,
+    },
+    /// Convert a SQuAD 2.0 JSON file into answer-eval cases (no model needed)
+    AnswerEvalImportSquad {
+        /// Path to a SQuAD 2.0 file, e.g. dev-v2.0.json
+        #[arg(long)]
+        input: String,
+
+        /// Number of cases, half answerable and half unanswerable
+        #[arg(long, default_value_t = 200)]
+        sample: usize,
+
+        /// Label hashed with each question id to choose the sample; a new
+        /// label yields a new, disjoint-by-chance sample
+        #[arg(long)]
+        label: String,
+
+        /// Output JSONL case file
+        #[arg(long)]
         output: String,
     },
     /// Validate OpenUncertainty cash ablation, guards, calibration, and throughput
@@ -1323,6 +1348,7 @@ async fn main() {
             model,
             base_url,
             think,
+            min_source_families,
             output,
         } => {
             if let Err(error) = answer_eval::run(
@@ -1330,9 +1356,21 @@ async fn main() {
                 &model,
                 base_url.as_deref(),
                 think.as_deref(),
+                min_source_families,
                 &output,
             ) {
                 eprintln!("answer-eval failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::AnswerEvalImportSquad {
+            input,
+            sample,
+            label,
+            output,
+        } => {
+            if let Err(error) = answer_eval_squad::run(&input, sample, &label, &output) {
+                eprintln!("answer-eval-import-squad failed: {error}");
                 std::process::exit(2);
             }
         }

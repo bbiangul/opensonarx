@@ -874,41 +874,46 @@ impl OpenSonarXClient {
                     .collect();
                 trace.passages_read = passages.len();
                 trace.retained_passages = retained.len();
-                trace.extractor_model = Some(extractor.model_version());
-
-                let started = std::time::Instant::now();
-                let extraction = extractor.extract(query, &passages);
-                trace.extraction_ms = elapsed_ms(started);
-                match extraction {
-                    Err(error) => {
-                        trace.model_error = Some(error.to_string());
-                        crate::answer::results_only(policy)
-                    }
-                    Ok(mut extraction) => {
-                        trace.proposed_claims = extraction.claims.len();
-                        crate::answer::merge_repeated_claims(&mut extraction);
-                        let started = std::time::Instant::now();
-                        let judgments = self.stance_judge.as_ref().and_then(|judge| {
-                            trace.stance_model = Some(judge.model_version());
-                            extraction
-                                .claims
-                                .iter()
-                                .take(policy.max_claims)
-                                .map(|claim| judge.judge(&claim.text, &retained))
-                                .collect::<Result<Vec<_>>>()
-                                .map_err(|error| trace.model_error = Some(error.to_string()))
-                                .ok()
-                        });
-                        trace.stance_ms = elapsed_ms(started);
-                        let (answer, checklist, stats) = crate::answer::assemble_answer(
-                            &results,
-                            &passages,
-                            &extraction,
-                            judgments.as_deref(),
-                            policy,
-                        );
-                        trace.rejected_quotes = stats.rejected_quotes;
-                        (answer, checklist)
+                if passages.is_empty() {
+                    // Nothing to read: no model is called for an empty slate.
+                    crate::answer::results_only(policy)
+                } else {
+                    trace.extractor_model = Some(extractor.model_version());
+                    let started = std::time::Instant::now();
+                    let extraction = extractor.extract(query, &passages);
+                    trace.extraction_ms = elapsed_ms(started);
+                    match extraction {
+                        Err(error) => {
+                            trace.model_error = Some(error.to_string());
+                            crate::answer::results_only(policy)
+                        }
+                        Ok(mut extraction) => {
+                            trace.proposed_claims = extraction.claims.len();
+                            crate::answer::merge_repeated_claims(&mut extraction);
+                            let started = std::time::Instant::now();
+                            let judgments = self.stance_judge.as_ref().and_then(|judge| {
+                                trace.stance_model = Some(judge.model_version());
+                                let claims: Vec<&str> = extraction
+                                    .claims
+                                    .iter()
+                                    .take(policy.max_claims)
+                                    .map(|claim| claim.text.as_str())
+                                    .collect();
+                                judge_claims(judge.as_ref(), &claims, &retained)
+                                    .map_err(|error| trace.model_error = Some(error.to_string()))
+                                    .ok()
+                            });
+                            trace.stance_ms = elapsed_ms(started);
+                            let (answer, checklist, stats) = crate::answer::assemble_answer(
+                                &results,
+                                &passages,
+                                &extraction,
+                                judgments.as_deref(),
+                                policy,
+                            );
+                            trace.rejected_quotes = stats.rejected_quotes;
+                            (answer, checklist)
+                        }
                     }
                 }
             }
@@ -1824,6 +1829,37 @@ impl Default for OpenSonarXClient {
     }
 }
 
+/// Judge every claim against the retained passages, one model call per
+/// claim, concurrently. Each call is independent, so the answer waits for the
+/// slowest call instead of the sum of all of them.
+fn judge_claims(
+    judge: &dyn StanceJudge,
+    claims: &[&str],
+    retained: &[oi_types::EvidencePassage],
+) -> Result<Vec<Vec<oi_types::StanceJudgment>>> {
+    if retained.is_empty() {
+        // No retained text can support or contradict anything.
+        return Ok(claims.iter().map(|_| Vec::new()).collect());
+    }
+    if let [claim] = claims {
+        return Ok(vec![judge.judge(claim, retained)?]);
+    }
+    std::thread::scope(|scope| {
+        let calls: Vec<_> = claims
+            .iter()
+            .map(|claim| scope.spawn(move || judge.judge(claim, retained)))
+            .collect();
+        calls
+            .into_iter()
+            .map(|call| {
+                call.join().unwrap_or_else(|_| {
+                    Err(oi_types::Error::Internal("stance judge panicked".into()))
+                })
+            })
+            .collect()
+    })
+}
+
 /// Identical requests share one answer flight and one short-lived cache
 /// entry. The key is the request itself: no rewriting, no equivalence table.
 fn answered_search_cache_key(query: &str, top_k: usize, filters: &QueryFilters) -> String {
@@ -2031,11 +2067,13 @@ mod tests {
     const SECOND_TEXT: &str = "Acme profile. Records show the company was started by Ada Example.";
     const SPAN: &str = "company was started by Ada Example";
 
-    /// Proposes one claim quoting `quote` from every retained passage.
+    /// Proposes `claims` claims, each quoting `quote` from every retained
+    /// passage.
     struct ScriptedExtractor {
         quote: &'static str,
         calls: AtomicUsize,
         fail: bool,
+        claims: usize,
     }
 
     impl ScriptedExtractor {
@@ -2044,6 +2082,7 @@ mod tests {
                 quote,
                 calls: AtomicUsize::new(0),
                 fail: false,
+                claims: 1,
             })
         }
     }
@@ -2056,17 +2095,23 @@ mod tests {
             }
             Ok(ClaimExtraction {
                 request_kind: RequestKind::Question,
-                claims: vec![ProposedClaim {
-                    text: "Ada Example started the company.".to_string(),
-                    quotes: passages
-                        .iter()
-                        .filter(|passage| passage.retained)
-                        .map(|passage| ProposedQuote {
-                            passage_id: passage.id.clone(),
-                            quote: self.quote.to_string(),
-                        })
-                        .collect(),
-                }],
+                claims: (0..self.claims)
+                    .map(|index| ProposedClaim {
+                        text: if index == 0 {
+                            "Ada Example started the company.".to_string()
+                        } else {
+                            format!("Ada Example started the company ({index}).")
+                        },
+                        quotes: passages
+                            .iter()
+                            .filter(|passage| passage.retained)
+                            .map(|passage| ProposedQuote {
+                                passage_id: passage.id.clone(),
+                                quote: self.quote.to_string(),
+                            })
+                            .collect(),
+                    })
+                    .collect(),
                 ..Default::default()
             })
         }
@@ -2243,6 +2288,7 @@ mod tests {
             quote: SPAN,
             calls: AtomicUsize::new(0),
             fail: true,
+            claims: 1,
         });
         let client = client_with_two_sources().with_claim_extractor(extractor.clone());
         for _ in 0..2 {
@@ -2289,6 +2335,97 @@ mod tests {
             .search_answered("who started Acme?", 5, &QueryFilters::default())
             .unwrap();
         assert_eq!(extractor.calls.load(Ordering::SeqCst), 2);
+    }
+
+    #[test]
+    fn answered_search_calls_no_model_when_there_is_nothing_to_read() {
+        let extractor = ScriptedExtractor::quoting(SPAN);
+        let client =
+            OpenSonarXClient::with_embedder(SdkConfig::default(), Arc::new(MockEmbedder::new(16)))
+                .with_search_engines(Vec::new())
+                .with_claim_extractor(extractor.clone());
+        let answered = client
+            .search_answered("who started Acme", 5, &QueryFilters::default())
+            .unwrap();
+        assert!(answered.results.is_empty());
+        assert_eq!(answered.answer.status, "results_only");
+        assert_eq!(answered.trace.extractor_model, None);
+        assert_eq!(extractor.calls.load(Ordering::SeqCst), 0);
+    }
+
+    /// Supports every passage and records how many calls overlapped.
+    struct OverlapJudge {
+        active: AtomicUsize,
+        peak: AtomicUsize,
+        calls: AtomicUsize,
+    }
+
+    impl StanceJudge for OverlapJudge {
+        fn judge(&self, _claim: &str, passages: &[EvidencePassage]) -> Result<Vec<StanceJudgment>> {
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            let active = self.active.fetch_add(1, Ordering::SeqCst) + 1;
+            self.peak.fetch_max(active, Ordering::SeqCst);
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            self.active.fetch_sub(1, Ordering::SeqCst);
+            Ok(passages
+                .iter()
+                .map(|passage| StanceJudgment {
+                    passage_id: passage.id.clone(),
+                    label: StanceLabel::Supports,
+                    quote: Some(SPAN.to_string()),
+                })
+                .collect())
+        }
+
+        fn model_version(&self) -> String {
+            "overlap-judge".to_string()
+        }
+    }
+
+    #[test]
+    fn stance_for_several_claims_is_judged_concurrently() {
+        let judge = Arc::new(OverlapJudge {
+            active: AtomicUsize::new(0),
+            peak: AtomicUsize::new(0),
+            calls: AtomicUsize::new(0),
+        });
+        let client = client_with_two_sources()
+            .with_claim_extractor(Arc::new(ScriptedExtractor {
+                quote: SPAN,
+                calls: AtomicUsize::new(0),
+                fail: false,
+                claims: 3,
+            }))
+            .with_stance_judge(judge.clone());
+        let answered = client
+            .search_answered("who started Acme", 5, &QueryFilters::default())
+            .unwrap();
+        assert_eq!(answered.answer.claims.len(), 3);
+        assert!(
+            answered
+                .answer
+                .claims
+                .iter()
+                .all(|claim| claim.status == "corroborated")
+        );
+        assert_eq!(judge.calls.load(Ordering::SeqCst), 3);
+        assert_eq!(judge.peak.load(Ordering::SeqCst), 3);
+    }
+
+    #[test]
+    fn no_stance_call_is_made_without_retained_text() {
+        struct NeverJudge;
+        impl StanceJudge for NeverJudge {
+            fn judge(&self, _: &str, _: &[EvidencePassage]) -> Result<Vec<StanceJudgment>> {
+                panic!("judge must not be called without retained passages")
+            }
+            fn model_version(&self) -> String {
+                "never".to_string()
+            }
+        }
+        let judged = super::judge_claims(&NeverJudge, &["a claim", "another claim"], &[]).unwrap();
+        assert_eq!(judged.len(), 2);
+        assert!(judged.iter().all(Vec::is_empty));
     }
 
     #[test]

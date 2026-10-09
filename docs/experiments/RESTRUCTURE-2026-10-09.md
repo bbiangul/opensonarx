@@ -124,14 +124,34 @@ Não decidem significado, mas são dados embutidos em código:
 - `oi-embed/corpus.rs`: 500 frases de calibração da projeção do CLIP.
 - `oi-sdk/engines/mod.rs`: parâmetros de tracking removidos de URLs.
 
+## Feito depois, sem rodar modelo
+
+- **Teste de vazamento** (`tests/integration/benchmark_leakage.rs`): falha se
+  uma query de `bench/fixtures/` com três ou mais palavras aparecer na parte
+  de produção de qualquer arquivo em `crates/`. Roda com a suíte, logo no CI.
+- **Menos espera pelo modelo:** o stance de cada afirmação é julgado em
+  paralelo, e nenhum modelo é chamado quando não há passagem para ler ou
+  texto retido para julgar. Os prompts não mudaram, então a medição do
+  `answer-eval` v2 continua descrevendo o que está no código.
+- **Dados externos:** `oi-bench answer-eval-import-squad` converte um arquivo
+  SQuAD 2.0 em casos, metade com resposta no texto e metade sem. A amostra
+  sai do hash do id com um rótulo, então ninguém escolhe perguntas olhando
+  para elas. Como cada caso tem um documento só, rodar com
+  `--min-source-families 1`. O conversor foi testado com um arquivo de
+  exemplo no formato; **o SQuAD real não foi baixado nem avaliado**.
+
+Suíte depois disso: 990 passam, 0 falham.
+
 ## Próximos passos
 
-1. Holdout selado para o caminho de resposta, com conjuntos externos.
-2. Checagem de responsividade (a afirmação responde à pergunta?) como
+1. Baixar o SQuAD 2.0 dev, gerar uma amostra com rótulo novo e rodar o
+   `answer-eval` nela sem inspecionar os casos antes. Precisa de um modelo;
+   o local deixa a máquina lenta.
+2. Decidir onde o modelo roda. Com o local, uma resposta leva 22 a 41 s.
+3. Checagem de responsividade (a afirmação responde à pergunta?) como
    julgamento próprio, em vez de depender só do prompt do extrator.
-3. Julgar stance de todas as afirmações numa chamada e medir um modelo mais
-   rápido contra o teto de 5 s.
-4. Roteador de intenção por embedding, para não chamar o modelo em consultas
-   de destino.
-5. CI: `clippy -D warnings`, `fmt --check` e um lint que falhe se uma query
-   de `bench/` aparecer em `crates/`.
+4. Julgar o stance de todas as afirmações numa chamada só. Muda o prompt,
+   então exige nova medição.
+5. Roteador de intenção por embedding, para não chamar o modelo em consultas
+   de destino. Precisa de um conjunto rotulado externo.
+6. Conjuntos para stance (XNLI-pt, FEVER) e para português.
