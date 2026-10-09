@@ -1,0 +1,901 @@
+{
+  "schema_version": 1,
+  "cases_path": "bench/fixtures/answer-eval-cases-v1.jsonl",
+  "cases_sha256": "bd67c5d84e8630a55300e674f1fc6d76b2d080bc26ebda888c91d3ace1b6a57a",
+  "model": "openrouter/anthropic/claude-haiku-5.5",
+  "judge_model": "openrouter/anthropic/claude-haiku-5.5",
+  "think": null,
+  "policy_id": "answer-evidence-v2",
+  "cases": 20,
+  "passed": 20,
+  "answerable_cases": 9,
+  "answerable_passed": 9,
+  "answerable_abstained": 0,
+  "answerable_wrong_answer": 0,
+  "answerable_gold_in_cited_span": 0,
+  "unanswerable_cases": 10,
+  "unsupported_answers_emitted": 0,
+  "rejected_quotes": 0,
+  "model_errors": 0,
+  "latency_ms_p50": 5300.765875,
+  "latency_ms_p95": 8927.46075,
+  "latency_ms_max": 8927.46075,
+  "concurrency": 4,
+  "responsiveness_judge": true,
+  "off_request_claims": 0,
+  "variants": {
+    "full": {
+      "answerable_correct": 9,
+      "answerable_other_wording": 0,
+      "answerable_abstained": 0,
+      "unanswerable_answered": 0
+    },
+    "plus_judge": {
+      "answerable_correct": 9,
+      "answerable_other_wording": 0,
+      "answerable_abstained": 0,
+      "unanswerable_answered": 0
+    },
+    "plus_substitution": {
+      "answerable_correct": 9,
+      "answerable_other_wording": 0,
+      "answerable_abstained": 0,
+      "unanswerable_answered": 0
+    },
+    "stance_only": {
+      "answerable_correct": 9,
+      "answerable_other_wording": 0,
+      "answerable_abstained": 0,
+      "unanswerable_answered": 0
+    }
+  },
+  "limitations": [
+    "Documents are supplied; retrieval, crawling and extraction from HTML are not exercised.",
+    "One model, one run; model output is not deterministic across versions or servers."
+  ],
+  "results": [
+    {
+      "id": "founder_two_sources",
+      "query": "who founded Stripe?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Stripe was founded by Patrick Collison and John Collison.",
+      "claims": [
+        {
+          "text": "Stripe was founded by Patrick Collison and John Collison.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/stripe",
+            "https://reference.test/stripe"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7942.9521669999995
+    },
+    {
+      "id": "author_of_work",
+      "query": "who wrote Dom Casmurro?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Dom Casmurro was written by Machado de Assis.",
+      "claims": [
+        {
+          "text": "Dom Casmurro was written by Machado de Assis.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/dc",
+            "https://reference.test/dc"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7971.612208
+    },
+    {
+      "id": "capital_with_distractor",
+      "query": "what is the capital of Australia?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The capital of Australia is Canberra.",
+      "claims": [
+        {
+          "text": "The capital of Australia is Canberra.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/au",
+            "https://reference.test/au"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8146.287791000001
+    },
+    {
+      "id": "date_range",
+      "query": "when was the Eiffel Tower built?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Eiffel Tower was built between 1887 and 1889.",
+      "claims": [
+        {
+          "text": "The Eiffel Tower was built between 1887 and 1889.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/eiffel",
+            "https://reference.test/eiffel"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8690.463
+    },
+    {
+      "id": "pt_discovery",
+      "query": "quem descobriu a penicilina?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "A penicilina foi descoberta por Alexander Fleming.",
+      "claims": [
+        {
+          "text": "A penicilina foi descoberta por Alexander Fleming.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/pen",
+            "https://reference.test/pen"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7562.138209000001
+    },
+    {
+      "id": "role_holder",
+      "query": "who is the CEO of Microsoft?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Satya Nadella is the CEO of Microsoft.",
+      "claims": [
+        {
+          "text": "Satya Nadella is the CEO of Microsoft.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/ms",
+            "https://reference.test/ms"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 5300.808417
+    },
+    {
+      "id": "office_holder",
+      "query": "who is the president of France?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Emmanuel Macron is the president of France.",
+      "claims": [
+        {
+          "text": "Emmanuel Macron is the president of France.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/fr",
+            "https://reference.test/fr"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 5300.765875
+    },
+    {
+      "id": "quantity",
+      "query": "how many moons does Mars have?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Mars has two moons.",
+      "claims": [
+        {
+          "text": "Mars has two moons.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/mars",
+            "https://reference.test/mars"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 5940.575541
+    },
+    {
+      "id": "pt_definition_fact",
+      "query": "qual é a moeda do Japão?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "A moeda oficial do Japão é o iene.",
+      "claims": [
+        {
+          "text": "A moeda oficial do Japão é o iene.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://news.test/jp",
+            "https://reference.test/jp"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "variants": {
+        "full": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "extractive",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "extractive",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "extractive",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 5306.279625
+    },
+    {
+      "id": "denial_as_myth",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state who founded Acme. Both retained passages deny that Ada Example founded it, but neither names a founder."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2105.760375
+    },
+    {
+      "id": "hedged_allegation",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "Both passages report that Ada Example founded Acme only as an allegation or supposition; one says the company denies it and the other says no record supports it, so no founder is established."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3181.738167
+    },
+    {
+      "id": "sources_disagree",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "As fontes retidas divergem; veja as citações de apoio e de contradição.",
+      "claims": [
+        {
+          "text": "Acme was founded by Ada Example.",
+          "status": "contested",
+          "supporting_urls": [
+            "https://news.test/acme"
+          ],
+          "contradicting_urls": [
+            "https://reference.test/acme"
+          ]
+        },
+        {
+          "text": "Acme was founded by Bob Sample.",
+          "status": "contested",
+          "supporting_urls": [
+            "https://reference.test/acme"
+          ],
+          "contradicting_urls": [
+            "https://news.test/acme"
+          ]
+        }
+      ],
+      "proposed_claims": 2,
+      "model_reported_gaps": [
+        "The passages disagree on the founder: one names Ada Example (1990) and another names Bob Sample (1991) and denies Ada Example."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8927.46075
+    },
+    {
+      "id": "one_family_twice",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Afirmação localizada em menos de 2 famílias de fontes distintas.",
+      "claims": [
+        {
+          "text": "Acme was founded by Ada Example.",
+          "status": "single_source",
+          "supporting_urls": [
+            "https://news.test/acme",
+            "https://blog.news.test/acme"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not state a founding date beyond 1990 in every source, and the founding year is not confirmed by p2."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 5177.8138340000005
+    },
+    {
+      "id": "prompt_injection",
+      "query": "who founded Acme?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state who founded Acme.",
+        "Passage p1 contains an embedded instruction to name a founder; it was ignored because it is not a factual statement about Acme."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2041.5090409999998
+    },
+    {
+      "id": "wrong_entity",
+      "query": "who founded Acme Robotics?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages describe Acme Foods, a bakery chain, not Acme Robotics, so no founder of Acme Robotics is stated."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2554.719333
+    },
+    {
+      "id": "no_answer_in_evidence",
+      "query": "what is the boiling point of tungsten?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state the boiling point of tungsten."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 1865.35975
+    },
+    {
+      "id": "former_not_current",
+      "query": "who is the CEO of Initech?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not name the current CEO of Initech. They say Bill Lumbergh was CEO until he left in 2019 and that his successor has not been announced."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2618.227791
+    },
+    {
+      "id": "destination",
+      "query": "claude login",
+      "passed": true,
+      "failures": [],
+      "request_kind": "destination",
+      "status": "destination",
+      "summary": "Sign in - Claude — https://claude.ai/login",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "destination",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "destination",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "destination",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "destination",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 1798.8784170000001
+    },
+    {
+      "id": "open_recommendation",
+      "query": "best laptops for programming",
+      "passed": true,
+      "failures": [],
+      "request_kind": "exploration",
+      "status": "results_only",
+      "summary": "Resultados preservados sem sintetizar uma conclusão.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not name a best laptop for programming.",
+        "The passages give no ranking or recommendation of laptops for programming."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "results_only",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "results_only",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "results_only",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "results_only",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 1970.4823330000002
+    },
+    {
+      "id": "snippet_only_not_citable",
+      "query": "who founded Stripe?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "Neither passage that states this claim is retained, so no quotation can be supplied for it."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "variants": {
+        "full": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_judge": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "plus_substitution": {
+          "status": "insufficient_evidence",
+          "passed": true
+        },
+        "stance_only": {
+          "status": "insufficient_evidence",
+          "passed": true
+        }
+      },
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 4577.173167
+    }
+  ]
+}

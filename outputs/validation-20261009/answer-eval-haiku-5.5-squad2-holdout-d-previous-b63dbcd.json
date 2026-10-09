@@ -1,0 +1,4927 @@
+{
+  "schema_version": 1,
+  "cases_path": "bench/datasets/squad2/holdout-d.jsonl",
+  "cases_sha256": "a98656e6738582c3b488da62023218b4c23287ad06b72fb1baab4814f39d21af",
+  "model": "openrouter/anthropic/claude-haiku-5.5",
+  "judge_model": "openrouter/anthropic/claude-haiku-5.5",
+  "think": null,
+  "policy_id": "answer-evidence-v2+min_source_families=1",
+  "cases": 200,
+  "passed": 177,
+  "answerable_cases": 100,
+  "answerable_passed": 92,
+  "answerable_abstained": 4,
+  "answerable_wrong_answer": 4,
+  "answerable_gold_in_cited_span": 95,
+  "unanswerable_cases": 100,
+  "unsupported_answers_emitted": 15,
+  "rejected_quotes": 2,
+  "model_errors": 0,
+  "latency_ms_p50": 6354.976,
+  "latency_ms_p95": 9558.011667,
+  "latency_ms_max": 14234.1525,
+  "concurrency": 6,
+  "responsiveness_judge": true,
+  "off_request_claims": 10,
+  "limitations": [
+    "Documents are supplied; retrieval, crawling and extraction from HTML are not exercised.",
+    "One model, one run; model output is not deterministic across versions or servers."
+  ],
+  "results": [
+    {
+      "id": "squad2:56e16839cd28a01900c67889",
+      "query": "What are two basic primary resources used to guage complexity?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Time and storage are two basic resources used to measure computational complexity.",
+      "claims": [
+        {
+          "text": "Time and storage are two basic resources used to measure computational complexity.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Computational_complexity_theory/1"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6528.820875
+    },
+    {
+      "id": "squad2:5ad26a5fd7d075001a429318",
+      "query": "Pulling on an object on a frictional surface can result in what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages describe pushing on an object on a frictional surface, not pulling on one, so they do not state what pulling produces."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2712.07025
+    },
+    {
+      "id": "squad2:5706111a52bb89140068984d",
+      "query": "How many lines does the commuter rail system have?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The commuter rail system, Metrolink, has seven lines.",
+      "claims": [
+        {
+          "text": "The commuter rail system, Metrolink, has seven lines.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Southern_California/32"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7080.384417
+    },
+    {
+      "id": "squad2:5728667eff5b5019007da1ff",
+      "query": "Roughly how much is the Student Government's budget?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The University of Chicago Student Government's annual budget is greater than $2 million.",
+      "claims": [
+        {
+          "text": "The University of Chicago Student Government's annual budget is greater than $2 million.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/University_of_Chicago/24"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage gives only a lower bound and no exact figure.",
+        "The passage does not state the year or fiscal period the budget applies to."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6886.655541
+    },
+    {
+      "id": "squad2:5726449f1125e71900ae1929",
+      "query": "What event happened 66 million years ago?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Cretaceous–Paleogene extinction event happened 66 million years ago.",
+      "claims": [
+        {
+          "text": "The Cretaceous–Paleogene extinction event happened 66 million years ago.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Ctenophora/4"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages mention the Cretaceous–Paleogene extinction event only in passing, in a discussion of ctenophore evolution, and do not describe the event itself."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7745.448041
+    },
+    {
+      "id": "squad2:5726378238643c19005ad315",
+      "query": "What was suggested at the Symposium in 1967",
+      "passed": false,
+      "failures": [
+        "answer has none of [\"suggested it for use in the ARPANET\", \"use in the ARPANET\"]"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "At the 1967 ACM Symposium on Operating System Principles, Roger Scantlebury suggested using packet switching for the ARPANET.",
+      "claims": [
+        {
+          "text": "At the 1967 ACM Symposium on Operating System Principles, Roger Scantlebury suggested using packet switching for the ARPANET.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Packet_switching/4"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 9027.977832999999
+    },
+    {
+      "id": "squad2:5729727baf94a219006aa439",
+      "query": "Besides the analytic property of numbers, what other property of numbers does number theory focus on?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Besides analytic aspects, number theory also focuses on the algebraic aspects of numbers.",
+      "claims": [
+        {
+          "text": "Besides analytic aspects, number theory also focuses on the algebraic aspects of numbers.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Prime_number/3"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6912.089083
+    },
+    {
+      "id": "squad2:572a13841d0469140077973b",
+      "query": "What have studies on income inequality sometimes found evidence confirming?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Studies on income inequality have sometimes found evidence confirming the Kuznets curve hypothesis, which states that with economic development, inequality first increases, then decreases.",
+      "claims": [
+        {
+          "text": "Studies on income inequality have sometimes found evidence confirming the Kuznets curve hypothesis, which states that with economic development, inequality first increases, then decreases.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/33"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not identify the specific studies or how many found this evidence."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6578.955167
+    },
+    {
+      "id": "squad2:572860e03acd2414000df977",
+      "query": "What non-Chinese empire did the Yuan dynasty succeed?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Yuan dynasty is considered a successor to the Mongol Empire, a non-Chinese empire.",
+      "claims": [
+        {
+          "text": "The Yuan dynasty is considered a successor to the Mongol Empire, a non-Chinese empire.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Yuan_dynasty/1"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage describes the Yuan dynasty as a khanate ruled by successors of Möngke Khan after the Mongol Empire divided, but does not state directly which empire it succeeded in the sense the request asks."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7628.403292
+    },
+    {
+      "id": "squad2:5ad4acbd5b96ef001a109d7a",
+      "query": "What fluids are enzymes not found in?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state which fluids lack enzymes. They list enzymes (lysozyme, phospholipase A2) in saliva, tears, and breast milk, and describe semen as containing defensins and zinc, but never say enzymes are absent from any fluid."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3243.396916
+    },
+    {
+      "id": "squad2:5ad22b87d7d075001a428601",
+      "query": "What highly combustible materials corrode?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage describes corroding substances such as iron as non-combustible, and does not state that any highly combustible material corrodes."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2716.775333
+    },
+    {
+      "id": "squad2:5727fd123acd2414000df185",
+      "query": "What is the income inequality gap between genders in Botswana?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The income gap between genders in Botswana is 53%.",
+      "claims": [
+        {
+          "text": "The income gap between genders in Botswana is 53%.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/14"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not state the year or time frame of the 53% figure.",
+        "The passage does not specify which gender the 53% gap favors or how the gap was measured."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7516.593207999999
+    },
+    {
+      "id": "squad2:57274ca8dd62a815002e9aa7",
+      "query": "What is the purpose of the ASER?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Annual Status of Education Report (ASER) evaluates learning levels in rural India.",
+      "claims": [
+        {
+          "text": "The Annual Status of Education Report (ASER) evaluates learning levels in rural India.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Private_school/10"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not state the report's intended purpose or goals beyond evaluating learning levels in rural India."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7716.220875
+    },
+    {
+      "id": "squad2:5705e3f252bb89140068966c",
+      "query": "How many inhabitants does the Los Angeles area contain?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Los Angeles area contains over 12 million inhabitants.",
+      "claims": [
+        {
+          "text": "The Los Angeles area contains over 12 million inhabitants.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Southern_California/2"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages give only a lower bound ('over 12 million') and no exact figure for the Los Angeles area.",
+        "The passages also give a larger figure of over 17.5 million for the Greater Los Angeles Area, a five-county combined area that is a different entity and is not included in the claim."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7244.6915
+    },
+    {
+      "id": "squad2:5a6681d1f038b7001ab0bf02",
+      "query": "What action did Brownlee take against GCSB Waihopai that caused them to close temporarily?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say Brownlee took any action against GCSB Waihopai. Brownlee is quoted only on civil disobedience in general. The passage attributes the temporary closure to the Plowshares organization, which padlocked the gates and used sickles to deflate one of the domes covering two satellite dishes."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3207.144166
+    },
+    {
+      "id": "squad2:5729e02f1d0469140077963b",
+      "query": "What can result in more equal distribution of income?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Steeper tax progressivity applied to social spending can result in a more equal distribution of income.",
+      "claims": [
+        {
+          "text": "Steeper tax progressivity applied to social spending can result in a more equal distribution of income.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/7"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6372.692709
+    },
+    {
+      "id": "squad2:5727c69d3acd2414000dec15",
+      "query": "What was the trend of female student population from 1970s and deyond?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "After the 1977 merger of Harvard and Radcliffe admissions, the proportion of female undergraduates at Harvard steadily increased.",
+      "claims": [
+        {
+          "text": "After the 1977 merger of Harvard and Radcliffe admissions, the proportion of female undergraduates at Harvard steadily increased.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Harvard_University/9"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages give no figures or percentages for the female student share over time.",
+        "The passages cover only Harvard; they do not give data for other institutions or the wider US trend beyond a brief mention.",
+        "The passages do not describe the female student trend during the 1970s before the merger or in the decades after it in detail."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8387.51625
+    },
+    {
+      "id": "squad2:5ad283bcd7d075001a42985c",
+      "query": "What takes no energy to pack them together?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage does not identify anything that takes no energy to pack together; it only states that packing electrons densely together requires energy."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3800.013708
+    },
+    {
+      "id": "squad2:572810ec2ca10214002d9d06",
+      "query": "After what event did the Spanish concede Florida to Britain?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Spain conceded Florida to Britain in 1763, after the French and Indian War.",
+      "claims": [
+        {
+          "text": "Spain conceded Florida to Britain in 1763, after the French and Indian War.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Jacksonville,_Florida/5"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6689.6325
+    },
+    {
+      "id": "squad2:571ccd9b5efbb31900334df9",
+      "query": "What percentage of oxygen will a zeolite sieve produce?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "A zeolite molecular sieve produces an oxygen gas stream that is 90% to 93% O2.",
+      "claims": [
+        {
+          "text": "A zeolite molecular sieve produces an oxygen gas stream that is 90% to 93% O2.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Oxygen/30"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8710.850959
+    },
+    {
+      "id": "squad2:572ffe6fb2c2fd14005686f2",
+      "query": "The Muslim Brotherhood's competence compares well against what type of local governments?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Muslim Brotherhood's competence compares very favourably against incompetent, inefficient, or neglectful governments whose commitment to social justice is limited to rhetoric.",
+      "claims": [
+        {
+          "text": "The Muslim Brotherhood's competence compares very favourably against incompetent, inefficient, or neglectful governments whose commitment to social justice is limited to rhetoric.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Islamism/8"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not specify that these governments are local governments; it refers only to governments in general."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8052.486999999999
+    },
+    {
+      "id": "squad2:5a67978ef038b7001ab0c30a",
+      "query": "What kind of tuition is charged if you enroll in a Sonderungsverbot?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Most Ersatzschulen, which are bound by the Sonderungsverbot against segregating pupils by their parents' means, charge very low tuition fees and/or offer scholarships.",
+      "claims": [
+        {
+          "text": "Most Ersatzschulen, which are bound by the Sonderungsverbot against segregating pupils by their parents' means, charge very low tuition fees and/or offer scholarships.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Private_school/7"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not give specific tuition amounts.",
+        "The passage does not say that every school under the Sonderungsverbot charges low tuition; it says most Ersatzschulen do.",
+        "The passage does not describe a 'Sonderungsverbot' as a school one can enroll in; it is a constitutional prohibition in Article 7, Paragraph 4 of the Grundgesetz."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8541.760957999999
+    },
+    {
+      "id": "squad2:571cd88ddd7acb1400e4c18d",
+      "query": "What event would necessitate airline passengers to need a supplemental supply of oxygen?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "A sudden loss of cabin pressure (cabin depressurization) would necessitate supplemental oxygen for airline passengers.",
+      "claims": [
+        {
+          "text": "A sudden loss of cabin pressure (cabin depressurization) would necessitate supplemental oxygen for airline passengers.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Oxygen/36"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": false,
+      "model_error": null,
+      "latency_ms": 7661.0637910000005
+    },
+    {
+      "id": "squad2:5a25ade0ef59cd001a623c47",
+      "query": "What does  a list of top 250 transportation markets published show?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No passage describes a top 250 transportation markets list. The only Top-250 list mentioned ranks the largest global design and construction firms by work outside their home country, and it is not specific to transportation markets."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3141.053167
+    },
+    {
+      "id": "squad2:57113639a58dae1900cd6d1c",
+      "query": "What class of ships is an example of large passenger liners?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Olympic class is an example of a class of ships that are large passenger liners.",
+      "claims": [
+        {
+          "text": "The Olympic class is an example of a class of ships that are large passenger liners.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Steam_engine/4"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6820.787709
+    },
+    {
+      "id": "squad2:57373f80c3c5551400e51e91",
+      "query": "What did objects in forced motion contain according to the late Medieval idea that influence Aristotle?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "According to the late Medieval idea, objects in forced motion contained an innate force called impetus.",
+      "claims": [
+        {
+          "text": "According to the late Medieval idea, objects in forced motion contained an innate force called impetus.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Force/3"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage says the late Medieval idea influenced Galileo, not Aristotle as the request states."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7953.397334
+    },
+    {
+      "id": "squad2:5ad2442bd7d075001a428a3f",
+      "query": "What impact does higher worker productivity and leveled pay have on lower earners?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "In Marxian analysis, higher worker productivity from mechanization and automation results in relatively stagnant wages for the working class.",
+      "claims": [
+        {
+          "text": "In Marxian analysis, higher worker productivity from mechanization and automation results in relatively stagnant wages for the working class.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/3"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not address leveled or equalized pay.",
+        "The passages do not discuss the effects on lower earners specifically, only on the working class in general."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 10577.099209
+    },
+    {
+      "id": "squad2:5a665142846392001a1e1ac0",
+      "query": "What did the government want Thoreau to do?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state what the government wanted Thoreau to do. They mention his refusal to pay and a taxman's question about handling it, but not the government's demand."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3023.753708
+    },
+    {
+      "id": "squad2:57294279af94a219006aa209",
+      "query": "What range of years was the current warming compared to?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The current warming was compared to temperatures between 1000 and 1900.",
+      "claims": [
+        {
+          "text": "The current warming was compared to temperatures between 1000 and 1900.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Intergovernmental_Panel_on_Climate_Change/14"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not name the specific studies or give the individual years within that range."
+      ],
+      "rejected_quotes": 1,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8152.835417
+    },
+    {
+      "id": "squad2:572632ceec44d21400f3dc2f",
+      "query": "What did Paul Baran develop in the late 1950's",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Paul Baran developed the concept Distributed Adaptive Message Block Switching in the late 1950s.",
+      "claims": [
+        {
+          "text": "Paul Baran developed the concept Distributed Adaptive Message Block Switching in the late 1950s.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Packet_switching/0"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5764.463833
+    },
+    {
+      "id": "squad2:571155ae2419e31400955595",
+      "query": "What is William Rankine's nationality?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "William Rankine's nationality is Scottish.",
+      "claims": [
+        {
+          "text": "William Rankine's nationality is Scottish.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Steam_engine/23"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6386.527333
+    },
+    {
+      "id": "squad2:5727ed2e3acd2414000df002",
+      "query": "When there are many workers competing for a few jobs its considered as what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Many workers competing for a few jobs is described as high supply combined with low demand, which results in low wages.",
+      "claims": [
+        {
+          "text": "Many workers competing for a few jobs is described as high supply combined with low demand, which results in low wages.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/5"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage describes this situation as high supply and low demand but does not give it a single named term."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7815.089625
+    },
+    {
+      "id": "squad2:5706074552bb8914006897d8",
+      "query": "What is the population of the Greater Los Angeles Area?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The population of the Greater Los Angeles Area is 17,786,419.",
+      "claims": [
+        {
+          "text": "The population of the Greater Los Angeles Area is 17,786,419.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Southern_California/22"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not state the year or date of the population figure."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6409.312208
+    },
+    {
+      "id": "squad2:5ad419f8604f3c001a40049c",
+      "query": "What is the approximate turbine entry temperature of a pump turbine?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No passage gives the turbine entry temperature of a pump turbine. The only temperature figure, about 1500 °C, is for gas turbines, which is a different machine."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2519.400375
+    },
+    {
+      "id": "squad2:5711607f2419e314009555cd",
+      "query": "What is the power-to-weight ratio of a steam plant compared to that of an internal combustion engine?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The power-to-weight ratio of a steam plant is generally lower than that of an internal combustion engine, because the weight of boilers and condensers reduces it.",
+      "claims": [
+        {
+          "text": "The power-to-weight ratio of a steam plant is generally lower than that of an internal combustion engine, because the weight of boilers and condensers reduces it.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Steam_engine/35"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages give no numerical power-to-weight values for either steam plants or internal combustion engines."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6534.241625
+    },
+    {
+      "id": "squad2:5ad02f4977cf76001a686d74",
+      "query": "The first item of business in the House of Lords is usually what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No retained passage describes the first item of business in the House of Lords. The only passage covers the Scottish Parliament and mentions the House of Commons, which is a different chamber."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2303.30425
+    },
+    {
+      "id": "squad2:572650325951b619008f6faa",
+      "query": "There is criticism that the energy policies are expensive quick fixes that ignore which facts?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Critics say the energy policies ignore market and technology realities.",
+      "claims": [
+        {
+          "text": "Critics say the energy policies ignore market and technology realities.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/1973_oil_crisis/14"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7130.1305409999995
+    },
+    {
+      "id": "squad2:57299a6f6aef05140015501a",
+      "query": "What is an additional meaning intended when the word prime is used?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The additional meaning intended when the word prime is used is that any object can be, essentially uniquely, decomposed into its prime components.",
+      "claims": [
+        {
+          "text": "The additional meaning intended when the word prime is used is that any object can be, essentially uniquely, decomposed into its prime components.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Prime_number/24"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5919.5265
+    },
+    {
+      "id": "squad2:5a0c6c78f5590b0018dab404",
+      "query": "What has been easily proven about the rain forest",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Rainfall in the Amazon basin during the Last Glacial Maximum was lower than it is at present.",
+      "claims": [
+        {
+          "text": "Rainfall in the Amazon basin during the Last Glacial Maximum was lower than it is at present.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Amazon_rainforest/3"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "No passage describes anything as easily proven about the rainforest; the passage says the extent of rainforest reduction during the Last Glacial Maximum is debated and difficult to resolve.",
+        "Only one topic, the Last Glacial Maximum, is covered; no other aspects of the rainforest are addressed."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 9590.482375000001
+    },
+    {
+      "id": "squad2:57264e455951b619008f6f68",
+      "query": "Who appoints the board of the European Central Bank?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The board of the European Central Bank is appointed by the European Council, on the Council's recommendation.",
+      "claims": [
+        {
+          "text": "The board of the European Central Bank is appointed by the European Council, on the Council's recommendation.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/European_Union_law/7"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6482.889
+    },
+    {
+      "id": "squad2:5ad2852ad7d075001a429895",
+      "query": "What branches off away from Dordrecht?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "The Oude Maas branches off near Dordrecht.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/Rhine/16"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not say whether any other waterway branches off near Dordrecht."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8015.4809589999995
+    },
+    {
+      "id": "squad2:5ad21f6fd7d075001a4284a6",
+      "query": "Who built on Philo of Pneumatica's work?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "Leonardo da Vinci built on Philo of Byzantium's work in Pneumatica by observing that a portion of air is consumed during combustion and respiration.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/Oxygen/4"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages name no one other than Leonardo da Vinci as building on Philo's work."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 9267.037583000001
+    },
+    {
+      "id": "squad2:57284b904b864d19001648e3",
+      "query": "How many quadrangles does the Main Quadrangles have?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Main Quadrangles of the University of Chicago consist of six quadrangles, each surrounded by buildings, bordering one larger quadrangle.",
+      "claims": [
+        {
+          "text": "The Main Quadrangles of the University of Chicago consist of six quadrangles, each surrounded by buildings, bordering one larger quadrangle.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/University_of_Chicago/9"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5904.5815
+    },
+    {
+      "id": "squad2:5730a951069b531400832216",
+      "query": "The French thought bringing what would uplift other regions?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The French thought bringing Christianity and French culture would uplift other regions.",
+      "claims": [
+        {
+          "text": "The French thought bringing Christianity and French culture would uplift other regions.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Imperialism/24"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6293.847624999999
+    },
+    {
+      "id": "squad2:5729d36b1d0469140077960b",
+      "query": "Why are there more poor people in the United States and Europe than China?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Oxfam's report, which uses net wealth (assets minus debts), finds more poor people in the United States and Western Europe than in China, attributed to a greater tendency to take on debts.",
+      "claims": [
+        {
+          "text": "Oxfam's report, which uses net wealth (assets minus debts), finds more poor people in the United States and Western Europe than in China, attributed to a greater tendency to take on debts.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/0"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages attribute the finding to an Oxfam report using a net-wealth methodology and do not independently establish poverty counts for the United States, Europe, or China.",
+        "The passages say this methodology has been questioned, and they do not give an independent explanation of the poverty gap beyond debt.",
+        "The passages do not define 'poor' or give the specific poverty figures for each region."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 11094.220167
+    },
+    {
+      "id": "squad2:5a55106f134fea001a0e18ae",
+      "query": "Apple Inc created what in 1985?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Apple Inc created AppleTalk, a proprietary suite of networking protocols, in 1985.",
+      "claims": [
+        {
+          "text": "Apple Inc created AppleTalk, a proprietary suite of networking protocols, in 1985.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Packet_switching/9"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 5835.344291
+    },
+    {
+      "id": "squad2:5ad40280604f3c001a3ffd57",
+      "query": "Who left Messina in the 11th century?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage reports that Richard the Lion-hearted left Messina in April 1191, which is in the 12th century, not the 11th century requested. No passage gives an 11th-century departure from Messina."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2432.180125
+    },
+    {
+      "id": "squad2:572751b4708984140094dc1d",
+      "query": "What does the time element in construction mean?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The time element in construction means that a delay costs money, and in cases of bottlenecks, a delay can be extremely expensive.",
+      "claims": [
+        {
+          "text": "The time element in construction means that a delay costs money, and in cases of bottlenecks, a delay can be extremely expensive.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Construction/14"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5976.123375
+    },
+    {
+      "id": "squad2:5ad2424cd7d075001a42898c",
+      "query": "What religion was Janet Gray?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state Janet Gray's religion. The only mention of her (passage p1) describes her as a supporter of the 'Hugues hypothesis' about the origin of the word 'huguenote'."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2181.841666
+    },
+    {
+      "id": "squad2:572fcd86947a6a140053ccdd",
+      "query": "Who may also submit private bills to Parliament?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "An outside proposer may also submit private bills to Parliament.",
+      "claims": [
+        {
+          "text": "An outside proposer may also submit private bills to Parliament.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Scottish_Parliament/25"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6380.265125
+    },
+    {
+      "id": "squad2:5727d6154b864d1900163e38",
+      "query": "What percentage of total financial aid for undergraduates from Harvard was in the form of grants?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Grants made up 88% of Harvard's financial aid for undergraduate students.",
+      "claims": [
+        {
+          "text": "Grants made up 88% of Harvard's financial aid for undergraduate students.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Harvard_University/19"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not state the year or time period to which the 88% figure applies."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 14234.1525
+    },
+    {
+      "id": "squad2:5a6057f0eae51e001ab14d1e",
+      "query": "Do certain packets take priority over others if sent at the exact same time?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say how packets sent at the exact same time are prioritized. They state that packets are normally forwarded first-in, first-out, and that other scheduling disciplines (such as weighted fair queuing or leaky bucket) may be used for differentiated or guaranteed quality of service, but none addresses simultaneous sends."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3246.0021659999998
+    },
+    {
+      "id": "squad2:5a57f0ea770dc0001aeefee2",
+      "query": "Where can sedimentary rock not be found at the same time?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage does not say where sedimentary rock cannot be found at the same time. It discusses fossil presence over time and lateral facies change in sedimentary strata, but does not answer the question as asked."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2420.726917
+    },
+    {
+      "id": "squad2:57293c246aef051400154bba",
+      "query": "What kind of people attend the IPCC meetings?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Most people attending IPCC meetings are government representatives or officials from governmental organizations. Non-governmental and intergovernmental organizations may attend IPCC meetings as observers. Attendance at the 2003 IPCC meeting included government officials and climate change experts.",
+      "claims": [
+        {
+          "text": "Most people attending IPCC meetings are government representatives or officials from governmental organizations.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Intergovernmental_Panel_on_Climate_Change/2"
+          ],
+          "contradicting_urls": []
+        },
+        {
+          "text": "Non-governmental and intergovernmental organizations may attend IPCC meetings as observers.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Intergovernmental_Panel_on_Climate_Change/2"
+          ],
+          "contradicting_urls": []
+        },
+        {
+          "text": "Attendance at the 2003 IPCC meeting included government officials and climate change experts.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Intergovernmental_Panel_on_Climate_Change/2"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 4,
+      "model_reported_gaps": [
+        "The passages do not give a complete list of attendee types for all IPCC meetings.",
+        "The passages give two different attendance totals for the 2003 meeting (350 and 322), and do not reconcile them."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 13666.95625
+    },
+    {
+      "id": "squad2:571163172419e314009555ea",
+      "query": "Who confirmed Watt's discovery of latent heat?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Watt's discovery of latent heat was confirmed by Joseph Black.",
+      "claims": [
+        {
+          "text": "Watt's discovery of latent heat was confirmed by Joseph Black.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Steam_engine/40"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6128.649667000001
+    },
+    {
+      "id": "squad2:572fb42904bcaa1900d76c17",
+      "query": "What type of ballot is used to elect the Presiding Officer and deputies of the Parliament?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Presiding Officer and deputies of the Scottish Parliament are elected by a secret ballot.",
+      "claims": [
+        {
+          "text": "The Presiding Officer and deputies of the Scottish Parliament are elected by a secret ballot.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Scottish_Parliament/8"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7239.878833
+    },
+    {
+      "id": "squad2:5a38d4b9a4b263001a8c1948",
+      "query": "In 1979, what was the average mpg for American cars?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages give no average mpg figure for American cars in 1979; they report 13.5 mpg in 1970 and 17.4 mpg in 1985 only."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2081.675542
+    },
+    {
+      "id": "squad2:5ad3a3fc604f3c001a3fea77",
+      "query": "In between French and British, what groups never controlled land?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say which groups never controlled land. They state that the Delaware, Shawnee, and Mingo were formally under Iroquois rule and limited in their authority to make agreements, but they do not say whether those groups ever controlled land.",
+        "The passages do not address whether any groups beyond the Mi'kmaq, Abenaki, Iroquois Confederation, Delaware, Shawnee, and Mingo were present between the French and British."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3834.140708
+    },
+    {
+      "id": "squad2:5725daa8ec44d21400f3d6b5",
+      "query": "Which artist has a piece of his artwork located at the Fulton Mall?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The artist Pierre-Auguste Renoir has a piece of artwork located at the Fulton Mall in Fresno.",
+      "claims": [
+        {
+          "text": "The artist Pierre-Auguste Renoir has a piece of artwork located at the Fulton Mall in Fresno.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Fresno,_California/7"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7355.695166
+    },
+    {
+      "id": "squad2:572745c6708984140094db99",
+      "query": "Construction involves the translation of what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Construction involves the translation of designs into reality.",
+      "claims": [
+        {
+          "text": "Construction involves the translation of designs into reality.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Construction/8"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5981.75675
+    },
+    {
+      "id": "squad2:5ad25d49d7d075001a428eed",
+      "query": "In what year was Rene Goulaine de Laudonniere born?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state the birth year of René Goulaine de Laudonnière; they mention only his 1564 voyage and founding of Fort Caroline."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2030.722
+    },
+    {
+      "id": "squad2:5ad4f7895b96ef001a10a7f1",
+      "query": "What is it called when a pathogen spends most of its lifecycle outside of host cells?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not name a term for a pathogen that spends most of its lifecycle outside host cells; p1 only describes intracellular pathogens, which spend most of their life-cycle inside host cells."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2441.296708
+    },
+    {
+      "id": "squad2:57281ab63acd2414000df493",
+      "query": "What drove residents to quieter suburban housing?",
+      "passed": false,
+      "failures": [
+        "answer has none of [\"The construction of highways\", \"construction of highways\", \"highways\"]"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Highway construction led residents to move to newer housing in the suburbs.",
+      "claims": [
+        {
+          "text": "Highway construction led residents to move to newer housing in the suburbs.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Jacksonville,_Florida/10"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not say why residents wanted quieter housing specifically.",
+        "The passage describes only Jacksonville, Florida, after World War II and does not address other areas."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7211.902167
+    },
+    {
+      "id": "squad2:5ad3a733604f3c001a3feacc",
+      "query": "What areas did English recruit natives from?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "The British were supported in the war by the Iroquois Six Nations and by the Cherokee, until differences sparked the Anglo-Cherokee War in 1758.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/French_and_Indian_War/10"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages name the Iroquois Six Nations and the Cherokee as British supporters but do not describe them as recruited from specific areas or regions.",
+        "The passages do not say the British recruited fighters; they say the British were supported."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 9457.042417
+    },
+    {
+      "id": "squad2:57268e2bf1498d1400e8e3b3",
+      "query": "When did Denmark join the EU?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Denmark joined the EU in 1972.",
+      "claims": [
+        {
+          "text": "Denmark joined the EU in 1972.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/European_Union_law/4"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage gives only the year 1972 and no exact date of Denmark's accession."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7584.185167000001
+    },
+    {
+      "id": "squad2:572753335951b619008f8854",
+      "query": "Whose role is to design the works, prepare the specifications and produce construction drawings, administer the contract, tender the works, and manage the works from inception to completion",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "In this construction procurement arrangement, the architect or engineer, acting as project coordinator, has the role of designing the works, preparing the specifications and producing construction drawings, administering the contract, tendering the works, and managing the works from inception to completion.",
+      "claims": [
+        {
+          "text": "In this construction procurement arrangement, the architect or engineer, acting as project coordinator, has the role of designing the works, preparing the specifications and producing construction drawings, administering the contract, tendering the works, and managing the works from inception to completion.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Construction/16"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6644.329
+    },
+    {
+      "id": "squad2:5729fd111d046914007796a5",
+      "query": "Plants lack what kind of immune cells?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Plants lack phagocytic cells.",
+      "claims": [
+        {
+          "text": "Plants lack phagocytic cells.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Immune_system/27"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6943.254875
+    },
+    {
+      "id": "squad2:5728dc2d3acd2414000e0080",
+      "query": "Who claims that public companies can also be part of civil disobedience?",
+      "passed": false,
+      "failures": [
+        "status insufficient_evidence != expected extractive",
+        "answer has none of [\"Brownlee\"]"
+      ],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The retained passage says Brownlee argues civil disobedience against non-governmental agencies such as trade unions, banks, and private universities can be justified. It does not mention public companies, so it does not directly answer whether anyone claims public companies can be part of civil disobedience."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": false,
+      "model_error": null,
+      "latency_ms": 3498.531833
+    },
+    {
+      "id": "squad2:5a2c3efbbfd06b001a5aea96",
+      "query": "What claim did BSkyB agree with?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage reports that Virgin Media claimed BSkyB had substantially increased the asking price for the channels, and that BSkyB denied this claim. It does not show BSkyB agreeing with any claim."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3033.41975
+    },
+    {
+      "id": "squad2:5acf86ff77cf76001a6850fa",
+      "query": "Who's office did students occupy in a protest over rental policies in 1965?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages describe a 1962 occupation of President George Beadle's office over off-campus rental policies, not a 1965 protest, so no passage answers the question for 1965."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3345.638125
+    },
+    {
+      "id": "squad2:5725d183271a42140099d23d",
+      "query": "In 1940, what percentage of the population in Fresno was Asian?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "In 1940, 2.7% of Fresno's population was Asian.",
+      "claims": [
+        {
+          "text": "In 1940, 2.7% of Fresno's population was Asian.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Fresno,_California/2"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5154.845959
+    },
+    {
+      "id": "squad2:5ad53b9d5b96ef001a10abca",
+      "query": "What can be viewed as an informal language where the language instances whose input is yes?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "A decision problem can be viewed as a formal language whose members are the instances whose output is yes.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/Computational_complexity_theory/6"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The request says 'informal language', but the passage describes a formal language."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7814.453542
+    },
+    {
+      "id": "squad2:57266e72f1498d1400e8df8c",
+      "query": "What techniques can be used to determine paleotopography?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Thermochemical techniques can be used to determine paleotopography.",
+      "claims": [
+        {
+          "text": "Thermochemical techniques can be used to determine paleotopography.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Geology/9"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not name the specific thermochemical techniques used to determine paleotopography or explain how they work."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6468.894334
+    },
+    {
+      "id": "squad2:5ad02ef677cf76001a686d6a",
+      "query": "what was invented in 1888 that revolutionized warfare?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No passage names an invention from 1888 that revolutionized warfare. The only military technology mentioned is the machine gun, which the passage says had become an effective battlefield weapon by the 1880s, without a date of invention or a link to 1888."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2281.499125
+    },
+    {
+      "id": "squad2:5a2ecb43a83784001a7d248c",
+      "query": "In what year did the second wave of the plague hit the Netherlands?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "A second wave of plague may have reached the Low Countries, including the Netherlands, with the pandemic spreading through the Low Countries from 1350.",
+      "claims": [
+        {
+          "text": "A second wave of plague may have reached the Low Countries, including the Netherlands, with the pandemic spreading through the Low Countries from 1350.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Black_Death/11"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not explicitly state the year the second wave hit the Netherlands; the 1350 date refers to the pandemic spreading through the Low Countries, and the second-wave link is only suggested with hedged wording (\"may have\")."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 10860.893833
+    },
+    {
+      "id": "squad2:5ad3e83e604f3c001a3ff63e",
+      "query": "What is a notable application of jet engines today?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not mention jet engines or any of their applications today."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2287.476333
+    },
+    {
+      "id": "squad2:5a82458131013a001a33538a",
+      "query": "Where did Barack Obama give his last speech in 2016?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not mention any speech by Barack Obama in 2016 or where his last speech was given.",
+        "The only passage about Obama (p1, a Harvard University page) lists him among political leaders and does not describe any speech."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2178.843041
+    },
+    {
+      "id": "squad2:57335c20d058e614000b58fa",
+      "query": "What formation has an asymmetrical pattern of different terraces?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Vistula Valley is the formation with an asymmetrical pattern of different terraces.",
+      "claims": [
+        {
+          "text": "The Vistula Valley is the formation with an asymmetrical pattern of different terraces.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Warsaw/14"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7301.691500000001
+    },
+    {
+      "id": "squad2:5ad4d9be5b96ef001a10a3b2",
+      "query": "The Paris Palace had been an exceptional example of what type of architecture?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No retained passage describes a 'Paris Palace' or its architectural style; the only Paris reference is to the Palais Garnier, which is not the same building."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2303.093541
+    },
+    {
+      "id": "squad2:5729f69caf94a219006aa6fa",
+      "query": "What is the process by which the antigen/antibody complex is processed in to peptides?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The B cell takes up the antigen/antibody complex and processes it by proteolysis into peptides.",
+      "claims": [
+        {
+          "text": "The B cell takes up the antigen/antibody complex and processes it by proteolysis into peptides.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Immune_system/20"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not describe the proteolysis steps in detail."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6373.303042
+    },
+    {
+      "id": "squad2:572a0bfaaf94a219006aa77c",
+      "query": "Scientists disagree with how the Amazon rainforest changed over time with some arguing that it was reduced to isolated refugia seperated by what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Some scientists argue that during the Last Glacial Maximum the Amazon rainforest was reduced to small, isolated refugia separated by open forest and grassland.",
+      "claims": [
+        {
+          "text": "Some scientists argue that during the Last Glacial Maximum the Amazon rainforest was reduced to small, isolated refugia separated by open forest and grassland.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Amazon_rainforest/3"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7160.40475
+    },
+    {
+      "id": "squad2:57377862c3c5551400e51ef6",
+      "query": "Who thought that applied force caused movement of an object regardless of non-zero velocity?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Aristotle thought that an applied force caused the motion of an object moving at constant non-zero velocity.",
+      "claims": [
+        {
+          "text": "Aristotle thought that an applied force caused the motion of an object moving at constant non-zero velocity.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Force/17"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not state Aristotle's view in his own terms and frames it as a misinterpretation."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7665.249417
+    },
+    {
+      "id": "squad2:5a6cefd64eec6b001a80a706",
+      "query": "What are the two symbols that signify pharmacy in non-English-speaking countries?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage does not identify two symbols that signify pharmacy in non-English-speaking countries. It names the mortar and pestle and the Rx character as the most common symbols in English-speaking countries, and lists country-specific symbols (the green Greek cross in several countries, the Gaper in the Netherlands, and a red stylized letter A in Germany and Austria) without saying which two represent non-English-speaking countries overall."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3503.2815419999997
+    },
+    {
+      "id": "squad2:5ad40995604f3c001a3fff46",
+      "query": "When didn't Kublai ban the international Mongol slave trade?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages give no period during which Kublai did not ban the international Mongol slave trade. They say only that in 1291 he forbade the sale abroad of Mongols."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2949.283792
+    },
+    {
+      "id": "squad2:57299c2c6aef051400155020",
+      "query": "What is the name of an algebraic structure in which addition, subtraction and multiplication are defined?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The algebraic structure in which addition, subtraction and multiplication are defined is a commutative ring.",
+      "claims": [
+        {
+          "text": "The algebraic structure in which addition, subtraction and multiplication are defined is a commutative ring.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Prime_number/25"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7386.748458
+    },
+    {
+      "id": "squad2:5ad4cf8e5b96ef001a10a149",
+      "query": "What do NK cells protect?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "NK cells destroy compromised host cells, such as tumor cells or virus-infected cells.",
+      "claims": [
+        {
+          "text": "NK cells destroy compromised host cells, such as tumor cells or virus-infected cells.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Immune_system/14"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not explicitly say that NK cells protect anything; the claim above reports what they destroy."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8099.258042
+    },
+    {
+      "id": "squad2:5ad4da795b96ef001a10a3e9",
+      "query": "What fortification was build in the 18th century after the defeat of the November Uprising?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages describe the Warsaw Citadel as a 19th-century fortification built after the defeat of the November Uprising, not an 18th-century one, so no passage answers the request as asked."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3143.82275
+    },
+    {
+      "id": "squad2:5a836273e60761001a2eb643",
+      "query": "Where is the mesoglea different in other parts of the canal system?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage describes how the gastrodermis differs across the canal system (the side nearer the organ it supplies versus the side farther from it), not how the mesoglea differs. No passage states where the mesoglea differs in other parts of the canal system."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2695.977417
+    },
+    {
+      "id": "squad2:5a63969068151a001a9223ac",
+      "query": "In what direction does the river system extend?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not describe a river system or the direction it extends. The only direction mentioned is the Great Dividing Range, which extends east-west, but that is a mountain system."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2288.091917
+    },
+    {
+      "id": "squad2:5ad2684bd7d075001a429266",
+      "query": "What would income differentials be if individual contributions weren't relevant to the social product?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say what income differentials would be if individual contributions were not relevant to the social product. The only related statement (p1) says socialists want differentials to reflect individual contributions, which is the opposite case."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2619.264917
+    },
+    {
+      "id": "squad2:572fca7eb2c2fd1400568476",
+      "query": "What body constitutes the supreme legislature of Scotland?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Parliament of the United Kingdom at Westminster constitutes the supreme legislature of Scotland.",
+      "claims": [
+        {
+          "text": "The Parliament of the United Kingdom at Westminster constitutes the supreme legislature of Scotland.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Scottish_Parliament/22"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6776.8292089999995
+    },
+    {
+      "id": "squad2:5726722bdd62a815002e8528",
+      "query": "How many kilometers of acres of the Ecuadorian rainforest is supported?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "A quarter square kilometer (62 acres) of Ecuadorian rainforest supports more than 1,100 tree species.",
+      "claims": [
+        {
+          "text": "A quarter square kilometer (62 acres) of Ecuadorian rainforest supports more than 1,100 tree species.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Amazon_rainforest/9"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The request is garbled and does not clearly say what the rainforest area supports; the passage answers only with tree species.",
+        "The passage gives this figure from a single 2001 study and does not give a broader area of Ecuadorian rainforest."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7992.729167
+    },
+    {
+      "id": "squad2:571cd3b55efbb31900334e05",
+      "query": "To what pathogen that causes gas gangrene is oxygen poisonous?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Oxygen is poisonous to the anaerobic bacteria that cause gas gangrene.",
+      "claims": [
+        {
+          "text": "Oxygen is poisonous to the anaerobic bacteria that cause gas gangrene.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Oxygen/33"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not name the specific species of bacteria that cause gas gangrene."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7100.988291000001
+    },
+    {
+      "id": "squad2:57297d421d046914007794e9",
+      "query": "When using a probabilistic algorithm, how is the probability that the number is composite expressed mathematically?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "When a probabilistic test is repeated n times and the number passes every time, the probability that the number is composite is expressed as 1/(1-p)n, where p is the probability that the test passes when applied to a composite number.",
+      "claims": [
+        {
+          "text": "When a probabilistic test is repeated n times and the number passes every time, the probability that the number is composite is expressed as 1/(1-p)n, where p is the probability that the test passes when applied to a composite number.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Prime_number/10"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage writes the exponent without superscript formatting, so 1/(1-p)n is presumably 1/(1-p)^n; the passage does not say this explicitly."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 9300.145583000001
+    },
+    {
+      "id": "squad2:5a834caae60761001a2eb53c",
+      "query": "When are some juvenile plankton able to do before becoming an adult?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "In at least some species, juveniles are capable of reproduction before reaching adult size and shape.",
+      "claims": [
+        {
+          "text": "In at least some species, juveniles are capable of reproduction before reaching adult size and shape.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Ctenophora/2"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage covers only ctenophores and does not address other types of juvenile plankton."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8432.0655
+    },
+    {
+      "id": "squad2:5ad26acad7d075001a42932b",
+      "query": "How many French family names are commonly used in the Netherlands?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages give no number of French family names commonly used in the Netherlands; they only say some Huguenot descendants may be noted by French family names."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2381.231375
+    },
+    {
+      "id": "squad2:5ad25eead7d075001a428f4f",
+      "query": "Who lives longer on average than Greeks and New Zealanders?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "In 2004, people in Sweden (80 years) and Japan (82 years) lived longer on average than Greeks and New Zealanders (78 years each).",
+      "claims": [
+        {
+          "text": "In 2004, people in Sweden (80 years) and Japan (82 years) lived longer on average than Greeks and New Zealanders (78 years each).",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/22"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage names only Sweden and Japan and gives no complete list of other countries with longer average life expectancy.",
+        "The figures are from 2004 and may not reflect current life expectancy."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 9750.635417
+    },
+    {
+      "id": "squad2:5ad0313b77cf76001a686dd3",
+      "query": "Who has the task of ensuring that party members don't vote according to party line?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say who ensures party members do not vote according to the party line. They say that whips are entrusted with ensuring members vote according to the party line (p1), which is the opposite of what was asked."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3047.264417
+    },
+    {
+      "id": "squad2:56e1dc62cd28a01900c67bcb",
+      "query": "What hypothesis is associated with the complexity class of P viewed as a mathematical abstraction with efficient algorithmic functionality?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The hypothesis associated with the complexity class P viewed as a mathematical abstraction of efficient algorithmic computation is the Cobham–Edmonds thesis.",
+      "claims": [
+        {
+          "text": "The hypothesis associated with the complexity class P viewed as a mathematical abstraction of efficient algorithmic computation is the Cobham–Edmonds thesis.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Computational_complexity_theory/33"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5411.839167
+    },
+    {
+      "id": "squad2:5728659f4b864d190016498d",
+      "query": "What is the name of the country's longest continuously running student film society?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The name of the country's longest continuously running student film society is Doc Films.",
+      "claims": [
+        {
+          "text": "The name of the country's longest continuously running student film society is Doc Films.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/University_of_Chicago/23"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7487.214875000001
+    },
+    {
+      "id": "squad2:5ad2649ad7d075001a429163",
+      "query": "In what year did Hoek van Holland begin canalization projects?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage does not say when canalization projects began at Hoek van Holland. It mentions only that canalisation projects on the Rhine were completed in the 19th and 20th centuries, and that Hoek van Holland is the endpoint of the Rhine-kilometer scale."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2017.2515
+    },
+    {
+      "id": "squad2:5ad02de177cf76001a686d17",
+      "query": "When did the age of imperialism begin?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Age of Imperialism began around 1700.",
+      "claims": [
+        {
+          "text": "The Age of Imperialism began around 1700.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Imperialism/14"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage gives only an approximate start date and does not say what event marked the beginning.",
+        "The passage's 1700 start date is tagged [citation needed], so it is not sourced."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 6533.586083
+    },
+    {
+      "id": "squad2:572ff760b2c2fd140056867b",
+      "query": "On what basis do the radical Islamist organizations conduct their attacks?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Radical Islamist organizations such as al-Qaeda, the Egyptian Islamic Jihad and the Taliban conduct attacks on a religious basis.",
+      "claims": [
+        {
+          "text": "Radical Islamist organizations such as al-Qaeda, the Egyptian Islamic Jihad and the Taliban conduct attacks on a religious basis.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Islamism/1"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not explain what the religious basis consists of or give further detail on their stated motivations."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7118.132541999999
+    },
+    {
+      "id": "squad2:5ad0392577cf76001a686e50",
+      "query": "Optional Committees are committees which are set down under what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages describe Mandatory Committees as set down under the Scottish Parliament's standing orders but do not state what Optional Committees are set down under."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2403.0959159999998
+    },
+    {
+      "id": "squad2:57274a1edd62a815002e9a9d",
+      "query": "What was the percentage of Germans attending private high schools in 2008?",
+      "passed": false,
+      "failures": [
+        "status insufficient_evidence != expected extractive",
+        "answer has none of [\"11.1\", \"11.1%\"]"
+      ],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage gives 7.8% for pupils in private schools in Germany overall, ending in 2008, but not specifically for private high schools.",
+        "The passage gives 11.1% for students in private high schools but does not state the year, so it cannot be confirmed as the 2008 figure."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": false,
+      "model_error": null,
+      "latency_ms": 2965.486625
+    },
+    {
+      "id": "squad2:572941273f37b319004781b0",
+      "query": "What was the topic of the error?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The error was over Himalayan glaciers.",
+      "claims": [
+        {
+          "text": "The error was over Himalayan glaciers.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Intergovernmental_Panel_on_Climate_Change/12"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not describe the error's content beyond its subject, Himalayan glaciers."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7208.875541
+    },
+    {
+      "id": "squad2:5726472bdd62a815002e8043",
+      "query": "Who did internet2 partner with",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Internet2 partnered with Qwest to build the first Internet2 Network, called Abilene, in 1998. Internet2 announced a partnership with Level 3 Communications in 2006 to launch a new nationwide network.",
+      "claims": [
+        {
+          "text": "Internet2 partnered with Qwest to build the first Internet2 Network, called Abilene, in 1998.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Packet_switching/20"
+          ],
+          "contradicting_urls": []
+        },
+        {
+          "text": "Internet2 announced a partnership with Level 3 Communications in 2006 to launch a new nationwide network.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Packet_switching/20"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 2,
+      "model_reported_gaps": [
+        "The passages do not give a complete list of all Internet2 partners."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 9738.567249999998
+    },
+    {
+      "id": "squad2:57337f6ad058e614000b5bce",
+      "query": "What conviction did many Poles have regarding how the Varsovians thought of themselves?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Many Poles believed that Varsovians thought of themselves as better only because they lived in the capital.",
+      "claims": [
+        {
+          "text": "Many Poles believed that Varsovians thought of themselves as better only because they lived in the capital.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Warsaw/26"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage describes this as \"some kind of conviction\" and does not say how many Poles held it."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7117.201084
+    },
+    {
+      "id": "squad2:5ad23eefd7d075001a4288da",
+      "query": "What was liquified in a stable state for the first time on March 22, 1883?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state anything liquefied in a stable state on March 22, 1883. The only such event described is oxygen, liquefied in a stable state on March 29, 1883 by Zygmunt Wróblewski and Karol Olszewski, which is a different date."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2727.204042
+    },
+    {
+      "id": "squad2:5ad3a342604f3c001a3fea5d",
+      "query": "Where didn't French fur trappers travel?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage says French fur traders and trappers traveled throughout the St. Lawrence and Mississippi watersheds, but it does not say which places they did not travel to."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2273.8823749999997
+    },
+    {
+      "id": "squad2:5a551230134fea001a0e18cc",
+      "query": "DECnet stands for what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state what DECnet stands for; they describe it as a suite of network protocols created by Digital Equipment Corporation but give no expansion of the name."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2176.5218750000004
+    },
+    {
+      "id": "squad2:5a89473c3b2508001a72a59b",
+      "query": "Which theorem can be simplified to the prime ideals theorem?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say that any theorem can be simplified to the prime ideals theorem. They only state that the fundamental theorem of arithmetic generalizes to the Lasker–Noether theorem, which is a different relationship."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2422.437958
+    },
+    {
+      "id": "squad2:573786b51c4567190057448f",
+      "query": "What is gravitational acceleration proportional to?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Gravitational acceleration is proportional to the mass of the attracting body.",
+      "claims": [
+        {
+          "text": "Gravitational acceleration is proportional to the mass of the attracting body.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Force/24"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage mentions an inverse square law for gravitational acceleration with distance only conditionally, not as a stated fact, so it is not included as a claim."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6814.941
+    },
+    {
+      "id": "squad2:5a2ebb5fa83784001a7d2447",
+      "query": "In what year did the plague begin in the Middle East?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The plague reached the Middle East in 1347.",
+      "claims": [
+        {
+          "text": "The plague reached the Middle East in 1347.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Black_Death/4"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not explicitly state when the plague began in the Middle East; it gives 1347 as the year the disease reached Alexandria and spread through the region, which may be an arrival date rather than the start."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 9240.002042
+    },
+    {
+      "id": "squad2:57296d571d04691400779415",
+      "query": "What theorem defines the main role of primes in number theory?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The fundamental theorem of arithmetic establishes the central role of primes in number theory.",
+      "claims": [
+        {
+          "text": "The fundamental theorem of arithmetic establishes the central role of primes in number theory.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Prime_number/0"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5436.326333
+    },
+    {
+      "id": "squad2:5ad153e9645df0001a2d1799",
+      "query": "What did the Court of Justice justify about a low content of vegetable fat?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "A low content of vegetable fat did not justify a \"chocolate substitute\" label, according to the Court of Justice.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/European_Union_law/31"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8584.424709
+    },
+    {
+      "id": "squad2:572a07fc6aef0514001551dd",
+      "query": "What are two examples of primitive jawless vertebrates?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The lamprey and the hagfish are examples of primitive jawless vertebrates.",
+      "claims": [
+        {
+          "text": "The lamprey and the hagfish are examples of primitive jawless vertebrates.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Immune_system/37"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5526.150833
+    },
+    {
+      "id": "squad2:5ad0426c77cf76001a686f1e",
+      "query": "The Second Minister's Question Time takes place between what times on Thursdays?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not mention a Second Minister's Question Time. They describe First Minister's Question Time (12 p.m. to 12:30 p.m. on Thursdays), General Question Time (11:40 a.m. to 12 p.m. on Thursdays), and a themed Question Time at 2.30pm, but none of these is the Second Minister's Question Time."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2402.490625
+    },
+    {
+      "id": "squad2:56e16839cd28a01900c67887",
+      "query": "What measure of a computational problem broadly defines the inherent difficulty of the solution?",
+      "passed": false,
+      "failures": [
+        "answer has none of [\"if its solution requires significant resources\", \"its solution requires significant resources\"]"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The inherent difficulty of a computational problem is measured by the amount of resources, such as time and storage, that its solution requires, whatever algorithm is used.",
+      "claims": [
+        {
+          "text": "The inherent difficulty of a computational problem is measured by the amount of resources, such as time and storage, that its solution requires, whatever algorithm is used.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Computational_complexity_theory/1"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7216.907834
+    },
+    {
+      "id": "squad2:5a678f35f038b7001ab0c2c6",
+      "query": "What kind of education is offered in public schools in Australia?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not describe the education offered in public (government) schools in Australia. They only compare private schools with government schools on uniforms, expulsion powers, and cost."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2369.450042
+    },
+    {
+      "id": "squad2:5a89150d3b2508001a72a4ac",
+      "query": "What is the name of one algebraic generalization Goldbach's conjecture has inspired?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say that Goldbach's conjecture inspired any algebraic generalization. They mention prime elements and prime ideals only as generalizations of prime numbers in general, not as results of Goldbach's conjecture."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2618.78
+    },
+    {
+      "id": "squad2:57283c464b864d19001647c9",
+      "query": "When was the University of Chicago established?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The University of Chicago was established in 1890.",
+      "claims": [
+        {
+          "text": "The University of Chicago was established in 1890.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/University_of_Chicago/0"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 4934.53475
+    },
+    {
+      "id": "squad2:5a63981168151a001a9223b5",
+      "query": "Which rail line operates Around the island?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not mention a rail line called Around the island or any service by that name."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2276.0121670000003
+    },
+    {
+      "id": "squad2:5ad404d4604f3c001a3ffdea",
+      "query": "What was Temur Khan's Japanese-style name?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not give a Japanese-style name for Temur Khan. They mention only Temür Khan and Emperor Chengzong, which is not a Japanese-style name."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2130.284709
+    },
+    {
+      "id": "squad2:5725cb33271a42140099d1de",
+      "query": "Which phylum is more complex than sponges?",
+      "passed": false,
+      "failures": [
+        "answer has none of [\"Ctenophores\"]"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The ctenophore phylum is more complex than sponges.",
+      "claims": [
+        {
+          "text": "The ctenophore phylum is more complex than sponges.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Ctenophora/5"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not explicitly state how cnidarians or bilaterians compare with sponges in complexity."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7913.208042
+    },
+    {
+      "id": "squad2:5726a3c6f1498d1400e8e5ae",
+      "query": "The Social Chapter is a chapter of what treaty?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Social Chapter is a chapter of the 1997 Treaty of Amsterdam.",
+      "claims": [
+        {
+          "text": "The Social Chapter is a chapter of the 1997 Treaty of Amsterdam.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/European_Union_law/24"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6092.274916
+    },
+    {
+      "id": "squad2:5ad40a0e604f3c001a3fff7a",
+      "query": "Which religion did Kublai reject?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Yuan dynasty, founded by Kublai Khan, never converted to Islam.",
+      "claims": [
+        {
+          "text": "The Yuan dynasty, founded by Kublai Khan, never converted to Islam.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Yuan_dynasty/32"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not state that Kublai Khan personally rejected Islam; they say the Yuan dynasty never converted to it and that he favored Buddhism."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8138.185957999999
+    },
+    {
+      "id": "squad2:5725ce4d38643c19005acd4f",
+      "query": "What does the name Fresno mean in Spanish?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The name Fresno means \"ash tree\" in Spanish.",
+      "claims": [
+        {
+          "text": "The name Fresno means \"ash tree\" in Spanish.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Fresno,_California/0"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6238.201333
+    },
+    {
+      "id": "squad2:5ad4f8255b96ef001a10a811",
+      "query": "What does not explain the failure of vaccines directed at the HIV virus?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not identify any factor that fails to explain the failure of HIV vaccines. They say frequent changes in antigens may explain those failures, and they describe self-cloaking as an evasion strategy, but they do not say which factor does not explain the failures."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3487.0568749999998
+    },
+    {
+      "id": "squad2:57281c594b864d19001644a5",
+      "query": "People behaving with civil disobedience that is not-violent is said to make society have more of what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Civil disobedients refraining from violence is said to help preserve society's tolerance of civil disobedience.",
+      "claims": [
+        {
+          "text": "Civil disobedients refraining from violence is said to help preserve society's tolerance of civil disobedience.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Civil_disobedience/9"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage says non-violence helps preserve society's tolerance of civil disobedience, not explicitly that it produces more tolerance."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8033.2726250000005
+    },
+    {
+      "id": "squad2:5ad26257d7d075001a42909d",
+      "query": "From the perspective of whom in the car is the vehicle and everything inside of it at rest?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "From the perspective of the person in the car, the vehicle and everything inside of it is at rest.",
+      "claims": [
+        {
+          "text": "From the perspective of the person in the car, the vehicle and everything inside of it is at rest.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Force/5"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 5319.13225
+    },
+    {
+      "id": "squad2:570d4030fed7b91900d45d9f",
+      "query": "Who owns the rail lines in Victoria?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The rail lines in Victoria are government-owned.",
+      "claims": [
+        {
+          "text": "The rail lines in Victoria are government-owned.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Victoria_(Australia)/14"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not name the specific government body that owns the lines.",
+        "The passages do not say whether every rail line in Victoria is government-owned."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6843.799584
+    },
+    {
+      "id": "squad2:5728d63c4b864d1900164f19",
+      "query": "The Mark of Anarchy was written to protest against what?",
+      "passed": false,
+      "failures": [
+        "status insufficient_evidence != expected extractive"
+      ],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "The Mask of Anarchy, written in 1819 after the Peterloo massacre, begins with images of what Shelley thought were the unjust forms of authority of his time.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/Civil_disobedience/2"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not explicitly say the poem was written to protest against a specific target; it only describes the poem as beginning with images of unjust authority and following the Peterloo massacre.",
+        "The request says 'The Mark of Anarchy'; the passage refers to 'The Mask of Anarchy'."
+      ],
+      "rejected_quotes": 1,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8584.121874999999
+    },
+    {
+      "id": "squad2:5ad401f2604f3c001a3ffd42",
+      "query": "Who dominated Western Europe for 380 years?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say who dominated Western Europe for 380 years. The only 380-year period mentioned is Cyprus being under Western European domination after the Anglo-Norman conquest, which concerns a different entity and does not answer the question."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2618.016125
+    },
+    {
+      "id": "squad2:5a1c8aedb4fb5d00187146a1",
+      "query": "What River surrounds Jacksonville?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No passage states that a river surrounds Jacksonville. The passage says the St. Johns River divides the city and that the Trout River, a tributary of the St. Johns, is located entirely within Jacksonville."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2617.465375
+    },
+    {
+      "id": "squad2:5ad3bc28604f3c001a3feee3",
+      "query": "Why did France choose to give up no continental lands?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "France chose to cede its continental North American possessions east of the Mississippi rather than Guadeloupe and Martinique because it viewed the Caribbean islands' sugar cane as more economically valuable and easier to defend than the continent's furs.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/French_and_Indian_War/42"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The request's wording ('give up no continental lands') appears to contradict the passage, which says France ceded its continental lands; the answer addresses the likely intended question.",
+        "The passages give France's stated reasoning only and do not describe other factors behind the decision."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 10390.219208
+    },
+    {
+      "id": "squad2:5ad3ea77604f3c001a3ff6e1",
+      "query": "Where was the centrifugal governor first observed by Watt?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say where Watt himself first observed the centrifugal governor. Passage p1 says his partner Boulton saw one at a flour mill that Boulton & Watt were building, which is a related fact about Boulton, not Watt."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2967.3204159999996
+    },
+    {
+      "id": "squad2:5ad266f8d7d075001a429209",
+      "query": "In what year did Huguenots begin to settle in South Africa?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not give a year for when Huguenots began settling in South Africa. They say only that Huguenots settled at the Cape of Good Hope in South Africa, helped by Dutch Republic ties, without a date."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2816.3345
+    },
+    {
+      "id": "squad2:5727ff083acd2414000df1ad",
+      "query": "What introduces inequality to a country?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "As a country develops and acquires more capital, the owners of that capital gain more wealth and income, which introduces inequality.",
+      "claims": [
+        {
+          "text": "As a country develops and acquires more capital, the owners of that capital gain more wealth and income, which introduces inequality.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/15"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage gives only Kuznets's account of development and capital ownership; it does not cover other possible causes of inequality."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7110.639042
+    },
+    {
+      "id": "squad2:5a605197eae51e001ab14d0b",
+      "query": "Did Paul Baran develop Distributed Adaptive Message Block Switching with the goal of monetizing it?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages state that Paul Baran developed Distributed Adaptive Message Block Switching at RAND to provide a fault-tolerant, efficient routing method for telecommunication messages, funded by the US Department of Defense. They do not mention monetization or any commercial goal."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3773.7047079999998
+    },
+    {
+      "id": "squad2:572ffabf04bcaa1900d76fa3",
+      "query": "What, rather than Islamism, requires explanation?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "According to a writer for the International Crisis Group, quietist or non-political Islam, not Islamism, requires explanation.",
+      "claims": [
+        {
+          "text": "According to a writer for the International Crisis Group, quietist or non-political Islam, not Islamism, requires explanation.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Islamism/4"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage gives this as one writer's view rather than an established consensus."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8675.146041
+    },
+    {
+      "id": "squad2:5ad566375b96ef001a10adce",
+      "query": "What happens if a problem X is in C, and soft for C?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not address the case where a problem X is soft for C. The term 'soft' is not defined in them. The only case covered is X in C and hard for C, which makes X complete for C (p1), and that does not answer the request as written."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 4392.868415999999
+    },
+    {
+      "id": "squad2:5ad27a80d7d075001a4295fa",
+      "query": "Until the work of Galileo, what was not identified as a universal force?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage says gravity was not identified as a universal force until the work of Isaac Newton, not until Galileo's work, so it does not answer the question as asked about the period before Galileo.",
+        "The passage says Galileo described falling objects by showing constant acceleration independent of mass, but it does not say what was unidentified as a universal force before Galileo."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3322.591959
+    },
+    {
+      "id": "squad2:5acfea0677cf76001a686463",
+      "query": "When was Al-Banna born?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages give Al-Banna's assassination in 1949 but do not state when he was born."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2187.1492080000003
+    },
+    {
+      "id": "squad2:56e16182e3433e1400422e29",
+      "query": "By what main attribute are computational problems classified utilizing computational complexity theory?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Computational problems are classified by their inherent difficulty.",
+      "claims": [
+        {
+          "text": "Computational problems are classified by their inherent difficulty.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Computational_complexity_theory/0"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 5765.1558749999995
+    },
+    {
+      "id": "squad2:5a1c55b4b4fb5d0018714608",
+      "query": "What grew at the narrow point in the river under Spanish rule?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage says settlement grew at the narrow point under British rule, not Spanish rule, and does not describe any growth there under Spanish rule."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2622.148041
+    },
+    {
+      "id": "squad2:56e19724cd28a01900c679f9",
+      "query": "In addition to the traveling salesman problem, what is another example of a function problem?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Another example of a function problem, besides the traveling salesman problem, is the integer factorization problem.",
+      "claims": [
+        {
+          "text": "Another example of a function problem, besides the traveling salesman problem, is the integer factorization problem.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Computational_complexity_theory/8"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6093.995791
+    },
+    {
+      "id": "squad2:5725bcb6271a42140099d0eb",
+      "query": "Why did OPEC raise the price of oil to $5.11?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "OPEC raised the posted price of oil to $5.11 a barrel in response to American aid to Israel.",
+      "claims": [
+        {
+          "text": "OPEC raised the posted price of oil to $5.11 a barrel in response to American aid to Israel.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/1973_oil_crisis/5"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not give OPEC's own stated reasoning beyond the response to American aid to Israel."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 7229.04175
+    },
+    {
+      "id": "squad2:5ad15c52645df0001a2d18b0",
+      "query": "What should fall under article 56 according to several governments?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "According to several governments, hospital services should not fall within article 56.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/European_Union_law/38"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not say what other activities, if any, several governments argued should fall under article 56.",
+        "The retrieved passage text appears truncated, so later parts of the source may contain further government submissions."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7992.727416
+    },
+    {
+      "id": "squad2:5ad02de677cf76001a686d22",
+      "query": "The words Wisdom, Compassion, Justice, and Integration are inscribed on what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "The words Wisdom, Compassion, Justice, and Integrity are inscribed on the parliamentary mace of the Scottish Parliament.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/Scottish_Parliament/11"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage gives the fourth word as \"Integrity\", not \"Integration\" as in the request."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8392.712958
+    },
+    {
+      "id": "squad2:57306797396df919000960f0",
+      "query": "Some have generalized the meaning of the word imperialism down to general-purpose what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Some have generalized the meaning of imperialism down to general-purpose aggressiveness.",
+      "claims": [
+        {
+          "text": "Some have generalized the meaning of imperialism down to general-purpose aggressiveness.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Imperialism/2"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6614.230958
+    },
+    {
+      "id": "squad2:5a67d87ef038b7001ab0c48e",
+      "query": "What is the highest range a student would pay when boarding  in a Scottish school?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No passage gives boarding fees for Scottish schools specifically. The only boarding figure (£27,000+ per year) is a UK-wide figure for private schools, and the passage refers to a separate 'Meeting the Cost' section for Scotland that was not retrieved."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2791.7470839999996
+    },
+    {
+      "id": "squad2:5ad03b2777cf76001a686e98",
+      "query": "The Scotland Act 2002 extends the devolved what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not mention the Scotland Act 2002. They state that the Scotland Act 2012 extends the devolved competencies, which is a different act and does not answer the question as asked."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2316.441167
+    },
+    {
+      "id": "squad2:5ad24e50d7d075001a428c3e",
+      "query": "What is economic liberalism not one of the causes of?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not identify any outcome that economic liberalism is not a cause of; they only state that it is one of the causes of economic inequality."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2477.341042
+    },
+    {
+      "id": "squad2:56e1febfe3433e1400423236",
+      "query": "What eponymous variation of arithmetic presents a decision problem not evidenced in P?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The decision problem in Presburger arithmetic has been shown not to be in P.",
+      "claims": [
+        {
+          "text": "The decision problem in Presburger arithmetic has been shown not to be in P.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Computational_complexity_theory/42"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8286.236083
+    },
+    {
+      "id": "squad2:5a8224ea31013a001a335251",
+      "query": "What did local residents do when Forbes announced budget cuts in 2011?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say Forbes announced budget cuts in 2011. The only Forbes item is a March 2009 estimate of Harvard's endowment loss at about $12 billion.",
+        "The passages say local residents protested Harvard's halting of construction on the $1.2 billion Allston Science Complex, but they do not tie these protests to any Forbes announcement or give a date for them.",
+        "No passage states how local residents responded to a Forbes announcement in 2011."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2837.8858330000003
+    },
+    {
+      "id": "squad2:57302cd004bcaa1900d772db",
+      "query": "What has the United Nations designed ISIL?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The United Nations has designated ISIL a terrorist organisation.",
+      "claims": [
+        {
+          "text": "The United Nations has designated ISIL a terrorist organisation.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Islamism/34"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passages do not give a date for the United Nations designation."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6530.368625
+    },
+    {
+      "id": "squad2:5ad40726604f3c001a3ffe8f",
+      "query": "What discouraged trade under the Yuan?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state what discouraged trade under the Yuan. They say the Yuan's political unity promoted trade between East and West and that the dynasty had significantly eased trade and commerce across Asia until its decline, but they name no factor that discouraged it."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2365.8170410000002
+    },
+    {
+      "id": "squad2:5ad25fcbd7d075001a428f8f",
+      "query": "How much of a difference in homicide rates aren't related to inequality?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "As fontes retidas divergem; veja as citações de apoio e de contradição.",
+      "claims": [
+        {
+          "text": "About half of the variation in homicide rates among U.S. states and Canadian provinces is not accounted for by differences in inequality, according to Daly et al. (2001).",
+          "status": "contested",
+          "supporting_urls": [],
+          "contradicting_urls": [
+            "https://squad.test/Economic_inequality/24"
+          ]
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage gives no figure for the unexplained share of homicide rate variation in the worldwide study by Fajnzylber et al. (2002).",
+        "The passage does not say what accounts for the remaining variation."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 8190.639042000001
+    },
+    {
+      "id": "squad2:5728fd206aef05140015494e",
+      "query": "What probiotic flora is found in unpasteurized yogurt?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The probiotic flora found in unpasteurized yogurt are lactobacilli.",
+      "claims": [
+        {
+          "text": "The probiotic flora found in unpasteurized yogurt are lactobacilli.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Immune_system/8"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage names only the genus lactobacilli and does not identify specific species or strains."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8286.517667
+    },
+    {
+      "id": "squad2:571136b8a58dae1900cd6d24",
+      "query": "How is lap provided by overlapping the admission side port?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Lap is provided by lengthening the rubbing surfaces of the valve so that they overlap the port on the admission side.",
+      "claims": [
+        {
+          "text": "Lap is provided by lengthening the rubbing surfaces of the valve so that they overlap the port on the admission side.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Steam_engine/5"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6793.124458
+    },
+    {
+      "id": "squad2:5ad2bb5fd7d075001a42a080",
+      "query": "During what war did the Western Allies cross the Rhine bridge at Arnhem?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage does not say the Western Allies crossed the Arnhem Rhine bridge. It says the bridge was a central focus of the failed Operation Market Garden in September 1944, during World War II, so the request's premise is not supported."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3786.445625
+    },
+    {
+      "id": "squad2:573098f38ab72b1400f9c5d3",
+      "query": "What did European empires rely on to supply them with resources?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "European empires relied on their colonies to collect resources and ship them to home ports, especially in the seventeenth and eighteenth centuries.",
+      "claims": [
+        {
+          "text": "European empires relied on their colonies to collect resources and ship them to home ports, especially in the seventeenth and eighteenth centuries.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Imperialism/16"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not describe the resource-supply arrangements in detail for the nineteenth and twentieth centuries, where it says the idea is not necessarily valid."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8120.052917000001
+    },
+    {
+      "id": "squad2:5a8929e43b2508001a72a4dd",
+      "query": "To what extent did Fermat confirm the validity of Euler numbers?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not mention Euler numbers at all, so they cannot show whether Fermat confirmed their validity.",
+        "The passages discuss Fermat numbers (numbers of the form 2^(2^n) + 1), not Euler numbers, and say only that Fermat verified the primality of some of them up to n = 4.",
+        "The passages do not state that Fermat confirmed anything about Euler's work."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2686.773959
+    },
+    {
+      "id": "squad2:572fc49d04bcaa1900d76ccd",
+      "query": "What do MSPs who are not in the chamber when the division bell rings return to do?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "MSPs who are not in the chamber when the division bell rings return to vote.",
+      "claims": [
+        {
+          "text": "MSPs who are not in the chamber when the division bell rings return to vote.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Scottish_Parliament/15"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6140.4613340000005
+    },
+    {
+      "id": "squad2:5729f24baf94a219006aa6e0",
+      "query": "What do the owners of more capital end up having?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The owners of more capital end up having more wealth and income.",
+      "claims": [
+        {
+          "text": "The owners of more capital end up having more wealth and income.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Economic_inequality/15"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage presents this as Kuznets's argument about countries as they develop, not as a general fact about all capital owners."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6904.84425
+    },
+    {
+      "id": "squad2:572649d8f1498d1400e8db37",
+      "query": "What caused UK to have an oil crisis in its own country?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The UK's own oil crisis was a series of strikes by coal miners and railroad workers over the winter of 1973–74.",
+      "claims": [
+        {
+          "text": "The UK's own oil crisis was a series of strikes by coal miners and railroad workers over the winter of 1973–74.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/1973_oil_crisis/10"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not explain why the coal miners and railroad workers struck or how the strikes were tied to oil supply.",
+        "The passage does not say what caused the strikes to be counted as an oil crisis beyond the single sentence describing them."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 8912.0685
+    },
+    {
+      "id": "squad2:5725fb8138643c19005acf42",
+      "query": "What is KMJ now referred to?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "KMJ is now known as NBC affiliate KSEE.",
+      "claims": [
+        {
+          "text": "KMJ is now known as NBC affiliate KSEE.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Fresno,_California/24"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6098.864209
+    },
+    {
+      "id": "squad2:573312fcd058e614000b56e8",
+      "query": "What is Warsaw's economy characterized by?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Warsaw's economy is characterized by a wide variety of industries, including FMCG manufacturing, metal processing, steel and electronic manufacturing, and food processing.",
+      "claims": [
+        {
+          "text": "Warsaw's economy is characterized by a wide variety of industries, including FMCG manufacturing, metal processing, steel and electronic manufacturing, and food processing.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Warsaw/1"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6600.785166
+    },
+    {
+      "id": "squad2:572ffa79a23a5019007fcbec",
+      "query": "Microplates squeezing and rotating created the features of what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Microplates squeezing and rotating created the features of Mediterranean geography.",
+      "claims": [
+        {
+          "text": "Microplates squeezing and rotating created the features of Mediterranean geography.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Rhine/24"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6891.785000000001
+    },
+    {
+      "id": "squad2:5a38c6bca4b263001a8c1919",
+      "query": "When Japan received 71% of its imported oil from the middle east in December what result did it cause in public?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages give the 71% Middle East share of Japan's imported oil for 1970, not December.",
+        "The passages say a 5% production cut in December caused a panic, but do not link that panic to the 71% import share.",
+        "No passage describes a public result of Japan receiving 71% of its imported oil from the Middle East in December."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3372.030792
+    },
+    {
+      "id": "squad2:5ad400f0604f3c001a3ffcef",
+      "query": "Which tribes did Genghis Khan fight against?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not name any tribes that Genghis Khan fought against; p1 only says he united the Mongol and Turkic tribes of the steppes.",
+        "The passages mention the Jin dynasty, which Ögedei Khan destroyed in 1234, but not any action by Genghis Khan against tribes."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2618.434209
+    },
+    {
+      "id": "squad2:5ad26dbcd7d075001a4293d8",
+      "query": "In what year did Huguenot refugees first settle in Norwich?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state the year Huguenot refugees first settled in Norwich; they only say some refugees moved there and that Norwich had an earlier Walloon weaver settlement."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2294.306125
+    },
+    {
+      "id": "squad2:56e17644e3433e1400422f42",
+      "query": "What field of computer science analyzes all possible algorithms in aggregate to determine the resource requirements needed to solve to a given problem?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Computational complexity theory is the field of computer science that analyzes all possible algorithms in aggregate to determine the resources needed to solve a given problem.",
+      "claims": [
+        {
+          "text": "Computational complexity theory is the field of computer science that analyzes all possible algorithms in aggregate to determine the resources needed to solve a given problem.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Computational_complexity_theory/2"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6354.976
+    },
+    {
+      "id": "squad2:57297ed93f37b3190047845f",
+      "query": "What is one straightforward case of a probabilistic test?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Fermat primality test is a particularly simple example of a probabilistic test.",
+      "claims": [
+        {
+          "text": "The Fermat primality test is a particularly simple example of a probabilistic test.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Prime_number/11"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6595.998041
+    },
+    {
+      "id": "squad2:5737821cc3c5551400e51f1b",
+      "query": "What kind of self-consistent models are physicists trying to make that would create a theory of everything?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Physicists are trying to develop self-consistent unification models that would combine all four fundamental interactions into a theory of everything.",
+      "claims": [
+        {
+          "text": "Physicists are trying to develop self-consistent unification models that would combine all four fundamental interactions into a theory of everything.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Force/22"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not describe the specific mathematical or structural features of these models beyond unifying the four fundamental interactions."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6420.56025
+    },
+    {
+      "id": "squad2:57300580b2c2fd140056874e",
+      "query": "What increased in the Rhine because of the land clearance in the upland areas?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The sediment load of the Rhine strongly increased as a result of land clearance in the upland areas.",
+      "claims": [
+        {
+          "text": "The sediment load of the Rhine strongly increased as a result of land clearance in the upland areas.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Rhine/33"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6263.880708000001
+    },
+    {
+      "id": "squad2:5730a314069b5314008321ec",
+      "query": "Which regions have temperate climates?",
+      "passed": false,
+      "failures": [
+        "status insufficient_evidence != expected extractive",
+        "answer has none of [\"Mid-Atlantic\", \"Northern Europe and the Mid-Atlantic\"]"
+      ],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not factually identify which regions have temperate climates. The only mention is a colonial-era scholars' belief, attributed to them, that Northern Europe and the Mid-Atlantic have a temperate climate, and it concerns human character rather than climate."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": false,
+      "model_error": null,
+      "latency_ms": 3789.7214999999997
+    },
+    {
+      "id": "squad2:57300c67947a6a140053cff1",
+      "query": "Who stated a change of the length of the Rhine?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The German encyclopedia Knaurs Lexikon stated in 1932 that the length of the Rhine was 1,320 kilometres (820 miles).",
+      "claims": [
+        {
+          "text": "The German encyclopedia Knaurs Lexikon stated in 1932 that the length of the Rhine was 1,320 kilometres (820 miles).",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Rhine/43"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 9558.011667
+    },
+    {
+      "id": "squad2:572996c73f37b319004784b6",
+      "query": "On what type of exponentiation does the Diffie–Hellman key exchange depend on?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Diffie–Hellman key exchange depends on modular exponentiation.",
+      "claims": [
+        {
+          "text": "The Diffie–Hellman key exchange depends on modular exponentiation.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Prime_number/22"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6582.062125
+    },
+    {
+      "id": "squad2:57268882f1498d1400e8e308",
+      "query": "Which theory states that slow geological processes are still occurring today, and have occurred throughout Earth's history?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The theory that slow geological processes have occurred throughout Earth's history and are still occurring today is uniformitarianism.",
+      "claims": [
+        {
+          "text": "The theory that slow geological processes have occurred throughout Earth's history and are still occurring today is uniformitarianism.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Geology/24"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": false,
+      "model_error": null,
+      "latency_ms": 6181.293207999999
+    },
+    {
+      "id": "squad2:5ad243a7d7d075001a428a07",
+      "query": "What is income inequality not attributed to?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "p1 states that neoclassical economics attributes income inequality to differences in value added by labor, capital and land, and to productivity gaps between professions. It does not state what income inequality is not attributed to, so no claim answers the question as asked."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3535.757667
+    },
+    {
+      "id": "squad2:572fac17947a6a140053cb55",
+      "query": "What act set out the Parliament's powers as a devolved legislature?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The Scotland Act 1998 set out the Scottish Parliament's powers as a devolved legislature.",
+      "claims": [
+        {
+          "text": "The Scotland Act 1998 set out the Scottish Parliament's powers as a devolved legislature.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Scottish_Parliament/0"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6373.5030830000005
+    },
+    {
+      "id": "squad2:57300888b2c2fd1400568776",
+      "query": "What did the number of legions in Roman times depend on?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "The number of Roman legions present at any base or in total depended on whether a state or threat of war existed.",
+      "claims": [
+        {
+          "text": "The number of Roman legions present at any base or in total depended on whether a state or threat of war existed.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Rhine/37"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage covers only the Rhine bases in the period about AD 14 to 180, not Roman legion numbers in general.",
+        "It does not give the actual numbers of legions under different conditions."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": true,
+      "model_error": null,
+      "latency_ms": 6616.482666
+    },
+    {
+      "id": "squad2:5a3e3907378766001a002503",
+      "query": "What 2011 report was requested by the IPCC?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state that any 2011 report was requested by the IPCC. They say the two IPCC Special Reports finalized in 2011, SRREN and SREX, were requested by governments.",
+        "The passages name no other 2011 report requested by the IPCC."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2786.139042
+    },
+    {
+      "id": "squad2:5acff55577cf76001a68661f",
+      "query": "Western Imperialism united the globe according to which theory?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No passage states that Western imperialism united the globe according to any theory. Passage p1 says European expansion divided the world, as portrayed through world systems theory, which is a different claim."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 3143.402917
+    },
+    {
+      "id": "squad2:5a552252134fea001a0e1965",
+      "query": "What was considered to be incorrect for the services given out by KPN?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Using the name Datanet 1 for KPN's Videotex and related services was considered incorrect.",
+      "claims": [
+        {
+          "text": "Using the name Datanet 1 for KPN's Videotex and related services was considered incorrect.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Packet_switching/18"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not name every KPN service considered incorrect, only the Videotex and related services under the Datanet 1 name."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7337.7105
+    },
+    {
+      "id": "squad2:5ad4cb055b96ef001a10a0e2",
+      "query": "What cell is unable to act as a scavenger?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passage states that macrophages act as scavengers but does not say which cell cannot act as a scavenger; it describes neutrophils only as phagocytes and does not mention scavenging for them."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2622.143458
+    },
+    {
+      "id": "squad2:5ad3bce5604f3c001a3feefe",
+      "query": "Where did British kill many Acadians?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say that the British killed Acadians or where any killings took place. They describe the deportation of Acadians beginning in 1755 and their resettlement in British North American provinces, France, New Orleans, and other places."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2662.08
+    },
+    {
+      "id": "squad2:5ad262f7d7d075001a4290d4",
+      "query": "The concept of inertia can explain the tendency of people to continue in what?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages describe the tendency of objects, not people, to continue in constant motion, so they do not answer the question as asked."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2824.785333
+    },
+    {
+      "id": "squad2:5ad28ea7d7d075001a429a53",
+      "query": "What flows out of the former bay Hollands Diep?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages say the Meuse flows into the former bay Hollands Diep but do not state what flows out of it."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2145.0416250000003
+    },
+    {
+      "id": "squad2:5a6cb5c14eec6b001a80a626",
+      "query": "What else was avoided by pharmas?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say what pharmas avoided. They describe pharmacy history, including the Greek roots of the word, the medical advice and services pharmas once offered, and the retail shops they ran."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2621.98875
+    },
+    {
+      "id": "squad2:5a5918ff3e1742001a15cf7e",
+      "query": "What do unstable isotope studies indicate?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Unstable (radioactive) isotope studies provide insight into the geochemical evolution of rock units.",
+      "claims": [
+        {
+          "text": "Unstable (radioactive) isotope studies provide insight into the geochemical evolution of rock units.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Geology/15"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage does not describe specific findings from unstable isotope studies beyond insight into geochemical evolution."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7010.230958
+    },
+    {
+      "id": "squad2:5a0c6a7ef5590b0018dab3f9",
+      "query": "Water on the eastern side float away from what ocean?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta.",
+      "claims": [
+        {
+          "text": "Water on the eastern side flowed toward the Atlantic Ocean.",
+          "status": "off_request",
+          "supporting_urls": [
+            "https://squad.test/Amazon_rainforest/2"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage describes the mid-Eocene drainage pattern and does not state a time frame for the question's wording."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7341.772916
+    },
+    {
+      "id": "squad2:5a1c883cb4fb5d0018714673",
+      "query": "What began to decline after World War I?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say what began to decline after World War I; the only passage discusses events after World War II and the non-Hispanic white share of Jacksonville's population from 1970 to 2010."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2147.1862499999997
+    },
+    {
+      "id": "squad2:5a3e3752378766001a0024f6",
+      "query": "Who is one of the authors of the WGI Summary?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not name any author of the WGI Summary for Policymakers. They mention John Houghton only as a co-chair of TAR WGI and Richard Lindzen only as an IPCC author who criticized the SPM."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2912.382167
+    },
+    {
+      "id": "squad2:5a82025a31013a001a3350b7",
+      "query": "In what year was David Tappan elected to the chair?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not state when David Tappan was elected to the chair. They say he was Hollis Professor of Divinity and died in 1803, and that Henry Ware was elected to the chair in 1805."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2624.6558330000003
+    },
+    {
+      "id": "squad2:5acfa93777cf76001a685783",
+      "query": "Who is the White House Coordinator of Security Planning and also an anthropologist?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "No passage identifies anyone who is both the White House Coordinator of Security Planning and an anthropologist. p1 names Samuel P. Huntington as the coordinator but describes him as a conservative international relations scholar, not an anthropologist. p1 names David Graeber and Donald Johanson as anthropologists but does not link either to the coordinator role."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2461.6560839999997
+    },
+    {
+      "id": "squad2:5ad283bcd7d075001a42985a",
+      "query": "Since electrons are minions, they cannot occupy the same what?",
+      "passed": false,
+      "failures": [
+        "status must not be extractive"
+      ],
+      "request_kind": "question",
+      "status": "extractive",
+      "summary": "Electrons cannot occupy the same quantum mechanical state as other electrons.",
+      "claims": [
+        {
+          "text": "Electrons cannot occupy the same quantum mechanical state as other electrons.",
+          "status": "corroborated",
+          "supporting_urls": [
+            "https://squad.test/Force/31"
+          ],
+          "contradicting_urls": []
+        }
+      ],
+      "proposed_claims": 1,
+      "model_reported_gaps": [
+        "The passage describes electrons as fermions, not minions; the request's premise is not stated in the passage."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": true,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 7746.277375
+    },
+    {
+      "id": "squad2:5ad3bd87604f3c001a3fef24",
+      "query": "What made Ohio Country safe?",
+      "passed": true,
+      "failures": [],
+      "request_kind": "question",
+      "status": "insufficient_evidence",
+      "summary": "Nenhuma afirmação pôde ser localizada literalmente no texto retido.",
+      "claims": [],
+      "proposed_claims": 0,
+      "model_reported_gaps": [
+        "The passages do not say what made the Ohio Country safe. They describe it as vulnerable to legal and illegal settlement after the construction of military roads by Braddock and Forbes, but give no account of any condition that made it safe."
+      ],
+      "rejected_quotes": 0,
+      "complete_answer_supported": false,
+      "gold_in_cited_span": null,
+      "model_error": null,
+      "latency_ms": 2345.6832090000003
+    }
+  ]
+}

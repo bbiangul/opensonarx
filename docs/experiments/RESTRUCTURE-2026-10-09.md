@@ -193,15 +193,62 @@ evidência relacionada, e não pode ser apresentada como a resposta.
 Regressão de desenvolvimento (20 casos) com o modelo hospedado: 20/20 nas
 três versões. Latência por caso no harness: p50 de 4 a 6 s, p95 de 7 a 13 s.
 
+### Modelo maior e troca declarada pelo extrator
+
+**Um extrator maior não resolve.** Na amostra C, com `claude-sonnet-5.5`:
+
+| Extrator / juízes | Com resposta: corretas / outra redação / abstenções | Sem resposta: respondidas |
+|---|---|---|
+| Haiku / Haiku | 87 / 9 / 4 | 17 |
+| Sonnet / Haiku | 92 / 3 / 5 | 21 |
+| Sonnet / Sonnet | 93 / 2 / 5 | 25 |
+
+O modelo maior acerta mais quando há resposta e responde mais quando não
+há. Lendo os 25 casos do Sonnet: parte são erros claros em que o extrator
+anotou a troca em texto livre ("o texto fala de primos, não de testes"),
+parte são respostas defensáveis a perguntas com erro de digitação ou que o
+SQuAD marca como sem resposta por um detalhe. Essa leitura foi feita só pela
+pergunta, pela resposta e pela nota do modelo, sem conferir os parágrafos.
+
+**Troca declarada.** O extrator passou a declarar, por afirmação, quando só
+responde lendo um termo da pergunta como outro termo do texto
+(`substitution`: termo da pergunta, termo da afirmação). O código aceita a
+declaração só se os dois termos existirem literalmente, e então a afirmação
+vira `off_request`, com ou sem juiz.
+
+Amostra D (nova, lida só em agregado), Haiku, mesma passada do modelo
+montada de quatro formas:
+
+| Montagem | Com resposta: corretas / outra redação / abstenções | Sem resposta: respondidas |
+|---|---|---|
+| só stance | 94 / 5 / 1 | 37 |
+| + troca declarada | 91 / 4 / 5 | 13 |
+| + juiz de responsividade | 93 / 5 / 2 | 18 |
+| **as duas (pipeline atual)** | **90 / 4 / 6** | **11** |
+| versão anterior do código (commit `b63dbcd`), rodada à parte | 92 / 4 / 4 | 15 |
+
+Leitura:
+
+- Na mesma amostra, a versão atual tem 4 respostas indevidas a menos que a
+  anterior (15 → 11) e 2 corretas a menos (92 → 90).
+- O "só stance" de 37 não é comparável ao das amostras A a C (22 a 34): com o
+  campo de troca no prompt, o extrator propõe mais afirmações fora da
+  pergunta, que depois são postas de lado.
+- Somando as rodadas: sem checagem, 22 a 34 de 100; com o juiz, 15 a 17; com
+  juiz e troca declarada, 11.
+
 ### Limites desta avaliação
 
-- **17 a 22% das perguntas sem resposta ainda são respondidas.** O SQuAD 2.0
-  constrói essas perguntas para parecerem respondíveis, então é um teste
-  duro, mas o número é o que foi medido.
+- **11% das perguntas sem resposta ainda são respondidas** na amostra D (15 a
+  17% com a versão anterior). O SQuAD 2.0 constrói essas perguntas para
+  parecerem respondíveis e tem rótulos discutíveis, então é um teste duro,
+  mas o número é o que foi medido. O ganho custou cerca de 2 a 4 respostas
+  corretas em 100.
 - Com uma fonte por caso, a regra de duas famílias não foi exercida. Não se
   sabe quanto ela reduziria as respostas indevidas.
-- 100 casos por grupo: a diferença de 22 para 17 está dentro do que uma
-  amostra desse tamanho distingue mal. A amostra C só foi lida em agregado.
+- 100 casos por grupo: diferenças de 4 ou 5 casos estão no limite do que uma
+  amostra desse tamanho distingue. A amostra C foi lida depois da rodada do
+  Sonnet; a D só em agregado.
 - As perguntas do SQuAD foram escritas olhando o parágrafo e muitas dependem
   dele ("qual era a mais importante dessas cidades?"). Consultas reais são
   autocontidas; o efeito disso não foi medido.
@@ -213,9 +260,8 @@ três versões. Latência por caso no harness: p50 de 4 a 6 s, p95 de 7 a 13 s.
 
 ## Próximos passos
 
-1. Reduzir as respostas a perguntas sem resposta (hoje 17 a 22%). Medir um
-   modelo maior no papel de extrator e medir o efeito da regra de duas
-   fontes com um conjunto multi-documento.
+1. Medir o efeito da regra de duas fontes sobre as respostas indevidas (hoje
+   11% com uma fonte), com um conjunto multi-documento.
 2. Medir latência de ponta a ponta com o modelo hospedado contra o teto de
    5 s.
 3. Avaliação em português e conjuntos para stance (XNLI-pt, FEVER).
