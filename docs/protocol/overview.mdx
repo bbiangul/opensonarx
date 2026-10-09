@@ -21,41 +21,43 @@ description: Architecture of the OpenSonarX decentralized search protocol.
     │   ┌──────────────────────────────┐   │
     │   │  HNSW (384-dim vectors)      │   │
     │   │  + BM25 (keyword index)      │   │
-    │   │  + Reputation ranking        │   │
+    │   │  + Stake-neutral ranking     │   │
     │   └──────────────────────────────┘   │
     └──────────────────────────────────────┘
          │
-    ┌────┴─────┐
-    │ Sentinel │
-    │ Crawler  │
-    └──────────┘
+    ┌────┴─────┐      ┌──────────────────────┐
+    │ Sentinel │      │ OpenUncertainty      │
+    │ Crawler  │      │ experimental Stage 2│
+    └──────────┘      └──────────────────────┘
 ```
 
 ## Core components
 
 | Component | Crate | Description |
 |-----------|-------|-------------|
-| **Search engine** | `oi-index` | HNSW vector index + BM25 keyword index, fused with reputation-weighted ranking |
+| **Search engine** | `oi-index` | HNSW vector index + BM25 keyword index with stake/reputation/DNS-neutral retrieval |
+| **Uncertainty** | `oi-index::uncertainty` | MVP claim-level calibration, evidential fallback, economic-conviction guardrails, and decision reranking |
 | **Embeddings** | `oi-embed` | MiniLM (384-dim, INT8 quantized ONNX) for text, CLIP (512-dim) for images |
 | **P2P layer** | `oi-network` | libp2p with Kademlia, gossipsub, request-response, mDNS |
 | **Crawler** | `oi-crawl` | Content distiller: fetch, extract, chunk, quality gate, embed, index |
 | **SDK** | `oi-sdk` | Wires all components together into a unified search client |
 | **CLI** | `oi-cli` | Command-line interface for all operations |
-| **Staking** *(Phase 3)* | `oi-staking` | Solana Anchor program for $TRUTH stake/unstake/dispute/governance |
+| **Economic substrate** *(legacy/experimental)* | `oi-staking` | Existing Solana stake/dispute plumbing; no ranking authority and no production capital authority without deterministic settlement |
 
 ## Data flow
 
 1. **Ingest**: Sentinel crawls URLs, extracts Markdown, chunks text, generates embeddings, inserts into index
-2. **Query**: Agent sends query → embedding generated → HNSW + BM25 search → results enriched with reputation data → ranked and returned
-3. **Feedback**: Agent submits positive/negative signals → reputation updated → affects future ranking
+2. **Retrieve**: Agent sends query → embedding generated → HNSW + BM25 search → broad stake-neutral candidates returned
+3. **Decide (experimental)**: typed claim evidence is joined for top candidates → OpenUncertainty may rerank, warn, cite, or abstain under an explicit client policy
 
-## Phase 3: Staking layer
+## Economic commitments
 
 <Note>
-  The following is planned for Phase 3 and is not yet implemented.
+  Capital settlement and live Stage-2 integration are not yet production-ready. The repository contains an MVP estimator and evaluation harness, not a validated real-cash product.
 </Note>
 
-In Phase 3, the data flow will expand with two additional steps:
+The v1 stake-weighted roadmap is retracted. Domain stake remains legacy accountability metadata and never changes base relevance. A future economic flow may add:
 
-4. **Stake**: Publishers stake $TRUTH on domains/entities via Solana program → staked content gets ranking boost
-5. **Dispute**: Bad content challenged → jury votes → stake slashed or preserved
+4. **Claim commitment**: an authorized party places genuinely losable cash on one exact Grade-A/event-bound predicate before its outcome
+5. **Deterministic settlement**: retained inputs reproduce the declared rule; ambiguous/unavailable outcomes return the bond as unresolved
+6. **Calibration**: only held-out outcomes decide whether comparable economic conviction receives a positive, zero, or negative capped likelihood in Stage 2

@@ -97,26 +97,26 @@ api_key = "your-serper-key"
 - `oi-crawl` — content distiller (fetch, extract, chunk, quality gate)
 - `oi-network` — libp2p P2P layer (Kademlia DHT, gossipsub)
 - `oi-sdk` — SDK core (wires index + embedder + engines)
-- `oi-staking` — Solana Anchor program ($TRUTH token) [Phase 3 — not yet implemented]
+- `oi-staking` — legacy/experimental Solana economic substrate; excluded from retrieval rank
 - `oi-cli` — CLI binary (`oi`)
 
-## Ranking (current)
+## Retrieval ranking (current)
 
 ```
-final_score = (semantic_score + bm25_score) / 2 * reputation
+base_relevance = semantic_weight * normalized_semantic + bm25_weight * normalized_bm25
+final_score = base_relevance * bounded_quality * bounded_freshness
 ```
 
 - Semantic: cosine similarity (384-dim MiniLM embeddings)
 - BM25: TF-IDF keyword matching
-- Reputation: Wilson score from feedback signals
+- Stake, reputation, DNS verification, wallet/payment data, and uncertainty do not enter retrieval rank
 
-## Ranking (Phase 3 — planned)
+## OpenUncertainty (MVP-1, experimental)
 
-```
-final_score = (semantic_score + bm25_score) / 2 * stake_boost * reputation
-```
-
-- Stake boost: log2(1 + stake_usd / 100) — not yet implemented
+- Claim/task/horizon-specific `DETERMINISTIC`, `CALIBRATED`, or `EVIDENTIAL_ONLY` output
+- Stage-2 policy may rerank while preserving the original retrieval rank
+- Claim-specific cash at risk is eligible only under an objective pre-outcome predicate
+- Cash effect is outcome-learned, may be positive/zero/negative, and is capped; raw domain stake never buys confidence
 
 ## Benchmark Results
 
@@ -137,7 +137,7 @@ Latency: ~1s median (vs ~3.4s for search + 3 fetches).
 |-------|--------|-------------|
 | Phase 1 | Done | Hybrid search engine (HNSW + BM25), content distiller, CLI |
 | Phase 2 | Done | P2P network (libp2p), blended search, sentinel crawler |
-| Phase 3 | Planned | $TRUTH token staking on Solana, dispute/jury system, stake-weighted ranking |
+| Phase 3 | Replaced | v1 stake-weighted ranking and subjective jury slashing are retracted; validate deterministic commitments and OpenUncertainty in a narrow real cohort |
 
 ## License
 

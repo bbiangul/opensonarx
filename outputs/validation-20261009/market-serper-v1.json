@@ -1,0 +1,2072 @@
+{
+  "captured_at_unix_ms": 1791541384746,
+  "experiment": "sealed-unjudged-market-generalization-capture-v1",
+  "manifest_path": "outputs/validation-20261009/workload-v1.json",
+  "manifest_sha256": "bb85bbdc0416f7883aa5381b20335891acdb5f23509e38fd369ca59b88f7aec5",
+  "manifest_name": "oct09-mixed-diagnostic-v1",
+  "engine": "serper",
+  "live_network": true,
+  "mock_results": false,
+  "judged_during_capture": false,
+  "top_k": 5,
+  "concurrency": 2,
+  "query_count": 40,
+  "nonempty": 40,
+  "complete_coverage_gate_passed": true,
+  "latency": {
+    "count": 40,
+    "p50_ms": 1319.590916,
+    "p95_ms": 2070.862458,
+    "p99_ms": 2899.704833,
+    "max_ms": 2899.704833
+  },
+  "wall_ms": 31160.098417,
+  "throughput_qps": 1.2836929930290983,
+  "cases": [
+    {
+      "manifest": {
+        "id": "oct09-navigation-0",
+        "query": "mozilla firefox official website",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "navigation-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 1130.041375,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "The fast, private browser that keeps you safe — Firefox.com",
+          "url": "https://www.firefox.com/en-US/",
+          "snippet": "Powered by Mozilla · Ask us a question! Website Privacy Notice · Terms of Use · Cookie Policy · Community Participation Guidelines · Logo Trademark Licensing ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Get Firefox for desktop and mobile — Firefox.com",
+          "url": "https://www.firefox.com/",
+          "snippet": "Firefox is a free web browser backed by Mozilla, a non-profit dedicated to internet health and privacy.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Mozilla - Internet for people, not profit (US)",
+          "url": "https://www.mozilla.org/en-US/",
+          "snippet": "Welcome to Mozilla. From trustworthy tech to policies that defend your digital rights, we put you first — always. Learn about us ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Firefox Fast & Private Browser - Apps on Google Play",
+          "url": "https://play.google.com/store/apps/details?id=org.mozilla.firefox&hl=en_US",
+          "snippet": "Firefox is a private web browser designed to protect your data, block trackers and make browsing fast, secure and simple. Whether you're looking for an ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Choose which Firefox Browser to download in your language",
+          "url": "https://www.firefox.com/en-US/download/all/",
+          "snippet": "Choose which Firefox Browser to download in your language. Everyone deserves access to the internet — your language should never be a barrier.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-navigation-1",
+        "query": "LibreOffice site oficial",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "navigation-1",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "navigation"
+      },
+      "search_ms": 1257.285167,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Download — LibreOffice",
+          "url": "https://www.libreoffice.org/download/",
+          "snippet": "Download LibreOffice, the free and open source office suite. Download by torrent or see all mirror links. Customize your download below.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Free and private office suite, no forced AI — LibreOffice",
+          "url": "https://www.libreoffice.org/",
+          "snippet": "LibreOffice is a free office suite. LibreOffice is an open source office suite created by you, for you. It's free and open source software, so anyone can study ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "LibreOffice",
+          "url": "https://en.wikipedia.org/wiki/LibreOffice",
+          "snippet": "LibreOffice is a free and open-source office productivity software suite developed by The Document Foundation (TDF). It was created in 2010 as a fork of ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Release Notes",
+          "url": "https://www.libreoffice.org/release-notes/",
+          "snippet": "The latest version of LibreOffice, recommended for technology enthusiasts, which contains new features and program enhancements.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Who are we?",
+          "url": "https://www.libreoffice.org/who-are-we/",
+          "snippet": "LibreOffice is free and open source software, originally based on OpenOffice.org (commonly known as OpenOffice), and is the most actively developed OpenOffice.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-navigation-2",
+        "query": "Blender official website",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "navigation-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 1401.3955,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Blender - The Free and Open Source 3D Creation Software ...",
+          "url": "https://www.blender.org/",
+          "snippet": "Join the official Blender Survey 2026!. Toggle navigation. Roadmap · Download ... Browse assets stored online and download them only when needed.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Blender",
+          "url": "https://www.youtube.com/@BlenderOfficial",
+          "snippet": "Official YouTube channel for Blender, the Free and Open Source 3D Creation Suite. Official Blender Open Movies Watch all the films made by Blender!",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Blender (software)",
+          "url": "https://en.wikipedia.org/wiki/Blender_(software)",
+          "snippet": "Blender is a free and open-source 3D computer graphics software suite. It runs on Windows, macOS, Linux, BSD, is used for general 3D modeling, animation,",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "is the real blender web this? \"https://www.blender.org\" i'ved ...",
+          "url": "https://www.reddit.com/r/blender/comments/1iie1mx/is_the_real_blender_web_this_httpswwwblenderorg/",
+          "snippet": "Yes, that's the official real blender web site. https://www.blender.org/ this is the official website https://store.steampowered.com/app/365670 ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Blender - Free download and install on Windows",
+          "url": "https://apps.microsoft.com/detail/9pp3c07gtvrh?hl=en-US&gl=US",
+          "snippet": "Blender is the Free and Open Source 3D creation suite. It supports the entirety of the 3D pipeline—modeling, sculpting, rigging, ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-navigation-3",
+        "query": "Zotero site oficial",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "navigation-3",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "navigation"
+      },
+      "search_ms": 1491.655583,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Zotero | Your personal research assistant",
+          "url": "https://www.zotero.org/",
+          "snippet": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research. tero for Android Also available for Mac, Windows, Linux, and iOS",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Download Zotero Connector",
+          "url": "https://www.zotero.org/download/",
+          "snippet": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research. Zotero | Your personal research assistant",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "ZoteroBib: Fast, free bibliography generator - MLA, APA ...",
+          "url": "https://zbib.org/",
+          "snippet": "Free, accurate citation and bibliography maker for APA, Chicago, Harvard, MLA, and 10000 other styles. No ads, no downloads, no account required.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Zotero Documentation",
+          "url": "https://www.zotero.org/support/",
+          "snippet": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Login",
+          "url": "https://www.zotero.org/user/login/",
+          "snippet": "Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research. Username or Email Password. Log in to Zotero or Sign in with a ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-navigation-4",
+        "query": "Inkscape official website",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "navigation-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 1849.8086250000001,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Inkscape - Free download and install on Windows",
+          "url": "https://apps.microsoft.com/detail/9pd9bhglfc7h?hl=en-US&gl=US",
+          "snippet": "Inkscape is a free and open-source vector graphics editor; it can be used to create or edit vector graphics such as illustrations, diagrams, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Inkscape: Free and Open Source Vector Drawing",
+          "url": "https://github.com/inkscape/inkscape",
+          "snippet": "Inkscape is a professional quality vector graphics software that runs on Windows, Mac OS X and Linux. It is used by design professionals and hobbyists ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Inkscape - Download",
+          "url": "https://inkscape.en.softonic.com/",
+          "snippet": "Inkscape is a free graphic and design editor that can be used for personal and professional purposes. The program has a complete set of design tools that allow ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Inkscape",
+          "url": "https://en.wikipedia.org/wiki/Inkscape",
+          "snippet": "Inkscape is a free and open-source software vector graphics editor released under a GNU General Public License (GPL) 2.0 or later.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Installing Inkscape",
+          "url": "https://wiki.inkscape.org/wiki/Installing_Inkscape",
+          "snippet": "This page explains how to install Inkscape, either the stable or the development version. For instructions on how to compile Inkscape from ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-transactions-0",
+        "query": "download Firefox for Linux official",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "transactions-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1479.8670419999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Download Firefox for Linux",
+          "url": "https://www.firefox.com/en-US/download/linux/",
+          "snippet": "Download for Linux 64-bit. The Firefox browser for Linux that lets you work confidently and browse privately. Firefox is open source. Download Download Firefox ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Install Firefox on Linux - Mozilla Support",
+          "url": "https://support.mozilla.org/en-US/kb/install-firefox-linux",
+          "snippet": "Go to the Firefox download page, and click Download for Linux 64-bit or Download for Linux ARM64. You can also click the All Firefox Downloads ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "The fast, private browser that keeps you safe — Firefox.com",
+          "url": "https://www.firefox.com/en-US/",
+          "snippet": "Get the browsing experience you expect with protection, control and choice built in. Try Firefox · Download on the App Store Get it on Google Play.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Choose which Firefox Browser to download in your language",
+          "url": "https://www.firefox.com/en-US/download/all/",
+          "snippet": "Browser to download in your language … we make Firefox available in more than 90 languages. Download Download Firefox Windows macOS iOS Android Linux Custom ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Doonload Mozilla Firefox fur Linux",
+          "url": "https://www.firefox.com/sco/download/linux/",
+          "snippet": "Download for Linux 64-bit Download for Linux ARM64. Using Debian, Ubuntu or any Debian-based distribution? You can set up our APT repository instead.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-transactions-1",
+        "query": "baixar LibreOffice para macOS oficial",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "transactions-1",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "transactions"
+      },
+      "search_ms": 2899.704833,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Download — LibreOffice",
+          "url": "https://www.libreoffice.org/download/",
+          "snippet": "LibreOffice 26.8 is our latest stable release, including new features, performance improvements, fixes and more… Markdown support. Import and export documents ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Installation Instructions",
+          "url": "https://www.libreoffice.org/installation-instructions/",
+          "snippet": "First check the system requirements before installing LibreOffice on macOS. Important: on the Download page, please make sure you are choosing the right version ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Download LibreOffice for Mac | MacUpdate",
+          "url": "https://libreoffice.macupdate.com/",
+          "snippet": "Updated on. Aug 26, 2026 · License. Free · Monetization. Absolutely Free · Size. 309.3 MB · Architecture. Intel 64; Apple Silicon · OS. macOS 11 or later · Downloads.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Download LibreOffice for Mac - Free - latest version",
+          "url": "https://libreoffice.en.softonic.com/mac/download",
+          "snippet": "Download LibreOffice for Mac now from Softonic: 100% safe and virus free. More than 1605 downloads this month. Download LibreOffice latest ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "LibreOffice - App Store - Apple",
+          "url": "https://apps.apple.com/us/app/libreoffice/id1630474372?mt=12",
+          "snippet": "LibreOffice is compatible with a wide range of document formats such as Microsoft® Word (.doc, .docx), Excel (.xls, .xlsx), PowerPoint (.ppt, .pptx) and ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-transactions-2",
+        "query": "renew passport UK official application",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "transactions-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1022.577791,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Overseas British passport applications",
+          "url": "https://www.gov.uk/overseas-passports",
+          "snippet": "Get the forms, prices and application details you need if: you're a British national; you want to renew or apply for a British passport from overseas.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Apply online for a UK passport",
+          "url": "https://www.gov.uk/apply-renew-passport",
+          "snippet": "Use this service to apply for, renew, replace or update your passport and pay for it online. You'll need a debit or credit card to use this service.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Adult Passport Renewal",
+          "url": "https://uk.usembassy.gov/adult-passport-renewal/",
+          "snippet": "Renewing Your 10-Year Passport (by mail). STEP 1: Complete and print online form DS-82 . You must SIGN the completed form DS-82 before mailing your application.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Renew Your Passport Online - travel.gov",
+          "url": "https://travel.state.gov/en/passports/renew-replace/online.html",
+          "snippet": "Confirm you meet the requirements · The passport you are renewing is (or was) valid for 10 years. · You are age 25 or older. · You are not changing your personal ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "How to renew a UK passport – everything you need to know",
+          "url": "https://www.allcleartravel.co.uk/blog/how-to-renew-uk-passport/",
+          "snippet": "Step 1: Go to the official GOV.UK website · Step 2: Fill in your details · Step 3: Upload a digital passport photo · Step 4: Pay the application ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-transactions-3",
+        "query": "emitir comprovante de situação cadastral CPF",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "transactions-3",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "transactions"
+      },
+      "search_ms": 1099.923792,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Comprovante de Situação Cadastral no CPF - Receita Federal",
+          "url": "https://servicos.receita.fazenda.gov.br/servicos/cpf/consultasituacao/consultapublica.asp",
+          "snippet": "Comprovante de Situação Cadastral no CPF. Preencha os campos abaixo com os dados solicitados. CPF: Data de Nascimento: O comprovante gerado não fornece ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Consultar Cadastro de Pessoa Física (CPF) na Receita Federal",
+          "url": "https://www.gov.br/pt-br/servicos/consultar-cadastro-de-pessoas-fisicas",
+          "snippet": "Consulte a situação cadastral do seu CPF junto à Receita Federal. Por meio deste serviço você também pode emitir o comprovante de situação cadastral, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Comprovante de Situação Cadastral no CPF",
+          "url": "http://cpf.receita.fazenda.gov.br/situacao/default.asp",
+          "snippet": "Receita Federal do Brasil. Comprovante de Situação Cadastral no CPF. Informe o dado abaixo. CPF. Data de Nascimento. Consultar Consultar. Limpar Limpar.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Comprovante de regularidade do CPF: para que serve e ...",
+          "url": "https://www.serasa.com.br/carteira-digital/blog/regularidade-cpf/",
+          "snippet": "Para obter o comprovante de regularidade do CPF, basta acessar o app ou a página de consulta de situação cadastral no site da Receita Federal.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Comprovante de Situação Cadastral no CPF",
+          "url": "https://www2.camara.leg.br/a-camara/estruturaadm/diretorias/diretoria-de-gestao-pessoas/estrutura-1/depes/secretariado-parlamentar/posse-de-sp-sem-vinculo/copy_of_comprovante-de-situacao-cadastral-no-cpf",
+          "snippet": "1- Acessar o sítio da Receita Federal por meio link abaixo: · 2- Digitar o CPF e a data de nascimento do indicado, clicar em \"Sou humano\" e \"Consultar\". · 3- ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-transactions-4",
+        "query": "apply for an Australian passport official",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "transactions-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1449.2751660000001,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Australian Passport Office: Home",
+          "url": "https://www.passports.gov.au/",
+          "snippet": "Australian passports and travel documents ... Find out how to apply, check the status of your passport application, or get quick advice on travel documents.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "How to apply for a passport | Australia in the USA",
+          "url": "https://usa.embassy.gov.au/how-apply-passport",
+          "snippet": "How to Apply · 1. Fill out your application online at the global website (www.passports.gov.au) · 2. Print your application form - check full pages have printed.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Passport - policy",
+          "url": "https://www.dfat.gov.au/about-us/publications/corporate/passports/passport-policy",
+          "snippet": "Customers can complete a passport application online, then print and lodge it at one of the participating Australia Post outlets across Australia or at their ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Australian passport application tips",
+          "url": "https://auspost.com.au/personal/id-and-document-services/passport-and-identity-photos/application-tips",
+          "snippet": "There are 2 ways to complete a passport application form. You can complete an online form or a paper form from the Post Office. Online form. Complete the online ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Australian Passports | Australia in the USA",
+          "url": "https://usa.embassy.gov.au/passports",
+          "snippet": "Passports · How to apply · Where to apply · Documents/Forms required · Photos · Urgent travel/Emergency Passports · Lost/Stolen passport · Guarantors ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-factual-0",
+        "query": "who developed the Julia programming language",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "factual-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 2250.301583,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Julia (programming language)",
+          "url": "https://en.wikipedia.org/wiki/Julia_(programming_language)",
+          "snippet": "Designed by Jeff Bezanson, Alan Edelman, Stefan Karpinski, Viral B. Shah Developer Jeff Bezanson, Stefan Karpinski, Viral B. Shah, and other contributors [2] [ ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Why We Created Julia",
+          "url": "https://julialang.org/blog/2012/02/why-we-created-julia/",
+          "snippet": "We Created Julia 14 February 2012 | Jeff Bezanson, Stefan Karpinski, Viral B. Shah, Alan Edelman Jeff Bezanson Stefan Karpinski Viral B. Shah ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Julia (programming language): Home",
+          "url": "https://guides.libraries.uc.edu/julia",
+          "snippet": "Developed at MIT by Dr. Viral Shah, Prof. Alan Edelman, Dr. Jeff Bezanson and Stefan Karpinski. in 2012. How is Julia different from other ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "How an MIT research project became a global ...",
+          "url": "https://news.mit.edu/2026/how-mit-research-project-became-global-programming-language-0831",
+          "snippet": "JuliaHub's founders, who include Julia co-creators Shah, MIT professor of mathematics Alan Edelman, Jeff Bezanson SM '12, PhD '15, and former ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "The Julia Programming Language",
+          "url": "https://julialang.org/",
+          "snippet": "The official website for the Julia Language. Julia is a language that is fast, dynamic, easy to use, and open source. Click here to learn more.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-factual-1",
+        "query": "quem criou o protocolo HTTP",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "factual-1",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "factual"
+      },
+      "search_ms": 1400.560708,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "HTTP: O que é e como surgiu? - Gabriel Ritter - Medium",
+          "url": "https://reisritter.medium.com/http-o-que-%C3%A9-e-como-surgiu-59f299f22b23",
+          "snippet": "Tudo começou em 1989 com um cara chamado Tim Berners-Lee, um brilhante físico e cientista da computação britânico que, enquanto trabalhava na ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "O que é HTTP: entenda de forma simples e fácil",
+          "url": "https://www.homehost.com.br/blog/internet/o-que-e-http/",
+          "snippet": "Uma breve história do HTTP. Em meados de 1991, Tim Berners Lee criou um protocolo para fazer o download de arquivos hipertexto de servidores. Hipertexto eram ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "HTTPS – Wikipédia, a enciclopédia livre",
+          "url": "https://pt.wikipedia.org/wiki/HTTPS",
+          "snippet": "Porém, o HTTPS não deve ser confundido com o protocolo \"Secure HTTP\" (S-HTTP) ... A Netscape Communication criou o HTTPS em 1994 para seu navegador Netscape.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Evolución del protocolo HTTP - MDN Web Docs",
+          "url": "https://developer.mozilla.org/es/docs/Web/HTTP/Guides/Evolution_of_HTTP",
+          "snippet": "HTTP es el protocolo en el que se basa la Web. Fue inventado por Tim Berners-Lee entre los años 1989-1991, HTTP ha visto muchos cambios, manteniendo la mayor ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Protocolo HTTP",
+          "url": "https://dev.to/ortizdavid/protocolo-http-2cbk",
+          "snippet": "O HTTP foi desenvolvido por Tim Berners-Lee no CERN (Organização Europeia para Pesquisa Nuclear) durante o início da década de 1990. A primeira ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-factual-2",
+        "query": "what is the difference between a compiler and an interpreter",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "factual-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 1438.971583,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Interpreter vs Compiler : r/learnprogramming",
+          "url": "https://www.reddit.com/r/learnprogramming/comments/q3ddlp/interpreter_vs_compiler/",
+          "snippet": "Usually, an interpreter is slower than compiled code, and interpreters are quite often interactive. That is, you start an interpreter, load code ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Difference Between Compiler and Interpreter",
+          "url": "https://www.geeksforgeeks.org/compiler-design/difference-between-compiler-and-interpreter/",
+          "snippet": "A compiler translates the whole program at once, which can make it run faster but takes more time to compile. An interpreter translates and runs ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Interpreter vs Compiler: What's the Difference?",
+          "url": "https://www.youtube.com/watch?v=ZWM-I2rRfP8",
+          "snippet": "In this video, we dive into the world of interpreters and compilers, breaking down their key differences and how they operate.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Distinguishing an Interpreter from a Compiler",
+          "url": "https://tratt.net/laurie/blog/2023/distinguishing_an_interpreter_from_a_compiler.html",
+          "snippet": "a compiler has to do some work at compile-time, whereas an interpreter has to do none4, and a partial evaluator has to do a lot of work.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Compiler vs. Interpreter in Programming",
+          "url": "https://builtin.com/software-engineering-perspectives/compiler-vs-interpreter",
+          "snippet": "The difference is compilers translate this code before executing it, and interpreters translate this code line-by-line as it's being executed. Which languages ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-factual-3",
+        "query": "quem inventou o transistor",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "factual-3",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "factual"
+      },
+      "search_ms": 1549.6967499999998,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Transístor – Wikipédia, a enciclopédia livre",
+          "url": "https://pt.wikipedia.org/wiki/Trans%C3%ADstor",
+          "snippet": "O primeiro dispositivo praticamente implementado foi um transistor de contato pontual inventado em 1947 pelos físicos estadunidenses John Bardeen, Walter ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "A História do transistor",
+          "url": "https://www.newtoncbraga.com.br/index.php/historia/407-a-historia-do-transistor",
+          "snippet": "O primeiro nome importante foi o de GEORGE CLARKE SOUTHWORTH, nascido em 1890 e morto em 1972. Este pesquisador nasceu numa pequena cidade da Pennsylvania e se ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "The Component That CHANGED the WORLD and Created ...",
+          "url": "https://www.youtube.com/watch?v=3G8lzeUQykM&xstg=CAMSBhUDzO3xHw%3D%3D",
+          "snippet": "TRANSISTOR: O componente que MUDOU o MUNDO e criou a ERA DIGITAL Assista esse VÍDEO e DESCUBRA TUDO sobre o TRANSITOR, o componente incrível ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Transistor, uma invenção que mudou o mundo",
+          "url": "https://www.seesp.org.br/site/jornal-do-engenheiro/item/21758-transistor-uma-invencao-que-mudou-o-mundo",
+          "snippet": "O protótipo desenvolvido pelos pesquisadores do laboratório norte-americano Bell Labs John Bardeen, William Shockley e Walter Brattain era chamado de transistor ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "O que é um Transistor em Eletrônica",
+          "url": "https://www.bosontreinamentos.com.br/eletronica/o-que-e-um-transistor-em-eletronica/",
+          "snippet": "O transistor foi inventado em 1947 pelos físicos John Bardeen, Walter Brattain e William Shockley, que trabalhavam nos Laboratórios Bell, nos ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-factual-4",
+        "query": "what does the term eventual consistency mean",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "factual-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 1329.28225,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "What is Eventual Consistency? Definition & FAQs",
+          "url": "https://www.scylladb.com/glossary/eventual-consistency/",
+          "snippet": "Eventual consistency in general refers to a database's ability to process transactions simultaneously while preserving the integrity of the data. In simple ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Eventual consistency",
+          "url": "https://en.wikipedia.org/wiki/Eventual_consistency",
+          "snippet": "Eventual consistency is a consistency model used in distributed computing to achieve high availability. An eventually consistent system ensures that if no new ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "What is eventual consistency good for? : r/learnprogramming",
+          "url": "https://www.reddit.com/r/learnprogramming/comments/1di3tay/what_is_eventual_consistency_good_for/",
+          "snippet": "Strictly speaking, \"eventual consistency\" means that eventually, all participants in the system agree on a final state that resulted from some ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Eventual Consistency in Distributed Systems",
+          "url": "https://www.geeksforgeeks.org/system-design/eventual-consistency-in-distributive-systems-learn-system-design/",
+          "snippet": "Eventual consistency allows data updates to propagate gradually across replicas while ensuring they eventually reach the same state. Write ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "System design — eventual consistency vs strong consistency",
+          "url": "https://medium.com/@qingedaig/system-design-eventual-consistency-vs-strong-consistency-feee5fd8d3fc",
+          "snippet": "Eventual consistency is a model in which updates to a distributed data store may not be immediately visible to all parts of the system, but all ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-current-0",
+        "query": "latest stable release of Rust programming language",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "current-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 1097.86975,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Announcing Rust 1.99.0",
+          "url": "https://blog.rust-lang.org/releases/latest/",
+          "snippet": "The Rust team is happy to announce a new version of Rust, 1.99.0. Rust is a programming language empowering everyone to build reliable and ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Rust Changelogs: Rust Versions",
+          "url": "https://releases.rs/",
+          "snippet": "Rust Versions # Stable: 1.99.0 Beta: 1.100.0 (12 November, 2026, 35 days left) Nightly: 1.101.0 (24 December, 2026, 77 days left) Ongoing Stabilization PRs ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Rust (programming language)",
+          "url": "https://en.wikipedia.org/wiki/Rust_(programming_language)",
+          "snippet": "... language\", adoption slowed because it radically changed from version to version. On May 15, 2015, Rust 1.0 became the first stable release. One ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Rust 1.96.1 is out",
+          "url": "https://www.reddit.com/r/rust/comments/1ujqvqx/rust_1961_is_out/",
+          "snippet": "Rust 1.96.1 is out. official blog.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Releases · rust-lang/rust",
+          "url": "https://github.com/rust-lang/rust/releases",
+          "snippet": "Empowering everyone to build reliable and efficient software. - Releases · rust-lang/rust. ... new version is published. Not all crates have pubtime yet. #16369 # ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-current-1",
+        "query": "versão estável atual do PostgreSQL",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "current-1",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "current"
+      },
+      "search_ms": 2070.862458,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Release Notes",
+          "url": "https://www.postgresql.org/docs/release/",
+          "snippet": "Below is the complete archive of release notes for every version of PostgreSQL. PostgreSQL 18. 18.6 · 18.4 · 18.3 · 18.2 · 18.1 · 18.0. PostgreSQL 17. 17.11 ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "PostgreSQL: The world's most advanced open source database",
+          "url": "https://www.postgresql.org/",
+          "snippet": "The PostgreSQL Global Development Group announces that the 4th beta release of PostgreSQL 19 is now available for download. This release contains PostgreSQL 19 ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "PostgreSQL: Downloads",
+          "url": "https://www.postgresql.org/download/",
+          "snippet": "PostgreSQL is available for download as ready-to-use packages or installers for various platforms, as well as a source code archive if you want to build it ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "qual versão do postgres vocês estão usando em produção?",
+          "url": "https://www.reddit.com/r/django/comments/1g6huwe/postgres_users_what_version_of_postgres_are_you/?tl=pt-br",
+          "snippet": "Me deparei com este artigo hoje: \n\nhttps://neon.tech/blog/why-does-everyone-run-ancient-postgres-versions \n\ne me fez verificar. Geralmente uso a ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "PostgreSQL EOL Dates: Every Version's Release & End-of- ...",
+          "url": "https://www.herodevs.com/blog-posts/postgresql-eol-dates-every-versions-release-end-of-life-timeline",
+          "snippet": "PostgreSQL 14 reaches end of life on November 12, 2026, five years after its September 30, 2021 release. After that date the PostgreSQL ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-current-2",
+        "query": "current president of Mexico official",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "current-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 1231.092667,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Claudia Sheinbaum",
+          "url": "https://en.wikipedia.org/wiki/Claudia_Sheinbaum",
+          "snippet": "Claudia Sheinbaum Pardo … has been serving as the 66th president of Mexico since 2024. She is the first woman and the first person with Jewish",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Claudia Sheinbaum",
+          "url": "https://awpc.cattcenter.iastate.edu/directory/claudia-sheinbaum",
+          "snippet": "President of Mexico, 2024-present ... Claudia Sheinbaum Pardo is an environmental engineer and politician who has served as president of Mexico since 2024.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Claudia Sheinbaum | Education, Policies, & Biography",
+          "url": "https://www.britannica.com/biography/Claudia-Sheinbaum",
+          "snippet": "Claudia Sheinbaum is the current President of Mexico. She assumed office on October 1, 2024, after a landslide victory in the presidential election,",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Claudia Sheinbaum's first year: 5 key points on democracy ...",
+          "url": "https://www.wola.org/analysis/claudia-sheinbaums-first-year-5-key-points-on-democracy-and-human-rights/",
+          "snippet": "Claudia Sheinbaum became Mexico's first female president. She arrived with the promise of continuing and expanding the plan of the ruling party ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Claudia Sheinbaum Pardo: Chingona",
+          "url": "https://www.chicagohistory.org/claudia-sheinbaum-pardo-chingona/",
+          "snippet": "Claudia Sheinbaum Pardo, cementing her place in history as Mexico's 66th president and as the first woman and first Jewish person to hold the ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-current-3",
+        "query": "quem é o primeiro ministro do Canadá atualmente",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "current-3",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "current"
+      },
+      "search_ms": 1369.876916,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Primeiro-ministro do Canadá",
+          "url": "https://pt.wikipedia.org/wiki/Primeiro-ministro_do_Canad%C3%A1",
+          "snippet": "O atual primeiro-ministro do Canadá é Mark Carney, líder do Partido Liberal do Canadá. desde 14 de março de 2025 Estilo O Muito",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "About | Prime Minister of Canada",
+          "url": "https://www.pm.gc.ca/en/about",
+          "snippet": "Mark Carney is Canada's 24th Prime Minister. He was elected Leader of the Liberal Party of Canada and sworn in as Prime Minister in March 2025.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Mark Carney – Wikipédia, a enciclopédia livre",
+          "url": "https://pt.wikipedia.org/wiki/Mark_Carney",
+          "snippet": "Mark Joseph Carney PC (Fort Smith, é um político e economista canadense que atua como o 24o primeiro-ministro do Canadá e líder do Partido Liberal desde 2025.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Eleições no Canadá: Mark Carney segue como premiê ...",
+          "url": "https://www.bbc.com/portuguese/articles/cgenvp50e15o",
+          "snippet": "Mark Carney, de 60 anos, é o atual primeiro-ministro do Canadá — mas está no cargo há apenas um mês. Ele substituiu Justin Trudeau.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "O primeiro-ministro do Canadá, Mark Carney, disse hoje ...",
+          "url": "https://www.instagram.com/reel/DTvidenCZKv/?hl=en",
+          "snippet": "O primeiro-ministro do Canadá, Mark Carney, revelou ter estudado a possibilidade de uma eventual ação militar dos Estados Unidos contra o Canadá ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-current-4",
+        "query": "latest release of LibreOffice",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "current-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 1539.318917,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Release Notes",
+          "url": "https://www.libreoffice.org/release-notes/",
+          "snippet": "LibreOffice 26.8.1 (October 8, 2026) - Latest Branch The latest version of LibreOffice, recommended for technology enthusiasts, which contains new features and ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Download — LibreOffice",
+          "url": "https://www.libreoffice.org/download/",
+          "snippet": "LibreOffice 26.8 is our latest stable release, including new features, performance improvements, fixes and more...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "New major update: LibreOffice 25.8 – smarter, faster and ...",
+          "url": "https://www.reddit.com/r/libreoffice/comments/1mvbszt/new_major_update_libreoffice_258_smarter_faster/",
+          "snippet": "The Document Foundation announces the release of LibreOffice 25.8. support for Windows 7, Windows 8 and Windows 8.1 has been removed. for ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "LibreOffice",
+          "url": "https://whatsnew.libreoffice.org/",
+          "snippet": "Latest Stable 26.8.1 LibreOffice Releases Major versions follow a year.month (e.g., 25.2 for February 2025). 26.8.1 SEP 21, 2026. Download latest version of ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "LibreOffice 26.8 Open-Source Office Suite Officially ...",
+          "url": "https://9to5linux.com/libreoffice-26-8-open-source-office-suite-officially-released-this-is-whats-new",
+          "snippet": "LibreOffice 26.8 open-source office suite is now available for download with numerous new features, improvements, and bug fixes.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-diligence-0",
+        "query": "is this cryptocurrency project audited and does an audit prove safety",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "diligence-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 1249.975667,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Crypto audits: What should your business expect? - BPM",
+          "url": "https://www.bpm.com/insights/crypto-audit/",
+          "snippet": "A crypto audit examines your blockchain transactions, controls, and financial records—helping you stay compliant, manage risk, and demonstrate ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Crypto auditing: A guide to reporting and compliance",
+          "url": "https://tax.thomsonreuters.com/blog/crypto-auditing-a-guide-to-reporting-and-compliance/",
+          "snippet": "Auditors must verify that access is maintained throughout and after the audit period to avoid any reputational damage from lost access. What can ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Do you find security audits for crypto projects useful?",
+          "url": "https://www.reddit.com/r/CryptoCurrency/comments/uepycl/do_you_find_security_audits_for_crypto_projects/",
+          "snippet": "A smart contract security audit provides a detailed analysis of a project's smart contracts. These are important to safeguard funds invested through ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Cryptocurrency audits and challenges",
+          "url": "https://ohiocpa.com/for-the-public/news/2024/04/09/cryptocurrency-audits-and-challenges",
+          "snippet": "Navigate cryptocurrency auditing challenges with expertise. Learn how auditors tackle complexities and ensure accurate financial statement.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "What specific crypto activities and behaviors trigger an IRS audit?",
+          "url": "https://www.reddit.com/r/Coinbase/comments/1qqyhat/what_specific_crypto_activities_and_behaviors/",
+          "snippet": "",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-diligence-1",
+        "query": "como verificar se uma corretora tem autorização da CVM",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "diligence-1",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "diligence"
+      },
+      "search_ms": 1040.339375,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "CVM - Comissão de Valores Mobiliários - Portal Gov.br",
+          "url": "https://www.gov.br/cvm/pt-br",
+          "snippet": "A CVM é uma Autarquia vinculada ao Ministério da Fazenda, que tem o objetivo de fiscalizar, normatizar, disciplinar e desenvolver o mercado de valores ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Serviços - Sistemas CVM",
+          "url": "https://sistemas.cvm.gov.br/?CadGeral",
+          "snippet": "Situação do Requisito na CVM: Entre com o CPF/CNPJ (Deixe em branco caso não saiba): Preencha somente com números. ... A consulta pode ser feita por Razão Social, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Quer saber se uma corretora está registrada na CVM? ...",
+          "url": "https://www.instagram.com/p/DXNQYYHDr_I/",
+          "snippet": "No site da Autarquia, você pode consultar o Cadastro Geral e verificar se a corretora está devidamente registrada e autorizada pela CVM a atuar ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Sistemas CVM",
+          "url": "https://sistemas.cvm.gov.br/",
+          "snippet": "Consulta ao Cadastro da CVM, Regulados Companhias Demonstrações financeiras, cadastro, documentos, fato relevante,",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "How to check if a brokerage firm is legitimate?",
+          "url": "https://www.youtube.com/watch?v=fuLHn6luE5Q",
+          "snippet": "Go to the CVM system website. The link is: sistemas.cvm.gov.br. Enter the brokerage firm's name in the first field. Enter the validation number ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-diligence-2",
+        "query": "does a company registration prove an investment is safe",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "diligence-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 998.477792,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Check Registration: Sellers and Investments",
+          "url": "https://www.finra.org/investors/protect-your-money/check-registration",
+          "snippet": "Keep in mind that registration with the SEC doesn't guarantee that an investment will be a good one or immune to fraud.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "How do I know that my secure investment is not a scamm?",
+          "url": "https://www.quora.com/How-do-I-know-that-my-secure-investment-is-not-a-scamm",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "How can one determine if an investment company is legitimate?",
+          "url": "https://www.quora.com/How-can-one-determine-if-an-investment-company-is-legitimate",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Risks of Falsely Claiming Accredited Investor Status",
+          "url": "https://www.justanswer.com/business-law/r9plc-happens-company-i-m-investing-asks.html",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Are They Registered?",
+          "url": "https://www.securities-administrators.ca/investor-tools/are-they-registered/",
+          "snippet": "Registration helps protect investors because securities regulators will only register firms and individuals if they are properly qualified.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-diligence-3",
+        "query": "como verificar se um instituto de pesquisa divulgou sua metodologia",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "diligence-3",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "diligence"
+      },
+      "search_ms": 1100.524875,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Conheça as regras para fazer pesquisas eleitorais e saiba ...",
+          "url": "https://www.mpf.mp.br/o-mpf/unidades/procuradoria-geral-da-republica-pgr/noticias/conheca-as-regras-para-fazer-pesquisas-eleitorais-e-saiba-como-o-mp-eleitoral-fiscaliza",
+          "snippet": "Como toda pesquisa de opinião pública, a pesquisa eleitoral utiliza método científico para apurar a realidade do momento junto a segmentos ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "O que você precisa saber para entender uma pesquisa ...",
+          "url": "https://www.nexojornal.com.br/expresso/2026/04/26/tse-pesquisa-eleitoral-como-funciona-metodologia",
+          "snippet": "É possível consultar os registros no site do tribunal, com informações sobre o contratante, o número de entrevistados, o valor gasto e a ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Consulta às pesquisas registradas",
+          "url": "https://www.tse.jus.br/eleicoes/pesquisa-eleitorais/consulta-as-pesquisas-registradas",
+          "snippet": "O resultado da consulta está limitado a 50 registros. Utilize os filtros para pesquisar. PesqEle - Sistema de Registro de Pesquisas Eleitorais, Versão: 3.11 ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Pesquisas eleitorais são confiáveis?",
+          "url": "https://www12.senado.leg.br/institucional/datasenado/pesquisas-eleitorais-sao-confiaveis",
+          "snippet": "O primeiro passo para identificar pesquisas idôneas é verificar o grau de transparência da metodologia. A pesquisa deve divulgar informações básicas, tais ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Pesquisa eleitoral é confiável? As pesquisas sobre as eleições ...",
+          "url": "https://www.facebook.com/tvcamara/videos/-pesquisa-eleitoral-%C3%A9-confi%C3%A1velas-pesquisas-sobre-as-elei%C3%A7%C3%B5es-seguem-regras-e-s%C3%A3/1053020170431482/",
+          "snippet": "Pesquisa eleitoral é confiável? As pesquisas sobre as eleições seguem regras e são fiscalizadas pela Justiça Eleitoral.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-diligence-4",
+        "query": "what evidence is needed to verify a charities legitimacy",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "diligence-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 1319.590916,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Before Giving to a Charity",
+          "url": "https://consumer.ftc.gov/articles/giving-charity",
+          "snippet": "Find out if the fundraiser and charity are registered. Most states require charities and their fundraisers to register with the state regulator. Check to see if ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "How to verify a charity's legitimacy",
+          "url": "https://www.facebook.com/USAGov/posts/are-you-sure-the-charity-that-youre-donating-to-is-legitimate-take-a-look-at-a-f/1032382932261742/",
+          "snippet": "Are you sure the charity that you're donating to is legitimate? \n\nTake a look at a few tips to help you protect yourself or report a charity that ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "how do i know if a charity is legit and my money is actually ...",
+          "url": "https://www.reddit.com/r/NoStupidQuestions/comments/1kq5jwk/how_do_i_know_if_a_charity_is_legit_and_my_money/",
+          "snippet": "Hey yall. I want to start giving money to people who actually need it—like for clean water, food, medical stuff, basic needs—in other countries or the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "How to Verify a Charity Before Donating",
+          "url": "https://www.solutions.bank/blog/post/how-to-verify-a-charity-before-donating",
+          "snippet": "One way to verify a charity's legitimacy is to check for accreditation. Accreditation means that the charity has met certain standards and has ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Before You Donate: How to Verify a Charity and Protect ...",
+          "url": "https://www.vcpwealth.com/blog-01/you-donate-how-verify-charity-and-protect-your-gift",
+          "snippet": "Having confirmation of your donation is essential, especially if you donate over $250. This is the IRS cutoff for proof of donation. While you ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-polls-0",
+        "query": "como identificar a margem de erro de uma pesquisa eleitoral",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "polls-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1319.5987499999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Margem de erro em pesquisas eleitorais - G1 - Globo",
+          "url": "https://g1.globo.com/politica/eleicoes/2026/videos/noticia/2026/08/21/video-entenda-o-que-e-a-margem-de-erro.ghtml",
+          "snippet": "Em uma pesquisa com 2 mil entrevistados, por exemplo, a margem de erro pode ser de dois pontos percentuais para mais ou para menos.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Entenda o que é a margem de erro nas pesquisas eleitorais ...",
+          "url": "https://www.facebook.com/g1/videos/entenda-o-que-%C3%A9-a-margem-de-erro-nas-pesquisas-eleitorais-httpglobo4qrfadt-g1-el/1540559513854075/",
+          "snippet": "Então assim, sempre tem que considerar a margem de erro pra saber se foi uma oscilação ou se realmente foi um crescimento ou uma queda.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "O que é margem de erro em uma pesquisa eleitoral e como ...",
+          "url": "https://guiadoestudante.abril.com.br/estudo/o-que-e-margem-de-erro-e-como-interpreta-la/",
+          "snippet": "A margem de erro é de dois pontos percentuais, para mais ou para menos, e o índice de confiança é de 95%. Com a erro, de 30% a 34%.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Margem de erro de uma pesquisa: o que é, cálculo",
+          "url": "https://brasilescola.uol.com.br/matematica/o-que-margem-erro-uma-pesquisa.htm",
+          "snippet": "A margem de erro nos diz qual é a possibilidade de variação dos resultados coletados. Por exemplo, as pesquisas eleitorais possuem quase sempre margem de erro ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Entenda o que é a margem de erro nas pesquisas eleitorais",
+          "url": "https://www.jota.info/eleicoes/eleicoes-2022/entenda-o-que-e-a-margem-de-erro-nas-pesquisas-eleitorais",
+          "snippet": "Todas as pesquisas divulgadas devem informar a margem de erro pois o estudo é feito por amostragem e não traz resultados absolutos.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-polls-1",
+        "query": "does a polling registration certify its results",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "polls-1",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "polls"
+      },
+      "search_ms": 1139.416792,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Election Results, Canvass, and Certification",
+          "url": "https://www.eac.gov/election-officials/election-results-canvass-and-certification",
+          "snippet": "The election results reported on election night are never the final, certified results. When polls close, local election ・ after every valid vote has ・ the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "What Happens After Election Day? Canvassing ...",
+          "url": "https://campaignlegal.org/update/what-happens-after-election-day-canvassing-certification-and-seating-members-congress",
+          "snippet": "To certify election results, the state or local officials must review and approve the completed canvass. This certification serves as legal ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Election certification, explained",
+          "url": "https://protectdemocracy.org/work/election-certification-explained/",
+          "snippet": "Election certification is the process through which the canvass – the process of ensuring that every ballot is accounted for – is concluded.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Series Postelection Processes",
+          "url": "https://www.ncsl.org/elections-and-campaigns/postelection-processes",
+          "snippet": "It's over when election administrators complete their postelection activities and the election results are certified.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Elections Defined: Canvassing and Certification of Ballots",
+          "url": "https://www.ncsl.org/resources/details/elections-defined-canvassing-and-certification-of-ballots",
+          "snippet": "Once that board reviews and confirms the results, all associated documentation goes to a state entity. That's when the election results are ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-polls-2",
+        "query": "diferença entre pesquisa estimulada e espontânea",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "polls-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1169.21275,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Qual a diferença entre pesquisa estimulada e ...",
+          "url": "https://www.institutophd.com.br/qual-a-diferenca-entre-pesquisa-estimulada-e-pesquisa-espontanea/",
+          "snippet": "As pesquisas estimuladas acabam limitando um pouco as ações dos entrevistados, mas por outro lado são mais simples de apurar e também têm um ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Intenção de voto espontânea e estimulada: Entenda a ...",
+          "url": "https://www.opuspesquisa.com/blog/eleitoral/intencao-de-voto-espontanea-e-estimulada/",
+          "snippet": "Enquanto, na pesquisa espontânea, o que se consegue aferir é o grau de cristalização do nome dos candidatos, na pesquisa estimulada tem-se um ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Você sabe a diferença entre pesquisa espontânea e ...",
+          "url": "https://www.instagram.com/p/DZfBPggjlZ9/",
+          "snippet": "Você sabe a diferença entre pesquisa espontânea e estimulada? Elas medem coisas diferentes, e cada uma traz um tipo de informação importante ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Qual a diferença entre pesquisa espontânea e estimulada?",
+          "url": "https://especiais.gazetadopovo.com.br/eleicoes/2018/qual-e-diferenca-entre-pesquisa-espontanea-e-pesquisa-estimulada/",
+          "snippet": "As intenções de voto na pesquisa espontânea são menores do que na pesquisa estimulada – quando são apresentados, ao entrevistado, opções de ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "O que é pesquisa estimulada? Entenda a principal dúvida ...",
+          "url": "https://oglobo.globo.com/blogs/pulso/post/2022/07/o-que-e-pesquisa-estimulada-entenda-a-principal-duvida-dos-brasileiros-nas-buscas-do-google.ghtml",
+          "snippet": "Por não apresentar opções, a pesquisa espontânea costuma trazer menos respostas concretas que a estimulada, mas é ao mesmo tempo muito ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-polls-3",
+        "query": "how can two articles report the same election poll",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "polls-3",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "polls"
+      },
+      "search_ms": 1210.407542,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "How the Associated Press reports election results ...",
+          "url": "https://www.npr.org/2024/11/05/nx-s1-5173783/how-the-associated-press-reports-election-results-differently-from-other-news-outlets",
+          "snippet": "You know, they do this by looking at multiple data points - you know, the history of a state, advanced vote data like early voting, as well as ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Why the Same Poll Produces Two Opposite Headlines",
+          "url": "https://5050politics.com/blog/poll-headlines/",
+          "snippet": "Two polls fielded on the same days with the same questions can differ mainly because they disagreed about who would turn up.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "News outlets are conscious of the need to explain election ...",
+          "url": "https://apnews.com/article/ap-transparent-explain-vote-count-d8acf18bbd639af2f1ba685fc601c01c",
+          "snippet": "At the AP, editors are mindful of political misinformation and opinion polls that reveal a growing distrust of the media, said Julie Pace, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "The polls aren't skewed, media coverage is - OUP Blog",
+          "url": "https://blog.oup.com/2017/03/political-polls-skewed-media-coverage/",
+          "snippet": "At first glance, the two distributions are different, suggesting that media coverage of polls reflect a different version of the race than ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Why electoral votes don't match across different media outlets",
+          "url": "https://www.king5.com/article/news/politics/elections/electoral-vote-discrepancies-presidential-election/281-a927fc51-4b0b-48ae-bf8a-8a2516177308",
+          "snippet": "Both the National Election Pool and AP VoteCast collect data that is used to project races, with exit polls being a key component of both.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-polls-4",
+        "query": "o que significa período de coleta de uma pesquisa eleitoral",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "polls-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1678.146,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Conheça as regras para fazer pesquisas eleitorais e saiba ...",
+          "url": "https://www.mpf.mp.br/o-mpf/unidades/procuradoria-geral-da-republica-pgr/noticias/conheca-as-regras-para-fazer-pesquisas-eleitorais-e-saiba-como-o-mp-eleitoral-fiscaliza",
+          "snippet": "Pesquisas eleitorais são o questionamento feito ao eleitor, em determinado momento, a respeito de candidatos que podem disputar ou já concorrem ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Pesquisas eleitorais são confiáveis?",
+          "url": "https://www12.senado.leg.br/institucional/datasenado/pesquisas-eleitorais-sao-confiaveis",
+          "snippet": "Pesquisas eleitorais são uma tentativa de captar a intenção de voto do cidadão, em um momento específico, por meio de um número limitado de entrevistas. É, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "ELECTION POLLS | How they work and why they are regulated",
+          "url": "https://www.youtube.com/watch?v=3NvRcLfJOR8",
+          "snippet": "As pesquisas eleitorais são instrumentos importantes para medir a percepção da população sobre temas e disputas eleitorais.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Eleições 2026: como funciona uma pesquisa eleitoral?",
+          "url": "https://investnews.com.br/economia/eleicoes-2026-pesquisa-eleitoral/",
+          "snippet": "A pesquisa eleitoral mede intenções declaradas de voto no período em que o trabalho de campo foi realizado. Ela responde a uma pergunta ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Entenda a importância da pesquisa eleitoral",
+          "url": "https://www.espm.br/blog/entenda-a-importancia-da-pesquisa-eleitoral/",
+          "snippet": "Na coleta, existe a abordagem em fluxo, que é quando o entrevistador aborda a pessoa na rua, em um ponto de ônibus ou em sua casa, a exemplo da ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-high_impact-0",
+        "query": "what evidence supports checking interactions before taking two medicines",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "high_impact-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1393.5941659999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Drug Interaction Checker - Find Unsafe Combinations",
+          "url": "https://www.drugs.com/drug_interactions.html",
+          "snippet": "Use Drugs.com's Drug Interaction Checker, trusted by doctors and patients, to instantly review your meds for unsafe combinations.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Drug Interactions: Warning Signs & How to Prevent Them",
+          "url": "https://southwestcare.org/understanding-your-medications-how-to-avoid-dangerous-drug-interactions/",
+          "snippet": "Drug interactions can cause serious side effects or make medications stop working. Learn the warning signs and how to protect yourself with a pharmacist ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Drug Interactions: What You Should Know",
+          "url": "https://www.fda.gov/drugs/resources-drugs/drug-interactions-what-you-should-know",
+          "snippet": "Doing so will help you to avoid potential problems such as drug interactions. Drug interactions may make your drug less effective, cause ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Drug interactions can result in side effects, reduce the ...",
+          "url": "https://www.facebook.com/UAMShealth/videos/drug-interaction-checker/132428634342790/",
+          "snippet": "Drug interactions can result in side effects, reduce the effectiveness of your medicine or possibly increase the action of a medicine.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Current Knowledge about Providing Drug–Drug Interaction ...",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8103271/",
+          "snippet": "by T Hammar · 2021 · Cited by 41 — A drug–drug interaction (DDI) can be described as the effect of one medication being changed (enhanced, diminished, or modified) by the presence of another ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-high_impact-1",
+        "query": "como identificar o órgão oficial de uma orientação tributária",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "high_impact-1",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1753.075541,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Mais Orientações Tributárias — Receita Federal - Portal Gov.br",
+          "url": "https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria",
+          "snippet": "Saiba mais sobre cadastros, obrigações e pagamento de impostos. Benefícios Fiscais · Cadastro · Cobranças e Intimações · Controles Fiscais Especiais.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Manual de Orientação Tributária da Receita Federal 2026 ...",
+          "url": "https://www.instagram.com/p/DYhyooNlDmJ/",
+          "snippet": "A Receita Federal publicou um guia completo com orientações para o correto cumprimento das obrigações tributárias pelos Cartórios. O material ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "What Is the Taxpayer Orientation Manual?",
+          "url": "https://www.youtube.com/watch?v=Zi1zffX2FeM",
+          "snippet": "Aquí te explicamos quais são os objetivos do MOC e porque é importante que os desenvolvedores estejam sempre atualizados sobre a legislação ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Orientação tributária de ISS - Finanças",
+          "url": "https://www.pmpf.rs.gov.br/financas/servicos/orientacao-tributaria-de-iss/",
+          "snippet": "Como solicitar online: Clicar no botão “Acesso ao sistema” e informar sua senha, após, selecionar o assunto ORIENTAÇÃO TRIBUTÁRIA DE ISS e anexar os documentos ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Receita Federal lança Manual de Orientações Tributárias ...",
+          "url": "https://www.legisweb.com.br/noticia/?id=33311",
+          "snippet": "Publicação reúne diretrizes atualizadas e padronizadas sobre as obrigações tributárias de notários e registradores em todo o país.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-high_impact-2",
+        "query": "what should a source disclose about a clinical trial",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "high_impact-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1239.07275,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Joint statement on public disclosure of results from clinical ...",
+          "url": "https://cdn.who.int/media/docs/default-source/clinical-trials/ictrp-jointstatement-2017.pdf",
+          "snippet": "Clinical trial registry records should be updated as necessary to include final enrolment numbers achieved, and the date of primary study completion. The Trial ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "What Should Be Disclosed to Research Participants? - PMC",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4154248/",
+          "snippet": "by D Wendler · 2013 · Cited by 39 — Once this is done, disclosure regarding the interventions used in the study should be based on the standards for appropriate disclosure in clinical care.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "The Ultimate Guide to Understanding Clinical Trials and ...",
+          "url": "https://studypages.com/blog/a-comprehensive-guide-to-all-you-need-to-know-about-clinical-trials-and-research-in-healthcare/",
+          "snippet": "All the necessary information should be disclosed to patients during the trial so they can decide whether to participate.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Clinical Trial Disclosures 101: The Basics You Need to Know",
+          "url": "https://mmsholdings.com/perspectives/clinical-trial-disclosures-101-the-basics-you-need-to-know/",
+          "snippet": "A: All primary and secondary outcome measures must be disclosed as per clinical trial protocol. It should also include study design, a list of interventions ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "When is a Medical Record not a Source Document?",
+          "url": "https://hrpp.usc.edu/wp-content/uploads/sites/3/2021/07/1309_Medical_Records.pdf",
+          "snippet": "records of clinical findings, observations or other activities in a clinical trial necessary for the reconstruction and evaluation of the trial. Source data ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-high_impact-3",
+        "query": "como conferir a data de vigência de uma norma",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "high_impact-3",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1388.992417,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Vigência e Eficácia das Normas - Início, Término e Aplicação",
+          "url": "https://www.youtube.com/watch?v=qrBeMo3zlBg&xstg=CAMSBhUDzO3xHw%3D%3D",
+          "snippet": "Neste vídeo, você vai aprender o que é vigência da norma ... Vigência e Eficácia das Normas - Início, Término e Aplicação | Introdução ao Direito.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Vigência da Norma",
+          "url": "https://www.jusbrasil.com.br/artigos/vigencia-da-norma/620262280",
+          "snippet": "Salvo disposição em contrário, a lei começa a vigorar no país 45 dias depois de publicada no órgão oficial. Elucida o professor Sílvio de Salvo ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Termo: Período de Vacância",
+          "url": "https://www.congressonacional.leg.br/legislacao-e-publicacoes/glossario-tecnica-legislativa/-/TecnicaLegislativa/termo/periodo_de_vacancia",
+          "snippet": "Período entre a data de publicação e o início da vigência da norma jurídica, podendo ser previsto de forma expressa em cláusula de vigência, ou, na ausência ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "CONSIDERAÇÕES SOBRE A VALIDADE, VIGÊNCIA E ...",
+          "url": "https://revistacej.cjf.jus.br/cej/index.php/revcej/article/download/1933/1858/",
+          "snippet": "Em regra, o Poder Legislativo é o órgão apto para determinar o início e o término da vigência de uma norma ju- rídica, sendo que tais determinações se encontram ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Como consultar se uma norma foi revogada ou está vigente?",
+          "url": "https://www.gov.br/saude/pt-br/acesso-a-informacao/institucional/legislacao/como-consultar-se-uma-norma-foi-revogada-ou-esta-vigente",
+          "snippet": "Para saber se alguma norma foi revogada ou está vigente, basta acessar o sistema Saúde Legis. Vejamos um exemplo de busca no sistema: Para ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-high_impact-4",
+        "query": "what evidence distinguishes correlation from causation in a health study",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "high_impact-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1199.131917,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "How to Distinguish Correlation from Causation in Orthopaedic ...",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10010939/",
+          "snippet": "by I Zaniletti · 2022 · Cited by 29 — Correlation does not imply causation, whereas, causation frequently occurs with correlation. Correlation and causation are related concepts, but may require ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Correlation vs Causation | Introduction to Statistics",
+          "url": "https://www.jmp.com/en/statistics-knowledge-portal/linear-models/what-is-correlation/correlation-vs-causation",
+          "snippet": "A strong correlation might indicate causality, but there could easily be other explanations: It may be the result of random chance, evidence for causation ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Two things can be connected without one causing the other. ...",
+          "url": "https://www.facebook.com/ClevelandClinicInYourCommunity/posts/two-things-can-be-connected-without-one-causing-the-otherunderstanding-the-diffe/1260302139648805/",
+          "snippet": "Correlation, after all, is only a measure of how two different things change together. * Causality. Correlation does not imply causation, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Distinguishing Between Correlation and Causation is ...",
+          "url": "https://www.acsh.org/news/2024/08/12/distinguishing-between-correlation-and-causation-critical-law-science-and-medicine-17374",
+          "snippet": "Correlation means only that there is a relationship or pattern in time or space between the values of two variables. Causation means that one ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Correlation vs Causation: Learn the Difference",
+          "url": "https://amplitude.com/blog/causation-correlation",
+          "snippet": "Correlation is when two variables appear to change in sync. For example, one might decrease as the other increases or vice versa. Causation means one variable ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-exploratory-0",
+        "query": "compare programming languages for scientific computing",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "exploratory-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1218.2034580000002,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Programming languages centered around scientific ...",
+          "url": "https://www.reddit.com/r/ProgrammingLanguages/comments/1054xoz/programming_languages_centered_around_scientific/",
+          "snippet": "I've been perusing the past few weeks through the state of scientific computing/HPC languages. I think it's interesting how few of them check all of what ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Scientific programming language",
+          "url": "https://en.wikipedia.org/wiki/Scientific_programming_language",
+          "snippet": "C, C++, Python, and Java. This comparison highlights how general-purpose. A comparative overview of languages used in scientific computing is provided in the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Which compiled language to learn for scientific computing?",
+          "url": "https://www.reddit.com/r/AskProgramming/comments/1o1e5yi/which_compiled_language_to_learn_for_scientific/",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "What programming language should I use for scientific computing, Python ...",
+          "url": "https://www.quora.com/What-programming-language-should-I-use-for-scientific-computing-Python-C-Java-or-Fortran",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Which programming language is best for scientific studies?",
+          "url": "https://www.quora.com/Which-programming-language-is-best-for-scientific-studies",
+          "snippet": "",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-exploratory-1",
+        "query": "vantagens e limitações de armazenamento distribuído",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "exploratory-1",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1230.121916,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Os prós e contras das soluções de armazenamento no local",
+          "url": "https://www.nexsan.com/pt-br/resources/the-pros-and-cons-of-on-premises-storage-solutions/",
+          "snippet": "Um dos principais benefícios do armazenamento local também é a acessibilidade. Quando os dados são armazenados e acessados localmente, a latência é minimizada; ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Vantagens e desvantagens da computação em nuvem",
+          "url": "https://cloud.google.com/learn/advantages-of-cloud-computing?hl=pt-BR",
+          "snippet": "A computação em nuvem oferece mais flexibilidade para sua empresa. É possível escalonar rapidamente recursos e armazenamento para atender às demandas dos ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Benefícios do armazenamento na nuvem",
+          "url": "https://www.oracle.com/br/cloud/storage/what-is-cloud-storage/benefits/",
+          "snippet": "Por que o armazenamento em nuvem tem mais vantagens que os data centers locais? · Acessibilidade e redundância · Segurança de dados · Capacidade de ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Armazenamento NAS: Avalie benefícios e limitações",
+          "url": "https://www.storageja.com.br/post/vantagens-e-limitacoes-do-armazenamento-nas?srsltid=AU7gw4VmX81sFLAxmHO-H6sPDMLBJ2F9xwTKjL5Vly0wwK3y5BwZU14R",
+          "snippet": "Uma das grandes vantagens do armazenamento NAS é sua capacidade de crescer junto com a demanda por dados. A maioria dos modelos permite o que chamamos de scale- ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "O que é armazenamento em nuvem?",
+          "url": "https://aws.amazon.com/pt/what-is/cloud-storage/",
+          "snippet": "O armazenamento em nuvem oferece capacidade de armazenamento praticamente ilimitada, permitindo que você aumente a escala verticalmente no tamanho e com a ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-exploratory-2",
+        "query": "how do libraries preserve digital archives",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "exploratory-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 990.759875,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Digital Preservation - ALA Library LibGuides",
+          "url": "https://libguides.ala.org/libpreservation/digitalpreservation",
+          "snippet": "Digital preservation is a set of activities aimed towards ensuring access to digital materials over time. In the United States digital ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Digital Preservation at the Library of Congress",
+          "url": "https://www.loc.gov/preservation/digital/",
+          "snippet": "Digital Preservation at the Library of Congress is a distributed effort and includes efforts around content ingest, monitoring and reporting, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Digital Collections and Archives: Preservation",
+          "url": "https://flvc.libguides.com/digitalcollectionsandarchives/Preservation",
+          "snippet": "Digital Preservation Management · Clear and complete technical specifications · Production of reliable master files · Sufficient descriptive, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Digital Preservation | University Libraries",
+          "url": "https://library.albany.edu/preservation/digipres",
+          "snippet": "The short definition is “Digital preservation combines policies, strategies and actions that ensure access to digital content over time.” Remember, digitization ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Libraries' Role in Preserving Digital Information",
+          "url": "https://carnegie.org/article/libraries-role-in-preserving-digital-information/",
+          "snippet": "The advent of digital technologies has provided librarians and archivists with new tools to organize information and to share it more broadly ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-exploratory-3",
+        "query": "diferenças entre mecanismos de busca acadêmicos",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "exploratory-3",
+        "language": "pt-BR",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1361.069291,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Melhores Motores de Busca Acadêmica para Pesquisadores",
+          "url": "https://jenni.ai/pt/blog/best-academic-search-engines",
+          "snippet": "os motores de busca académicos são concebidos especificamente para responder às necessidades de académicos e investigadores. A principal ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "📚 Google ou Google Acadêmico: você sabe qual usar? ...",
+          "url": "https://www.instagram.com/p/DdqqphUFt4L/",
+          "snippet": "Apesar de terem nomes parecidos, Google e Google Acadêmico têm finalidades diferentes. Google é um buscador geral. Ele pesquisa conteúdos ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Mecanismos de busca acadêmica: uma análise quantitativa",
+          "url": "https://www.researchgate.net/publication/261798080_Mecanismos_de_busca_academica_uma_analise_quantitativa",
+          "snippet": "descobrir similaridades e diferenças em algumas de suas características, tais como: período de cobertura, tipos de documentos, idiomas, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "GOOGLE SCHOLAR OR PUBMED? The difference for scientific ...",
+          "url": "https://www.youtube.com/watch?v=ssyEDXQEiX4",
+          "snippet": "Neste vídeo comento as diferenças de pesquisa no Google Acadêmico e na Pubmed, quando o objetivo é encontrar informação científica.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Google Acadêmico",
+          "url": "https://scholar.google.com/?hl=pt-BR",
+          "snippet": "O Google Acadêmico é uma forma simples de pesquisar literatura acadêmica. Pesquise dentre uma variedade de disciplinas e fontes: artigos, teses, livros, ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "oct09-exploratory-4",
+        "query": "how do communities moderate collaboratively edited reference works",
+        "source": "implementer_authored_diagnostic_workload",
+        "source_id": "exploratory-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1170.2959580000002,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Community Perspectives on Factors That Influence ... - PMC",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2757482/",
+          "snippet": "by RM Pinto · 2009 · Cited by 68 — Community collaboration in research may lead to better methods, results, and dissemination of interventions. Little systematic research has examined ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Collaborative Reading and Enriched Content with PaperHive",
+          "url": "https://magazine.paperhive.org/collaborative-reading-enriching-content-strength-research-communities/",
+          "snippet": "Explore with PaperHive the advantages of collaborative reading with enriched content, community proofreading, and digital discussions. Knowing ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "The Reparative Work of Radical Collaboration - IDEAH",
+          "url": "https://ideah.pubpub.org/pub/ldny7m0u",
+          "snippet": "by J Rogers · 2023 · Cited by 3 — Community partners maintain control over how information is gathered, held, interpreted, and retrieved. In this way, community history remains ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Submission Guidelines | Collaborations",
+          "url": "https://collaborations.miami.edu/about/submissions",
+          "snippet": "Collaborations invites you to submit manuscripts for review and possible publication. Manuscripts should be submitted in English using the online system.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Community Reference: Making Libraries Indispensable in ...",
+          "url": "http://americanlibrariesmagazine.org/2012/06/13/community-reference-making-libraries-indispensable-in-a-new-way/",
+          "snippet": "Answering community reference questions builds a partnership between the library and the community group by giving us an active role in the ...",
+          "source": "serper"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "This is a raw market-provider capture, not a Google UI or AI-answer capture.",
+    "The artifact is intentionally unjudged; quality is evaluated only after both systems are frozen and pooled.",
+    "An empty result vector cannot distinguish a legitimate zero-result query from every upstream failure mode."
+  ]
+}

@@ -1,0 +1,2072 @@
+{
+  "captured_at_unix_ms": 1791542161132,
+  "experiment": "sealed-unjudged-market-generalization-capture-v1",
+  "manifest_path": "outputs/validation-20261009/workload-transfer-v2.json",
+  "manifest_sha256": "4a8c71b022f76413d834253c0a441dbd9152ebe45c5f934f1a998f678337d5ed",
+  "manifest_name": "oct09-transfer-diagnostic-v2",
+  "engine": "serper",
+  "live_network": true,
+  "mock_results": false,
+  "judged_during_capture": false,
+  "top_k": 5,
+  "concurrency": 2,
+  "query_count": 40,
+  "nonempty": 40,
+  "complete_coverage_gate_passed": true,
+  "latency": {
+    "count": 40,
+    "p50_ms": 1199.545125,
+    "p95_ms": 1580.651875,
+    "p99_ms": 1871.334416,
+    "max_ms": 1871.334416
+  },
+  "wall_ms": 26914.898375,
+  "throughput_qps": 1.4861657451827552,
+  "cases": [
+    {
+      "manifest": {
+        "id": "transfer-oct09-navigation-0",
+        "query": "Audacity official website",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 1293.754958,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Download Audacity for Windows",
+          "url": "https://www.audacityteam.org/download/windows/",
+          "snippet": "Download Audacity for Windows. Audacity is tested on Windows 10 & Windows 11, and may also work on Windows 8.1, 7 and Vista. Both x86_64 and ARM64 versions are ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Audacity | Free, Open Source Audio Editor and Recorder",
+          "url": "https://www.audacityteam.org/",
+          "snippet": "Audacity is the world's most popular audio editing and recording app. Edit, mix, and enhance your audio tracks with the power of Audacity. Download now!",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Audacity.org - scam website??",
+          "url": "https://www.reddit.com/r/audacity/comments/z7iocc/audacityorg_scam_website/",
+          "snippet": "Audacity.org is actually spelled AUDUCITY and actually redirects to https://audacitya.org/ and the Download there seems bogus.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Audacity - Download and install on Windows",
+          "url": "https://apps.microsoft.com/detail/xp8k0j757hhrdw?hl=en-US&gl=US",
+          "snippet": "This is the only official version of Audacity on the Microsoft store. Audacity is an easy-to-use, multi-track audio editor and recording tool.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Download Audacity | Windows, macOS and Linux",
+          "url": "https://www.audacityteam.org/download/",
+          "snippet": "Download Audacity for Windows, macOS and Linux. Current version: 4.0.1 | View changelog Download for Your system Windowsx86_64 and ARM64 installersDownload",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-navigation-1",
+        "query": "GIMP site oficial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "navigation"
+      },
+      "search_ms": 1431.983167,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "GIMP - GNU Image Manipulation Program",
+          "url": "https://www.gimp.org/",
+          "snippet": "This is the official website of the GNU Image Manipulation Program (GIMP). GIMP is a cross-platform image editor available for GNU/Linux, macOS, Windows and ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "GIMP Downloads, Tutorials, Plugins & Free Image Tools ...",
+          "url": "https://gimp.cc/",
+          "snippet": "Download GIMP 3.2.4 for Windows, macOS, and Linux. Browse tutorials, plugins, and free image tools at GIMP.cc - An independent GIMP resource site.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "r/GIMP",
+          "url": "https://www.reddit.com/r/GIMP/",
+          "snippet": "GIMP (GNU Image Manipulation Program) is a cross-platform image editor available for GNU/Linux, macOS, Windows and more operating systems.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "GIMP - Free download and install on Windows",
+          "url": "https://www.microsoft.com/fo-fo/p/gimp/9pnsjclxdz0v",
+          "snippet": "GIMP is an acronym for GNU Image Manipulation Program. It is Community-driven Free Software for high-end image creation and manipulation.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "GIMP",
+          "url": "https://en.wikipedia.org/wiki/GIMP",
+          "snippet": "The GNU Image Manipulation Program or GIMP is a free and open-source raster graphics editor. GIMP is always stylized in capitals and was formerly stylized ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-navigation-2",
+        "query": "Krita official website",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 989.528375,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Krita | Digital Painting. Creative Freedom.",
+          "url": "https://krita.org/en/",
+          "snippet": "Krita is a professional FREE and open source painting program. It is made by artists that want to see affordable art tools for everyone. Download.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Is https://docs.krita.org an official Krita site?",
+          "url": "https://www.reddit.com/r/krita/comments/ufm3v9/is_httpsdocskritaorg_an_official_krita_site/",
+          "snippet": "Today I had a idea to get more brushes, I found a video saying to go to this site ( https://docs.krita.org/en/resources_page.html ) and download the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Krita - Apps on Google Play",
+          "url": "https://play.google.com/store/apps/details?id=org.krita&hl=en_US",
+          "snippet": "Krita is a full-featured digital painting application designed for artists. Whether you create illustrations, comics, animations, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Krita",
+          "url": "https://en.wikipedia.org/wiki/Krita",
+          "snippet": "Krita is a free and open-source raster graphics editor designed primarily for digital art and 2D animation. Krita. Developers, Krita Foundation, KDE.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Artwork",
+          "url": "https://krita-artists.org/c/artwork/5/l/top",
+          "snippet": "Post your latest Krita artworks here. Request for critique from fellow Krita artists. Every artwork is unique so don't be shy to post yours.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-navigation-3",
+        "query": "Obsidian site oficial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "navigation"
+      },
+      "search_ms": 1871.334416,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Obsidian - Sharpen your thinking",
+          "url": "https://obsidian.md/",
+          "snippet": "Obsidian stores notes privately on your device, so you can access them quickly, even offline. No one else can read them, not even us. Your mind is unique. With ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Download",
+          "url": "https://obsidian.md/download",
+          "snippet": "Obsidian is available on all major platforms. Download Obsidian for iOS, Android, macOS, Windows and Linux.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Home - Obsidian Help",
+          "url": "https://obsidian.md/help/Home",
+          "snippet": "Obsidian Help Welcome to the official Obsidian Help site, where you can find tips and guides on how to use Obsidian. For API documentation visit the Obsidian ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Obsidian | Home",
+          "url": "https://www.obsidian.net/",
+          "snippet": "Obsidian.net is the home for Obsidian Entertainment, developer of Star Wars Knights of the Old Republic II, Neverwinter Nights 2, Alpha Protocol, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Obsidian Publish",
+          "url": "https://publish.obsidian.md/",
+          "snippet": "The publishing platform for non-linear thinkers. Obsidian Publish brings your connected notes online. Unique features help readers explore your web of ideas.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-navigation-4",
+        "query": "OpenStreetMap official website",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 1049.9295829999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "OpenStreetMap",
+          "url": "https://en.wikipedia.org/wiki/OpenStreetMap",
+          "snippet": "The official OSM website at openstreetmap.org is the project's main hub for contributors. A reference implementation of a slippy map (featuring a selection ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "OpenStreetMap",
+          "url": "https://openstreetmap.com/",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "OpenStreetMap",
+          "url": "https://osm.org/",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "OpenStreetMap - ArcGIS Online",
+          "url": "https://openstreetmap.maps.arcgis.com/",
+          "snippet": "OpenStreetMap (OSM) is a free, editable map of the world built by a community of mappers that contribute and maintain data about roads, trails, buildings, cafés ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "OpenStreetBrowser",
+          "url": "https://www.openstreetbrowser.org/",
+          "snippet": "OpenStreetBrowser has a new feature: Using the context menu on the map (either right-click or long-tap) you can place markers.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-transactions-0",
+        "query": "download Audacity for Windows official",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1090.935083,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Download Audacity for Windows",
+          "url": "https://www.audacityteam.org/download/windows/",
+          "snippet": "Audacity is tested on Windows 10 & Windows 11, and may also work on Windows 8.1, 7 and Vista. Both x86_64 and ARM64 versions are available.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Download Audacity | Windows, macOS and Linux",
+          "url": "https://www.audacityteam.org/download/",
+          "snippet": "Download Audacity for Windows, macOS and Linux. Current version: 4.0.1 | View changelog Download for Your system Windowsx86_64 and ARM64 installersDownload",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Audacity - Download and install on Windows",
+          "url": "https://apps.microsoft.com/detail/xp8k0j757hhrdw?hl=en-US&gl=US",
+          "snippet": "This is the only official version of Audacity on the Microsoft store. Audacity is an easy-to-use, multi-track audio editor and recording ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Download Audacity - Free - latest version",
+          "url": "https://audacity.en.softonic.com/download",
+          "snippet": "Download Audacity for Windows now from Softonic: 100% safe and virus free. Simply go to the website, head to the site's download section, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Audacity | Free, Open Source Audio Editor and Recorder",
+          "url": "https://www.audacityteam.org/",
+          "snippet": "Audacity is the world's most popular audio editing and recording app. Edit, mix, and enhance your audio tracks with the power of Audacity. Download now!",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-transactions-1",
+        "query": "baixar GIMP para Linux oficial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "transactions"
+      },
+      "search_ms": 1177.553875,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "GIMP - Downloads",
+          "url": "https://www.gimp.org/downloads/",
+          "snippet": "The current stable release of GIMP is 3.2.6 (2026-09-10). Show downloads for GNU/Linux | macOS | Microsoft Windows | … s for Windows can be found on download. ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "GIMP - GNU Image Manipulation Program",
+          "url": "https://www.gimp.org/",
+          "snippet": "GIMP is a cross-platform image editor available for GNU/Linux, macOS, Windows and more operating systems. It is free software, you can change its source code",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Download GIMP 3.2.4 - Windows, macOS, Linux",
+          "url": "https://gimp.cc/download.html",
+          "snippet": "Download GIMP 3.2.4 for free. Direct links to official GIMP downloads for Windows, macOS Apple Silicon, macOS Intel, and Linux AppImage and Flatpak.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "GIMP - Development Downloads",
+          "url": "https://www.gimp.org/downloads/devel/",
+          "snippet": "This is the download page for the development version of GIMP. ... No recent development version of GIMP available. Show downloads for GNU/Linux | macOS | ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "gimp",
+          "url": "https://community.linuxmint.com/software/view/gimp",
+          "snippet": "Install GIMP is an advanced picture editor. You can use it to edit, enhance, and retouch photos and scans, create drawings, and make your own images.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-transactions-2",
+        "query": "apply for a New Zealand passport official",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1528.842958,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Apply for your passport | New Zealand ...",
+          "url": "https://www.passports.govt.nz/most-citizens-can-apply-for-their-passport-online",
+          "snippet": "You can apply online for a standard or urgent passport. The fastest way to get or renew a passport is by applying online.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "New Zealand Passports",
+          "url": "https://www.passports.govt.nz/",
+          "snippet": "Start your application to get, renew or replace a passport. You need a photo, identity referee, payment method, and consent for children.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Get or renew a New Zealand passport",
+          "url": "https://www.govt.nz/browse/passports-citizenship-and-identity/get-or-renew-a-new-zealand-passport/",
+          "snippet": "Apply online to get or renew a passport for yourself or your child. Adult passports are valid for 10 years. Child passports are valid for 5 years.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Applying for a New Zealand Passport",
+          "url": "https://www.mfat.govt.nz/en/countries-and-regions/europe/germany/new-zealand-embassy/renewing-or-applying-for-a-new-zealand-passport",
+          "snippet": "Applying for a New Zealand Passport. You can apply for a new New Zealand Passport online. The application process includes the option of urgent delivery.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "New Zealand passport",
+          "url": "https://en.wikipedia.org/wiki/New_Zealand_passport",
+          "snippet": "Officials are encouraged to use a standard passport if possible and only apply for an official passport if there are potential hostilities or visa issues.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-transactions-3",
+        "query": "solicitar certidão de nascimento online oficial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "transactions"
+      },
+      "search_ms": 1270.847958,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Certidão de nascimento ou casamento atualizada",
+          "url": "https://www.gov.br/mre/pt-br/consulado-londres/registro-civil/segunda-via/certidao-atualizada",
+          "snippet": "Certidão de nascimento ou casamento atualizada (emitida no Brasil há no máximo seis meses). A certidão atualizada pode ser obtida ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Registro Civil - Portal Oficial",
+          "url": "https://www.registrocivil.org.br/",
+          "snippet": "Acesse os nossos serviços online do Registros Civil. 2ª via da certidão. Solicitar a 2ª via da certidão de nascimento, casamento e óbito. Busca de certidão.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Passo a passo, como pedir sua certidão online Solicitar ...",
+          "url": "https://www.instagram.com/reel/DRUmlK3iGVd/?hl=en",
+          "snippet": "Você pode realizar a solicitação presencialmente em um Cartório de Registro Civil ou pela internet, por meio do portal oficial RegistroCivil.org ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Registro Civil — Certidão de Nascimento Atualizada Online",
+          "url": "https://e-cartoriodobrasil.com/pedido/registro-civil/certidao-de-nascimento",
+          "snippet": "Precisando de Registro Civil e Certidão de Nascimento Atualizada Online? Solicite agora e evite filas. Online, rápido e seguro.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "2.ª via de certidões de nascimento e de óbito pode ser ...",
+          "url": "https://www.cnj.jus.br/2a-via-de-certidoes-de-nascimento-e-de-obito-podem-ser-solicitadas-via-internet/",
+          "snippet": "Por meio de um painel unificado, é possível, pela Internet, pedir outra via de certidões de nascimento e óbito, tanto física quanto digital.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-transactions-4",
+        "query": "renew a Canadian passport official application",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1580.651875,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Renew an adult passport from the US",
+          "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports-usa/renew-us.html",
+          "snippet": "Renewing a passport is simpler than applying for a new one. This is because you don't need a guarantor, proof of Canadian citizenship or ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Adult Simplified Renewal Passport Application",
+          "url": "https://www.canada.ca/content/dam/ircc/migration/ircc/english/passport/forms/pdf/pptc054.pdf",
+          "snippet": "To renew your Canadian passport, you need the following from your most recent passport: • passport number; • date of issue; • date of expiry.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "How to renew a passport in Canada",
+          "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports/renew-adult-passport.html",
+          "snippet": "Online passport renewal is now available. You may be able to renew your passport online if you need it in 20 business days or more.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Canadian passports: Applying from the United States",
+          "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports-usa.html",
+          "snippet": "Get a passport. Renew your adult passport. Who can renew, how to apply, forms, photos and documents to include. Apply for a new adult passport.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Renew a passport outside Canada and the US",
+          "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-passports-abroad/renew-abroad.html",
+          "snippet": "Who can renew a Canadian adult passport, fees, what you need to submit with your application and specific steps to apply.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-factual-0",
+        "query": "who invented the World Wide Web",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 1566.250334,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Tim Berners-Lee",
+          "url": "https://en.wikipedia.org/wiki/Tim_Berners-Lee",
+          "snippet": "Sir Timothy John Berners-Lee (born 8 June 1955), also known as TimBL, is an English computer scientist best known as the inventor of the World Wide Web, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "A short history of the Web",
+          "url": "https://home.cern/science/computing/the-birth-of-the-web/short-history-web/",
+          "snippet": "Tim Berners-Lee wrote the first proposal for the World Wide Web in March 1989. Together with Belgian systems engineer Robert Cailliau, it was formalised as a ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Sir Tim Berners-Lee",
+          "url": "https://www.ccc.mit.edu/person/sir-tim-berners-lee/",
+          "snippet": "Sir Tim Berners-Lee invented the World Wide Web in 1989. He is the co-founder and CTO of Inrupt.com, a tech start-up which uses, promotes and helps develop ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Sir Tim Berners-Lee invented both the World Wide Web ...",
+          "url": "https://www.reddit.com/r/webdev/comments/1ja5ya3/sir_tim_bernerslee_invented_both_the_world_wide/",
+          "snippet": "This is Sir Tim Berners-Lee, inventor of the World Wide Web (WWW), who developed the first web browser and web server, and introduced HTML, HTTP ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "30 years of the web: a short history of the invention that ...",
+          "url": "https://www.britishcouncil.org/anyone-anywhere/history-web",
+          "snippet": "Tim Berners-Lee invented the World Wide Web as an essential tool for high energy physics at CERN from 1989 to 1994. ©. Cern. For many of us, the web is a huge ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-factual-1",
+        "query": "quem fundou a Wikimedia Foundation",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "factual"
+      },
+      "search_ms": 1109.000333,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Wikimedia Foundation: Home",
+          "url": "https://wikimediafoundation.org/",
+          "snippet": "We are the nonprofit that hosts Wikipedia. We support the people, technology, and policies that enable reliable information to be shared with the world.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Wikimedia Foundation",
+          "url": "https://en.wikipedia.org/wiki/Wikimedia_Foundation",
+          "snippet": "The Wikimedia Endowment was established as a donor-advised fund at the Tides Foundation, with a stated goal to raise $100 million in the next 10 years.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Who we are – Wikimedia Foundation",
+          "url": "https://wikimediafoundation.org/who-we-are/",
+          "snippet": "Since our founding in 2003, we have supported the hundreds of thousands of volunteer editors who edit, expand and curate the Wikimedia projects. We equip these ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Memory:Timeline - Wikimedia Foundation Governance Wiki",
+          "url": "https://foundation.wikimedia.org/wiki/Memory:Timeline",
+          "snippet": "This is the official timeline of the Wikimedia Foundation. Wikimedia Foundation's founding in 2003, Wikimedia Foundation founded in Florida, United States. was ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "20 years of the nonprofit behind Wikipedia",
+          "url": "https://wikimediafoundation.org/news/2023/06/20/20-years-of-the-non-profit-behind-wikipedia/",
+          "snippet": "Jimmy Wales created the Wikimedia Foundation in 2003, two years after he founded Wikipedia. Since then, we have carried forward the same ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-factual-2",
+        "query": "who founded CERN",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 1201.8796670000002,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Our History – Home | CERN",
+          "url": "https://home.cern/about/who-we-are/our-history/",
+          "snippet": "CERN's origins can be traced to the 1940s. On 10 June 1955, CERN Director-General, Felix Bloch, . Felix Bloch, CERN's Director-General, laid the first ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "CERN",
+          "url": "https://en.wikipedia.org/wiki/CERN",
+          "snippet": "Established in 1954, Higgs boson was found by CERN experiments. The band Les Horribles Cernettes was founded by women from CERN.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "About CERN",
+          "url": "https://home.cern/about/",
+          "snippet": "Founded in 1954, the CERN laboratory sits astride the Franco-Swiss border near Geneva. It was one of Europe's first joint ventures and now has 25 member states.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "CERN: 60 Years of Collaboration",
+          "url": "https://www.aps.org/publications/apsnews/201409/cern.cfm",
+          "snippet": "French physicist Louis de Broglie first proposed a multi-national European lab in 1949. After years of lobbying spearheaded by Isador Rabi, a Nobel laureate and ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Making History",
+          "url": "https://careers.cern/making-history/",
+          "snippet": "Tim Berners-Lee, a scientist at CERN, developed the World Wide Web, revolutionizing how information is shared and accessed globally. 2012: Discovery of the ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-factual-3",
+        "query": "quem criou a linguagem Lua",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "factual"
+      },
+      "search_ms": 1252.898125,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Lua (linguagem de programação)",
+          "url": "https://pt.wikipedia.org/wiki/Lua_(linguagem_de_programa%C3%A7%C3%A3o)",
+          "snippet": "A linguagem Lua foi criada, a princípio, para um projeto da Petrobras. ... Essas características fazem de Lua uma linguagem ideal para configuração, automação ( ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "A Linguagem de Programação Lua",
+          "url": "https://www.lua.org/portugues.html",
+          "snippet": "Lua nasceu e cresceu no Tecgraf, o então Grupo de Tecnologia em Computação Gráfica da PUC-Rio. Atualmente, Lua é desenvolvida no laboratório ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "A História Secreta da Linguagem Lua Que Você Nunca ...",
+          "url": "https://www.youtube.com/watch?v=FgL5LAHqV9o",
+          "snippet": "Tu sabia que uma das linguagens de programação mais usadas em jogos do mundo foi criada aqui no Brasil? Lua foi desenvolvida em 1993 na PUC-Rio",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Mais um monte de coisa sobre Lua, a linguagem ...",
+          "url": "https://www.reddit.com/r/brasil/comments/2uo80z/mais_um_monte_de_coisa_sobre_lua_a_linguagem_de/",
+          "snippet": "A segunda mais popular é LuaJIT (feita pelo alemão Mike Pall, o cara é uma lenda), que implementa a versão 5.1 com algumas coisinhas da versão ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Lua: conheça a linguagem de programação brasileira que ...",
+          "url": "https://itforum.com.br/noticias/lua-linguagem-brasileira-games/",
+          "snippet": "Desenvolvida em 1993 na PUC-Rio, Lua se tornou a linguagem de configuração de clássicos como Grim Fandango e Baldurs Gate.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-factual-4",
+        "query": "who invented the first working laser",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 1009.587375,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "The first laser",
+          "url": "https://press.uchicago.edu/Misc/Chicago/284158_townes.html",
+          "snippet": "Theodore Maiman made the first laser operate on 16 May 1960 at the Hughes Research Laboratory in California, by shining a high-power flash lamp ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Theodore Maiman",
+          "url": "https://en.wikipedia.org/wiki/Theodore_Maiman",
+          "snippet": "Theodore Harold Maiman (July 11, 1927 – May 5, 2007) was an American engineer and physicist who is widely credited with the invention of the laser.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "16th May 1960: The world's first laser was successfully ...",
+          "url": "https://www.youtube.com/watch?v=Svj_22_hQKU",
+          "snippet": "16th May 1960: The world's first laser was successfully operated by Theodore Maiman ... Who Invented Lasers and How Do They Actually Work? Today I ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "History of Lasers | 1960 - Today's Innovations",
+          "url": "https://lasernetus.org/resources/blog/history-of-lasers",
+          "snippet": "It took a while to bear fruit, but in 1960, Theodore Maiman built the first working laser based on some of these finds. Right before this invention, Donna ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Milestones:First Working Laser, 1960",
+          "url": "https://ethw.org/Milestones:First_Working_Laser,_1960",
+          "snippet": "Theodore Maiman developed the first working laser at Hughes Research Lab in 1960 and his paper describing the operation of the first laser was ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-current-0",
+        "query": "latest stable release of Node.js",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 1422.419291,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Node.js Releases",
+          "url": "https://nodejs.org/en/about/previous-releases",
+          "snippet": "Node.js Codename First released Last updated Status v26 - May 05, 2026 Oct 07, 2026 Current Details v25 - Oct 15, 2025 Mar 31, 2026 EOL Details v24 Krypton May ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Node.js",
+          "url": "https://nodejs.org/en",
+          "snippet": "Learn more what Node.js is able to offer with our Learning materials. v24.21.0Latest LTSv26.11.1Latest Release. Copyright OpenJS Foundation and Node.js ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Download Node.js",
+          "url": "https://nodejs.org/en/download",
+          "snippet": "Get Node.js® v24.21.0LTS v24.21.0LTS v26.11.1Current v25.9.0EOL v24.21.0LTS v23. Get the latest Node.js version instead and try the latest improvements! v24.21 ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Node.js",
+          "url": "https://endoflife.date/nodejs",
+          "snippet": "Latest 26 (Upcoming LTS ) 5 months ago (05 May 2026) Ends in 1 year (27 Oct 2027) 26.11.1 (08 Oct 2026) 22.23.3 (23 for general use.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "What are the differences between Long Term Support (LTS ...",
+          "url": "https://stackoverflow.com/questions/33661274/what-are-the-differences-between-long-term-support-lts-and-stable-versions-of",
+          "snippet": "Originally asked: What is the difference between Node.js 4.x branch with LTS (Long Term Support) and the 5.x branch (listed as Stable)? But this is ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-current-1",
+        "query": "versão estável atual do Debian",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "current"
+      },
+      "search_ms": 1212.3922089999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Debian Releases",
+          "url": "https://www.debian.org/releases/",
+          "snippet": "The current stable distribution of Debian is version 13, codenamed trixie. It was initially released as version 13.0 on August 9th, 2025 and its latest update, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Downloading Debian",
+          "url": "https://www.debian.org/download",
+          "snippet": "Downloading Debian. This is Debian 13, codenamed trixie, netinst, for 64-bit PC (amd64) debian-13.7.0-amd64-netinst.iso.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Download Debian",
+          "url": "https://www.debian.org/distrib/",
+          "snippet": "Download Debian. This page has options for downloading and installing Debian 13.7.0, the stable release. Download mirrors of installation images ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Debian “trixie” Release Information",
+          "url": "https://www.debian.org/releases/trixie/",
+          "snippet": "Debian 13.7 was released on September 12th, 2026. Debian 13.0 was initially released on August 9th, 2025. The release included many major ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Histórico de versões do Debian",
+          "url": "https://pt.wikipedia.org/wiki/Hist%C3%B3rico_de_vers%C3%B5es_do_Debian",
+          "snippet": "A última versão do Debian é chamada \"Trixie\". [1] O próximo o Debian 14, \"Forky\". [2] O Debian sempre mantém ao menos três ramos ativos a todo o momento, \" ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-current-2",
+        "query": "current president of Argentina official",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 999.231,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Javier Milei",
+          "url": "https://en.wikipedia.org/wiki/Javier_Milei",
+          "snippet": "Javier Gerardo Milei (born 22 October 1970) is an Argentine politician and economist who has served as the president of Argentina since 2023.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Argentina: Two years of Javier Milei",
+          "url": "https://www.freiheit.org/argentina-brazil-paraguay-and-uruguay/javier-milei-two-years-office-impressive-successes-and",
+          "snippet": "Javier Milei has been President of Argentina for two years. Currently, at 31%, it is at its lowest level since 2018.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Javier Milei elected president of Argentina",
+          "url": "https://directoriolegislativo.org/en/javier-milei-elected-president-of-argentina/",
+          "snippet": "Javier Milei of La Libertad Avanza (LLA) was elected president of Argentina with 55.5% of the vote, The president-elect will take office on December 10 and ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "President of Argentina",
+          "url": "https://en.wikipedia.org/wiki/President_of_Argentina",
+          "snippet": "The current president Javier Milei was sworn into office on 10 December 2023. He succeeded Alberto Fernández. The constitution of Argentina, along with several ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Approval Tracker: Argentina's President Javier Milei",
+          "url": "https://www.as-coa.org/articles/approval-tracker-argentinas-president-javier-milei",
+          "snippet": "In December 2023, Javier Milei assumed the presidency of Argentina. Now in his third year of governance, Milei has fulfilled his promises to ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-current-3",
+        "query": "quem é o primeiro ministro do Reino Unido atualmente",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "current"
+      },
+      "search_ms": 1103.696417,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Andy Burnham assume como primeiro-ministro do Reino ...",
+          "url": "https://www.bbc.com/portuguese/articles/cyvlyy9m7mzo",
+          "snippet": "Andy Burnham assumiu nesta segunda-feira (20/7) o cargo de primeiro-ministro do Reino Unido — o sétimo líder do país nos últimos 10 anos.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Keir Starmer – Wikipédia, a enciclopédia livre",
+          "url": "https://pt.wikipedia.org/wiki/Keir_Starmer",
+          "snippet": "Keir Rodney Starmer KCB KC (Southwark, 2 de setembro de 1962) é um político britânico que serviu como primeiro-ministro do Reino Unido de 5 de julho de 2024 ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "O novo primeiro-ministro do Reino Unido, Andy Burnham ...",
+          "url": "https://www.facebook.com/g1/videos/o-novo-primeiro-ministro-do-reino-unido-andy-burnham-assumiu-oficialmente-o-carg/2833260797036232/",
+          "snippet": "O novo primeiro-ministro do Reino Unido, Andy Burnham, assumiu oficialmente o cargo nesta segunda-feira (20). Jul 20, 2026·",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Quem é Andy Burnham, o novo primeiro-ministro do Reino ...",
+          "url": "https://www.dw.com/pt-br/quem-%C3%A9-andy-burnham-o-novo-primeiro-ministro-do-reino-unido/a-77660965",
+          "snippet": "O deputado trabalhista Andy Burnham tomou posse nesta segunda-feira (20/07) como primeiro-ministro do Reino Unido, substituindo o impopular ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Primeiro-ministro do Reino Unido",
+          "url": "https://pt.wikipedia.org/wiki/Primeiro-ministro_do_Reino_Unido",
+          "snippet": "Primeiro-ministro do Reino Unido ; No cargo. Andy Burnham. desde 20 de julho de 2026 ; Governo do Reino Unido ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-current-4",
+        "query": "latest release of WordPress",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 964.344875,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Releases – WordPress News",
+          "url": "https://wordpress.org/news/category/releases/",
+          "snippet": "WordPress 6.8 RC 3 is ready for download and testing! The scheduled final release date for WordPress 6.8 is April 15, 2025. Your help testing over the next ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Release Archive",
+          "url": "https://wordpress.org/download/releases/",
+          "snippet": "This is an archive of every recorded release that's been made available for WordPress. Latest release Version Release date z 7.1.3 October 6, 2026 ・ 7.1.2 ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Latest WordPress Version (and All the Previous Versions)",
+          "url": "https://www.liquidweb.com/wordpress/latest-wordpress-version/",
+          "snippet": "The WordPress current version is 6.9. It was released on December 2, 2025. Named Gene, WordPress version 6.9 improves collaboration, performance, and editor ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "WordPress Version History: From 1.0 to 6.7",
+          "url": "https://cmsminds.com/blog/wordpress-versions/",
+          "snippet": "The latest version of WordPress is 6.7 “Rollins”, released on November 12, 2024. WordPress 6.1 “Misha” was released on November 1, 2022.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "What is New in The Latest WordPress Version?",
+          "url": "https://www.accuwebhosting.com/blog/wordpress-latest-version/",
+          "snippet": "The latest WordPress version is 6.5. This version enhanced performance, improved site health checks and advanced accessibility improvements.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-diligence-0",
+        "query": "is a token staking reward proof that a platform is trustworthy",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 1131.3411250000001,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Is staking and farming a scam? : r/CryptoMarkets",
+          "url": "https://www.reddit.com/r/CryptoMarkets/comments/12rxgm1/is_staking_and_farming_a_scam/",
+          "snippet": "Let me explain what I mean. If you put 100 USD in a staking platform, you will receive your staking rewards in the platform’s token. So if you stake ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "What are the risks of staking, is the Risk Vs Reward worth it?",
+          "url": "https://www.reddit.com/r/CryptoCurrency/comments/11xz2ap/what_are_the_risks_of_staking_is_the_risk_vs/",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "What risks should I know before using DeFi staking platforms?",
+          "url": "https://www.quora.com/What-risks-should-I-know-before-using-DeFi-staking-platforms",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "I was part of a staking project that offered 15% returns weekly. They even ...",
+          "url": "https://www.quora.com/I-was-part-of-a-staking-project-that-offered-15-returns-weekly-They-even-paid-out-small-amounts-to-build-trust-But-later-withdrawals-stopped-completely-Why",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Is Staking Crypto Safe?",
+          "url": "https://www.kraken.com/learn/is-crypto-staking-safe",
+          "snippet": "No, staking rewards are not guaranteed. Reward rates can vary based on how many participants are staking on the network, validator performance, ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-diligence-1",
+        "query": "essa plataforma de investimentos é confiável sem auditoria",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "diligence"
+      },
+      "search_ms": 1561.2212909999998,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "GOLPE DO FALSO INVESTIMENTO: COMO IDENTIFICAR E ...",
+          "url": "https://www.youtube.com/watch?v=srIYGAJJ-bs&xstg=CAMSBhUDzO3xHw%3D%3D",
+          "snippet": "Golpe do falso investimento: você está protegido? Saber como identificar golpes digitais é essencial para manter seu dinheiro e seus ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Quase metade das pessoas que acessaram site de falsa ...",
+          "url": "https://www.gov.br/cvm/pt-br/assuntos/noticias/2024/quase-metade-das-pessoas-que-acessaram-site-de-falsa-corretora-cairia-em-golpe-financeiro",
+          "snippet": "Quase metade das pessoas (48%) que clicaram no anúncio de uma falsa corretora de valores poderia ter caído em um golpe financeiro.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "plataforma de investimento internacional é confiável",
+          "url": "https://analise.com/opiniao/21475",
+          "snippet": "As plataformas fraudulentas são criadas para simular perfeitamente um investimento real, mesmo sem existir qualquer operação financeira por trás ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Golpes de investimento: como avaliar a legitimidade das ...",
+          "url": "https://www.sicoob.com.br/web/sicoobcredicom/blog/-/blogs/golpes-de-investimento-como-avaliar-a-legitimidade-das-oportunidades",
+          "snippet": "Proteja seus investimentos! Descubra estratégias para avaliar a legitimidade de oportunidades e evitar golpes de investimento. Informe-se e invista com ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Understand how the fake investment brokerage scam works",
+          "url": "https://www.youtube.com/watch?v=mQk7Nnls4vI&xstg=CAMSBhUDzO3xHw%3D%3D",
+          "snippet": "GOLPE: FALSA INVESTIMENTO em canais de investimentos. Golpe do Pix ... Golpe da Falsa Corretora de Criptomoedas: Identifique e Aja Rápido!",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-diligence-2",
+        "query": "is a charities reputation enough to trust its finances",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 1312.639917,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Trust matters when it comes to charitable giving. A recent ...",
+          "url": "https://www.facebook.com/bbbcet/posts/trust-matters-when-it-comes-to-charitable-givinga-recent-article-in-the-nonprofi/1435278568627549/",
+          "snippet": "BBB Charity Reviews help donors make informed giving decisions while providing charities with an independent, trusted assessment of their ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "how do i know if a charity is legit and my money is actually helping ...",
+          "url": "https://www.reddit.com/r/NoStupidQuestions/comments/1kq5jwk/how_do_i_know_if_a_charity_is_legit_and_my_money/",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Why overhead ratios are misleading for nonprofits",
+          "url": "https://www.linkedin.com/posts/erinn-andrews_how-to-know-if-you-can-trust-a-charity-with-activity-7325253040930770944-slhp",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Do you trust charities?",
+          "url": "https://www.quora.com/Do-you-trust-charities",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Transparent Reputations and Nonprofit Organizations",
+          "url": "https://www.captrust.com/resources/transparent-reputations-and-nonprofits/",
+          "snippet": "Charity is no longer synonymous with virtue and integrity. This article explores the impact of reputation and how transparency increases trust, thereby.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-diligence-3",
+        "query": "como verificar se uma oferta de investimento é legítima",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "diligence"
+      },
+      "search_ms": 1312.6388749999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Como saber se uma oferta de empréstimo é golpe",
+          "url": "https://www.mercadopago.com.br/blog/oferta-emprestimo-confiavel-ou-golpe",
+          "snippet": "Para saber se uma oferta de empréstimo é legítima, a regra mais confiável é: nenhuma instituição financeira séria cobra taxa antes de liberar ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Golpes de investimento: como avaliar a legitimidade das ...",
+          "url": "https://www.sicoob.com.br/web/sicoobcredicom/blog/-/blogs/golpes-de-investimento-como-avaliar-a-legitimidade-das-oportunidades",
+          "snippet": "Investimentos legítimos divulgam informações claras sobre seu funcionamento, Além disso, a ausência de documentação sólida é um indicativo de golpes, uma vez ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Golpes em investimentos: sinais de alerta",
+          "url": "https://gx.capital/golpes-em-investimentos-sinais-de-alerta",
+          "snippet": "Uma regra prática útil é comparar a oferta com referências públicas e facilmente verificáveis. Se a proposta promete o dobro ou o triplo do que ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "GOLPE DO FALSO INVESTIMENTO: COMO IDENTIFICAR E ...",
+          "url": "https://www.youtube.com/watch?v=srIYGAJJ-bs",
+          "snippet": "Saber como identificar golpes digitais é essencial para manter seu dinheiro e seus investimentos ainda mais seguros. Como saber se um ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Descontos falsos: descubra como identificar! - BV Inspira",
+          "url": "https://www.bv.com.br/bv-inspira/seguranca/descontos-falsos",
+          "snippet": "Antes de comprar, pesquise o CNPJ da empresa no site da Receita Federal e veja se o cadastro está ativo. Também vale consultar o Procon e o ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-diligence-4",
+        "query": "does a trusted publisher guarantee every claim is true",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 1358.8252089999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Book Publishers to Avoid: 5 Types of Shady Companies",
+          "url": "https://reedsy.com/blog/scams-and-publishing-companies-to-avoid/",
+          "snippet": "However, trustworthy marketers will never promise to make your book a “guaranteed bestseller.” It's simply impossible to promise such ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Publishing Scam Alerts",
+          "url": "https://authorsguild.org/resource/publishing-scam-alerts/",
+          "snippet": "Legitimate publishers rarely approach authors unsolicited, especially not for books already available on Amazon. They also don't typically ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Avoiding Problematic Publishers: Evaluating Publishers",
+          "url": "https://guides.library.kumc.edu/problematic-publishers/avoiding-problematic-publishers",
+          "snippet": "Claims made on the website, such as indexing, impact factor, etc. can be independently verified from trusted sources",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "How to Know If a Publisher Is the Real Deal",
+          "url": "https://www.youtube.com/watch?v=a4pOrYip1vE",
+          "snippet": "In this video, I share my research process for determining if a publisher is legitimate. I discuss the importance of protecting ourselves ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Contract Red Flag: When a Publisher Claims Copyright on ...",
+          "url": "https://writerbeware.blog/2021/03/19/contract-red-flag-when-a-publisher-claims-copyright-on-edits/",
+          "snippet": "Publishers can and do legitimately claim ownership of their own work product, such as cover art, design, and interior formatting.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-polls-0",
+        "query": "what does a polling confidence interval mean",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1586.671667,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "UNDERSTANDING CONFIDENCE INTERVALS",
+          "url": "https://wmed.edu/sites/default/files/UNDERSTANDING%20CONFIDENCE%20INTERVALS%20%20%28Comparing%20two%20intervals%29.pdf",
+          "snippet": "The margin of error is an interval (i.e., range of values) that accounts for the sampling error; this error is inherent in the results of a survey.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Confidence Intervals - Statistics Teaching Tools - Health.ny.gov",
+          "url": "https://www.health.ny.gov/diseases/chronic/confint.htm",
+          "snippet": "A confidence interval is a range around a measurement that conveys how precise the measurement is. polls are released.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Election polls are 95% confident but only 60% accurate ...",
+          "url": "https://newsroom.haas.berkeley.edu/research/election-polls-are-95-confident-but-only-60-accurate-berkeley-haas-study-finds/",
+          "snippet": "The confidence interval quantifies how sure one can be that the sample of people surveyed reflects the whole voter population.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "The purpose of a confidence interval ...",
+          "url": "https://www.optimizely.com/optimization-glossary/confidence-interval",
+          "snippet": "Confidence interval (CI): A range of values, derived from sample data, that's likely to contain the true population parameter (like a mean or proportion).",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Confidence Intervals - Finding and Using Health Statistics - NIH",
+          "url": "https://www.nlm.nih.gov/oet/ed/stats/02-950.html",
+          "snippet": "The confidence interval shows the range of values you expect the true estimate to fall between if you redo the study many times. Confidence intervals can ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-polls-1",
+        "query": "o que significa ponderação em uma pesquisa eleitoral",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "polls"
+      },
+      "search_ms": 1040.587625,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Como são feitas as pesquisas eleitorais? Entenda ...",
+          "url": "https://noticias.uol.com.br/comprova/ultimas-noticias/2026/09/29/explica-como-funciona-pesquisa-eleitorais-eleicoes-2026-metodologias.ghtm",
+          "snippet": "De acordo com o TSE, a ponderação é um ajuste estatístico pós-coleta aplicado para garantir que a composição da amostra corresponda com exatidão ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Pesquisas eleitorais são confiáveis?",
+          "url": "https://www12.senado.leg.br/institucional/datasenado/pesquisas-eleitorais-sao-confiaveis",
+          "snippet": "O que é ponderação estatística? Findo o trabalho de campo, as observações coletadas recebem pesos para que seja possível expandir os resultados obtidos para ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Pesquisa eleitoral: como tabular e interpretar os resultados",
+          "url": "https://tapanalise.app/blog/pesquisa-eleitoral-como-analisar",
+          "snippet": "Ponderação é ajuste fino, não conserto de amostra mal desenhada — e todo relatório sério informa se os números são brutos ou ponderados.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Election polls: understanding how voting surveys work",
+          "url": "https://www.youtube.com/watch?v=2eTexDdO4AI",
+          "snippet": "... ponderação para aproximar a composição da amostra do perfil do eleitorado. A pesquisa também pode ser espontânea ou estimulada e sempre ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Como são feitas as pesquisas eleitorais? Entenda ...",
+          "url": "https://www.terra.com.br/noticias/checamos/como-sao-feitas-as-pesquisas-eleitorais-entenda-metodologias,08c66c3748c523f7d4674d03be39aff9uydeugs4.html",
+          "snippet": "O que é ponderação em uma pesquisa eleitoral? Ela é necessária? De acordo com o TSE, a ponderação é um ajuste estatístico pós-coleta ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-polls-2",
+        "query": "how to identify the sample size of an election poll",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1220.3225419999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "How to Determine Sample Size: A Researcher's Guide",
+          "url": "https://www.cloudresearch.com/resources/guides/statistical-significance/determine-sample-size/",
+          "snippet": "All you have to do is take the number of respondents you need, divide by your expected response rate, and multiple by 100.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Polls, Sample Size, and Error Margins",
+          "url": "https://www.spcforexcel.com/knowledge/basic-statistics/polls-sample-size-error-margin/",
+          "snippet": "This article shows how to determine the sample size you need for a poll to get results within a given error margin.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Sample Size Calculator: What It Is & How To Use It",
+          "url": "https://www.surveymonkey.com/learn/research-and-analysis/sample-size-calculator/",
+          "snippet": "To calculate your sample size, you'll need to know your: Population size: The total number of people in the group you are trying to study.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Quick Tips to Tell if a Poll Is Legit",
+          "url": "https://www.ppic.org/blog/quick-tips-to-tell-if-a-poll-is-legit/",
+          "snippet": "In general, the number of people surveyed—the sample size—tells you whether results translate to the population at large. You need to know that ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "How Do Political Polls Work",
+          "url": "https://scienceexchange.caltech.edu/topics/voting-elections/political-polls-science",
+          "snippet": "While larger samples are generally more precise, a sample size of just 1,000 to 1,500 people can be enough to estimate national opinion in the United States— ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-polls-3",
+        "query": "como identificar a taxa de não resposta em uma pesquisa eleitoral",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "polls"
+      },
+      "search_ms": 1014.064375,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Pesquisas eleitorais são confiáveis?",
+          "url": "https://www12.senado.leg.br/institucional/datasenado/pesquisas-eleitorais-sao-confiaveis",
+          "snippet": "Outra desvantagem está na crescente taxa de não resposta, problema que pode ser amenizado com o tratamento adequado dos dados, como por exemplo é feito nas ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "O aumento da taxa de não resposta: as pesquisas diante de ...",
+          "url": "https://blogdoibre.fgv.br/posts/o-aumento-da-taxa-de-nao-resposta-pesquisas-diante-de-seu-maior-desafio-parte-i",
+          "snippet": "A taxa de não resposta pode ser definida como a razão entre: i) o número de questionários ou itens de um questionário não respondidos e ii) o ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Conheça as regras para fazer pesquisas eleitorais e saiba ...",
+          "url": "https://www.mpf.mp.br/o-mpf/unidades/procuradoria-geral-da-republica-pgr/noticias/conheca-as-regras-para-fazer-pesquisas-eleitorais-e-saiba-como-o-mp-eleitoral-fiscaliza",
+          "snippet": "A norma deixa claro que a Justiça Eleitoral não realiza qualquer controle prévio sobre o resultado das pesquisas, nem gerencia ou cuida da ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Você sabe como identificar se uma pesquisa eleitoral é ...",
+          "url": "https://www.facebook.com/UOLNoticias/videos/voc%C3%AA-sabe-como-identificar-se-uma-pesquisa-eleitoral-%C3%A9-realmente-s%C3%A9ria-entenda-c/1741388047117259/",
+          "snippet": "Você sabe como identificar se uma pesquisa eleitoral é realmente séria? Entenda como os institutos de pesquisa fazem cálculos ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Análise da não resposta em surveys políticos",
+          "url": "https://www.scielo.br/j/op/a/msNzrnnH86qGJtBbbkbQDHC/?lang=pt",
+          "snippet": "by K Henkel · 2012 · Cited by 8 — Os dados indicam que a quota da não resposta aumenta com a mudança de um ciclo de vida para outro ou com a própria experiência obtida pelos efeitos das ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-polls-4",
+        "query": "what is the difference between a poll and an exit poll",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1128.7623330000001,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Opinion Polls versus Exit Polls: what's the difference?",
+          "url": "https://www.polyas.de/blog/en/polyas/opinion-polls-vs-exit-polls",
+          "snippet": "Exit polls are conducted after an election or referendum and survey how people actually did vote. Opinion polls are conducted before elections",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Exit poll",
+          "url": "https://en.wikipedia.org/wiki/Exit_poll",
+          "snippet": "An election exit poll is a poll of voters taken immediately after they have exited the polling stations. A similar poll conducted before actual voters have ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Explaining Exit Polls",
+          "url": "https://aapor.org/wp-content/uploads/2022/12/Explaining-Exit-Polls-508.pdf",
+          "snippet": "An election exit poll is a survey based on interviews with voters as they leave (or exit) their balloting locations.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "What you need to know about Election Day exit polls",
+          "url": "https://abc7ny.com/post/what-need-know-election-day-2024-exit-polls/15508802/",
+          "snippet": "Exit polls are surveys conducted as voters leave their polling places on Election Day. Exit polls tell what issues were important in the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Public Opinion Surveys and Exit Polls —",
+          "url": "https://aceproject.org/main/english/lf/lfd08e.htm",
+          "snippet": "As opposed to electoral surveys, exit polls are not concerned with the intended vote, but are based on the answers given by voters selected at random after they ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-high_impact-0",
+        "query": "what should a medical guideline disclose about evidence certainty",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1310.397209,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Strong recommendations from low certainty evidence: a cross ...",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10039768/",
+          "snippet": "by MC Chong · 2023 · Cited by 30 — Clinical guidelines should be based on a thorough evaluation of the evidence and generally include a rating of the quality of evidence and assign a strength ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Overview of the GRADE approach",
+          "url": "https://book.gradepro.org/guideline/overview-of-the-grade-approach",
+          "snippet": "GRADE offers methods, tools and processes to assess the certainty of evidence and support healthcare decision making, particularly developing ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Chapter 10: Overall Certainty of Evidence",
+          "url": "https://www.cdc.gov/acip-grade-handbook/hcp/chapter-10-overall-certainty-of-evidence/index.html",
+          "snippet": "The overall certainty of evidence is typically made based on the critical outcome with the lowest certainty of evidence rating. For example, if ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Introduction to the GRADE tool for rating certainty in ...",
+          "url": "https://www.sciencedirect.com/science/article/pii/S2213398423002713",
+          "snippet": "by M Prasad · 2024 · Cited by 536 — It emphasizes the importance of considering the strengths and weaknesses of the evidence, as well as values, preferences, and practical considerations when ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Why Can Medical Guidelines Sound More Certain Than ...",
+          "url": "https://danielcameronmd.com/medical-guidelines-evidence-uncertainty/",
+          "snippet": "Medical guidelines can sound definitive even when evidence has gaps. Learn why uncertainty matters in clinical decisions.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-high_impact-1",
+        "query": "como conferir se uma orientação de saúde está atualizada",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "high_impact"
+      },
+      "search_ms": 990.059042,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Meu SUS Digital — Ministério da Saúde - Portal Gov.br",
+          "url": "https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital",
+          "snippet": "O usuário pode acompanhar seu histórico clínico, os dados de vacinação, resultados de exames, medicações, posição na fila de transplante, entre outros serviços ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Ministério da Saúde — Meu SUS Digital",
+          "url": "https://webatendimento.saude.gov.br/faq/meususdigital",
+          "snippet": "Já é possível autodeclarar alguns dados cadastrais diretamente pelo conferir aplicativo Meu SUS Digital, disponível para dispositivos móveis ou na versão web, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Meu SUS Digital — Ministério da Saúde - Portal Gov.br",
+          "url": "https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao",
+          "snippet": "Na plataforma, é possível consultar informações e documentos relacionados ao atendimento no Sistema Único de Saúde (SUS), de acordo com os dados ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "você já acessa o Meu SUS Digital? A plataforma oficial do ...",
+          "url": "https://www.instagram.com/vida.de.acs/p/DcOERv8xFNg/",
+          "snippet": "Por lá, podem estar disponíveis recursos como: histórico e carteira de vacinação resultados de exames informações sobre medicamentos ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "você já acessa o Meu SUS Digital? A plataforma oficial do ...",
+          "url": "https://www.facebook.com/VidaDeACS/posts/-na-pr%C3%B3xima-visita-domiciliar-que-tal-perguntar-voc%C3%AA-j%C3%A1-acessa-o-meu-sus-digital/1500073375490816/",
+          "snippet": "Ao orientar a comunidade sobre o Meu SUS Digital, você ajuda mais pessoas a conhecerem e acessarem informações que podem facilitar o cuidado e o ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-high_impact-2",
+        "query": "how can a taxpayer identify their relevant official tax authority",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1160.026542,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Power of attorney and other authorizations",
+          "url": "https://www.irs.gov/businesses/small-businesses-self-employed/power-of-attorney-and-other-authorizations",
+          "snippet": "Your authorization for Power of Attorney is recorded on the Centralized Authorization File (CAF) unless Line 4, Specific Use is checked.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Tax Policy and Procedure: Hierarchy of Tax Authorities",
+          "url": "https://libguides.law.lsu.edu/c.php?g=191374&p=1264047",
+          "snippet": "This resource guide is intended to assist students conduct tax research relevant to their work in the Tax Policy and Procedure Seminar.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Tax Research Sources: How to Find Authoritative ...",
+          "url": "https://www.bluej.com/blog/tax-research-sources",
+          "snippet": "Secondary sources help explain complex issues and identify relevant authority, but your final position should rely on primary sources. 3 ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Establishing Substantial Authority for Undisclosed ...",
+          "url": "https://www.thetaxadviser.com/issues/2009/jun/establishingsubstantialauthorityforundisclosedtaxpositions/",
+          "snippet": "In analyzing the weight that an authority carries, a practitioner must look to the decisions of the federal appellate circuit in which the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "RPO Preparer Directory",
+          "url": "https://irs.treasury.gov/rpo/rpo.jsf",
+          "snippet": "Use this tool to research tax return preparers near you or to determine the type of credentials or qualifications held by a specific tax professional. All tax ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-high_impact-3",
+        "query": "como verificar a jurisdição de uma decisão judicial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1049.83775,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Consultar distribuição de processos judiciais",
+          "url": "https://justica.gov.pt/Servicos/Consultar-distribuicao-de-processos-judiciais",
+          "snippet": "A distribuição de processos judiciais pode ser consultada na plataforma Citius. Primeiro, deve aceder à página de consulta do tipo de tribunal onde quer fazer a ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Os meus processos | Tribunais.org.pt",
+          "url": "https://tribunais.org.pt/Processos/Os-meus-processos",
+          "snippet": "Pode consultar o seu processo online através do serviço consultar os meus processos no portal eTribunal - Cidadão. Também pode consultar o seu processo no ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Justiça a um clique: saiba como consultar seus processos ...",
+          "url": "https://www.trf1.jus.br/trf1/noticias/justica-a-um-clique-saiba-como-consultar-seus-processos-no-trf1-de-forma-on-line-",
+          "snippet": "Após selecionar o grau de jurisdição, o usuário será levado para a página de consulta processual do PJe. Do lado esquerdo, haverá um menu com ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Portal de Serviços centraliza consulta a processos e ...",
+          "url": "https://www.cnj.jus.br/portal-de-servicos-centraliza-consulta-a-processos-judiciais-e-acesso-a-citacoes-e-intimacoes/",
+          "snippet": "Por meio de um só login, os usuários poderão verificar o andamento dos processos em todo o país, acompanhar as comunicações processuais … ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "How to Look Up Court Cases: A Complete Guide for Lawyers ...",
+          "url": "https://www.youtube.com/watch?v=sz79J_i8NTc&xstg=CAMSBhUDze3xHw%3D%3D",
+          "snippet": "Você sabia que pode consultar o andamento dos seus processos judiciais de forma simples e rápida? Neste vídeo, vou te mostrar passo a passo ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-high_impact-4",
+        "query": "what distinguishes a preprint from a peer reviewed medical study",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1019.4110830000001,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Preprints vs Peer-Reviewed Articles: What's the Difference?",
+          "url": "https://directivepublications.org/blog/preprints-vs-peer-reviewed-articles",
+          "snippet": "In short: A preprint is a manuscript shared publicly before peer review — fast, open, but not yet validated. A peer-reviewed article has ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Preprints: What is their role in medical journals? - PMC",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7093265/",
+          "snippet": "by KJ Chung · 2020 · Cited by 28 — A preprint is an early draft of a research article that has not been through the peer review process; usually, preprints are published by researchers on openly ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Open Access: Preprints - MSK Library Guides",
+          "url": "https://libguides.mskcc.org/oa/preprints",
+          "snippet": "In academic publishing, a preprint is the version of a scientific paper that often is seen prior to its publication in a peer-reviewed ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Pros, Cons, and What You Should Know About Medical ...",
+          "url": "https://blog.cabells.com/2024/04/03/pros-cons-and-what-you-should-know-about-medical-research-preprints/",
+          "snippet": "a preprint is a full and complete version of a research manuscript that's made publicly available via upload to a preprint repository server ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "What is a preprint?",
+          "url": "https://www.frontiersin.org/for-authors/where-to-publish/what-is-a-preprint",
+          "snippet": "A preprint is a version of a research paper shared before going through this formal process. A preprint is not necessarily a replacement for a peer-reviewed ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-exploratory-0",
+        "query": "compare relational and document databases for small teams",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1199.545125,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Relational vs Nonrelational Databases - Difference ...",
+          "url": "https://aws.amazon.com/compare/the-difference-between-relational-and-non-relational-databases/",
+          "snippet": "Relational databases are the best choice if your data is predictable in terms of size, structure, and access frequency. You may also prefer a relational ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Relational DB vs. Document DB - is it just a matter of a ...",
+          "url": "https://www.reddit.com/r/Database/comments/1ks2ust/relational_db_vs_document_db_is_it_just_a_matter/",
+          "snippet": "I'm making a social media app with this functionality - a post can be made, and different categories of users can interact with the same post...but in different ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Best Relational Databases for Small Businesses in 2025 ...",
+          "url": "https://estuary.dev/blog/relational-databases-for-small-businesses/",
+          "snippet": "Some well-known relational databases for small businesses are PostgreSQL, MySQL, MariaDB, SQLite, Firebird, and CockroachDB. PostgreSQL and ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Relational vs. NoSQL data - .NET",
+          "url": "https://learn.microsoft.com/en-us/dotnet/architecture/cloud-native/relational-vs-nosql-data",
+          "snippet": "Relational databases provide a store of related data tables. Relational databases typically provide consistency and availability, but not ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Why use a document-based database instead of ...",
+          "url": "https://stackoverflow.com/questions/441441/why-use-a-document-based-database-instead-of-a-relational-database-what-are-app",
+          "snippet": "Closed. This question is opinion-based. It is not currently accepting answers. Want to improve this question? Because this question may ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-exploratory-1",
+        "query": "vantagens e limites de arquivos digitais comunitários",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1059.940708,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Conheça as vantagens do armazenamento digital de ...",
+          "url": "https://stoque.com.br/abaris/vantagens-armazenamento-digital-de-documentos/",
+          "snippet": "O armazenamento digital de documentos desponta como solução fundamental para garantir a otimização do espaço e a implementação de inteligência nas operações.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Desvendando os arquivos digitais: da eficiência à ...",
+          "url": "https://solides.com.br/blog/arquivos-digitais-departamento-pessoal/",
+          "snippet": "Os arquivos digitais servem para facilitar a organização e acesso às informações em empresas e em nosso dia a dia. Ao adotar a Gestão Eletrônica de Documentos ( ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Arquivo digital: entenda o conceito, características e ...",
+          "url": "https://ikhon.com.br/blog/arquivo-digital-entenda-o-conceito-caracteristicas-e-vantagens-para-a-gestao",
+          "snippet": "Quais são as vantagens do arquivo digital para a gestão moderna? · Redução de custos e otimização de espaço · Agilidade e acesso remoto.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Arquivo Digital: O que é e quais as suas vantagens",
+          "url": "https://www.cegid.com/ib/pt/blog/arquivo-digital-gp/",
+          "snippet": "Vantagens do arquivo digital face ao arquivo em papel · Menor necessidade de espaço · Maior facilidade de consulta · Eliminação do consumo de papel.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Gestão de tempo: 3 vantagens de usar documentos digitais",
+          "url": "https://www.assinebem.com.br/blog/2024/04/17/gestao-de-tempo-3-vantagens-de-usar-documentos-digitais",
+          "snippet": "Segurança: ao submeter o artifício em plataformas de nuvem, a recuperação de artigos consegue ser feita rapidamente. Os dados contidos nele ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-exploratory-2",
+        "query": "how do open source communities maintain documentation quality",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1139.756042,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Best Practices for Maintainers",
+          "url": "https://opensource.guide/best-practices/",
+          "snippet": "Remember to keep your documentation up-to-date. If you're not able to always do this, delete your outdated documentation or indicate it is outdated so ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "How do open source projects maintain quality?",
+          "url": "https://softwareengineering.stackexchange.com/questions/18074/how-do-open-source-projects-maintain-quality",
+          "snippet": "How do open source projects maintain quality? What keeps the projects from people with relatively little programming experience checking in poor quality codes?",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Building great open source documentation",
+          "url": "https://opensource.googleblog.com/2018/10/building-great-open-source-documentation.html",
+          "snippet": "Providing effective documentation for open source software can build strong, inclusive communities and increase the usage of your product. The ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "What are the best practices for maintaining open-source ...",
+          "url": "https://github.com/orgs/community/discussions/165360",
+          "snippet": "Best Practices for Maintaining Open-Source Project Documentation · 1. Keeping Docs Up-to-Date · 2. Recommended Tools · 3. Encouraging Contributions.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Developers who run and maintain your own open-source ...",
+          "url": "https://www.reddit.com/r/AskProgramming/comments/1qbw8n6/developers_who_run_and_maintain_your_own/",
+          "snippet": "Developers who run and maintain your own open-source projects, how do you decide what to implement? Recently I was looking at the repository ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-exploratory-3",
+        "query": "diferenças entre repositórios acadêmicos e revistas científicas",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1221.104292,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Como você explicaria a diferença entre revistas científicas ...",
+          "url": "https://www.reddit.com/r/AskScienceDiscussion/comments/1p4r7g/how_would_you_explain_the_difference_between/?tl=pt-br",
+          "snippet": "É uma distinção crítica que não pode ser subestimada. Artigos de revisão são particularmente confusos de distinguir. Eu entendo que eles são revisados ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Scientific Journal or Database? | Understanding Databases!",
+          "url": "https://www.youtube.com/watch?v=9H6I1aymWcI",
+          "snippet": "Você provavelmente já passou pela situação em que seu professor pede para você buscar materiais em bases de dados X ou Y, contudo, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Diferença entre os principais tipos de publicações ...",
+          "url": "https://noticias.unisanta.br/blog-unisanta/diferenca-entre-os-principais-tipos-de-publicacoes-academicas",
+          "snippet": "Saber distinguir cada os tipos de publicações acadêmicas ajuda o pesquisador e estudante a escolher o formato para seus objetivos.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Revistas Nacionais",
+          "url": "https://journal.scientificsociety.net/index.php/sobre/revistas-cientificas-nacionais",
+          "snippet": "Vale destacar que internacionalmente o termo \"academic journal\" é equivalente ao que chamamos de \"revista científica\" no Brasil, enquanto \"jornal acadêmico\" no ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Anais vs. Revistas Científicas - Editora Integrar",
+          "url": "https://www.instagram.com/p/DIllGGrCFow/",
+          "snippet": "Você sabe qual é a diferença entre publicar um trabalho em anais de evento e em uma revista científica? Embora ambos sejam espaços importantes ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "transfer-oct09-exploratory-4",
+        "query": "compare citation indexing and full text academic search",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1230.981959,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Citation Analysis: A Comparison of Google Scholar, Scopus ...",
+          "url": "https://asistdl.onlinelibrary.wiley.com/doi/10.1002/meet.14504301185",
+          "snippet": "by K Yang · 2006 · Cited by 404 — This paper presents a case study comparing citations found in Scopus and Google Scholar with those found in Web of Science. CiteSearch, which ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Citation Indexes - Systematic Reviews - Library Guides - UniSC",
+          "url": "https://libguides.usc.edu.au/c.php?g=508412&p=3480198",
+          "snippet": "Search tool for full text and citations of scholarly literature across many disciplines and sources: articles, theses, books, abstracts and ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Search where you will find most: Comparing the disciplinary ...",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9075928/",
+          "snippet": "by M Gusenbauer · 2022 · Cited by 314 — Full-Text Archive Search. The method uses query results as a common denominator to compare a wide variety of search engines, repositories, four science ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Research Index - Review",
+          "url": "https://webdoc.sub.gwdg.de/edoc/aw/ucsb/istl/01-winter/databases.html",
+          "snippet": "Since Research Index was designed as a citation index, it seemed reasonable to also compare results to a commercial citation index. Searching for ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "How to Choose and Use Databases: Full-Text vs. Citation",
+          "url": "https://libguides.lvc.edu/c.php?g=1152118&p=8409018",
+          "snippet": "Those databases containing just citations to the materials are called indexes. Index/ citation databases help you discover and identify useful articles for ...",
+          "source": "serper"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "This is a raw market-provider capture, not a Google UI or AI-answer capture.",
+    "The artifact is intentionally unjudged; quality is evaluated only after both systems are frozen and pooled.",
+    "An empty result vector cannot distinguish a legitimate zero-result query from every upstream failure mode."
+  ]
+}

@@ -1,0 +1,475 @@
+{
+  "schema_version": 1,
+  "name": "origin-transfer-v3",
+  "sealed_at": "2026-10-09T11:25:09.911Z",
+  "selection": {
+    "independent_selection": false,
+    "labels_excluded_from_capture": true,
+    "selection_before_first_capture": true,
+    "purpose": "New broad diagnostic queries after origin fixes; not independent quality proof. Exact overlap rejection does not guarantee semantic novelty.",
+    "prior_holdouts_excluded": [
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v1.json",
+        "sha256": "33d74bb2af8fd1c490e77f9301cba71cfb0390ea2e05bd18dc36ca8cf052220c"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v10.json",
+        "sha256": "c0b072aa59e2ad3ba8f28671438c6d532a7c1f1b5dbce3d3ce565b4c2f5a4c32"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v11.json",
+        "sha256": "f691123c91bff1bcb5783707541cc48a1a38800d1eb47634578ccc01c07590af"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v12.json",
+        "sha256": "39a84da622a5e2eab219c71862fa76eed73e58e133da971bf7210e292aa0978e"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v13.json",
+        "sha256": "e2ef4ea1106796a4b934f17f6f678f774682c5d671c6b2ad8eb46109d21148d6"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v2.json",
+        "sha256": "baebb86d6111993d9e297e2ee16b4b25cd5899399454d4db51e1daafa20fdda7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v3.json",
+        "sha256": "2cb38771099af7e56cef41b7dc47ca9fd51dc14af8b49e04007f03d0131ce153"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v4.json",
+        "sha256": "87521c1797a79539dcc2d90f7f374259dc3c0425cfbb74ca3c844d741bdb8c67"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v5.json",
+        "sha256": "ac49568636f830aad1d1979c73e82578d26e67eb9f9f9676401995be4fcd5b7a"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v6.json",
+        "sha256": "f2baeb137df79aa989434ae943dd23417d38f4c7ecec0df863cd6778c114c1d7"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v7.json",
+        "sha256": "3cbacdb5a49799459302c8cea5e00983dc00121002a4b8652d83362647202bab"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v8.json",
+        "sha256": "faade6b31e3ee5264ccf1d068ae120ed51c0410c7654baf6436456e3e9ee9d76"
+      },
+      {
+        "path": "bench/fixtures/generalization-msmarco-holdout-v9.json",
+        "sha256": "810c6315f194c75948126f267f6dcc3f839cedfa72344bd6e504a5ce758329ca"
+      },
+      {
+        "path": "outputs/validation-20261009/workload-v1.json",
+        "sha256": "bb85bbdc0416f7883aa5381b20335891acdb5f23509e38fd369ca59b88f7aec5"
+      },
+      {
+        "path": "outputs/validation-20261009/workload-transfer-v2.json",
+        "sha256": "4a8c71b022f76413d834253c0a441dbd9152ebe45c5f934f1a998f678337d5ed"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "id": "origin-transfer-v3-navigation-0",
+      "query": "Signal Messenger official website",
+      "stratum": "navigation",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "navigation-0",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-navigation-1",
+      "query": "Jitsi site oficial",
+      "stratum": "navigation",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "navigation-1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-navigation-2",
+      "query": "KeePassXC official website",
+      "stratum": "navigation",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "navigation-2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-navigation-3",
+      "query": "VLC site oficial",
+      "stratum": "navigation",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "navigation-3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-navigation-4",
+      "query": "Thunderbird official website",
+      "stratum": "navigation",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "navigation-4",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-transactions-0",
+      "query": "download Thunderbird for Linux official",
+      "stratum": "transactions",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "transactions-0",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-transactions-1",
+      "query": "baixar VLC para Windows oficial",
+      "stratum": "transactions",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "transactions-1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-transactions-2",
+      "query": "apply for a Singapore passport official",
+      "stratum": "transactions",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "transactions-2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-transactions-3",
+      "query": "agendar atendimento para título de eleitor oficial",
+      "stratum": "transactions",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "transactions-3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-transactions-4",
+      "query": "renew an Irish passport official application",
+      "stratum": "transactions",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "transactions-4",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-factual-0",
+      "query": "who invented the cyclotron",
+      "stratum": "factual",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "factual-0",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-factual-1",
+      "query": "quem desenvolveu a linguagem Erlang",
+      "stratum": "factual",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "factual-1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-factual-2",
+      "query": "who founded the Internet Archive",
+      "stratum": "factual",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "factual-2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-factual-3",
+      "query": "quem inventou o sistema Braille",
+      "stratum": "factual",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "factual-3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-factual-4",
+      "query": "who developed the first electric battery",
+      "stratum": "factual",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "factual-4",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-current-0",
+      "query": "latest stable release of Electron",
+      "stratum": "current",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "current-0",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-current-1",
+      "query": "versão estável atual do SQLite",
+      "stratum": "current",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "current-1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-current-2",
+      "query": "current president of South Africa official",
+      "stratum": "current",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "current-2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-current-3",
+      "query": "quem é o primeiro ministro da Austrália atualmente",
+      "stratum": "current",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "current-3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-current-4",
+      "query": "latest release of NixOS",
+      "stratum": "current",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "current-4",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-diligence-0",
+      "query": "does an audit alone prove a trading platform is trustworthy",
+      "stratum": "diligence",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "diligence-0",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-diligence-1",
+      "query": "um projeto é confiável apenas porque seu código é aberto",
+      "stratum": "diligence",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "diligence-1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-diligence-2",
+      "query": "is a publisher trustworthy if all citations repeat the same press release",
+      "stratum": "diligence",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "diligence-2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-diligence-3",
+      "query": "como verificar se um investimento é legítimo antes de transferir dinheiro",
+      "stratum": "diligence",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "diligence-3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-diligence-4",
+      "query": "does a trusted account prove the identity of a charity",
+      "stratum": "diligence",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "diligence-4",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-polls-0",
+      "query": "what does nonresponse bias mean in election polling",
+      "stratum": "polls",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "polls-0",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-polls-1",
+      "query": "o que significa efeito de desenho em uma pesquisa eleitoral",
+      "stratum": "polls",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "polls-1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-polls-2",
+      "query": "how can poll weighting affect reported percentages",
+      "stratum": "polls",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "polls-2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-polls-3",
+      "query": "diferença entre margem de erro e erro de previsão eleitoral",
+      "stratum": "polls",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "polls-3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-polls-4",
+      "query": "what should a poll disclose about its sampling method",
+      "stratum": "polls",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "polls-4",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-high_impact-0",
+      "query": "what is the difference between absolute and relative risk in medical evidence",
+      "stratum": "high_impact",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "high_impact-0",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-high_impact-1",
+      "query": "como conferir a versão de uma recomendação clínica",
+      "stratum": "high_impact",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "high_impact-1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-high_impact-2",
+      "query": "how can a taxpayer verify the publication date of an official ruling",
+      "stratum": "high_impact",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "high_impact-2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-high_impact-3",
+      "query": "como verificar se um precedente judicial ainda está em vigor",
+      "stratum": "high_impact",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "high_impact-3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-high_impact-4",
+      "query": "what should a medical source disclose about conflicts of interest",
+      "stratum": "high_impact",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "high_impact-4",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-exploratory-0",
+      "query": "compare versioned backups and archive repositories",
+      "stratum": "exploratory",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "exploratory-0",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-exploratory-1",
+      "query": "vantagens e limitações de documentação colaborativa aberta",
+      "stratum": "exploratory",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "exploratory-1",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-exploratory-2",
+      "query": "how do academic repositories handle corrected papers",
+      "stratum": "exploratory",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "exploratory-2",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    },
+    {
+      "id": "origin-transfer-v3-exploratory-3",
+      "query": "diferenças entre verificação de origem e verificação de conteúdo",
+      "stratum": "exploratory",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "exploratory-3",
+      "language": "pt",
+      "locale": "pt-BR",
+      "country": "BR"
+    },
+    {
+      "id": "origin-transfer-v3-exploratory-4",
+      "query": "compare primary sources and independent replication in scientific reporting",
+      "stratum": "exploratory",
+      "source": "implementer_authored_transfer_diagnostic",
+      "source_id": "exploratory-4",
+      "language": "en",
+      "locale": "en-US",
+      "country": "US"
+    }
+  ]
+}

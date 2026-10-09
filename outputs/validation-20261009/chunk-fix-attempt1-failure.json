@@ -1,0 +1,10 @@
+{
+  "experiment": "transfer-chunk-fix-attempt-1",
+  "status": "aborted_not_passed",
+  "manifest_sha256": "4a8c71b022f76413d834253c0a441dbd9152ebe45c5f934f1a998f678337d5ed",
+  "failure": "factual_relation_direction_matches_entity sliced beyond a short sentence after parenthetical normalization",
+  "observed": "range end index 3 out of range for slice of length 1",
+  "complete_report_produced": false,
+  "fix": "reject sentences/surfaces shorter than the requested entity before slicing; add regression; repeat with a new cold index",
+  "quality_claim": false
+}

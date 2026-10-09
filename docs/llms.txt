@@ -13,7 +13,8 @@ OpenSonarX is a search engine that returns full Markdown content with trust sign
 - Decentralized P2P network (libp2p)
 - Works out of the box with DuckDuckGo — no API key needed
 - CLI tool: `oi search "your query"`
-- Blockchain/staking ($TRUTH token) is planned for Phase 3 — not yet implemented
+- Retrieval rank is stake/reputation/DNS neutral; OpenUncertainty is an experimental claim-level Stage-2 layer
+- Claim-specific cash at risk may affect calibrated reliance only after held-out validation; raw domain stake never buys rank or confidence
 
 ## Install
 curl -fsSL https://opensonarx.com/install.sh | sh
@@ -32,8 +33,8 @@ curl -fsSL https://opensonarx.com/install.sh | sh
 - [P2P Node](https://docs.opensonarx.com/guides/p2p-node)
 - [Sentinel Crawler](https://docs.opensonarx.com/guides/sentinel)
 - [Seeding Content](https://docs.opensonarx.com/guides/seeding)
-- [Staking Overview (Phase 3)](https://docs.opensonarx.com/staking/overview)
-- [Ranking Algorithm](https://docs.opensonarx.com/protocol/ranking)
+- [Economic Commitments (Experimental)](https://docs.opensonarx.com/staking/overview)
+- [Ranking and Uncertainty](https://docs.opensonarx.com/protocol/ranking)
 - [Wire Protocol](https://docs.opensonarx.com/protocol/wire-format)
 - [CLI: oi search](https://docs.opensonarx.com/cli/search)
 - [CLI: oi network](https://docs.opensonarx.com/cli/network)

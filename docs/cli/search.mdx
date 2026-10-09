@@ -20,7 +20,7 @@ oi search <query> [OPTIONS]
 | Flag | Default | Description |
 |------|---------|-------------|
 | `-k, --limit` | `5` | Maximum results to return |
-| `--min-stake` | — | Minimum stake in USD *(Phase 3)* |
+| `--min-stake` | — | Legacy explicit metadata filter; never changes the retrieval score and is not calibrated reliance |
 | `--freshness` | — | Freshness filter: `1h`, `1d`, `1w`, `1m`, `1y` |
 | `--type` | — | Content type filter: `text`, `image`, `pdf` |
 | `--shard` | — | Force specific shard(s) |
@@ -37,7 +37,7 @@ oi search <query> [OPTIONS]
 |------|---------|-------------|
 | `-o, --output` | `table` | Output format: `table`, `json`, `ndjson` |
 | `-n, --network` | `mainnet` | Network: `mainnet`, `devnet`, `localnet` |
-| `--open` | auto | Open mode: disable staking/settlement *(Phase 3)* |
+| `--open` | auto | Open mode: disable legacy staking/settlement integrations |
 | `-q, --quiet` | — | Suppress non-essential output |
 | `-v, --verbose` | — | Verbose logging |
 

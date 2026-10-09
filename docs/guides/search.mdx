@@ -67,18 +67,19 @@ oi search "rust" -o ndjson
 
 ## How ranking works
 
-The ranking formula combines:
+The Stage-1 scorer combines:
 
 ```
-final_score = (semantic_score + bm25_score) / 2 * reputation_factor
+base_relevance = semantic_weight * normalized_semantic + bm25_weight * normalized_bm25
+final_score = base_relevance * bounded_quality * bounded_freshness
 ```
 
 | Factor | Effect |
 |--------|--------|
 | **Semantic score** | Cosine similarity between query and content embeddings (384-dim MiniLM) |
 | **BM25 score** | Keyword matching with TF-IDF weighting |
-| **Reputation factor** | Wilson score from feedback signals — good content gets boosted over time |
+| **Quality/freshness** | Bounded content-local spam/slop/quality and time-decay features |
 
 <Note>
-  **Phase 3** will add stake-weighted ranking via $TRUTH token staking on Solana, giving publishers an additional way to signal content quality.
+  Stake, reputation, DNS, wallet/payment data, and OpenUncertainty outputs do not enter Stage 1. The experimental Stage-2 layer may use typed, held-out-calibrated claim evidence under an explicit policy while preserving the retrieval rank.
 </Note>

@@ -45,7 +45,7 @@ OpenSonarX pre-crawls the web, extracts clean content, and returns only the sent
     Join the decentralized search network.
   </Card>
   <Card title="How Ranking Works" icon="chart-line" href="/protocol/ranking">
-    Hybrid search algorithm with reputation signals.
+    Stake-neutral retrieval with an experimental uncertainty decision layer.
   </Card>
 </CardGroup>
 
@@ -55,13 +55,13 @@ OpenSonarX pre-crawls the web, extracts clean content, and returns only the sent
 Agent query → OpenSonarX
                 ├── HNSW vector search (384-dim MiniLM embeddings)
                 ├── BM25 keyword search (TF-IDF)
-                ├── Reputation-weighted ranking
-                └── Returns: clean Markdown + trust signals
+                ├── Stake/reputation-neutral retrieval
+                └── Returns: clean Markdown + typed evidence metadata
 ```
 
 1. **Sentinel nodes crawl** the web, extract content, chunk, embed, and index it
 2. **AI agents search** and get ranked results with full content — not just links
-3. **Feedback signals** from agents improve ranking over time — building a data moat
+3. **Typed evidence and outcome data** can support an explicit, calibrated Stage-2 decision policy; raw feedback never buys rank
 
 ## Why OpenSonarX vs Traditional Search APIs?
 
@@ -70,7 +70,7 @@ Agent query → OpenSonarX
 | **Output** | Links + thin snippets | Full Markdown content |
 | **Token cost** | ~6,500 tokens/query | ~835 tokens/query |
 | **Page fetching** | Agent must fetch and parse HTML | Pre-crawled and indexed |
-| **Trust signals** | None | Reputation score, feedback signals |
+| **Trust signals** | Usually opaque | Typed evidence plus experimental claim/task-specific uncertainty |
 | **Content quality** | Raw HTML with ads and nav | Clean, query-relevant text |
 | **Pricing** | Paid API + LLM token costs | Free and open source |
 | **Infrastructure** | Centralized, single provider | Decentralized P2P network |
@@ -85,4 +85,4 @@ Agent query → OpenSonarX
 | P2P network | libp2p (Kademlia DHT, gossipsub, request-response) |
 | Wire protocol | Protobuf via prost |
 | Crawling | Content distiller with quality gates (spam + AI slop detection) |
-| Staking *(Phase 3)* | Solana + Anchor ($TRUTH SPL token) |
+| Economic substrate *(legacy/experimental)* | Solana + Anchor plumbing; excluded from retrieval rank |

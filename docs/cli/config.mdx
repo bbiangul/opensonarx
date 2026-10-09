@@ -21,9 +21,17 @@ name = "brave"
 priority = 5
 api_key = "your-brave-key"
 
-# Phase 3 (not yet active):
+# Legacy/experimental economic substrate (not production-active):
 # [wallet]
 # path = "/Users/you/.solana/id.json"
+```
+
+Set `OPENSONARX_DATA_DIR` to place the config, index, stake mirror, and creator
+ledger under an explicit directory. This is useful for isolated production
+deployments and clean end-to-end evaluations:
+
+```bash
+OPENSONARX_DATA_DIR=/srv/opensonarx/tenant-a oi search "claude"
 ```
 
 ## Precedence
@@ -62,7 +70,7 @@ Shows auth mode (web3/gateway/open), account info, and quota.
 
 | Command | Description |
 |---------|-------------|
-| `oi verify <url>` | Trust-check a URL (reputation + risk) |
+| `oi verify <url>` | Inspect legacy provenance/reputation/risk metadata; not a calibrated truth probability |
 | `oi leaderboard` | Most-queried domains/entities |
 | `oi docs` | Open gateway API docs |
 | `oi yield show` | View current yield/earnings |

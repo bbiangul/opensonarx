@@ -1,48 +1,43 @@
 ---
-title: "Staking Overview (Phase 3)"
-description: "Planned: How $TRUTH token staking will drive search quality on Solana."
+title: "Economic Commitments (Experimental)"
+description: "How claim-specific cash at risk may inform calibrated reliance without buying rank."
 ---
 
 <Warning>
-  **Phase 3 — Not yet implemented.** Staking is part of the roadmap. The features described here are planned designs, not currently available.
+  **Not production-ready.** The repository has an estimator MVP and evaluation harness. Live capital settlement, custody, legal approval, and real-world predictive validation do not yet exist.
 </Warning>
 
-## Why stake?
+## What changed from v1
 
-Staking $TRUTH tokens on a domain will be a signal that you believe in the content quality. Staked domains will get a ranking boost in search results. Bad actors who stake on spam will be slashed through the dispute process.
+The planned domain-level stake boost is retracted. Domain stake, wallet balance, reputation, and DNS verification do not enter Stage-1 ranking. Registry data may still appear as legacy accountability metadata while clients migrate, but it cannot purchase relevance.
 
-## Planned economics
+The remaining useful intuition is narrower: accepting real loss on one exact claim before its outcome can reveal conviction. Whether that conviction predicts the declared target is an empirical question, not a protocol assumption.
 
-```
-final_score = relevance_score * stake_multiplier * reputation_decay
-```
+## Eligible economic conviction
 
-| Factor | Effect |
-|--------|--------|
-| **More stake** | Higher ranking boost (log-scaled) |
-| **Positive feedback** | Reputation grows, sustains the boost |
-| **Negative feedback** | Reputation decays, reduces the boost |
-| **Dispute (upheld)** | Stake slashed entirely |
+A position is eligible only if it:
 
-## Planned stake types
+- identifies the exact claim, direction, task, horizon, and deterministic/event-bound settlement rule;
+- is committed before material outcome information;
+- carries non-zero maximum loss and lock time;
+- records how much of the claim the predicate covers; and
+- discounts refunds, rebates, self-funding, insurance, side payments, and hedges.
 
-| Type | Description | Example |
-|------|-------------|---------|
-| **Domain** | Stake on a publisher's domain | `rust-lang.org` |
-| **Entity** | Stake on a specific creator on a UGC platform | `youtube.com/c/3blue1brown` |
-| **Curation** | Stake on someone else's domain | `oi domain curate docs.rs --amount 50` |
+Fully hedged, refundable, post-outcome, unscoped, or subjectively settled positions receive zero economic exposure.
 
-## UGC platform handling
+## How it may affect uncertainty
 
-For user-generated content platforms (YouTube, X, Reddit), **domain-level stake will NOT pass through** to individual pages. You'll need to stake on the specific entity (channel, account, subreddit) for content to get a boost.
+Headline amount is log-normalized and capped, then multiplied by maximum-loss, time, predicate-coverage, funding-independence, and unhedged fractions. Comparable resolved claims learn a likelihood relative to a no-cash baseline.
 
-This prevents a YouTube domain stake from boosting all 500M+ videos.
+The learned result may be positive, zero, or negative. Sparse calibration means zero effect. MVP-1 caps the absolute odds effect at 3×, so even a nominal whale position cannot erase strong contrary history.
 
 ## What works today
 
-Today, ranking is based on:
-- **Semantic similarity** (HNSW, 384-dim MiniLM embeddings)
-- **Keyword matching** (BM25, TF-IDF)
-- **Reputation** (Wilson score from feedback signals)
+- stake/reputation/DNS-neutral scorer tests;
+- a focused default-query registry/no-registry regression;
+- typed effective-exposure and calibration code;
+- positive, zero, negative, sparse, OOD, and whale unit tests;
+- a reproducible synthetic forward benchmark; and
+- a leakage-checked real-cohort JSONL evaluator with cluster-bootstrap uncertainty.
 
-Staking will add a fourth dimension to ranking when Phase 3 launches.
+See the [OpenUncertainty MVP-1 protocol](../OPENUNCERTAINTY-MVP1.md). Real cash must not affect a live decision policy until a pre-registered cohort passes the calibration, manipulation, wealth-slice, legal, and custody gates.

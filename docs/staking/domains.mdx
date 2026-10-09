@@ -1,29 +1,29 @@
 ---
-title: "Domain Staking (Phase 3)"
-description: "Planned: Stake $TRUTH on domains and verify DNS ownership."
+title: "Domain Identity and Legacy Stake"
+description: "DNS control metadata and legacy domain-capital commands without ranking authority."
 ---
 
 <Warning>
-  **Phase 3 — Not yet implemented.** Domain staking is part of the roadmap. The commands described here are planned designs, not currently available.
+  **Legacy/experimental.** These commands may exist in the CLI or devnet substrate, but domain stake is not part of v2.4 ranking or calibrated uncertainty.
 </Warning>
 
-## Planned: Stake on a domain
+## Legacy: stake on a domain
 
 ```bash
 oi stake rust-lang.org --amount 100
 ```
 
-## Planned: Verify DNS ownership
+## Verify DNS control
 
-Place a TXT record on your domain to prove ownership and get a reputation bonus:
+Place a TXT record on your domain to create a time-scoped control observation:
 
 ```bash
 oi domain verify rust-lang.org
 ```
 
-The CLI will output the required TXT record value. Add it to your DNS, then re-run the command to complete verification.
+The CLI will output the required TXT record value. Add it to DNS, then re-run the command to complete verification. DNS control is provenance metadata: it does not prove authorship, licensing, relevance, or factual accuracy and gives no ranking bonus.
 
-## Planned: Unstake
+## Legacy: unstake
 
 Begin the 7-day cooldown period:
 
@@ -33,14 +33,16 @@ oi unstake rust-lang.org
 
 After 7 days, the tokens are returned to your wallet.
 
-## Planned: Curate
+## Retracted: paid curation rank
 
-Stake on someone else's domain to boost its ranking:
+The legacy command shape was:
 
 ```bash
 oi domain curate docs.rs --amount 50
 ```
 
+It must not boost ranking. Any future sponsorship or underwriting is visibly scoped economics and cannot purchase Stage-1 rank or a calibrated posterior.
+
 ## Available today
 
-Domain management commands (`oi domain list`, `oi domain info`) are available now and show domain metadata. Staking functionality will be added in Phase 3.
+Domain management commands (`oi domain list`, `oi domain info`) show legacy metadata. Existing domain stake does not become OpenUncertainty economic conviction because it lacks an exact claim, direction, horizon, objective outcome, and outcome-specific loss.

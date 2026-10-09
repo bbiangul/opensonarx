@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-09",
+  "single_diagnostic_probe": true,
+  "endpoint": "https://google.serper.dev/search",
+  "http_status": 400,
+  "provider_message": "Not enough credits",
+  "result_count": 0,
+  "action": "suspend further paid capture until access is restored; no recharge performed",
+  "credentials_recorded": false,
+  "quality_conclusion": false
+}

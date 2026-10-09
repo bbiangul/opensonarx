@@ -1,52 +1,34 @@
 ---
-title: "Disputes (Phase 3)"
-description: "Planned: Challenge bad actors through the dispute and jury system."
+title: "Deterministic Challenges"
+description: "Why capital can move only on reproducible predicates."
 ---
 
 <Warning>
-  **Phase 3 — Not yet implemented.** The dispute and jury system is part of the roadmap. The features described here are planned designs, not currently available.
+  **Not production-ready.** Existing dispute/jury code is legacy infrastructure. Subjective jury slashing is retracted and must not move funds.
 </Warning>
 
-## Planned: How disputes will work
+## What changed
 
-If a staked domain serves spam, misinformation, or low-quality content, anyone will be able to open a dispute. A jury of token holders will vote to uphold or reject the dispute. If upheld, the domain's stake is slashed.
+“Spam,” “misinformation,” and “low quality” are not deterministic settlement predicates. A token-holder vote over those labels creates a bribable, gameable oracle. Human or model review may add warnings and evidence, but cannot slash, seize, or redistribute a bond.
 
-## Planned: Open a dispute
+## Eligible challenge flow
+
+1. The original commitment pins an exact predicate version, inputs, outcome source, deadline, and refund behavior.
+2. A challenger identifies the exact predicate/input alleged to fail and posts a challenge bond.
+3. Independent executors reproduce the deterministic trace. Trace equality—not majority authority—drives the declared result.
+4. Matching traces execute the pre-declared refund/payout/slash rule.
+5. Divergent traces, missing artifacts, or ambiguous outcomes pause the class and return the commitment and challenge bonds as unresolved.
+
+This applies to narrow facts such as signature validity, exact hash/snapshot equality, or a pinned machine-observable event. It does not adjudicate broad truth, journalism, politics, interpretation, or scientific controversy.
+
+## Legacy commands
+
+Commands such as the following may still exist while migration proceeds:
 
 ```bash
-oi dispute open spam-domain.com \
-  --bond 10 \
-  --reason "SEO spam, no real content"
-```
-
-The bond is locked during the dispute. If the dispute is upheld, you get the bond back plus a share of the slashed stake. If rejected, you lose the bond.
-
-## Planned: Jury participation
-
-### Register as a juror
-
-```bash
+oi dispute open <target> --bond 10 --reason <reason>
 oi jury register
-```
-
-Eligibility will require a minimum $TRUTH balance.
-
-### Vote on a dispute
-
-```bash
 oi jury vote <dispute_id> --verdict uphold
-oi jury vote <dispute_id> --verdict reject
 ```
 
-Voting will use commit-reveal: first commit a hashed vote, then reveal after the commit phase ends.
-
-## Planned outcomes
-
-| Verdict | Bond | Stake |
-|---------|------|-------|
-| **Upheld** | Returned to disputer + reward | Slashed |
-| **Rejected** | Lost (distributed to jurors) | Preserved |
-
-## What works today
-
-Today, bad content is handled through the **feedback system**. Negative feedback signals decay a domain's reputation score, reducing its ranking over time. The formal dispute and jury system will add on-chain enforcement in Phase 3.
+They must be treated as legacy/non-binding until a versioned deterministic execution path and full coalition-safety audit are implemented. They are not evidence that subjective slashing is part of v2.4.

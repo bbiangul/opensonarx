@@ -1,0 +1,320 @@
+{
+  "captured_at_unix_ms": 1791543344381,
+  "experiment": "live-answered-production-path-v1",
+  "answer_mode": true,
+  "real_embedder": "arctic-embed-s",
+  "data_dir": "/tmp/opensonarx-20261009-final-regression.4l8M8t",
+  "discovery_engine_override": "serper",
+  "initial_documents": 23,
+  "final_documents": 35,
+  "passes": 1,
+  "warmup_passes": 0,
+  "concurrency": 1,
+  "query_variants": false,
+  "query_variant": null,
+  "cases": 1,
+  "wall_ms": 6411.001583,
+  "throughput_qps": 0.15598186758395002,
+  "quality_pass_rate": 1.0,
+  "search_p50_ms": 6410.915292000001,
+  "search_p95_ms": 6410.915292000001,
+  "search_p99_ms": 6410.915292000001,
+  "crawl_p50_ms": 4579.06625,
+  "crawl_p95_ms": 4579.06625,
+  "crawl_p99_ms": 4579.06625,
+  "answer_hydration_p50_ms": 4579.064125,
+  "answer_hydration_p95_ms": 4579.064125,
+  "answer_hydration_p99_ms": 4579.064125,
+  "background_crawl_p50_ms": 0.002125,
+  "background_crawl_p95_ms": 0.002125,
+  "background_crawl_p99_ms": 0.002125,
+  "reports": [
+    {
+      "pass": 1,
+      "id": "factual_pix_creator",
+      "query": "quem criou o Pix?",
+      "intent": "factual",
+      "search_ms": 6410.915292000001,
+      "answer_hydration_ms": 4579.064125,
+      "background_crawl_ms": 0.002125,
+      "crawl_ms": 4579.06625,
+      "crawled_pages": 3,
+      "answer_status": "extractive",
+      "answer_summary": "Pix é um sistema de pagamento instantâneo criado pelo Banco Central, que permite transferir dinheiro entre contas em segundos, a qualquer hora e dia.",
+      "answer_warning": "Modo evidencial: não há probabilidade calibrada, e a dependência entre fontes ainda não foi resolvida.",
+      "answer_claims": [
+        "Pix é um sistema de pagamento instantâneo criado pelo Banco Central, que permite transferir dinheiro entre contas em segundos, a qualquer hora e dia."
+      ],
+      "answer_evidence_lineage": [
+        {
+          "underlying_unit_kind": "factual_relation_claim",
+          "underlying_unit_ids": [
+            "claim:9e1f7d19d7bebba75f609649"
+          ],
+          "identity_status": "normalized_claim_signature_only",
+          "underlying_unit_count": null,
+          "reporting_source_families": 3,
+          "claim_text_citations": 3,
+          "independence_status": "unknown_editorial_derivation",
+          "unresolved_dependencies": [
+            "syndication",
+            "quotation",
+            "shared_upstream_source"
+          ],
+          "registry_metadata_records": 0,
+          "registry_verifies": [],
+          "registry_does_not_verify": []
+        }
+      ],
+      "answer_citations_per_claim": [
+        3
+      ],
+      "answer_citation_urls": [
+        [
+          "https://www.bcb.gov.br/estabilidadefinanceira/pix",
+          "https://en.wikipedia.org/wiki/Pix_(payment_system)",
+          "https://www.ebanx.com/en/insights/payments-explained/pix-instant-payment-system/"
+        ]
+      ],
+      "poll_registry": [],
+      "market_quotes": [],
+      "search_passes": 4,
+      "hydrated_pages": 3,
+      "stage_trace": {
+        "evidence_checklist": {
+          "policy_id": "answer-requirements-v1",
+          "complete_answer_supported": true,
+          "critical_missing": false,
+          "requirements": [
+            {
+              "id": "claim_citations",
+              "claim_index": 0,
+              "critical": true,
+              "status": "satisfied",
+              "evidence_refs": [
+                "https://www.bcb.gov.br/estabilidadefinanceira/pix",
+                "https://en.wikipedia.org/wiki/Pix_(payment_system)",
+                "https://www.ebanx.com/en/insights/payments-explained/pix-instant-payment-system/"
+              ]
+            },
+            {
+              "id": "retained_citation_excerpt",
+              "claim_index": 0,
+              "critical": true,
+              "status": "satisfied",
+              "evidence_refs": [
+                "https://www.bcb.gov.br/estabilidadefinanceira/pix",
+                "https://en.wikipedia.org/wiki/Pix_(payment_system)",
+                "https://www.ebanx.com/en/insights/payments-explained/pix-instant-payment-system/"
+              ]
+            },
+            {
+              "id": "distinct_reporting_families",
+              "claim_index": 0,
+              "critical": true,
+              "status": "satisfied",
+              "evidence_refs": [
+                "https://www.bcb.gov.br/estabilidadefinanceira/pix",
+                "https://en.wikipedia.org/wiki/Pix_(payment_system)",
+                "https://www.ebanx.com/en/insights/payments-explained/pix-instant-payment-system/"
+              ]
+            }
+          ]
+        },
+        "initial_retrieval_ms": 127.86449999999999,
+        "initial_hydration_ms": 2811.674208,
+        "corroboration_discovery_ms": 1531.163292,
+        "corroboration_provider_discovery_ms": 1531.163292,
+        "corroboration_queries": [
+          "\"pix\" \"banco central\"",
+          "site:gov.br \"pix\" \"banco central\""
+        ],
+        "corroboration_discovered_candidates": 13,
+        "corroboration_discovered_urls": [
+          "https://www.bcb.gov.br/estabilidadefinanceira/pix",
+          "https://www.bcb.gov.br/publicacoes/blog-do-bc",
+          "https://www.bcb.gov.br/en/financialstability/pix_en",
+          "https://www.bcb.gov.br/estabilidadefinanceira/pix-sobre",
+          "https://www.bcb.gov.br/",
+          "https://www.bcb.gov.br/acessoinformacao/enderecostelefones",
+          "https://www.gov.br/pt-br/servicos/emitir-relatorio-de-chaves-pix",
+          "https://www.bcb.gov.br/meubc/faqs/p/O-que-e-chave-pix",
+          "https://dadosabertos.bcb.gov.br/dataset/pix",
+          "https://www.bcb.gov.br/en/financialstability/pixstatistics",
+          "https://www.bcb.gov.br/estabilidadefinanceira/estatisticaspix",
+          "https://www.instagram.com/p/DUDfy94EiGe/",
+          "https://www.bcb.gov.br/estabilidadefinanceira/pix?modalAberto=reclamacao_pix"
+        ],
+        "corroboration_retained_candidates": 13,
+        "corroboration_retained_urls": [
+          "https://www.bcb.gov.br/estabilidadefinanceira/pix",
+          "https://www.bcb.gov.br/publicacoes/blog-do-bc",
+          "https://www.bcb.gov.br/en/financialstability/pix_en",
+          "https://www.bcb.gov.br/estabilidadefinanceira/pix-sobre",
+          "https://www.bcb.gov.br/",
+          "https://www.bcb.gov.br/acessoinformacao/enderecostelefones",
+          "https://www.gov.br/pt-br/servicos/emitir-relatorio-de-chaves-pix",
+          "https://www.bcb.gov.br/meubc/faqs/p/O-que-e-chave-pix",
+          "https://dadosabertos.bcb.gov.br/dataset/pix",
+          "https://www.bcb.gov.br/en/financialstability/pixstatistics",
+          "https://www.bcb.gov.br/estabilidadefinanceira/estatisticaspix",
+          "https://www.instagram.com/p/DUDfy94EiGe/",
+          "https://www.bcb.gov.br/estabilidadefinanceira/pix?modalAberto=reclamacao_pix"
+        ],
+        "corroboration_hydration_urls": [
+          "https://www.bcb.gov.br/estabilidadefinanceira/pix"
+        ],
+        "poll_registration_discovery_ms": 0.0,
+        "poll_scenario_discovery_ms": 0.0,
+        "corroboration_hydration_ms": 1767.389917,
+        "retrieval_refresh_ms": 66.41000000000001,
+        "answer_construction_ms": 28.270125,
+        "total_ms": 6410.836625,
+        "primary_source_expansion": true,
+        "poll_scenario_expansion": false,
+        "poll_primary_scenario_audit": false,
+        "fresh_answer_cache_hit": false,
+        "corroboration_hydration_budget_exhausted": false,
+        "factual_reference_results": 0,
+        "factual_display_fallback_candidates": 16,
+        "factual_display_results": 5,
+        "fresh_local_evidence_hit": false,
+        "initial_hydration_requested": 5,
+        "corroboration_hydration_requested": 1,
+        "poll_registry_lookup_ms": 0.0,
+        "poll_registry_ids": 0,
+        "poll_registry_records": 0,
+        "poll_registry_errors": 0,
+        "market_quote_lookup_ms": 0.0,
+        "market_quote_records": 0,
+        "market_quote_errors": 0
+      },
+      "sources": [
+        "local",
+        "serper",
+        "discovery_cache"
+      ],
+      "quality_pass": true,
+      "quality_failures": [],
+      "results": [
+        {
+          "decision_rank": 1,
+          "retrieval_rank": 5,
+          "url": "https://www.bcb.gov.br/estabilidadefinanceira/pix",
+          "title": "",
+          "source": "local",
+          "published_at": null,
+          "crawled_at": 1791543344,
+          "relevance_score": 0.7367999361356099,
+          "decision_score": 0.15037837522061673,
+          "uncertainty_mode": "evidential_only",
+          "ignorance": 0.6799999999999999,
+          "independence": 1.0,
+          "cash_log_bayes_factor": 0.0,
+          "evidence_signals": [
+            "snippet_available",
+            "distilled_content_available",
+            "query_relative_source_role_primary",
+            "claim_graph_missing",
+            "outside_top_relevance_band"
+          ],
+          "evidence_lineage": null
+        },
+        {
+          "decision_rank": 2,
+          "retrieval_rank": 4,
+          "url": "https://www.bbc.com/portuguese/articles/c0r2kkg1lqyo",
+          "title": "Quem criou o Pix? Como nasceu o sistema de pagamentos que está na mira do governo Trump - BBC News Brasil",
+          "source": "local",
+          "published_at": 1780531200,
+          "crawled_at": 1791542568,
+          "relevance_score": 0.9434109214916224,
+          "decision_score": 0.3064690238861464,
+          "uncertainty_mode": "evidential_only",
+          "ignorance": 0.6,
+          "independence": 1.0,
+          "cash_log_bayes_factor": 0.0,
+          "evidence_signals": [
+            "title_available",
+            "snippet_available",
+            "distilled_content_available",
+            "query_relative_source_role_unclassified",
+            "claim_graph_missing"
+          ],
+          "evidence_lineage": null
+        },
+        {
+          "decision_rank": 3,
+          "retrieval_rank": 5,
+          "url": "https://ranking.org.br/artigos/quem-criou-o-pix",
+          "title": "Quem criou o Pix e como o sistema foi construído - Ranking dos Políticos",
+          "source": "local",
+          "published_at": 1780511023,
+          "crawled_at": 1791542567,
+          "relevance_score": 0.9369059002654141,
+          "decision_score": 0.30347671412209054,
+          "uncertainty_mode": "evidential_only",
+          "ignorance": 0.6,
+          "independence": 1.0,
+          "cash_log_bayes_factor": 0.0,
+          "evidence_signals": [
+            "title_available",
+            "snippet_available",
+            "distilled_content_available",
+            "query_relative_source_role_unclassified",
+            "claim_graph_missing"
+          ],
+          "evidence_lineage": null
+        },
+        {
+          "decision_rank": 4,
+          "retrieval_rank": 2,
+          "url": "https://en.wikipedia.org/wiki/Pix_(payment_system)",
+          "title": "Pix (payment system) - Wikipedia",
+          "source": "local",
+          "published_at": 1611096067,
+          "crawled_at": 1791543196,
+          "relevance_score": 0.7844412799317565,
+          "decision_score": 0.233342988768608,
+          "uncertainty_mode": "evidential_only",
+          "ignorance": 0.6,
+          "independence": 1.0,
+          "cash_log_bayes_factor": 0.0,
+          "evidence_signals": [
+            "title_available",
+            "snippet_available",
+            "distilled_content_available",
+            "query_relative_source_role_edited_reference",
+            "claim_graph_missing",
+            "outside_top_relevance_band"
+          ],
+          "evidence_lineage": null
+        },
+        {
+          "decision_rank": 5,
+          "retrieval_rank": 3,
+          "url": "https://www.ebanx.com/en/insights/payments-explained/pix-instant-payment-system/",
+          "title": "Payments Explained: How does Pix, Brazil's instant payment system, work? | EBANX",
+          "source": "local",
+          "published_at": null,
+          "crawled_at": 1791543338,
+          "relevance_score": 0.7405903536319591,
+          "decision_score": 0.21317156267070123,
+          "uncertainty_mode": "evidential_only",
+          "ignorance": 0.6,
+          "independence": 1.0,
+          "cash_log_bayes_factor": 0.0,
+          "evidence_signals": [
+            "title_available",
+            "snippet_available",
+            "distilled_content_available",
+            "query_relative_source_role_unclassified",
+            "claim_graph_missing",
+            "outside_top_relevance_band"
+          ],
+          "evidence_lineage": null
+        }
+      ]
+    }
+  ]
+}

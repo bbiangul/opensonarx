@@ -1,10 +1,10 @@
 ---
-title: "Entity Staking (Phase 3)"
-description: "Planned: Stake on individual creators on UGC platforms."
+title: "Entity Identity and Legacy Stake"
+description: "Entity-scoped metadata and filtering without purchased ranking."
 ---
 
 <Warning>
-  **Phase 3 — Not yet implemented.** Entity staking is part of the roadmap. The features described here are planned designs, not currently available.
+  **Legacy/experimental.** Entity stake may be represented in registry metadata, but it has no Stage-1 ranking authority and is not calibrated confidence.
 </Warning>
 
 ## What are entities?
@@ -17,9 +17,9 @@ Entities represent specific creators or accounts on user-generated content (UGC)
 | X (Twitter) | `x.com/{handle}` | `x.com/elonmusk` |
 | Reddit | `reddit.com/r/{subreddit}` | `reddit.com/r/rust` |
 
-## Why entity staking?
+## Why entity scope still matters
 
-On UGC platforms, domain-level staking would boost *all* content on the platform — millions of pages. Entity staking will let you target specific creators whose content you trust.
+On UGC platforms, a domain represents millions of unrelated creators. Entity identifiers let clients filter results and let future typed source histories refer to the relevant creator rather than incorrectly transferring a platform-wide record.
 
 ## Normalization
 
@@ -37,4 +37,4 @@ You can already filter search results by entity:
 oi search "linear algebra" --entity youtube.com/c/3blue1brown
 ```
 
-Entity staking (using $TRUTH tokens to boost entity content ranking) will be added in Phase 3.
+Legacy entity stake can be returned as metadata, but cannot boost ranking. A future claim-specific position by an entity must independently satisfy the OpenUncertainty timing, loss, scope, settlement, and held-out calibration gates.

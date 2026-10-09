@@ -1,70 +1,47 @@
 ---
-title: Ranking Algorithm
-description: How OpenSonarX ranks search results using hybrid search and reputation signals.
+title: Ranking and Uncertainty
+description: Stake-neutral retrieval followed by an explicit, claim-level reliance policy.
 ---
 
-## Formula
+## Stage 1: broad retrieval
+
+The shipped scorer keeps financial and identity signals out of relevance:
 
 ```
-final_score = base_score * reputation_factor
+base_relevance = semantic_weight * normalized_semantic_score
+               + bm25_weight * normalized_bm25_score
+
+final_score = base_relevance * agent_utility_boost
+              * quality_multiplier * freshness_multiplier
 ```
 
-Where:
+Semantic similarity provides conceptual matching; BM25 preserves exact keyword matching for names, identifiers, functions, and error codes. The quality multiplier uses bounded content-local spam/slop/quality features, while freshness is a bounded time-decay feature.
 
-```
-base_score = (semantic_score + bm25_score) / 2
-reputation_factor = wilson_lower_bound(positive, negative) * age_decay
-```
+Stake amount, reputation, DNS verification, wallet balance, payment volume, popularity, and OpenUncertainty outputs do not enter this score or candidate generation. Unit tests cover scorer neutrality, and a focused `HybridIndex` regression returns identical default-query order and scores with and without non-zero registry data.
 
-## Semantic score
+## Stage 2: claim-level reliance
 
-Cosine similarity between the query embedding and document embedding. Both are 384-dimensional vectors from MiniLM (Snowflake Arctic Embed S, INT8 quantized).
+OpenUncertainty is an experimental decision layer over the retrieved candidate set. For a named claim, task, horizon, and policy it emits one of:
 
-## BM25 score
+- `DETERMINISTIC`: scoped result from a reproducible predicate;
+- `CALIBRATED`: probability plus interval for an observable target with adequate held-out data; or
+- `EVIDENTIAL_ONLY`: support, conflict, and ignorance without an invented probability.
 
-Classic TF-IDF keyword matching with BM25 weighting. Handles exact keyword matches that semantic similarity might miss (e.g., specific function names, error codes).
+A client may use this output to rerank, warn, cite, or abstain. Responses must preserve both `retrieval_rank` and `decision_rank`; Stage 2 cannot silently become a universal reputation order.
 
-## Reputation factor
+## Cash at risk
 
-Uses **Wilson score** lower bound for confidence:
+Raw domain stake never buys rank or confidence. A separate claim-specific position may become an **economic-conviction feature** only when it:
 
-```
-wilson_lower = (p + z^2/2n - z*sqrt(p*(1-p)/n + z^2/4n^2)) / (1 + z^2/n)
-```
+- was posted before the outcome;
+- carries genuine, non-refundable, unhedged loss;
+- names an exact deterministic/event-bound predicate, task, and horizon; and
+- improves held-out calibration for comparable claims.
 
-Where `p` = positive ratio, `n` = total votes, `z` = 1.96 (95% confidence).
+The learned contribution may be positive, zero, or negative and is capped. If calibration is sparse, its effect is exactly zero. This is evidence of revealed conviction, not purchased truth.
 
-New domains with no feedback get a neutral score (1.0). As feedback accumulates, reputation converges to the true quality signal.
+See the [OpenUncertainty MVP-1 protocol](../OPENUNCERTAINTY-MVP1.md) for the executable synthetic ablation, forward JSONL evaluator, attack guards, and real-pilot gates.
 
-## Age decay
-
-Freshness matters. Content with a recent `crawled_at` timestamp gets a slight boost that decays over time, ensuring the index reflects current information.
-
-## Phase 3: Stake-weighted ranking
-
-<Note>
-  The following is planned for Phase 3 and is not yet implemented.
-</Note>
-
-In Phase 3, the formula will expand to include a **stake boost**:
-
-```
-final_score = base_score * stake_boost * reputation_factor
-stake_boost = 1.0 + log2(1 + stake_usd / 100)
-```
-
-The stake boost will be **logarithmic** — doubling your stake won't double the boost. This prevents whale dominance while still rewarding meaningful commitment.
-
-| Stake (USD) | Boost multiplier |
-|------------|------------------|
-| $0 | 1.0x |
-| $100 | 2.0x |
-| $1,000 | ~4.3x |
-| $10,000 | ~7.7x |
-| $100,000 | ~11.0x |
-
-### UGC passthrough
-
-For user-generated content platforms (YouTube, X, Reddit), domain-level stake will give **zero passthrough** to individual pages. Only entity-level stake (staking on a specific channel/account/subreddit) will pass through.
-
-This prevents gaming where staking on `youtube.com` would boost all 500M+ videos.
+<Warning>
+  `trust_verdict` and `--min-trust` are legacy compatibility fields derived from old stake/reputation records. The filter is explicit and post-ranking, but it is not a calibrated probability and is not the v2.4 reliance model.
+</Warning>

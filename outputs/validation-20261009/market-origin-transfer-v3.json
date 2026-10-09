@@ -1,0 +1,1856 @@
+{
+  "captured_at_unix_ms": 1791545351044,
+  "experiment": "sealed-unjudged-market-generalization-capture-v1",
+  "manifest_path": "outputs/validation-20261009/workload-origin-transfer-v3.json",
+  "manifest_sha256": "1dad08cb74c55daebd3a4deb542b6b70a187c44c08e210ad9d1c2881f8e6864c",
+  "manifest_name": "origin-transfer-v3",
+  "engine": "serper",
+  "live_network": true,
+  "mock_results": false,
+  "judged_during_capture": false,
+  "top_k": 5,
+  "concurrency": 2,
+  "query_count": 40,
+  "nonempty": 34,
+  "complete_coverage_gate_passed": false,
+  "latency": {
+    "count": 40,
+    "p50_ms": 1160.0175,
+    "p95_ms": 1552.065875,
+    "p99_ms": 2770.0280409999996,
+    "max_ms": 2770.0280409999996
+  },
+  "wall_ms": 26464.067833,
+  "throughput_qps": 1.5114834292451838,
+  "cases": [
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-navigation-0",
+        "query": "Signal Messenger official website",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 1333.226875,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Signal >> Home",
+          "url": "https://signal.org/",
+          "snippet": "Signal uses your phone's data connection so you can avoid SMS and MMS fees. Speak Freely. Make crystal-clear voice and video calls to people who live across ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Signal Private Messenger - Apps on Google Play",
+          "url": "https://play.google.com/store/apps/details?id=org.thoughtcrime.securesms&hl=en_US",
+          "snippet": "Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Signal (software)",
+          "url": "https://en.wikipedia.org/wiki/Signal_(software)",
+          "snippet": "Signal is an open-source, encrypted messaging service for instant messaging, voice calls, and video calls. The instant messaging function includes sending ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Signal - Private Messenger - App Store - Apple",
+          "url": "https://apps.apple.com/us/app/signal-private-messenger/id874139669",
+          "snippet": "Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your communication completely ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Signal (@signalapp) / X",
+          "url": "https://x.com/signalapp",
+          "snippet": "Signal is a messaging app with privacy at its core. It is free and easy to use, with strong end-to-end encryption that keeps your chats and calls completely ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-navigation-1",
+        "query": "Jitsi site oficial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "navigation"
+      },
+      "search_ms": 1203.765625,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Jitsi: Free Video Conferencing Software for Web & Mobile",
+          "url": "https://jitsi.org/",
+          "snippet": "Learn more about Jitsi, a free open-source video conferencing software for web & mobile. Make a call, launch on your own servers, integrate into your app, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "About Jitsi Meet | Free Video Conferencing Solutions",
+          "url": "https://jitsi.org/jitsi-meet/",
+          "snippet": "Jitsi Meet is a fully encrypted, 100% open source video conferencing solution that you can use all day, every day, for free — with no account needed. What else ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Jitsi Meet - Secure, Simple and Scalable Video ...",
+          "url": "https://github.com/jitsi/jitsi-meet",
+          "snippet": "Jitsi Meet is a set of Open Source projects which empower users to use and deploy video conferencing platforms with state-of-the-art video quality and features.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "What is Jitsi | About Video Conferencing Software",
+          "url": "https://jitsi.org/about/",
+          "snippet": "About Jitsi: Video Conferencing Software. Jitsi is a set of open-source projects that allows you to easily build and deploy secure video conferencing solutions.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Jitsi Meet - App Store",
+          "url": "https://apps.apple.com/us/app/jitsi-meet/id1165103905",
+          "snippet": "Jitsi Meet lets you stay in touch with all your teams, be they family, friends, or colleagues. Instant video conferences, efficiently adapting to your scale ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-navigation-2",
+        "query": "KeePassXC official website",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 1600.195291,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "KeePassXC Password Manager",
+          "url": "https://keepassxc.org/",
+          "snippet": "KeePassXC is a modern, secure, and open-source password manager that stores and manages your most sensitive information. You can run KeePassXC ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "KeePassXC is a cross-platform community-driven port of ...",
+          "url": "https://github.com/keepassxreboot/keepassxc",
+          "snippet": "KeePassXC is a modern, secure, and open-source password manager that stores and manages your most sensitive information. You can run KeePassXC on Windows, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "KeePassXC",
+          "url": "https://en.wikipedia.org/wiki/KeePassXC",
+          "snippet": "KeePassXC (originally is a free and open-source cross-platform password manager. to run on Linux, Windows, macOS, and BSD, Website keepassxc.org",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "KeePassXC-Browser - Chrome Web Store",
+          "url": "https://chromewebstore.google.com/detail/keepassxc-browser/oboonakemofpalcgghocfoadofidjkkk?hl=en",
+          "snippet": "KeePassXC integration for modern web browsers. Official browser plugin for the KeePassXC password manager (https://keepassxc.org).",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "KeePassXC - Download and install on Windows",
+          "url": "https://apps.microsoft.com/detail/xp8k2l36vp0qmb?hl=en-US&gl=US",
+          "snippet": "KeePassXC is a modern, secure, and open-source password manager that stores and manages your most sensitive information.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-navigation-3",
+        "query": "VLC site oficial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "navigation"
+      },
+      "search_ms": 2770.0280409999996,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "VLC - Download and install on Windows",
+          "url": "https://apps.microsoft.com/detail/xpdm1zw6815mqm?hl=en-US&gl=US",
+          "snippet": "VLC media player (previously the VideoLAN Client and commonly known as simply VLC) is a free and open-source, portable, cross-platform media ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Why are there two different sites for VLC?",
+          "url": "https://www.reddit.com/r/VLC/comments/13fhhd5/why_are_there_two_different_sites_for_vlc/",
+          "snippet": "That's one site. Both links go to https://www.videolan.org , but one goes to the main page of that site and the other goes to the /VLC page ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "VLC media player",
+          "url": "https://en.wikipedia.org/wiki/VLC_media_player",
+          "snippet": "VLC media player (previously the VideoLAN Client) is a free and open-source, portable, cross-platform media player software and streaming media server ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "VLC for Android - Apps on Google Play",
+          "url": "https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=en_US",
+          "snippet": "VLC for Android can play any video and audio files, as well as network streams, network shares and drives, and DVD ISOs, like the desktop version of VLC.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "VLC.de Media Player (english) - Download",
+          "url": "https://en.vlc.de/",
+          "snippet": "You can download the latest version of VLC Media Player here. This player does not require any additional codecs or similar things, because they are already ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-navigation-4",
+        "query": "Thunderbird official website",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "navigation-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "navigation"
+      },
+      "search_ms": 1030.577208,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Download — Thunderbird",
+          "url": "https://www.thunderbird.net/en-US/thunderbird/all",
+          "snippet": "Thunderbird is a free email application that's easy to set up and customize - and it's loaded with great features!",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Thunderbird — Free Your Inbox. — Thunderbird",
+          "url": "https://www.thunderbird.net/en-US/",
+          "snippet": "Access all your messages, calendars, and contacts in one fast app. Filter and organize the way you like. Manage all accounts separately or in a unified inbox.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Thunderbird Help - Mozilla Support",
+          "url": "https://support.mozilla.org/en-US/products/thunderbird",
+          "snippet": "Still need help? We're here for you. Post a question to our support forums and get answers from our community of experts. Ask the Community ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Mozilla Thunderbird",
+          "url": "https://en.wikipedia.org/wiki/Mozilla_Thunderbird",
+          "snippet": "Mozilla Thunderbird is a free and open-source personal information manager primarily used as an e-mail client with a calendar and contactbook, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Thunderbird: Free Your Inbox - Apps on Google Play",
+          "url": "https://play.google.com/store/apps/details?id=net.thunderbird.android&hl=en_US",
+          "snippet": "Thunderbird is a powerful, privacy-focused email app. Effortlessly manage multiple email accounts from one app, with a Unified Inbox option for maximum ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-transactions-0",
+        "query": "download Thunderbird for Linux official",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1030.5895839999998,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Download — Thunderbird",
+          "url": "https://www.thunderbird.net/en-US/thunderbird/all",
+          "snippet": "Meet the powerful email, calendar, and contacts app for Windows, Linux, and macOS. These are officially maintained and distributed by Thunderbird. Download the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Install Thunderbird on Linux - Mozilla Support",
+          "url": "https://support.mozilla.org/en-US/kb/installing-thunderbird-linux",
+          "snippet": "This article explains how to download and install Thunderbird on Linux. Visit Thunderbird ESR on Flathub. Click Install and follow the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Install Thunderbird ESR on Linux",
+          "url": "https://flathub.org/en/apps/org.mozilla.thunderbird_esr",
+          "snippet": "Thunderbird is a free and open source email, newsfeed, chat, and calendaring client. Install Thunderbird ESR on Linux. Project Website https://www.thunderbird. ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Thunderbird — Free Your Inbox. — Thunderbird",
+          "url": "https://www.thunderbird.net/en-US/",
+          "snippet": "Meet the powerful email, calendar, and contacts app for Windows, Linux, and macOS. ... Linux 64-bit Download · Windows 32-bit Download · Linux 32-bit Download.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Install thunderbird on Linux | Snap Store",
+          "url": "https://snapcraft.io/thunderbird",
+          "snippet": "Install thunderbird on your Linux distribution. Choose your Linux distribution to get detailed installation instructions. If yours is not shown, get more ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-transactions-1",
+        "query": "baixar VLC para Windows oficial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "transactions"
+      },
+      "search_ms": 1079.479667,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Download official VLC media player for Windows - VideoLAN",
+          "url": "https://images.videolan.org/vlc/download-windows.html",
+          "snippet": "VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files, and various streaming protocols. Download VLC.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Official download of VLC media player, the best Open Source ...",
+          "url": "https://images.videolan.org/vlc/",
+          "snippet": "VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files, and various streaming protocols.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "VLC - Download and install on Windows",
+          "url": "https://apps.microsoft.com/detail/xpdm1zw6815mqm?hl=en-US&gl=US",
+          "snippet": "VLC media player (previously the VideoLAN Client and commonly known as simply VLC) is a free and open-source, portable, cross-platform media ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Baixar VLC media player",
+          "url": "https://vlc-media-player.softonic.com.br/download",
+          "snippet": "Baixe grátis do VLC media player de forma segura e 100% livre de vírus no Softonic. Baixada grátis do VLC media player, baixar VLC media ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Baixe VLC Media Player 3.0.24 para Windows | Uptodown. ...",
+          "url": "https://vlc-media-player.br.uptodown.com/windows/download",
+          "snippet": "Baixe a última versão de VLC Media Player para Windows. Um excelente reprodutor de mídia e servidor de streaming. VLC Media Player é um reprodutor de mídia.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-transactions-2",
+        "query": "apply for a Singapore passport official",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1409.3279169999998,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Apply for Passport - Singapore",
+          "url": "https://www.ica.gov.sg/documents/passport/apply",
+          "snippet": "Log in to our e-Service using your Singpass to complete the online application form, or submit the Singapore Passport Application Form (overseas) ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Apply or renew Singapore passport",
+          "url": "https://washington.mfa.gov.sg/consular-services/citizens-services/apply-or-renew-singapore-passport/",
+          "snippet": "Apply or renew Singapore passport · Online application · Application in person or by mail · Documents required · Processing fee · Additional information.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Becoming a Singapore Citizen",
+          "url": "https://www.ica.gov.sg/reside/citizenship",
+          "snippet": "You will need to log in to ICA e-Service using your Singpass and apply for you and your family. Have been a PR for at least 2 years and have ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Singapore passport",
+          "url": "https://en.wikipedia.org/wiki/Singapore_passport",
+          "snippet": "The Singapore passport is a passport issued to citizens of the Republic of Singapore. It enables the bearer to exit and re-enter Singapore freely; travel to ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Getting a Singapore passport",
+          "url": "https://www.expatica.com/sg/move/immigration/singapore-passport-2172828/",
+          "snippet": "Applying for a passport in Singapore ... You can apply for or renew a passport online via the ICA e-Services page. To submit an application, you ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-transactions-3",
+        "query": "agendar atendimento para título de eleitor oficial",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "transactions"
+      },
+      "search_ms": 1130.37525,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Agendamento — Tribunal Regional Eleitoral de Minas Gerais",
+          "url": "https://www.tre-mg.jus.br/servicos-eleitorais/agendamento",
+          "snippet": "Ficou com alguma dúvida? Ligue para o Disque- Eleitor. De qualquer cidade de Minas, disque 148 (custo de ligação local). De outros estados, ligue (31) ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Sistema de agendamento",
+          "url": "https://www.tre-am.jus.br/servicos-eleitorais/agendamento",
+          "snippet": "Sistema para solicitação do agendamento para atendimento acerca da inscrição eleitoral. itoral #Título de Eleitor - AM - 69060-000 Telefone: (92)3632-4400",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Agendamento para os Serviços Eleitorais",
+          "url": "https://www.tre-sp.jus.br/servicos-eleitorais/carta-de-servicos/agendamento-para-os-servicos-eleitorais",
+          "snippet": "... agendamento prévio. Clique aqui para agendar atendimento presencial no cartório eleitoral (link AgendaBio - https://apps.tre-sp.jus.br/AgendaBioOrdinario ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Título Eleitoral - transferência, certidões, e-Titulo e muito ...",
+          "url": "https://www.justicaeleitoral.jus.br/titulo-eleitoral/",
+          "snippet": "O atendimento presencial pode exigir o agendamento. Verifique no site do tribunal regional eleitoral se o cartório eleitoral do atendimento faz essa exigência e ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Agendar atendimento no cartório eleitoral é mais fácil do que ...",
+          "url": "https://www.instagram.com/reel/DUMMh73ARAk/?hl=en",
+          "snippet": "Entre os serviços disponíveis estão a consulta ao local de votação, emissão de certidões eleitorais, justificativa de ausência às urnas, ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-transactions-4",
+        "query": "renew an Irish passport official application",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "transactions-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "transactions"
+      },
+      "search_ms": 1010.013917,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Passport Online | Department Of Foreign Affairs",
+          "url": "https://www.ireland.ie/en/dfa/passports/passport-online/",
+          "snippet": "Irish passports can be renewed from anywhere in the world using Passport Online. available 24 hours a day, 7 days a week, 365 days a year.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Renew Or Replace Your Adult Passport",
+          "url": "https://www.ireland.ie/en/dfa/passports/how-to-apply-for-a-passport/renew-adult-passport/",
+          "snippet": "Irish passports can be renewed from anywhere in the world using Passport Online. Irish adult passports, for citizens aged 18 and over, are valid for 10 years.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Documents For Adult Passport Applications",
+          "url": "https://www.ireland.ie/en/dfa/passports/documentary-requirements/adult/",
+          "snippet": "Check what additional documents are required for your adult passport application, including renewals, first passports, business passports, and applications ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Passports | Embassy of Ireland USA",
+          "url": "https://www.ireland.ie/en/usa/washington/passports/",
+          "snippet": "find out how to apply for or renew your Irish passport. The fastest and cheapest way to get your first Irish passport or renew your old one.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "How to renew an Irish passport as an adult",
+          "url": "https://www.citizensinformation.ie/en/travel-and-recreation/passports/renewing-an-irish-passport/",
+          "snippet": "Call the Passport Assist Service on 01 613 1795 to get an application form. · They will create a paper application form with your details pre- ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-factual-0",
+        "query": "who invented the cyclotron",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 1378.8667500000001,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Ernest Lawrence",
+          "url": "https://en.wikipedia.org/wiki/Ernest_Lawrence",
+          "snippet": "was an American physicist who received the Nobel Prize in Physics in 1939 for his invention of the cyclotron. was the first cyclotron.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Ernest Lawrence's Cyclotron: Invention for the Ages",
+          "url": "https://www2.lbl.gov/Science-Articles/Archive/early-years.html",
+          "snippet": "Ernest Lawrence, Glenn Seaborg and Robert Oppenheimer in 1946 the 184-Inch Cyclotron. Lawrence invented a unique circular particle accelerator, but which ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Ernest Orlando Lawrence",
+          "url": "https://www.invent.org/inductees/ernest-orlando-lawrence",
+          "snippet": "Ernest Orlando Lawrence invented the cyclotron, a particle accelerator that uses a strong magnetic field to bend the path of charged particles, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "The cyclotron didn't just change physics. ...",
+          "url": "https://www.facebook.com/BerkeleyLab/posts/the-cyclotron-didnt-just-change-physics-it-changed-how-science-gets-donein-the-e/1518464366976187/",
+          "snippet": "The original idea was conceived of by nuclear physicist Ernest Lawrence³ in 1929, it's a type of particle accelerator that accelerates charged ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Ernest O. Lawrence",
+          "url": "https://lawrencehallofscience.org/exhibits/ernest-o-lawrence/",
+          "snippet": "Ernest Orlando Lawrence. His invention of the first cyclotron earned him the Nobel Prize in Physics in 1939, the first UC Berkeley scientist to win the prize ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-factual-1",
+        "query": "quem desenvolveu a linguagem Erlang",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "factual"
+      },
+      "search_ms": 1149.3557919999998,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Erlang (linguagem de programação)",
+          "url": "https://pt.wikipedia.org/wiki/Erlang_(linguagem_de_programa%C3%A7%C3%A3o)",
+          "snippet": "Erlang é uma linguagem de programação funcional, de tipagem dinâmica e forte, com dados imutáveis, funções de primeira classe, funções de alta ordem e suporte a ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "#programação | Linguagem ERLANG | Overview",
+          "url": "https://www.youtube.com/watch?v=8Q0kuXneevg",
+          "snippet": "Erlang | Você já cinhecia a linguagem de programação Erlang? Erlang é uma linguagem de programação criada pela Ericsson baseada em funções ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Erlang",
+          "url": "https://deinfo.uepg.br/~alunoso/2020/SO/Erlang/erlang-site.html",
+          "snippet": "Erlang foi desenvolvida no laboratório de computação da Ericsson, uma grande empresa do ramo de telecomunicações, por uma equipe de três desenvolvedores, sendo ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "r/erlang",
+          "url": "https://www.reddit.com/r/erlang/?tl=pt-br",
+          "snippet": "ELP: um novo servidor de linguagem para Erlang, desenvolvido pelo WhatsApp · A Plataforma de Linguagem Erlang (também conhecida como ELP) é um servidor de ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Você conhece o elixir? A linguagem de programação ...",
+          "url": "https://www.dio.me/articles/voce-conhece-o-elixir-a-linguagem-de-programacao-brasileira-baseada-em-erlang",
+          "snippet": "José Valim, criador da linguagem a desenvolveu para ser compilada em cima de Erlang para fornecer aplicações distribuídas a vários usuários, em tempo real ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-factual-2",
+        "query": "who founded the Internet Archive",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 1479.850375,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Brewster Kahle",
+          "url": "https://en.wikipedia.org/wiki/Brewster_Kahle",
+          "snippet": "Kahle founded the Internet Archive (including Wayback Machine) and co-founded Alexa Internet in 1996. He was inducted into the Internet Hall of Fame in 2012.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Internet Archive",
+          "url": "https://en.wikipedia.org/wiki/Internet_Archive",
+          "snippet": "The Internet Archive is an American non-profit library founded in 1996 by Brewster Kahle that runs a digital library website, archive.org.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Bios",
+          "url": "https://archive.org/about/bios",
+          "snippet": "A passionate advocate for public Internet access and a successful entrepreneur, Brewster Kahle has spent his career intent on a singular focus: ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Brewster Kahle - Epic.org",
+          "url": "https://epic.org/people/brewster-kahle/",
+          "snippet": "In 1996, Kahle founded the Internet Archive, the largest publicly accessible, privately funded digital archive in the world. At the same time, he co-founded ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "The Internet Archive's Brewster Kahle @ GC April 20",
+          "url": "https://gclibrary.commons.gc.cuny.edu/2015/03/20/the-internet-archives-brewster-kahle-gc-april-20/",
+          "snippet": "In 1996, Kahle founded the Internet Archive which may be the largest digital library. At the same time, he co-founded Alexa Internet which ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-factual-3",
+        "query": "quem inventou o sistema Braille",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "factual"
+      },
+      "search_ms": 1050.543625,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Quem foi Louis Braille, o francês que criou o sistema de ...",
+          "url": "https://www.uol.com.br/ecoa/ultimas-noticias/2023/03/19/quem-foi-louis-braille-o-frances-que-criou-o-sistema-de-leitura-para-cegos.htm",
+          "snippet": "Louis Braille aproveitou a base da ideia e reformulou o modelo. O novo sistema se baseou nas letras do alfabeto francês e em números, e ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Louis Braille – Wikipédia, a enciclopédia livre",
+          "url": "https://pt.wikipedia.org/wiki/Louis_Braille",
+          "snippet": "Louis Braille (Coupvray, 4 de janeiro de 1809 — Paris, 6 de janeiro de 1852), mais raramente Luís Braille, foi o criador do sistema de leitura por tato para ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Louis Braille, o inventor - Portal Gov.br",
+          "url": "https://www.gov.br/ibc/pt-br/centrais-de-conteudos/fique-por-dentro/louis-braille-o-inventor",
+          "snippet": "Sistema Braille de leitura e escrita para cegos. Louis Braille, o inventor",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Quem inventou o braile? – Escola da Ilha",
+          "url": "https://escoladailha.com.br/portal/quem-inventou-o-braile/",
+          "snippet": "O nome braile deve-se ao autor do sistema, o francês Louis Braille (1809 – 1852), que perdeu a visão aos 3 anos, ao ter o olho perfurado por ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Louis Braille - o cego que mudou o mundo #amazinginventors",
+          "url": "https://www.youtube.com/watch?v=JhJm7G6iGv8&xstg=CAMSBhUDze3xHw%3D%3D",
+          "snippet": "Louis Braille, o inventor do Sistema Braille de leitura para pessoas cegas. Louis Braille ficou cego aos cinco anos de idade. Além de ser ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-factual-4",
+        "query": "who developed the first electric battery",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "factual-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "factual"
+      },
+      "search_ms": 1050.61175,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Alessandro Volta",
+          "url": "https://en.wikipedia.org/wiki/Alessandro_Volta",
+          "snippet": "Alessandro Giuseppe Antonio Anastasio … was a pioneer of electricity and power, credited as the inventor of the electric battery. Volta invented the voltaic ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "March 20, 1800: Volta describes the Electric Battery",
+          "url": "https://www.aps.org/archives/publications/apsnews/200603/history.cfm",
+          "snippet": "Alessandro Volta invented the first electric pile, the forerunner of the modern battery.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Alessandro Volta – The Invention of the Electric Battery",
+          "url": "https://www.youtube.com/watch?v=2_iaOxrp0rw&xstg=CAMSBhUDze3xHw%3D%3D",
+          "snippet": "Discover the story of Alessandro Volta, the brilliant Italian scientist who invented the electric battery – a groundbreaking discovery that ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Volta Invents the Battery | History | Research Starters",
+          "url": "https://www.ebsco.com/research-starters/history/volta-invents-battery/",
+          "snippet": "Alessandro Volta is renowned for inventing the first true battery, a pivotal development in the field of electricity.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "#OTD in 1800, the first battery, called the voltaic pile, provided ...",
+          "url": "https://www.facebook.com/apsphysics/videos/otd-in-1800-the-first-battery-called-the-voltaic-pile-provided-the-first-continu/974045947719705/",
+          "snippet": "Alessandro Volta invented the first electrical battery and demonstrated that electricity could be generated chemically.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-current-0",
+        "query": "latest stable release of Electron",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 1050.60525,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Electron Releases",
+          "url": "https://electronjs.org/docs/latest/tutorial/electron-timelines",
+          "snippet": "The latest three stable major versions are supported by the Electron team. For example, if the latest release is 42.1.x, then the 41.0.x as well as the 40.2.x ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Releases · electron/electron",
+          "url": "https://github.com/electron/electron/releases",
+          "snippet": "Release list electron v44.7.0 electron v43.7.9 electron v42.11.12. Release Notes for v44.7.0 Features. Fixes Fixed an uncatchable. Backported fixes",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "All Releases",
+          "url": "https://releases.electronjs.org/release",
+          "snippet": "Stable Pre Release Nightly. Version, Released, Chromium, Node.js. 44.7.0 · TodayOct 7, 2026 · 152.0.7977.130 · 24.21.0 · 42.11.12 · TodayOct 7, 2026.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "electron",
+          "url": "https://www.npmjs.com/package/electron",
+          "snippet": "Latest version: 44.7.0, last published: a day ago. this package has built-in type declarations. Each Electron release provides binaries for macOS, Windows, and ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Electron (software framework)",
+          "url": "https://en.wikipedia.org/wiki/Electron_(software_framework)",
+          "snippet": "an eight-week release cycle. The latest three stable versions are supported by the Electron team. Latest version: v43.x.y Current 30 June 2026",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-current-1",
+        "query": "versão estável atual do SQLite",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "current"
+      },
+      "search_ms": 1430.1315,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "SQLite Download Page",
+          "url": "https://www.sqlite.org/download.html",
+          "snippet": "Complete canonical source tree for SQLite version 3.53.4, include test cases and extensions. This is a snapshot of all code under version control at the time of ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "SQLite Home Page",
+          "url": "https://www.sqlite.org/",
+          "snippet": "SQLite source code is in the public-domain and is free to everyone to use for any purpose. Latest Release. Version 3.53.4 (2026-07-24).",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Release History Of SQLite",
+          "url": "https://www.sqlite.org/changes.html",
+          "snippet": "Release History. This page provides a high-level summary of changes to SQLite. For more detail, see the Fossil checkin logs at ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "SQLite Release 3.52.0 On 2026-03-06",
+          "url": "https://www.sqlite.org/releaselog/3_52_0.html",
+          "snippet": "All of the features that were originally scheduled for the 3.52.0 release have been moved forward into version 3.53.0. A complete list of SQLite ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "sqlite3 — Interface DB-API 2.0 para bancos de dados SQLite",
+          "url": "https://docs.python.org/pt-br/3.8/library/sqlite3.html",
+          "snippet": "SQLite é uma biblioteca C que fornece um banco de dados leve baseado em disco que não requer um processo de servidor separado e permite acessar o banco de dados ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-current-2",
+        "query": "current president of South Africa official",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 1139.831209,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Cyril Ramaphosa",
+          "url": "https://en.wikipedia.org/wiki/Cyril_Ramaphosa",
+          "snippet": "Cyril Ramaphosa [b] i (born 17 November 1952) is a South African businessman and politician who is serving as the fifth president of South Africa since 2018.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "President Cyril Ramaphosa",
+          "url": "https://www.thepresidency.gov.za/node/197",
+          "snippet": "President Cyril Ramaphosa was sworn in as President of the Republic of South Africa on Thursday 15 February 2018",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Cyril Ramaphosa 🇿🇦 (@CyrilRamaphosa) ...",
+          "url": "https://x.com/CyrilRamaphosa?lang=en",
+          "snippet": "President of the African National Congress. President of the Republic of South Africa. Chair of the African Union 2020. 20.4K posts Cyril Ramaphosa",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Cyril Ramaphosa 🇿🇦 (@cyrilramaphosa)",
+          "url": "https://www.instagram.com/cyrilramaphosa/?hl=en",
+          "snippet": "@cyrilramaphosa: “President of the African National Congress. President of the Republic of South Africa. Chair of the African Union 2020.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Mr Cyril Ramaphosa",
+          "url": "https://www.pa.org.za/person/matamela-cyril-ramaphosa/",
+          "snippet": "Matamela Cyril Ramaphosa is the President of the Republic of South Africa, having been inaugurated on 19 June 2024. He was sworn in as the President of ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-current-3",
+        "query": "quem é o primeiro ministro da Austrália atualmente",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "current"
+      },
+      "search_ms": 1290.519542,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Anthony Albanese – Wikipédia, a enciclopédia livre",
+          "url": "https://pt.wikipedia.org/wiki/Anthony_Albanese",
+          "snippet": "Anthony Norman Albanese (Sydney, 2 de março de 1963) é um político australiano. Desde maio de 2022 é primeiro-ministro do seu país, sendo ainda o atual líder do ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Primeiro-ministro da Austrália",
+          "url": "https://pt.wikipedia.org/wiki/Primeiro-ministro_da_Austr%C3%A1lia",
+          "snippet": "Anthony Albanese é o atual primeiro-ministro. Ele é o líder da Partido Trabalhista Australiano, que controla a Câmara dos Representantes desde que foi reeleito ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Esquerda vence na Austrália com ajuda de fator Trump",
+          "url": "https://www.bbc.com/portuguese/articles/cvgn7nl3jjlo",
+          "snippet": "O primeiro-ministro australiano, Anthony Albanese, do Partido Trabalhista, conquistou a reeleição neste sábado (3/5), com ampla vantagem.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Anthony Albanese re-elected Prime Minister of Australia",
+          "url": "https://www.youtube.com/watch?v=BxGAYK466Ww",
+          "snippet": "O primeiro-ministro Anthony Albanese foi reeleito, neste sábado (3), para mais três anos de mandato na Austrália.",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Prime Minister of Australia",
+          "url": "https://www.pm.gov.au/",
+          "snippet": "The Hon Anthony Albanese. Help with the cost of living Stronger Medicare and aged care Opportunities for Australians",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-current-4",
+        "query": "latest release of NixOS",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "current-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "current"
+      },
+      "search_ms": 1290.524875,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "NixOS 26.05 released | Blog",
+          "url": "https://nixos.org/blog/announcements/2026/nixos-2605/",
+          "snippet": "We are very proud to announce the public availability of NixOS 26.05 “Yarara”. NixOS is a Linux distribution. Its underlying package repository ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Download | Nix & NixOS",
+          "url": "https://nixos.org/download/",
+          "snippet": "Old releases are also available. NixOS: the Linux distribution. Current version 26.05. ISO image. You can install NixOS on physical hardware by burning one of ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "NixOS",
+          "url": "https://en.wikipedia.org/wiki/NixOS",
+          "snippet": "Latest release, 26.05 / May 30, 2026; 4 months ago (2026-05-30). Latest ... After continued development, NixOS issued its first stable release, version 13.10, in ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Latest NixOS Releases topics",
+          "url": "https://discourse.nixos.org/c/announcements/nixos-releases/29",
+          "snippet": "NixOS 23.11 released! 30, 17717, December 6, 2023. NixOS 23.05 released! 11, 9234, June 9, 2023. NixOS 22.11 released. 10, 4776, December 13, 2022. NixOS ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Blog/Announcements",
+          "url": "https://nixos.org/blog/announcements/",
+          "snippet": "Nix 0.11 has been released. This is a major new release representing over a year of development. The most important improvement is secure multi-user support. It ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-diligence-0",
+        "query": "does an audit alone prove a trading platform is trustworthy",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 1179.021208,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "AuditChain: A Trading Audit Platform Over Blockchain",
+          "url": "https://www.frontiersin.org/journals/blockchain/articles/10.3389/fbloc.2020.00009/full",
+          "snippet": "by GR Vishnia · 2020 · Cited by 23 — We seek to explore the potential to develop a distributed ledger blockchain solution for the audit process that applies to financial market trade processing.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Compliance Audit Trail: What It Is and Why It Matters",
+          "url": "https://www.regly.ai/blog/compliance-audit-trail",
+          "snippet": "Audit trails make it possible to prove that records are authentic, unaltered, and accessible when requested. Financial Industry Regulatory ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "What is an audit trail? Everything you need to know",
+          "url": "https://optro.ai/blog/what-is-an-audit-trail",
+          "snippet": "If every transaction has a clean audit trail, an auditor can quickly determine whether transactions are valid. Faster auditor work means lower ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Protecting Investors through Reliable Audits",
+          "url": "https://pcaobus.org/news-events/speeches/speech-detail/protecting-investors-through-reliable-audits_446",
+          "snippet": "The Sarbanes-Oxley Act and PCAOB rules require all U.S. and non-U.S. accounting firms to register with the Board if they prepare or issue audit ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Regulatory Compliance for Trading Platforms",
+          "url": "https://www.linkedin.com/top-content/finance/securities-trading-platforms/regulatory-compliance-for-trading-platforms/",
+          "snippet": "Build tamper-proof records: Invest in technology that maintains immutable audit trails and automated transaction monitoring for easy review by regulators and ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-diligence-1",
+        "query": "um projeto é confiável apenas porque seu código é aberto",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "diligence"
+      },
+      "search_ms": 1268.951333,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Como eu respondo à afirmação \"Software de código ...",
+          "url": "https://www.reddit.com/r/opensource/comments/13rmz38/how_do_i_counter_open_source_is_less_secure_due/?tl=pt-br",
+          "snippet": "O código ser aberto não muda realmente se o código é seguro ou não, mas muda as chances de vulnerabilidades serem encontradas/observadas. Isso ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Software de código aberto é realmente seguro?",
+          "url": "https://www.welivesecurity.com/pt/seguranca-digital/software-de-codigo-aberto-pode-ser-seguro/",
+          "snippet": "Sempre haverá vulnerabilidades no software - não existe segurança perfeita, não há código perfeito. Como muitas vezes acontece em questões de ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Por que o Código Aberto não compartilha dos objetivos do ...",
+          "url": "https://www.gnu.org/philosophy/open-source-misses-the-point.pt-br.html",
+          "snippet": "A filosofia do código aberto, com seus valores puramente práticos, impede a compreensão das ideias profundas do software livre; ela traz muitas pessoas à nossa ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "CÓDIGO ABERTO ou SOFTWARE LIVRE são seguros para ...",
+          "url": "https://www.youtube.com/watch?v=Gq0zsgWRwoA",
+          "snippet": "CÓDIGO ABERTO ou SOFTWARE LIVRE são seguros para serem usados em seu PROJETO? ACTIVELY EXPLOITED vulnerability",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "🎬 Quando fecharam o código e inseriram ...",
+          "url": "https://www.instagram.com/reel/Dbf7T20EUPz/",
+          "snippet": "um projeto de código aberto em fechado pode virar uma armadilha intencional? • O que aconteceu: - Ele mudou a licença de um projeto que ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-diligence-2",
+        "query": "is a publisher trustworthy if all citations repeat the same press release",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 1249.856916,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "How do you handle publishing press releases verbatim?",
+          "url": "https://www.reddit.com/r/Journalism/comments/15tr8w1/how_do_you_handle_publishing_press_releases/",
+          "snippet": "We don't always have time to write original copy, but we review any press releases that come through. However, many are published as they're submitted to ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Press release references - APA Style",
+          "url": "https://apastyle.apa.org/style-grammar-guidelines/references/examples/press-release-references",
+          "snippet": "When the author and the publisher of the press release are the same, omit the publisher to avoid repetition, as shown in the example. Learn more. Press ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "The Importance of Using Proper Research Citations ...",
+          "url": "https://www.socialsciencespace.com/2024/02/the-importance-of-using-proper-research-citations-to-encourage-trustworthy-news-reporting/",
+          "snippet": "Consequently if a syndication republishes the same information across their news platforms, it replicates bad practice. A solution to this is to ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Should I Distribute the Same Press Release More Than Once?",
+          "url": "https://www.newswire.com/blog/should-i-distribute-the-same-press-release-more-than-once",
+          "snippet": "Short answer: No. Long answer: you can share the same story more than once, but not the same press release. “The definition of insanity is ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Citing the Same Source Multiple Times: Best Practices for ...",
+          "url": "https://www.sourcely.net/post/citing-the-same-source-multiple-times-best-practices-for-academic-writing",
+          "snippet": "Proper repeated citations demonstrate your attention to detail and respect for academic standards. Reader Convenience: Your readers shouldn't ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-diligence-3",
+        "query": "como verificar se um investimento é legítimo antes de transferir dinheiro",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "diligence"
+      },
+      "search_ms": 1179.914209,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Antes de investir numa plataforma online, faça estas 5 ...",
+          "url": "https://www.facebook.com/legacis.eu/posts/antes-de-investir-numa-plataforma-online-fa%C3%A7a-estas-5-verifica%C3%A7%C3%B5esa-plataforma-p/1970669424308666/",
+          "snippet": "Antes de transferir dinheiro, vale a pena parar alguns minutos e verificar: Algumas fraudes utilizam nomes semelhantes aos de empresas legí ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Golpes em investimentos: como proteger seu patrimônio",
+          "url": "https://gx.capital/golpes-em-investimentos-como-proteger-seu-patrimonio",
+          "snippet": "Aprenda a identificar golpes em investimentos, verificar instituições, consultar alertas oficiais e avaliar riscos antes de transferir dinheiro",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "GOLPE DO FALSO INVESTIMENTO: COMO IDENTIFICAR E ...",
+          "url": "https://www.youtube.com/watch?v=srIYGAJJ-bs",
+          "snippet": "Saber como identificar golpes digitais é essencial para manter seu dinheiro e seus investimentos ainda mais seguros. um investimento é golpe?",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "plataforma de investimento internacional é confiável",
+          "url": "https://analise.com/opiniao/21475",
+          "snippet": "Investimento internacional legítimo x golpe financeiro · ganhos sempre positivos; · bloqueio ou dificuldade para sacar; · exigência de novos ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Como saber se uma plataforma de investimento é golpe",
+          "url": "https://chainspect.com.br/blog/como-saber-se-plataforma-e-golpe",
+          "snippet": "Para saber se uma plataforma de investimento é golpe, aplique dois testes imediatos: ela promete retorno garantido e é autorizada a captar ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-diligence-4",
+        "query": "does a trusted account prove the identity of a charity",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "diligence-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "diligence"
+      },
+      "search_ms": 1160.0175,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "How to Verify a Charity Before Donating",
+          "url": "https://www.solutions.bank/blog/post/how-to-verify-a-charity-before-donating",
+          "snippet": "One way to verify a charity's legitimacy is to check for accreditation. Accreditation means that the charity has met certain standards and has ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Nonprofit scam alert: beware of fake donors",
+          "url": "https://www.facebook.com/FaribaultPoliceDepartment/posts/scam-alert-we-want-to-notify-our-community-about-a-recent-scam-attempt-targeting/1162559349394652/",
+          "snippet": "Always verify the legitimacy of charities through official websites or trusted platforms like Charity Navigator. If in doubt, don't hesitate ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Tips for Verifying Charities | NCDIT - NC.gov",
+          "url": "https://it.nc.gov/resources/online-safety-privacy/tips-guidance/tips-verifying-charities",
+          "snippet": "Many legitimate charities use .org domains, but always verify the organization independently rather than relying on the domain alone. Avoid opening links in ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "What are the most secure ways to definitively check the legitimacy of ...",
+          "url": "https://www.quora.com/What-are-the-most-secure-ways-to-definitively-check-the-legitimacy-of-a-charity-or-nonprofit",
+          "snippet": "",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "How can you verify the legitimacy of a charity organization that is calling ...",
+          "url": "https://www.quora.com/How-can-you-verify-the-legitimacy-of-a-charity-organization-that-is-calling-you-Are-there-any-methods-for-determining-their-identity-and-purpose",
+          "snippet": "",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-polls-0",
+        "query": "what does nonresponse bias mean in election polling",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1519.3419999999999,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Nonresponse Bias in Polls and Surveys",
+          "url": "https://www.poll-maker.com/NonResponse",
+          "snippet": "Nonresponse bias is the gap between the answer your poll reports and the answer you would have got if everyone you invited had replied.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Participation bias",
+          "url": "https://en.wikipedia.org/wiki/Participation_bias",
+          "snippet": "Participation bias or non-response bias is a phenomenon in which the results of studies, polls, etc. become non-representative because the participants ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "The challenges of polling when fewer people are available ...",
+          "url": "https://www.pewresearch.org/short-reads/2015/07/21/the-challenges-of-polling-when-fewer-people-are-available-to-be-polled/",
+          "snippet": "The potential for what pollsters call “nonresponse bias” – the unwelcome situation in which the people we're not reaching are somehow ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Nonresponse Bias",
+          "url": "https://methods.sagepub.com/ency/edvol/sage-encyclopedia-of-educational-research-measurement-evaluation/chpt/nonresponse-bias",
+          "snippet": "The term nonresponse bias refers to the potential bias that can occur in surveys due to nonresponse. Particularly since the start of the 21st ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Nonresponse Bias: Definition + Example",
+          "url": "https://www.surveymonkey.com/learn/survey-best-practices/nonresponse-bias-what-it-is-and-how-to-avoid-its-errors/",
+          "snippet": "Nonresponse bias occurs when certain groups of respondents are underrepresented, skewing your survey results.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-polls-1",
+        "query": "o que significa efeito de desenho em uma pesquisa eleitoral",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "polls"
+      },
+      "search_ms": 1380.524208,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "O caso do Comparecimento Eleitoral",
+          "url": "https://www.relmecs.fahce.unlp.edu.ar/article/download/relmecse091/14337",
+          "snippet": "Isto é, a dificuldade em separar o que é efeito da instituição e o que é efeito do contexto em que ela está inserida seria melhor modelado por desenhos não.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Desenho de Pesquisa",
+          "url": "https://repositorio.enap.gov.br/bitstream/1/3330/4/Livro_desenho_de_pesquisa%20%282%29.pdf",
+          "snippet": "by GP Silva · 2018 · Cited by 84 — “um desenho de pesquisa é um plano que mostra, por meio de uma discussão do nosso modelo e dos nossos dados, como nós pretendemos usar nossa evidência para ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Como construir um desenho de pesquisa em Ciência ...",
+          "url": "https://www.scielo.br/j/rbcpol/a/9RGHgPy8gqQNGsH7LTJBjrL/?lang=pt",
+          "snippet": "Este artigo busca oferecer orientações para a elaboração de desenhos de pesquisa em Ciência Política, destinando-se prioritariamente a discentes de graduação. ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "pesquisas eleitorais: uma discussão de cenários amostrais",
+          "url": "https://bd.camara.leg.br/bd/bitstreams/efeb2211-95aa-4a20-aa7f-bdad6b722037/download",
+          "snippet": "3 A amostragem estratificada é o desenho adequado quando o pesquisador pretende estudar uma população a partir de características específicas. O objetivo é ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Pesquisas com desenho experimental",
+          "url": "https://books.scielo.org/id/25qkk/pdf/maia-9786556308883-12.pdf",
+          "snippet": "Convencionou-se chamar de variável independente o que os pesquisadores supõem que sejam as causas de um de- terminado efeito, ao passo que o efeito é chamado ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-polls-2",
+        "query": "how can poll weighting affect reported percentages",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1210.794292,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Weighting Polls on Party Affiliation and Past Vote",
+          "url": "https://www.pewresearch.org/methods/2026/09/16/weighting-polls-on-party-affiliation-and-past-vote/",
+          "snippet": "Political weighting can make polls more accurate. polls on party affiliation improved accuracy by about 1-2 percentage points per candidate – ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Survey Weighting Defined In Plain Terms",
+          "url": "https://www.surveymonkey.com/learn/research-and-analysis/survey-weighting/",
+          "snippet": "Survey weighting adjusts response data so a sample matches the population you're studying. See the definition, common methods, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "A Journalist's Guide to Understanding Polls & Surveys",
+          "url": "https://aapor.org/journalist-guide-to-understanding-polls-surveys/",
+          "snippet": "Weighting accounts for unequal probabilities of selection and adjusts the poll data to ensure that the sample more accurately reflects the characteristics of ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "FAQs about political weighting in polling and its limitations",
+          "url": "https://www.pewresearch.org/methods/2026/09/16/faqs-about-political-weighting-in-polling-and-its-limitations/",
+          "snippet": "A weighting adjustment improves an estimate if the adjustment measure (e.g., party affiliation) is related both to who participates and to the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Weighting Your Survey Data: What You Need to Know and ...",
+          "url": "https://survalyzer.com/blog/weighting-survey-data",
+          "snippet": "Weighting compensates for differences in survey respondents' selection probability and non-response rates. These differences may be influenced by demographic ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-polls-3",
+        "query": "diferença entre margem de erro e erro de previsão eleitoral",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "polls"
+      },
+      "search_ms": 1158.483916,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Margem de erro em pesquisas eleitorais - G1 - Globo",
+          "url": "https://g1.globo.com/politica/eleicoes/2026/videos/noticia/2026/08/21/video-entenda-o-que-e-a-margem-de-erro.ghtml",
+          "snippet": "Segundo Chong, a margem de erro é inerente à estatística e está relacionada ao número de entrevistas realizadas. Em uma pesquisa com 2 mil ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Entenda o que é a margem de erro nas pesquisas eleitorais",
+          "url": "https://www.jota.info/eleicoes/eleicoes-2022/entenda-o-que-e-a-margem-de-erro-nas-pesquisas-eleitorais",
+          "snippet": "A margem de erro existe porque as pesquisas eleitorais não são feitas com toda a população, mas sim com uma pequena amostra que seja capaz de ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Entenda o que é a margem de erro nas pesquisas eleitorais ...",
+          "url": "https://www.facebook.com/g1/videos/entenda-o-que-%C3%A9-a-margem-de-erro-nas-pesquisas-eleitorais-httpglobo4qrfadt-g1-el/1540559513854075/",
+          "snippet": "A margem de erro ela sempre vai existir nas pesquisas, né? É inerente a estatística e a margem de erro ela sempre vai ser calculada de acordo ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "O que é Margem de Erro e Nível de Confiança?",
+          "url": "https://www.agppesquisas.com.br/nossos-servicos/o-que-e-margem-de-erro-e-nivel-de-confianca/",
+          "snippet": "Enquanto o erro amostral menor, exige uma amostra maior, no caso do nível de confiança é o oposto, quanto menor o nível, menor a amostra ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Margem de erro de uma pesquisa: o que é, cálculo",
+          "url": "https://brasilescola.uol.com.br/matematica/o-que-margem-erro-uma-pesquisa.htm",
+          "snippet": "A margem de erro nos diz qual é a possibilidade de variação dos resultados coletados. Por exemplo, as pesquisas eleitorais possuem quase sempre margem de erro ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-polls-4",
+        "query": "what should a poll disclose about its sampling method",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "polls-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "polls"
+      },
+      "search_ms": 1438.373292,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Quick Tips to Tell if a Poll Is Legit",
+          "url": "https://www.ppic.org/blog/quick-tips-to-tell-if-a-poll-is-legit/",
+          "snippet": "At the very least, the pollster should be transparent about the basics: who they are, when the survey was conducted, how many people responded, ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Understand Transparency in Polling",
+          "url": "https://ropercenter.cornell.edu/polling-and-public-opinion/understand-transparency-polling",
+          "snippet": "Effective disclosure also describes any groups within the target population that the sampling method could not reach.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Disclosure Standards",
+          "url": "https://aapor.org/standards-and-ethics/disclosure-standards/",
+          "snippet": "Probability-based sample specification should include a description of the sampling frame(s), list(s), or method(s). If a frame, list, or panel is used, the ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Polling: Methodology Disclosure",
+          "url": "https://www.linkedin.com/pulse/polling-methodology-disclosure-dave-fako",
+          "snippet": "This is disclosure of how the survey was conducted, the type of list(s) utilized and what was the frame, such as adults age 18+ in X, registered ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Polls and surveys",
+          "url": "https://www.politico.com/f/?id=00000162-d04e-d230-a36b-f7ffe7580002",
+          "snippet": "Generally, for the answer to be yes, a poll must: — Disclose the questions asked, the results of the survey and the method in which it was conducted. — Come ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-high_impact-0",
+        "query": "what is the difference between absolute and relative risk in medical evidence",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 299.174708,
+      "nonempty": false,
+      "results": []
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-high_impact-1",
+        "query": "como conferir a versão de uma recomendação clínica",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "high_impact"
+      },
+      "search_ms": 309.186167,
+      "nonempty": false,
+      "results": []
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-high_impact-2",
+        "query": "how can a taxpayer verify the publication date of an official ruling",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1552.065875,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Tax code, regulations and official guidance",
+          "url": "https://www.irs.gov/privacy-disclosure/tax-code-regulations-and-official-guidance",
+          "snippet": "Different sources provide the authority for tax rules and procedures. Here are some sources that can be searched online for free.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Tax Law: Administrative - Research Guides - UConn",
+          "url": "https://libguides.law.uconn.edu/c.php?g=345476&p=2327845",
+          "snippet": "The current status of IRS pronouncements should be verified with an online citator, either through Lexis, Westlaw, or one of the major ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Federal Tax Law: IRS Documents",
+          "url": "https://lawlibguides.luc.edu/c.php?g=610808&p=4239354",
+          "snippet": "VitalLaw - Tax(Federal) > Primary Sources. Choose \"IRS Administrative Rulings and Positions\" from the drop-down menu. Clicking the blue box that ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "IRS Alphabet Soup: Practical and Precedential Value of ...",
+          "url": "https://www.texastaxsection.org/Content/Newsletters/TTL%202015%20Win%20A%2006%20IRS%20Alphabet%20Soup%20opt.pdf",
+          "snippet": "by TR Green · Cited by 3 — A revenue ruling is an official interpretation by or communication from the Service which has been published in the Internal Revenue Bulletin.45 Revenue rulings ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Federal Tax Research Guide: IRS Materials",
+          "url": "https://law.indiana.libguides.com/c.php?g=17207&p=95932",
+          "snippet": "From the IRS website (IRS.gov) choose the \"Forms & Pubs\" tab and choose from current forms & publications or prior year forms and publications.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-high_impact-3",
+        "query": "como verificar se um precedente judicial ainda está em vigor",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "high_impact"
+      },
+      "search_ms": 350.57725,
+      "nonempty": false,
+      "results": []
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-high_impact-4",
+        "query": "what should a medical source disclose about conflicts of interest",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "high_impact-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "high_impact"
+      },
+      "search_ms": 1115.378792,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "WMA Statement on Conflict of Interest",
+          "url": "https://www.wma.net/policies-post/wma-statement-on-conflict-of-interest/",
+          "snippet": "Any conflict of interest, be it real or potential, financial or personal, including relational conflicts of interest, should be disclosed.",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Summary - Conflict of Interest in Medical Research, Education ...",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK22926/",
+          "snippet": "Groups should publicly disclose with each guideline their conflict of interest policies and procedures and the sources and amounts of indirect or direct funding",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Conflicts of Interest in Research | AMA Code of Medical Ethics",
+          "url": "https://code-medical-ethics.ama-assn.org/ethics-opinions/conflicts-interest-research",
+          "snippet": "Minimizing and mitigating conflicts of interest in clinical research is required in order to justify and maintain trust in the medical research community.",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "Conflicts of Interest in Clinical Guidelines: Update of U.S. ...",
+          "url": "https://www.ajpmonline.org/article/S0749-3797(17)30376-8/fulltext",
+          "snippet": "by Q Ngo-Metzger · 2018 · Cited by 77 — Conflicts of interest is solicited from all members every 4 months, formally reviewed, adjudicated, and made publicly available. The USPSTF conflicts of ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "A Fundamental Guide on Understanding Conflicts of ...",
+          "url": "https://blog.cabells.com/2024/01/10/a-fundamental-guide-on-understanding-conflicts-of-interest-cois-and-when-to-disclose/",
+          "snippet": "COI disclosures are focused on whether an involved third party could recognize the capacity or capability for a corrupted influence. If you ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-exploratory-0",
+        "query": "compare versioned backups and archive repositories",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-0",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 368.222875,
+      "nonempty": false,
+      "results": []
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-exploratory-1",
+        "query": "vantagens e limitações de documentação colaborativa aberta",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-1",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "exploratory"
+      },
+      "search_ms": 372.77662499999997,
+      "nonempty": false,
+      "results": []
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-exploratory-2",
+        "query": "how do academic repositories handle corrected papers",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-2",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1234.418917,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Institutional repository",
+          "url": "https://eifl.net/programme/digital-research-literacy/institutional-repository",
+          "snippet": "Keeping the correct version of a published paper – Author Accepted Manuscripts (AAMs) or postprint (after peer review) in addition to a published version or a ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "Repository for academic documents, algorithms and data",
+          "url": "https://www.jotse.org/index.php/jotse/article/view/1885/755",
+          "snippet": "by I Jaramillo · 2023 · Cited by 4 — Repository for academic documents, algorithms and data: A utility in an educational context.",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Repositories",
+          "url": "https://open-access.network/en/information/publishing/repositories",
+          "snippet": "Repositories are document servers operated by universities or research institutions on which scholarly materials are archived and made available free of charge ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "What repositories can be used to disseminate open-access ...",
+          "url": "https://www.researchgate.net/post/What_repositories_can_be_used_to_disseminate_open-access_published_research_papers",
+          "snippet": "I'm interested in repositories like zenodo, figshare, etc., where open-access papers (previously published) can be uploaded in order to improve the visibility ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "What Is an Institutional Repository for Research Papers?",
+          "url": "https://manuelgarcia.info/guides/research/guide/institutional-repository-research-paper",
+          "snippet": "Learn what an institutional repository is, why research papers appear there, which article versions you may find, and how to verify a repository copy.",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-exploratory-3",
+        "query": "diferenças entre verificação de origem e verificação de conteúdo",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-3",
+        "language": "pt",
+        "locale": "pt-BR",
+        "country": "BR",
+        "stratum": "exploratory"
+      },
+      "search_ms": 1089.913833,
+      "nonempty": true,
+      "results": [
+        {
+          "rank": 1,
+          "title": "Dicas para verificar conteúdos de diferentes formatos e ...",
+          "url": "https://projetocomprova.com.br/dicas/",
+          "snippet": "O primeiro e mais básico princípio para verificar a veracidade de um texto é conferir a data em que ele foi publicado. Seja por engano ou por estratégia, não é ...",
+          "source": "serper"
+        },
+        {
+          "rank": 2,
+          "title": "VERIFICAR NÃO É SUFICIENTE: CHECAGEM, ...",
+          "url": "https://revistatopicos.com.br/artigos/verificar-nao-e-suficiente-checagem-confianca-e-polarizacao-no-brasil-digital",
+          "snippet": "by E Amarante · 2026 — Ela envolve avaliar a origem do conteúdo, identificar a fonte primária, comparar versões, observar data, autoria, contexto, intenção, evidências ...",
+          "source": "serper"
+        },
+        {
+          "rank": 3,
+          "title": "Como funciona a verificação de fatos | Central de Transparência",
+          "url": "https://transparency.meta.com/pt-br/features/how-fact-checking-works/",
+          "snippet": "Os verificadores de fatos analisam o conteúdo e avaliam a precisão dele. Esse processo ocorre de forma independente da Meta e pode incluir ligar ...",
+          "source": "serper"
+        },
+        {
+          "rank": 4,
+          "title": "5 dicas: como checar informações na internet",
+          "url": "https://portal.pucrs.br/noticias/servicos/5-dicas-como-checar-informacoes-na-internet/",
+          "snippet": "1. Sempre identificar a fonte: a procedência da informação diz muito sobre sua natureza. · 2. Confira as datas das notícias: ao receber e enviar informações para ...",
+          "source": "serper"
+        },
+        {
+          "rank": 5,
+          "title": "Entenda as diferenças entre checagem de fatos e ...",
+          "url": "https://www.aosfatos.org/noticias/diferenca-checagem-de-fatos-moderacao-de-conteudo/",
+          "snippet": "Checagem, feita por profissionais ligados a organizações jornalísticas, identifica postagens falsas e enganosas; elas são sinalizadas e têm o ...",
+          "source": "serper"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "id": "origin-transfer-v3-exploratory-4",
+        "query": "compare primary sources and independent replication in scientific reporting",
+        "source": "implementer_authored_transfer_diagnostic",
+        "source_id": "exploratory-4",
+        "language": "en",
+        "locale": "en-US",
+        "country": "US",
+        "stratum": "exploratory"
+      },
+      "search_ms": 307.881417,
+      "nonempty": false,
+      "results": []
+    }
+  ],
+  "limitations": [
+    "This is a raw market-provider capture, not a Google UI or AI-answer capture.",
+    "The artifact is intentionally unjudged; quality is evaluated only after both systems are frozen and pooled.",
+    "An empty result vector cannot distinguish a legitimate zero-result query from every upstream failure mode."
+  ]
+}
