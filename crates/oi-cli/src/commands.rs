@@ -3,8 +3,8 @@ use oi_types::error::ExitCode;
 use oi_types::traits::SearchIndex;
 
 use super::{
-    CliConfig, DomainCommands, DisputeCommands, IndexCommands, JuryCommands,
-    NetworkCommands, SeedCommands, SentinelCommands, WalletCommands, YieldCommands,
+    CliConfig, DisputeCommands, DomainCommands, IndexCommands, JuryCommands, NetworkCommands,
+    SeedCommands, SentinelCommands, WalletCommands, YieldCommands,
 };
 use crate::config_file::ConfigFile;
 use crate::output;
@@ -21,8 +21,8 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
     // Load the canonical local index (shared by seed, sentinel, and the node)
     // so ingested content is searchable; without this, local search silently
     // returns external results only.
-    let seed_index_path = crate::config_file::ConfigFile::index_dir()
-        .map(|p| p.to_string_lossy().to_string());
+    let seed_index_path =
+        crate::config_file::ConfigFile::index_dir().map(|p| p.to_string_lossy().to_string());
     let sdk_config = SdkConfig {
         bootstrap_peers: config.bootstrap_peers.clone(),
         wallet_path: config.wallet_path.clone(),
@@ -60,7 +60,8 @@ fn build_client_mode(config: &CliConfig) -> Result<ClientMode, ExitCode> {
             .gateway_url
             .clone()
             .unwrap_or_else(|| "https://api.opensonarx.com".to_string());
-        let client = GatewayClient::new(base_url, Some(api_key.clone()), config.timeout_secs * 1000);
+        let client =
+            GatewayClient::new(base_url, Some(api_key.clone()), config.timeout_secs * 1000);
         return Ok(ClientMode::Gateway(client));
     }
 
@@ -121,6 +122,8 @@ pub fn search(
     site: Option<String>,
     min_trust: Option<String>,
     node: Option<String>,
+    explain: bool,
+    answer: bool,
 ) -> ExitCode {
     if query.trim().is_empty() {
         output::print_err("Query must not be empty", &config.format);
@@ -130,7 +133,9 @@ pub fn search(
         && !["unverified", "neutral", "trusted", "highly_trusted"].contains(&t.as_str())
     {
         output::print_err(
-            &format!("Invalid --min-trust '{t}'. Valid: unverified, neutral, trusted, highly_trusted"),
+            &format!(
+                "Invalid --min-trust '{t}'. Valid: unverified, neutral, trusted, highly_trusted"
+            ),
             &config.format,
         );
         return ExitCode::UserError;
@@ -152,6 +157,9 @@ pub fn search(
 
     // If --node is provided, query the P2P node's HTTP API directly
     if let Some(node_url) = node {
+        if answer {
+            return answer_via_node(config, &node_url, query, limit, &filters, explain);
+        }
         return search_via_node(config, &node_url, query, limit, &filters);
     }
 
@@ -163,45 +171,136 @@ pub fn search(
                 .clone()
                 .unwrap_or_else(|| "https://api.opensonarx.com".to_string());
             (
-                ClientMode::Gateway(GatewayClient::new(base_url, None, config.timeout_secs * 1000)),
+                ClientMode::Gateway(GatewayClient::new(
+                    base_url,
+                    None,
+                    config.timeout_secs * 1000,
+                )),
                 true,
             )
         }
     };
 
+    if answer {
+        return search_with_answer(
+            config,
+            &client,
+            query,
+            limit,
+            &filters,
+            explain,
+            is_anonymous,
+        );
+    }
+
+    let search_started = std::time::Instant::now();
     let result = match &client {
         ClientMode::Local(c) => {
             if let Some(corrected) = c.correct_query(query) {
                 eprintln!("(showing results for: {corrected})");
             }
-            c.search_blended(query, limit as usize, &filters).map(|(r, _)| r)
+            c.search_blended(query, limit as usize, &filters)
         }
-        ClientMode::Gateway(c) => c.search(query, limit as usize, &filters),
+        ClientMode::Gateway(c) => c.search(query, limit as usize, &filters).map(|items| {
+            let mut sources = Vec::new();
+            for item in &items {
+                if !sources.contains(&item.source) {
+                    sources.push(item.source.clone());
+                }
+            }
+            (items, sources)
+        }),
     };
+    let search_ms = search_started.elapsed().as_secs_f64() * 1_000.0;
 
     match result {
-        Ok(items) => {
-            if items.is_empty() {
-                output::print_ok(
-                    &format!("No results found for: {query}"),
-                    &config.format,
+        Ok((items, sources)) => {
+            if explain {
+                let local_results = items
+                    .iter()
+                    .filter(|item| item.source == "local" || item.source == "cached")
+                    .count();
+                let web_results = items.len().saturating_sub(local_results);
+                let evidence_modes: Vec<&str> = items
+                    .iter()
+                    .filter_map(|item| item.decision.as_ref())
+                    .map(|decision| decision.uncertainty_mode.as_str())
+                    .fold(Vec::new(), |mut modes, mode| {
+                        if !modes.contains(&mode) {
+                            modes.push(mode);
+                        }
+                        modes
+                    });
+                let decision_moves = items
+                    .iter()
+                    .filter_map(|item| item.decision.as_ref())
+                    .filter(|decision| decision.retrieval_rank != decision.decision_rank)
+                    .count();
+                let average_ignorance = if evidence_modes.as_slice() == ["not_applicable"] {
+                    "n/a".to_string()
+                } else if items.is_empty() {
+                    "0.000".to_string()
+                } else {
+                    format!(
+                        "{:.3}",
+                        items
+                            .iter()
+                            .filter_map(|item| item.decision.as_ref())
+                            .map(|decision| decision.ignorance)
+                            .sum::<f64>()
+                            / items.len() as f64
+                    )
+                };
+                let candidate_depth = match &client {
+                    ClientMode::Local(_) => {
+                        oi_sdk::retrieval_candidate_depth(limit as usize).to_string()
+                    }
+                    ClientMode::Gateway(_) => "gateway".to_string(),
+                };
+                eprintln!(
+                    "(path: intent={} candidates={} sources={} local={} web={} evidence={} decision_moves={} avg_ignorance={average_ignorance} search_ms={search_ms:.1})",
+                    oi_sdk::classify_query(query),
+                    candidate_depth,
+                    sources.join("+"),
+                    local_results,
+                    web_results,
+                    evidence_modes.join("+"),
+                    decision_moves,
                 );
+            }
+            if items.is_empty() {
+                output::print_ok(&format!("No results found for: {query}"), &config.format);
             } else {
                 output::print_list(
                     &items,
                     &config.format,
-                    &["RANK", "SCORE", "URL", "SOURCE"],
+                    &["RANK", "RETR", "REL", "DEC", "UNCERTAINTY", "URL", "SOURCE"],
                     |r| {
+                        let decision = r.decision.as_ref();
                         vec![
                             r.rank.to_string(),
+                            decision
+                                .map(|value| value.retrieval_rank.to_string())
+                                .unwrap_or_else(|| r.rank.to_string()),
                             format!("{:.3}", r.final_score),
+                            decision
+                                .map(|value| format!("{:.3}", value.decision_score))
+                                .unwrap_or_else(|| "-".to_string()),
+                            decision
+                                .map(|value| value.uncertainty_mode.clone())
+                                .unwrap_or_else(|| "not_run".to_string()),
                             r.url.clone(),
                             r.source.clone(),
                         ]
                     },
                 );
-                if items.iter().any(|r| r.stake_truth == 0) {
-                    eprintln!("(external results — not staked. Run `oi stake <domain> <amount>` to vouch for quality)");
+                if items
+                    .iter()
+                    .any(|r| r.source != "local" && r.source != "cached")
+                {
+                    eprintln!(
+                        "(some results are live web discoveries; claim-bearing queries keep elevated ignorance until retained evidence is available)"
+                    );
                 }
             }
             if is_anonymous {
@@ -214,9 +313,16 @@ pub fn search(
                 let pending = c.pending_crawl_count();
                 if pending > 0 {
                     eprintln!("(learning: indexing {pending} new sources from this search...)");
+                    let crawl_started = std::time::Instant::now();
                     let indexed = c.process_crawl_queue();
+                    let crawl_ms = crawl_started.elapsed().as_secs_f64() * 1_000.0;
                     if indexed > 0 {
                         eprintln!("(learned: {indexed} pages added to the local index)");
+                    }
+                    if explain {
+                        eprintln!(
+                            "(path: crawl_queued={pending} crawl_indexed={indexed} crawl_ms={crawl_ms:.1})"
+                        );
                     }
                 }
             }
@@ -227,6 +333,137 @@ pub fn search(
             e.exit_code()
         }
     }
+}
+
+fn search_with_answer(
+    config: &CliConfig,
+    client: &ClientMode,
+    query: &str,
+    limit: u32,
+    filters: &oi_types::QueryFilters,
+    explain: bool,
+    is_anonymous: bool,
+) -> ExitCode {
+    let started = std::time::Instant::now();
+    let response = match client {
+        ClientMode::Local(client) => client.search_answered(query, limit as usize, filters),
+        ClientMode::Gateway(client) => {
+            client
+                .search(query, limit as usize, filters)
+                .map(|results| {
+                    let mut sources_used = Vec::new();
+                    for result in &results {
+                        if !sources_used.contains(&result.source) {
+                            sources_used.push(result.source.clone());
+                        }
+                    }
+                    oi_sdk::AnsweredSearch {
+                        query: query.to_string(),
+                        answer: oi_sdk::construct_answer(
+                            query,
+                            oi_sdk::classify_query(query),
+                            &results,
+                        ),
+                        results,
+                        sources_used,
+                        search_passes: 1,
+                        hydrated_pages: 0,
+                        poll_registry: Vec::new(),
+                        market_quotes: Vec::new(),
+                        trace: oi_sdk::AnswerTrace::default(),
+                    }
+                })
+        }
+    };
+    let elapsed_ms = started.elapsed().as_secs_f64() * 1_000.0;
+
+    match response {
+        Ok(response) => {
+            if explain {
+                eprintln!(
+                    "(path: intent={} answer_status={} passes={} hydrated={} sources={} uncertainty={} avg_ignorance={} total_ms={elapsed_ms:.1})",
+                    response.answer.intent,
+                    response.answer.status,
+                    response.search_passes,
+                    response.hydrated_pages,
+                    response.sources_used.join("+"),
+                    response.answer.uncertainty_mode,
+                    response
+                        .answer
+                        .average_ignorance
+                        .map(|value| format!("{value:.3}"))
+                        .unwrap_or_else(|| "n/a".to_string()),
+                );
+            }
+            print_answered_search(config, &response);
+            if is_anonymous {
+                eprintln!("(anonymous mode - 10 queries/day, run `oi login` for 100/day)");
+            }
+            // Keep the ordinary flywheel for non-claim queries and any
+            // secondary discoveries not needed by the answer itself.
+            if let ClientMode::Local(client) = client
+                && client.pending_crawl_count() > 0
+            {
+                let _ = client.process_crawl_queue();
+            }
+            ExitCode::Success
+        }
+        Err(error) => {
+            output::print_err(&format!("Search answer failed: {error}"), &config.format);
+            error.exit_code()
+        }
+    }
+}
+
+fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) {
+    output::print_item(response, &config.format, |response| {
+        println!(
+            "ANSWER [{} | {}]",
+            response.answer.status, response.answer.uncertainty_mode
+        );
+        println!("{}", response.answer.summary);
+        if let Some(warning) = &response.answer.warning {
+            println!("Aviso: {warning}");
+        }
+        for (index, claim) in response.answer.claims.iter().enumerate() {
+            println!("Claim {}: {}", index + 1, claim.text);
+            for citation in &claim.citations {
+                println!(
+                    "  [{} | {}] {} — {}",
+                    citation.decision_rank, citation.evidence_role, citation.title, citation.url
+                );
+                if let Some(excerpt) = &citation.evidence_excerpt
+                    && excerpt != &claim.text
+                {
+                    println!("      Evidência: {excerpt}");
+                }
+            }
+        }
+        println!();
+        output::print_list(
+            &response.results,
+            &config.format,
+            &["RANK", "RETR", "REL", "DEC", "UNCERTAINTY", "URL", "SOURCE"],
+            |result| {
+                let decision = result.decision.as_ref();
+                vec![
+                    result.rank.to_string(),
+                    decision
+                        .map(|value| value.retrieval_rank.to_string())
+                        .unwrap_or_else(|| result.rank.to_string()),
+                    format!("{:.3}", result.final_score),
+                    decision
+                        .map(|value| format!("{:.3}", value.decision_score))
+                        .unwrap_or_else(|| "-".to_string()),
+                    decision
+                        .map(|value| value.uncertainty_mode.clone())
+                        .unwrap_or_else(|| "not_run".to_string()),
+                    result.url.clone(),
+                    result.source.clone(),
+                ]
+            },
+        );
+    });
 }
 
 /// Query a running P2P node's HTTP API.
@@ -293,6 +530,69 @@ fn search_via_node(
             },
         );
     }
+    ExitCode::Success
+}
+
+fn answer_via_node(
+    config: &CliConfig,
+    node_url: &str,
+    query: &str,
+    limit: u32,
+    filters: &oi_types::QueryFilters,
+    explain: bool,
+) -> ExitCode {
+    let url = format!("{}/answer", node_url.trim_end_matches('/'));
+    let body = serde_json::json!({
+        "query": query,
+        "limit": limit,
+        "filters": filters,
+    });
+    let started = std::time::Instant::now();
+    let response = ureq::post(&url)
+        .content_type("application/json")
+        .send(&serde_json::to_vec(&body).unwrap()[..]);
+    let response = match response {
+        Ok(response) => response,
+        Err(error) => {
+            output::print_err(
+                &format!("Failed to reach node at {node_url}: {error}"),
+                &config.format,
+            );
+            return ExitCode::UserError;
+        }
+    };
+    let body = match response.into_body().read_to_vec() {
+        Ok(body) => body,
+        Err(error) => {
+            output::print_err(
+                &format!("Failed to read answer response: {error}"),
+                &config.format,
+            );
+            return ExitCode::UserError;
+        }
+    };
+    let answer: oi_sdk::AnsweredSearch = match serde_json::from_slice(&body) {
+        Ok(answer) => answer,
+        Err(error) => {
+            output::print_err(
+                &format!("Failed to parse answer response: {error}"),
+                &config.format,
+            );
+            return ExitCode::UserError;
+        }
+    };
+    if explain {
+        eprintln!(
+            "(path: node_answer intent={} status={} passes={} hydrated={} sources={} total_ms={:.1})",
+            answer.answer.intent,
+            answer.answer.status,
+            answer.search_passes,
+            answer.hydrated_pages,
+            answer.sources_used.join("+"),
+            started.elapsed().as_secs_f64() * 1_000.0,
+        );
+    }
+    print_answered_search(config, &answer);
     ExitCode::Success
 }
 
@@ -378,7 +678,10 @@ pub fn feedback_stats(config: &CliConfig) -> ExitCode {
             ExitCode::Success
         }
         Err(e) => {
-            output::print_err(&format!("Failed to fetch feedback stats: {e}"), &config.format);
+            output::print_err(
+                &format!("Failed to fetch feedback stats: {e}"),
+                &config.format,
+            );
             e.exit_code()
         }
     }
@@ -387,7 +690,9 @@ pub fn feedback_stats(config: &CliConfig) -> ExitCode {
 // ── Stake / Unstake ─────────────────────────────────────────────────────────
 
 pub fn stake(config: &CliConfig, domain: &str, amount: u64) -> ExitCode {
-    if let Some(code) = reject_in_open_mode(config, "stake") { return code; }
+    if let Some(code) = reject_in_open_mode(config, "stake") {
+        return code;
+    }
     // Validate entity ref format before sending to chain
     if let Err(e) = oi_types::entity::EntityRef::parse(domain) {
         output::print_err(&format!("Invalid entity ref: {e}"), &config.format);
@@ -422,7 +727,9 @@ pub fn stake(config: &CliConfig, domain: &str, amount: u64) -> ExitCode {
 }
 
 pub fn unstake(config: &CliConfig, domain: &str) -> ExitCode {
-    if let Some(code) = reject_in_open_mode(config, "unstake") { return code; }
+    if let Some(code) = reject_in_open_mode(config, "unstake") {
+        return code;
+    }
     if let Err(e) = oi_types::entity::EntityRef::parse(domain) {
         output::print_err(&format!("Invalid entity ref: {e}"), &config.format);
         return ExitCode::UserError;
@@ -442,10 +749,7 @@ pub fn unstake(config: &CliConfig, domain: &str) -> ExitCode {
                 "cooldown_days": 7,
             });
             output::print_item(&info, &config.format, |item| {
-                println!(
-                    "Unstake initiated for {} (7-day cooldown)",
-                    item["domain"]
-                );
+                println!("Unstake initiated for {} (7-day cooldown)", item["domain"]);
                 println!("  Tx: {}", item["tx_hash"]);
             });
             ExitCode::Success
@@ -460,7 +764,9 @@ pub fn unstake(config: &CliConfig, domain: &str) -> ExitCode {
 // ── Domain ──────────────────────────────────────────────────────────────────
 
 pub fn domain(config: &CliConfig, action: DomainCommands) -> ExitCode {
-    if let Some(code) = reject_in_open_mode(config, "domain") { return code; }
+    if let Some(code) = reject_in_open_mode(config, "domain") {
+        return code;
+    }
     let client = match require_local(config, "domain") {
         Ok(c) => c,
         Err(code) => return code,
@@ -525,10 +831,7 @@ pub fn domain(config: &CliConfig, action: DomainCommands) -> ExitCode {
                 ExitCode::Success
             }
             Err(e) => {
-                output::print_err(
-                    &format!("Failed to get domain info: {e}"),
-                    &config.format,
-                );
+                output::print_err(&format!("Failed to get domain info: {e}"), &config.format);
                 e.exit_code()
             }
         },
@@ -556,14 +859,16 @@ pub fn domain(config: &CliConfig, action: DomainCommands) -> ExitCode {
                     e.exit_code()
                 }
             }
-        },
+        }
     }
 }
 
 // ── Dispute ─────────────────────────────────────────────────────────────────
 
 pub fn dispute(config: &CliConfig, action: DisputeCommands) -> ExitCode {
-    if let Some(code) = reject_in_open_mode(config, "dispute") { return code; }
+    if let Some(code) = reject_in_open_mode(config, "dispute") {
+        return code;
+    }
     match action {
         DisputeCommands::Open {
             domain,
@@ -643,10 +948,7 @@ pub fn dispute(config: &CliConfig, action: DisputeCommands) -> ExitCode {
                 ClientMode::Gateway(c) => match c.list_disputes() {
                     Ok(d) => d,
                     Err(e) => {
-                        output::print_err(
-                            &format!("Failed to list disputes: {e}"),
-                            &config.format,
-                        );
+                        output::print_err(&format!("Failed to list disputes: {e}"), &config.format);
                         return e.exit_code();
                     }
                 },
@@ -683,19 +985,23 @@ pub fn dispute(config: &CliConfig, action: DisputeCommands) -> ExitCode {
                             println!("Dispute: {}:{}", d.domain, d.status);
                             println!("  Reporter: {}", d.reporter);
                             println!("  Bond:     {} $TRUTH", d.bond);
-                            println!("  Votes:    {} guilty / {} innocent", d.votes_guilty, d.votes_innocent);
+                            println!(
+                                "  Votes:    {} guilty / {} innocent",
+                                d.votes_guilty, d.votes_innocent
+                            );
                         });
                         if let Some(bond) = &resp.fiat_bond {
-                            println!("  Fiat Bond: {} (${:.2})", bond.bond_id, bond.amount_cents as f64 / 100.0);
+                            println!(
+                                "  Fiat Bond: {} (${:.2})",
+                                bond.bond_id,
+                                bond.amount_cents as f64 / 100.0
+                            );
                             println!("  Status:    {:?}", bond.status);
                         }
                         ExitCode::Success
                     }
                     Err(e) => {
-                        output::print_err(
-                            &format!("Failed to get dispute: {e}"),
-                            &config.format,
-                        );
+                        output::print_err(&format!("Failed to get dispute: {e}"), &config.format);
                         e.exit_code()
                     }
                 },
@@ -717,7 +1023,9 @@ pub fn dispute(config: &CliConfig, action: DisputeCommands) -> ExitCode {
 // ── Jury ────────────────────────────────────────────────────────────────────
 
 pub fn jury(config: &CliConfig, action: JuryCommands) -> ExitCode {
-    if let Some(code) = reject_in_open_mode(config, "jury") { return code; }
+    if let Some(code) = reject_in_open_mode(config, "jury") {
+        return code;
+    }
     match action {
         JuryCommands::Register => {
             let info = serde_json::json!({
@@ -795,7 +1103,10 @@ pub fn yield_cmd(config: &CliConfig, action: YieldCommands) -> ExitCode {
             };
             output::print_item(&info, &config.format, |item| {
                 println!("Node Earnings:");
-                println!("  Earned:         {} lamports $TRUTH", item["accrued_truth"]);
+                println!(
+                    "  Earned:         {} lamports $TRUTH",
+                    item["accrued_truth"]
+                );
                 println!("  Queries served: {}", item["queries_served"]);
                 println!("  Pending tickets: {}", item["pending_tickets"]);
                 println!("  Pending value:  {} lamports", item["pending_truth"]);
@@ -803,12 +1114,18 @@ pub fn yield_cmd(config: &CliConfig, action: YieldCommands) -> ExitCode {
             ExitCode::Success
         }
         YieldCommands::Creators => {
-            // Creator earnings: the record of agent usage that replaced the
-            // page views (and ad revenue) agents no longer generate.
+            // Compatibility command name; these are non-payable exposure
+            // records, not licensed consumption or creator earnings.
             let client = build_local_client(config);
             let (queries, rows) = client.creator_earnings();
-            if matches!(config.format, crate::output::Format::Json | crate::output::Format::Ndjson) {
+            if matches!(
+                config.format,
+                crate::output::Format::Json | crate::output::Format::Ndjson
+            ) {
                 let doc = serde_json::json!({
+                    "record_kind": "non_payable_exposure_telemetry",
+                    "monetary_value": false,
+                    "settlement_eligible": false,
                     "queries_attributed": queries,
                     "creators": rows.iter().map(|(d, u)| serde_json::json!({
                         "domain": d,
@@ -826,12 +1143,21 @@ pub fn yield_cmd(config: &CliConfig, action: YieldCommands) -> ExitCode {
                 println!("No creator usage recorded yet. Serve some searches first.");
                 return ExitCode::Success;
             }
-            println!("Creator earnings ({queries} queries attributed):");
-            println!("{:<40} {:>7} {:>6} {:>8}  STAKED", "DOMAIN", "SERVED", "TOP-3", "CREDITS");
+            println!("Creator exposure ({queries} queries attributed):");
+            println!(
+                "Credits are non-monetary telemetry; no payment or licensed consumption is recorded."
+            );
+            println!(
+                "{:<40} {:>7} {:>6} {:>8}  STAKED",
+                "DOMAIN", "SERVED", "TOP-3", "CREDITS"
+            );
             for (d, u) in rows.iter().take(25) {
                 println!(
                     "{:<40} {:>7} {:>6} {:>8}  {}",
-                    d, u.served, u.top3, u.credits,
+                    d,
+                    u.served,
+                    u.top3,
+                    u.credits,
                     if u.stake_backed { "yes" } else { "-" }
                 );
             }
@@ -879,8 +1205,12 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                 } else {
                     Vec::new()
                 };
-                let routing_table_path = dirs::home_dir()
-                    .map(|h| h.join(".opensonarx").join("routing_table.json").to_string_lossy().to_string());
+                let routing_table_path = dirs::home_dir().map(|h| {
+                    h.join(".opensonarx")
+                        .join("routing_table.json")
+                        .to_string_lossy()
+                        .to_string()
+                });
 
                 let net_config = oi_network::config::NetworkConfig {
                     listen_port: port,
@@ -932,13 +1262,17 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                 let shard_override = shards.is_some();
                 let shard_ids = shards.unwrap_or_else(|| vec!["topic-general".into()]);
 
-                let mut node = oi_network::Node::new(net_config)
-                    .with_index(index.clone(), shard_ids.clone());
+                let mut node =
+                    oi_network::Node::new(net_config).with_index(index.clone(), shard_ids.clone());
                 println!("Starting OpenSonarX node...");
                 println!("  Peer ID:  {}", node.peer_id);
                 println!("  Listen:   /ip4/0.0.0.0/tcp/{port}");
                 println!("  Network:  {}", config.network);
-                println!("  Shards:   {} {}", shard_ids.join(", "), if shard_override { "(manual)" } else { "(auto)" });
+                println!(
+                    "  Shards:   {} {}",
+                    shard_ids.join(", "),
+                    if shard_override { "(manual)" } else { "(auto)" }
+                );
                 println!("  Index:    {} docs", index.doc_count());
 
                 // Build topic router for sentinel classification
@@ -956,11 +1290,16 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                 .map(|(t, e)| (t.shard_id.to_string(), e))
                                 .collect();
                             let router = oi_types::TopicRouter::new(centroids);
-                            println!("  Topic router: initialized ({} topics)", oi_types::BUILTIN_TOPICS.len());
+                            println!(
+                                "  Topic router: initialized ({} topics)",
+                                oi_types::BUILTIN_TOPICS.len()
+                            );
                             Some(std::sync::Arc::new(router))
                         }
                         Err(e) => {
-                            eprintln!("  Topic router: failed to embed topics ({e}), using default shard");
+                            eprintln!(
+                                "  Topic router: failed to embed topics ({e}), using default shard"
+                            );
                             None
                         }
                     }
@@ -980,8 +1319,12 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                     }
                 }
                 if node.config.bootstrap_peers.is_empty() {
-                    println!("  No bootstrap peers configured — running in local discovery mode (mDNS).");
-                    println!("  To join the network: oi network node --bootstrap /ip4/<peer>/tcp/4001");
+                    println!(
+                        "  No bootstrap peers configured — running in local discovery mode (mDNS)."
+                    );
+                    println!(
+                        "  To join the network: oi network node --bootstrap /ip4/<peer>/tcp/4001"
+                    );
                 } else {
                     println!("  Bootstrap peers:");
                     for p in &node.config.bootstrap_peers {
@@ -1007,15 +1350,22 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                 stakes_path: crate::config_file::ConfigFile::config_dir()
                                     .map(|d| d.join("stakes.json").to_string_lossy().to_string()),
                                 creator_ledger_path: crate::config_file::ConfigFile::config_dir()
-                                    .map(|d| d.join("creator_ledger.json").to_string_lossy().to_string()),
+                                    .map(|d| {
+                                        d.join("creator_ledger.json").to_string_lossy().to_string()
+                                    }),
                                 ..Default::default()
                             };
-                            let api_index_path =
-                                crate::config_file::ConfigFile::index_dir();
+                            let api_index_path = crate::config_file::ConfigFile::index_dir();
                             tokio::spawn(async move {
                                 if let Err(e) = crate::node_api::run_node_api(
-                                    hp, api_handle, api_index, api_index_path, api_sdk_config,
-                                ).await {
+                                    hp,
+                                    api_handle,
+                                    api_index,
+                                    api_index_path,
+                                    api_sdk_config,
+                                )
+                                .await
+                                {
                                     eprintln!("HTTP API error: {e}");
                                 }
                             });
@@ -1050,10 +1400,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                         }
                     }
                     Err(e) => {
-                        output::print_err(
-                            &format!("Node failed to start: {e}"),
-                            &config.format,
-                        );
+                        output::print_err(&format!("Node failed to start: {e}"), &config.format);
                     }
                 }
             });
@@ -1120,7 +1467,10 @@ async fn run_integrated_sentinel(
 
     let embedder = oi_sdk::OpenSonarXClient::default_embedder();
     let sentinel_id = handle.peer_id.to_string();
-    let default_shard = shard_ids.first().cloned().unwrap_or_else(|| "topic-general".into());
+    let default_shard = shard_ids
+        .first()
+        .cloned()
+        .unwrap_or_else(|| "topic-general".into());
 
     let daemon_config = DaemonConfig {
         concurrency,
@@ -1150,9 +1500,7 @@ async fn run_integrated_sentinel(
     let default_shard_clone = default_shard.clone();
     let verbose_events = verbose;
     let discovered_shards: std::sync::Arc<std::sync::Mutex<std::collections::HashSet<String>>> =
-        std::sync::Arc::new(std::sync::Mutex::new(
-            shard_ids.iter().cloned().collect(),
-        ));
+        std::sync::Arc::new(std::sync::Mutex::new(shard_ids.iter().cloned().collect()));
     let discovered_shards_clone = discovered_shards.clone();
     tokio::spawn(async move {
         while let Some(event) = event_rx.recv().await {
@@ -1333,7 +1681,10 @@ pub fn wallet(config: &CliConfig, action: WalletCommands) -> ExitCode {
             output::print_item(&info, &config.format, |item| {
                 println!("Wallet created successfully.");
                 println!("  Address: {}", item["address"]);
-                println!("  Keypair: {} (registered in config.toml)", item["keypair_path"]);
+                println!(
+                    "  Keypair: {} (registered in config.toml)",
+                    item["keypair_path"]
+                );
             });
             ExitCode::Success
         }
@@ -1431,10 +1782,7 @@ pub fn login(
             if let Some(e) = &file_config.auth.email {
                 e.clone()
             } else {
-                output::print_err(
-                    "Email required. Usage: oi login <email>",
-                    &config.format,
-                );
+                output::print_err("Email required. Usage: oi login <email>", &config.format);
                 return ExitCode::UserError;
             }
         }
@@ -1668,7 +2016,8 @@ pub fn status(config: &CliConfig) -> ExitCode {
             .gateway_url
             .clone()
             .unwrap_or_else(|| "https://api.opensonarx.com".to_string());
-        let client = GatewayClient::new(base_url, Some(api_key.clone()), config.timeout_secs * 1000);
+        let client =
+            GatewayClient::new(base_url, Some(api_key.clone()), config.timeout_secs * 1000);
         match client.quota() {
             Ok(quota) => {
                 println!(
@@ -1716,7 +2065,10 @@ pub fn leaderboard(config: &CliConfig, limit: u32) -> ExitCode {
     match result {
         Ok(entries) => {
             if entries.is_empty() {
-                output::print_ok("No leaderboard data yet. Run some searches first.", &config.format);
+                output::print_ok(
+                    "No leaderboard data yet. Run some searches first.",
+                    &config.format,
+                );
             } else {
                 output::print_list(
                     &entries,
@@ -1837,18 +2189,27 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
                 tokio::spawn(async move {
                     while let Some(event) = event_rx.recv().await {
                         let (url, domain, chunk_count, mut chunks) = match event {
-                            CrawlEvent::ContentDiscovered { url, domain, chunk_count, chunks, .. } => {
-                                (url, domain, chunk_count, chunks)
-                            }
-                            CrawlEvent::ContentUpdated { url, domain, chunk_count, chunks, .. } => {
-                                (url, domain, chunk_count, chunks)
-                            }
+                            CrawlEvent::ContentDiscovered {
+                                url,
+                                domain,
+                                chunk_count,
+                                chunks,
+                                ..
+                            } => (url, domain, chunk_count, chunks),
+                            CrawlEvent::ContentUpdated {
+                                url,
+                                domain,
+                                chunk_count,
+                                chunks,
+                                ..
+                            } => (url, domain, chunk_count, chunks),
                         };
 
                         // Embed each chunk that doesn't already have an embedding
                         for chunk in &mut chunks {
                             if chunk.embedding.is_none()
-                                && let Ok(emb) = client_for_events.embedder().embed_text(&chunk.content)
+                                && let Ok(emb) =
+                                    client_for_events.embedder().embed_text(&chunk.content)
                             {
                                 chunk.embedding = Some(emb);
                             }
@@ -1893,7 +2254,10 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
             ExitCode::Success
         }
         SentinelCommands::Status => {
-            output::print_ok("Sentinel status: not running (start with `oi sentinel start`)", &config.format);
+            output::print_ok(
+                "Sentinel status: not running (start with `oi sentinel start`)",
+                &config.format,
+            );
             ExitCode::Success
         }
         SentinelCommands::AddFeed { url } => {
@@ -1905,7 +2269,9 @@ pub fn sentinel(config: &CliConfig, action: SentinelCommands) -> ExitCode {
         }
         SentinelCommands::AddDomain { domain, stake } => {
             output::print_ok(
-                &format!("Domain registered: {domain} (stake hint: {stake})\nStart the sentinel daemon to begin monitoring."),
+                &format!(
+                    "Domain registered: {domain} (stake hint: {stake})\nStart the sentinel daemon to begin monitoring."
+                ),
                 &config.format,
             );
             ExitCode::Success
@@ -1926,11 +2292,17 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
     let index_path = crate::config_file::ConfigFile::index_dir().expect("home dir");
 
     match action {
-        IndexCommands::Export { output: output_path, shard } => {
+        IndexCommands::Export {
+            output: output_path,
+            shard,
+        } => {
             let storage = match oi_index::Storage::new(&index_path) {
                 Ok(s) if s.segment_exists("hnsw.bin") => s,
                 _ => {
-                    output::print_err("No index found. Run a node first to build an index.", &config.format);
+                    output::print_err(
+                        "No index found. Run a node first to build an index.",
+                        &config.format,
+                    );
                     return ExitCode::UserError;
                 }
             };
@@ -1995,13 +2367,20 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
             }
 
             let file_size = std::fs::metadata(&out_file).map(|m| m.len()).unwrap_or(0);
-            println!("Exported {} chunks to {} ({:.1} MB)",
-                chunks.len(), out_file, file_size as f64 / 1_048_576.0);
+            println!(
+                "Exported {} chunks to {} ({:.1} MB)",
+                chunks.len(),
+                out_file,
+                file_size as f64 / 1_048_576.0
+            );
 
             // Collect shard distribution
-            let mut shard_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+            let mut shard_counts: std::collections::HashMap<String, usize> =
+                std::collections::HashMap::new();
             for chunk in &chunks {
-                let sid = chunk.meta.as_ref()
+                let sid = chunk
+                    .meta
+                    .as_ref()
                     .and_then(|m| m.shard_id.as_deref())
                     .unwrap_or("unclassified");
                 *shard_counts.entry(sid.to_string()).or_default() += 1;
@@ -2033,9 +2412,8 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
                     if let Ok(path) = entry.path()
                         && path.to_str() == Some("chunks.json")
                     {
-                        let data: Vec<u8> = std::io::Read::bytes(entry)
-                            .filter_map(|b| b.ok())
-                            .collect();
+                        let data: Vec<u8> =
+                            std::io::Read::bytes(entry).filter_map(|b| b.ok()).collect();
                         chunks_json = Some(data);
                         break;
                     }
@@ -2094,7 +2472,10 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
             }
 
             let added = idx.doc_count() - before;
-            println!("  Ingested {added} new chunks ({} duplicates skipped)", chunks.len() - added);
+            println!(
+                "  Ingested {added} new chunks ({} duplicates skipped)",
+                chunks.len() - added
+            );
 
             if let Err(e) = idx.save(&storage) {
                 output::print_err(&format!("Failed to save index: {e}"), &config.format);
@@ -2145,9 +2526,12 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
 
             // Shard distribution via chunk replication
             if table_mode && let Ok(chunks) = idx.get_chunks_for_replication(None, usize::MAX) {
-                let mut shard_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+                let mut shard_counts: std::collections::HashMap<String, usize> =
+                    std::collections::HashMap::new();
                 for chunk in &chunks {
-                    let sid = chunk.meta.as_ref()
+                    let sid = chunk
+                        .meta
+                        .as_ref()
                         .and_then(|m| m.shard_id.as_deref())
                         .unwrap_or("unclassified");
                     *shard_counts.entry(sid.to_string()).or_default() += 1;
@@ -2174,7 +2558,10 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
             let mut domains: Vec<_> = a.per_domain.into_iter().collect();
             domains.sort_by(|x, y| y.1.cmp(&x.1));
 
-            if matches!(config.format, crate::output::Format::Json | crate::output::Format::Ndjson) {
+            if matches!(
+                config.format,
+                crate::output::Format::Json | crate::output::Format::Ndjson
+            ) {
                 // Machine-readable health for agents/monitoring.
                 let info = serde_json::json!({
                     "path": index_path.to_string_lossy(),
@@ -2195,16 +2582,30 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
                         .map(|(d, c)| serde_json::json!({"domain": d, "chunks": c}))
                         .collect::<Vec<_>>(),
                 });
-                println!("{}", serde_json::to_string_pretty(&info).unwrap_or_default());
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(&info).unwrap_or_default()
+                );
                 return ExitCode::Success;
             }
 
             println!("  Health:");
-            println!("    hnsw/bm25/meta: {}/{}/{}{}",
-                a.hnsw_count, a.bm25_count, a.meta_count,
-                if consistent { " (consistent)" } else { " (INCONSISTENT!)" });
+            println!(
+                "    hnsw/bm25/meta: {}/{}/{}{}",
+                a.hnsw_count,
+                a.bm25_count,
+                a.meta_count,
+                if consistent {
+                    " (consistent)"
+                } else {
+                    " (INCONSISTENT!)"
+                }
+            );
             println!("    avg quality:    {:.3}", a.avg_quality);
-            println!("    missing title/url: {}/{}", a.missing_title, a.missing_url);
+            println!(
+                "    missing title/url: {}/{}",
+                a.missing_title, a.missing_url
+            );
             println!("    orphan dedup hashes: {}", a.orphan_hashes);
             println!("  Top domains:");
             for (d, c) in domains.into_iter().take(8) {
@@ -2232,7 +2633,11 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
             println!(
                 "Re-embedding {} docs: '{}' -> '{}'",
                 old.doc_count(),
-                if old.embedder_name().is_empty() { "(unrecorded)" } else { old.embedder_name() },
+                if old.embedder_name().is_empty() {
+                    "(unrecorded)"
+                } else {
+                    old.embedder_name()
+                },
                 embedder.name()
             );
 
@@ -2287,7 +2692,10 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
 
             // Old index stays intact on disk until this save succeeds.
             if let Err(e) = new_index.save(&storage) {
-                output::print_err(&format!("Failed to save re-embedded index: {e}"), &config.format);
+                output::print_err(
+                    &format!("Failed to save re-embedded index: {e}"),
+                    &config.format,
+                );
                 return ExitCode::UserError;
             }
             println!(

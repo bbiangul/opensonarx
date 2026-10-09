@@ -58,9 +58,12 @@ pub struct SearchSection {
 }
 
 impl ConfigFile {
-    /// Directory for OpenSonarX configuration: `~/.opensonarx/`
+    /// Directory for OpenSonarX state.
+    ///
+    /// `OPENSONARX_DATA_DIR` provides an explicit deployment/test boundary;
+    /// otherwise the canonical `~/.opensonarx/` location is used.
     pub fn config_dir() -> Option<PathBuf> {
-        dirs::home_dir().map(|h| h.join(".opensonarx"))
+        resolve_config_dir(std::env::var_os("OPENSONARX_DATA_DIR"), dirs::home_dir())
     }
 
     /// Full path to the config file: `~/.opensonarx/config.toml`
@@ -120,10 +123,19 @@ impl ConfigFile {
             ));
         };
         std::fs::create_dir_all(&dir)?;
-        let content = toml::to_string_pretty(self)
-            .map_err(std::io::Error::other)?;
+        let content = toml::to_string_pretty(self).map_err(std::io::Error::other)?;
         std::fs::write(dir.join("config.toml"), content)
     }
+}
+
+fn resolve_config_dir(
+    override_dir: Option<std::ffi::OsString>,
+    home_dir: Option<PathBuf>,
+) -> Option<PathBuf> {
+    override_dir
+        .filter(|value| !value.is_empty())
+        .map(PathBuf::from)
+        .or_else(|| home_dir.map(|home| home.join(".opensonarx")))
 }
 
 #[cfg(test)]
@@ -177,5 +189,23 @@ email = "test@test.com"
         assert_eq!(config.auth.email.as_deref(), Some("test@test.com"));
         assert!(config.auth.api_key.is_none());
         assert!(config.wallet.path.is_none());
+    }
+
+    #[test]
+    fn test_explicit_data_dir_isolated_from_home() {
+        let resolved = resolve_config_dir(
+            Some(std::ffi::OsString::from("/tmp/opensonarx-e2e")),
+            Some(PathBuf::from("/users/example")),
+        );
+        assert_eq!(resolved, Some(PathBuf::from("/tmp/opensonarx-e2e")));
+    }
+
+    #[test]
+    fn test_empty_data_dir_falls_back_to_home() {
+        let resolved = resolve_config_dir(
+            Some(std::ffi::OsString::new()),
+            Some(PathBuf::from("/users/example")),
+        );
+        assert_eq!(resolved, Some(PathBuf::from("/users/example/.opensonarx")));
     }
 }

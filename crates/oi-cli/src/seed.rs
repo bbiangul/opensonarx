@@ -1,20 +1,20 @@
 use std::io::Read as _;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
+use oi_crawl::Distiller;
 use oi_crawl::discovery::parse_sitemap;
 use oi_crawl::fetcher::{fetch_bytes, fetch_url};
-use oi_crawl::robots::{parse_robots_txt, RobotsChecker};
+use oi_crawl::robots::{RobotsChecker, parse_robots_txt};
 use oi_crawl::spider::{Spider, SpiderConfig};
-use oi_crawl::Distiller;
 use oi_sdk::{OpenSonarXClient, SdkConfig};
 use oi_types::error::ExitCode;
 use oi_types::traits::CrawlPipeline;
 use tokio::sync::{RwLock, Semaphore};
 use tokio::task::JoinSet;
 
-use crate::SeedCommands;
 use super::CliConfig;
+use crate::SeedCommands;
 
 /// Entry point called from the `seed` dispatcher in commands.rs.
 pub async fn run_seed(config: &CliConfig, action: SeedCommands, verbose: bool) -> ExitCode {
@@ -343,16 +343,13 @@ async fn crawl_and_ingest(
                             Ok(()) => {
                                 let count = indexed.fetch_add(1, Ordering::Relaxed) + 1;
                                 if verbose {
-                                    eprintln!(
-                                        "[OK] {} — {} chunks",
-                                        url,
-                                        output.chunks.len()
-                                    );
+                                    eprintln!("[OK] {} — {} chunks", url, output.chunks.len());
                                 }
                                 // Periodic save
                                 if count.is_multiple_of(save_interval)
                                     && let Ok(saved) = client.save_index()
-                                    && saved && verbose
+                                    && saved
+                                    && verbose
                                 {
                                     eprintln!("[SAVE] index saved at {count} docs");
                                 }
@@ -580,7 +577,8 @@ mod tests {
         use flate2::write::GzEncoder;
         use std::io::Write;
 
-        let xml = r#"<?xml version="1.0"?><urlset><url><loc>https://test.com/a</loc></url></urlset>"#;
+        let xml =
+            r#"<?xml version="1.0"?><urlset><url><loc>https://test.com/a</loc></url></urlset>"#;
         let mut encoder = GzEncoder::new(Vec::new(), flate2::Compression::default());
         encoder.write_all(xml.as_bytes()).unwrap();
         let compressed = encoder.finish().unwrap();

@@ -7,7 +7,11 @@ mod seed;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "oi", about = "OpenSonarX CLI -- decentralized search protocol", version)]
+#[command(
+    name = "oi",
+    about = "OpenSonarX CLI -- decentralized search protocol",
+    version
+)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -21,7 +25,12 @@ struct Cli {
     wallet: Option<String>,
 
     /// Network: mainnet, devnet, localnet
-    #[arg(short = 'n', long = "network", default_value = "mainnet", global = true)]
+    #[arg(
+        short = 'n',
+        long = "network",
+        default_value = "mainnet",
+        global = true
+    )]
     network: String,
 
     /// Solana RPC URL override
@@ -103,6 +112,12 @@ pub enum Commands {
         /// Query a running P2P node's HTTP API (e.g., http://localhost:8001)
         #[arg(long)]
         node: Option<String>,
+        /// Print a concise execution path and phase latencies to stderr
+        #[arg(long)]
+        explain: bool,
+        /// Build a retained-evidence answer; claim-bearing queries may crawl and run a second pass
+        #[arg(long)]
+        answer: bool,
     },
     /// Submit feedback on a search result
     Feedback {
@@ -487,13 +502,15 @@ fn main() {
     let file_config = config_file::ConfigFile::load();
 
     let rpc_url = cli.rpc.clone().unwrap_or_else(|| {
-        file_config.network.rpc_url.clone().unwrap_or_else(|| {
-            match cli.network.as_str() {
+        file_config
+            .network
+            .rpc_url
+            .clone()
+            .unwrap_or_else(|| match cli.network.as_str() {
                 "devnet" => "https://api.devnet.solana.com".to_string(),
                 "localnet" => "http://localhost:8899".to_string(),
                 _ => "https://api.mainnet-beta.solana.com".to_string(),
-            }
-        })
+            })
     });
 
     let format = match cli.format {
@@ -547,10 +564,40 @@ fn main() {
             site,
             min_trust,
             node,
-        } => commands::search(&config, &query, limit, min_stake, freshness, types, shard, entity, content_kind, locale, gl, site, min_trust, node),
-        Commands::Feedback { result_id, useful, query, result_url, result_rank } => {
-            commands::feedback(&config, &result_id, useful, query.as_deref(), result_url.as_deref(), result_rank)
-        }
+            explain,
+            answer,
+        } => commands::search(
+            &config,
+            &query,
+            limit,
+            min_stake,
+            freshness,
+            types,
+            shard,
+            entity,
+            content_kind,
+            locale,
+            gl,
+            site,
+            min_trust,
+            node,
+            explain,
+            answer,
+        ),
+        Commands::Feedback {
+            result_id,
+            useful,
+            query,
+            result_url,
+            result_rank,
+        } => commands::feedback(
+            &config,
+            &result_id,
+            useful,
+            query.as_deref(),
+            result_url.as_deref(),
+            result_rank,
+        ),
         Commands::FeedbackStats => commands::feedback_stats(&config),
         Commands::Stake { domain, amount } => commands::stake(&config, &domain, amount),
         Commands::Unstake { domain } => commands::unstake(&config, &domain),
@@ -560,7 +607,11 @@ fn main() {
         Commands::Yield { action } => commands::yield_cmd(&config, action),
         Commands::Network { action } => commands::network(&config, action, cli.verbose),
         Commands::Wallet { action } => commands::wallet(&config, action),
-        Commands::Login { email, verify, gateway } => commands::login(&file_config, &config, email, verify, &gateway),
+        Commands::Login {
+            email,
+            verify,
+            gateway,
+        } => commands::login(&file_config, &config, email, verify, &gateway),
         Commands::Logout => commands::logout(&config),
         Commands::Sentinel { action } => commands::sentinel(&config, action),
         Commands::Verify { url } => commands::verify(&config, &url),

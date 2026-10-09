@@ -20,7 +20,10 @@ pub fn print_list<T: Serialize>(
 ) {
     match format {
         Format::Json => {
-            println!("{}", serde_json::to_string_pretty(items).unwrap_or_default());
+            println!(
+                "{}",
+                serde_json::to_string_pretty(items).unwrap_or_default()
+            );
         }
         Format::Ndjson => {
             for item in items {
@@ -58,7 +61,11 @@ pub fn print_list<T: Serialize>(
                     .iter()
                     .enumerate()
                     .map(|(i, cell)| {
-                        format!("{:<width$}", cell, width = widths.get(i).copied().unwrap_or(0))
+                        format!(
+                            "{:<width$}",
+                            cell,
+                            width = widths.get(i).copied().unwrap_or(0)
+                        )
                     })
                     .collect();
                 println!("{}", line.join("  "));
@@ -137,14 +144,16 @@ mod tests {
 
     #[test]
     fn test_print_list_table() {
-        let items = [TestItem {
+        let items = [
+            TestItem {
                 name: "alpha".to_string(),
                 value: 10,
             },
             TestItem {
                 name: "beta".to_string(),
                 value: 200,
-            }];
+            },
+        ];
 
         // Verify the row function works correctly
         let row_fn = |item: &TestItem| vec![item.name.clone(), item.value.to_string()];
@@ -172,12 +181,10 @@ mod tests {
 
     #[test]
     fn test_print_list_json() {
-        let items = vec![
-            TestItem {
-                name: "alpha".to_string(),
-                value: 10,
-            },
-        ];
+        let items = vec![TestItem {
+            name: "alpha".to_string(),
+            value: 10,
+        }];
         let json = serde_json::to_string_pretty(&items).unwrap();
         assert!(json.contains("\"name\": \"alpha\""));
         assert!(json.contains("\"value\": 10"));

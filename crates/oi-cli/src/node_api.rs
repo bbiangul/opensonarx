@@ -1,4 +1,8 @@
-use axum::{Json, Router, extract::State, routing::{get, post}};
+use axum::{
+    Json, Router,
+    extract::State,
+    routing::{get, post},
+};
 use oi_network::NodeHandle;
 use oi_types::proto::opensonarx as proto;
 use oi_types::{QueryFilters, SearchResultItem};
@@ -77,18 +81,21 @@ async fn search_handler(
     let client = state.client.clone();
     let query = req.query.clone();
     let filters = req.filters.clone();
-    let blended = tokio::task::spawn_blocking(move || {
-        client.search_blended(&query, limit, &filters)
-    })
-    .await
-    .map_err(|e| (
-        axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-        format!("Search task failed: {e}"),
-    ))?
-    .map_err(|e| (
-        axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-        format!("Search failed: {e}"),
-    ))?;
+    let blended =
+        tokio::task::spawn_blocking(move || client.search_blended(&query, limit, &filters))
+            .await
+            .map_err(|e| {
+                (
+                    axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Search task failed: {e}"),
+                )
+            })?
+            .map_err(|e| {
+                (
+                    axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Search failed: {e}"),
+                )
+            })?;
     let (mut items, _sources) = blended;
 
     // Crawl-on-query learning: fire-and-forget — the resident process
@@ -156,12 +163,46 @@ async fn search_handler(
                 items.truncate(limit);
                 for (i, r) in items.iter_mut().enumerate() {
                     r.rank = (i + 1) as u32;
+                    r.decision = None;
                 }
+                oi_sdk::evidence::apply_decision_policy(&req.query, &mut items);
             }
         }
     }
 
     Ok(Json(items))
+}
+
+async fn answer_handler(
+    State(state): State<Arc<ApiState>>,
+    Json(req): Json<SearchRequest>,
+) -> Result<Json<oi_sdk::AnsweredSearch>, (axum::http::StatusCode, String)> {
+    if req.query.trim().is_empty() {
+        return Err((
+            axum::http::StatusCode::BAD_REQUEST,
+            "query must not be empty".to_string(),
+        ));
+    }
+    let client = state.client.clone();
+    let query = req.query;
+    let filters = req.filters;
+    let limit = req.limit as usize;
+    let answer =
+        tokio::task::spawn_blocking(move || client.search_answered(&query, limit, &filters))
+            .await
+            .map_err(|error| {
+                (
+                    axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Answer task failed: {error}"),
+                )
+            })?
+            .map_err(|error| {
+                (
+                    axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Answer failed: {error}"),
+                )
+            })?;
+    Ok(Json(answer))
 }
 
 /// Minimal human search UI served at `/` — the same trust-priced index,
@@ -190,10 +231,9 @@ const UI_HTML: &str = r##"<!doctype html>
  .stake{color:#0f5132;font-weight:600}
  #status{color:#888;font-size:.85rem}
 </style></head><body>
-<h1>OpenSonarX <span>&mdash; trust-priced search; agent usage pays creators</span></h1>
+<h1>OpenSonarX <span>&mdash; relevance plus explicit evidential uncertainty</span></h1>
 <form id="f"><input type="text" id="q" placeholder="Search&hellip;" autofocus>
 <button>Search</button></form>
-<label><input type="checkbox" id="trust"> only stake-backed results (min_trust: neutral)</label>
 <p id="status"></p><div id="out"></div>
 <script>
 const f=document.getElementById('f'),q=document.getElementById('q'),out=document.getElementById('out'),st=document.getElementById('status');
@@ -201,7 +241,6 @@ f.addEventListener('submit',async e=>{
  e.preventDefault(); if(!q.value.trim())return;
  st.textContent='searching…'; out.innerHTML='';
  const body={query:q.value,top_k:8};
- if(document.getElementById('trust').checked) body.min_trust='neutral';
  const t0=performance.now();
  try{
   const res=await fetch('/v1/search',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
@@ -212,10 +251,12 @@ f.addEventListener('submit',async e=>{
   const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   for(const r of rs){
    const d=document.createElement('div'); d.className='r';
-   const stake=r.stake_usd>0?' <span class="stake">$'+r.stake_usd+' staked</span>':'';
+   const stake=r.stake_usd>0?' <span class="stake">$'+r.stake_usd+' disclosed stake (not relevance)</span>':'';
+   const decision=r.decision||{};
+   const uncertainty=decision.uncertainty_mode||'not_run';
    d.innerHTML='<a href="'+esc(r.url)+'" rel="noopener">'+esc(r.title||r.url)+'</a>'+
-    '<div class="meta">'+esc(r.url)+' <span class="badge '+esc(r.trust_verdict)+'">'+esc(r.trust_verdict)+'</span>'+stake+
-    ' · score '+(r.final_score||0).toFixed(3)+' · '+esc(r.source)+'</div>'+
+    '<div class="meta">'+esc(r.url)+' <span class="badge neutral">'+esc(uncertainty)+'</span>'+stake+
+    ' · relevance '+(r.final_score||0).toFixed(3)+' · '+esc(r.source)+'</div>'+
     '<div class="snippet">'+esc((r.content_relevant||r.snippet||'').slice(0,300))+'</div>';
    out.appendChild(d);
   }
@@ -285,10 +326,18 @@ fn proto_results_to_items(results: &[proto::SearchResult]) -> Vec<SearchResultIt
                     Some(r.content_kind.clone())
                 },
                 crawled_at: freshness.and_then(|f| {
-                    if f.crawled_at > 0 { Some(f.crawled_at) } else { None }
+                    if f.crawled_at > 0 {
+                        Some(f.crawled_at)
+                    } else {
+                        None
+                    }
                 }),
                 published_at: freshness.and_then(|f| {
-                    if f.published_at > 0 { Some(f.published_at as i64) } else { None }
+                    if f.published_at > 0 {
+                        Some(f.published_at as i64)
+                    } else {
+                        None
+                    }
                 }),
                 trust_verdict: "neutral".to_string(),
                 reputation_votes: 0,
@@ -299,6 +348,7 @@ fn proto_results_to_items(results: &[proto::SearchResult]) -> Vec<SearchResultIt
                 domain_url_count: None,
                 domain_reputation_score: None,
                 domain_total_votes: None,
+                decision: None,
             }
         })
         .collect()
@@ -320,12 +370,18 @@ pub async fn run_node_api(
         sdk_config,
         index.clone(),
     ));
-    let state = Arc::new(ApiState { handle, client, index, index_path });
+    let state = Arc::new(ApiState {
+        handle,
+        client,
+        index,
+        index_path,
+    });
 
     let app = Router::new()
         .route("/", get(ui_handler))
         .route("/health", get(health_handler))
         .route("/search", post(search_handler))
+        .route("/answer", post(answer_handler))
         .route("/v1/search", post(gateway_search_handler))
         .with_state(state);
 
