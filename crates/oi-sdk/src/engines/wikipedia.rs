@@ -1,8 +1,7 @@
-use oi_types::{SearchEngine, SearchResultItem};
+use oi_types::{SearchEngine, SearchParams, SearchResultItem};
 
-/// Key-free MediaWiki full-text search used only as a bounded factual
-/// reference fallback. It is deliberately not a general web-search provider:
-/// one Wikimedia corpus cannot satisfy source-independence or provider-
+/// Key-free MediaWiki full-text search. It is one corpus, not a general
+/// web-search provider: it cannot satisfy source-independence or provider-
 /// redundancy claims, and its snippets never become answer evidence.
 pub struct WikipediaSearch;
 
@@ -20,7 +19,26 @@ impl SearchEngine for WikipediaSearch {
         query: &str,
         limit: usize,
     ) -> std::result::Result<Vec<SearchResultItem>, ()> {
-        let host = wikipedia_host_for_query(query);
+        self.search_with_params_checked(query, limit, &SearchParams::default())
+    }
+
+    fn search_with_params(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> Vec<SearchResultItem> {
+        self.search_with_params_checked(query, limit, params)
+            .unwrap_or_default()
+    }
+
+    fn search_with_params_checked(
+        &self,
+        query: &str,
+        limit: usize,
+        params: &SearchParams,
+    ) -> std::result::Result<Vec<SearchResultItem>, ()> {
+        let host = &wikipedia_host(params.locale.as_deref());
         let url = wikipedia_search_url(host, query, limit);
         let agent = super::http_agent();
         let body = match agent
@@ -41,33 +59,18 @@ impl SearchEngine for WikipediaSearch {
     }
 }
 
-fn wikipedia_host_for_query(query: &str) -> &'static str {
-    let lower = query.to_lowercase();
-    let words = lower
-        .split(|character: char| !character.is_alphanumeric())
-        .filter(|word| !word.is_empty())
-        .collect::<Vec<_>>();
-    let portuguese_cue = query
-        .chars()
-        .any(|character| "áàâãçéêíóôõúüÁÀÂÃÇÉÊÍÓÔÕÚÜ".contains(character))
-        || words.iter().any(|word| {
-            matches!(
-                *word,
-                "como"
-                    | "criou"
-                    | "explicada"
-                    | "funciona"
-                    | "fundou"
-                    | "presidente"
-                    | "quantica"
-                    | "quem"
-            )
-        });
-    if portuguese_cue {
-        "pt.wikipedia.org"
-    } else {
-        "en.wikipedia.org"
-    }
+/// The Wikipedia edition for the caller's locale (`pt-BR` → `pt`), English
+/// when none is given. The edition is the caller's choice, never guessed from
+/// the words of the query.
+fn wikipedia_host(locale: Option<&str>) -> String {
+    let language = locale
+        .and_then(|locale| locale.split(['-', '_']).next())
+        .map(str::to_ascii_lowercase)
+        .filter(|language| {
+            (2..=3).contains(&language.len()) && language.bytes().all(|b| b.is_ascii_lowercase())
+        })
+        .unwrap_or_else(|| "en".to_string());
+    format!("{language}.wikipedia.org")
 }
 
 fn wikipedia_search_url(host: &str, query: &str, limit: usize) -> String {
@@ -171,22 +174,12 @@ mod tests {
     }
 
     #[test]
-    fn mediawiki_query_routes_portuguese_and_english_to_matching_editions() {
-        assert_eq!(
-            wikipedia_host_for_query("como funciona computação quântica"),
-            "pt.wikipedia.org"
-        );
-        assert_eq!(
-            wikipedia_host_for_query("quantum computing explained"),
-            "en.wikipedia.org"
-        );
-        assert!(
-            wikipedia_search_url(
-                wikipedia_host_for_query("computação quântica explicada"),
-                "computação quântica explicada",
-                5,
-            )
-            .starts_with("https://pt.wikipedia.org/")
-        );
+    fn edition_follows_the_caller_locale_and_defaults_to_english() {
+        assert_eq!(wikipedia_host(Some("pt-BR")), "pt.wikipedia.org");
+        assert_eq!(wikipedia_host(Some("es_AR")), "es.wikipedia.org");
+        assert_eq!(wikipedia_host(Some("DE")), "de.wikipedia.org");
+        assert_eq!(wikipedia_host(None), "en.wikipedia.org");
+        assert_eq!(wikipedia_host(Some("")), "en.wikipedia.org");
+        assert_eq!(wikipedia_host(Some("x/../evil")), "en.wikipedia.org");
     }
 }

@@ -1,7 +1,7 @@
 use oi_index::uncertainty::{
-    CalibrationMetrics, CashCalibration, ClaimAssessment, ConvictionSignal, EvidenceState,
-    OpenUncertainty, OpenUncertaintyConfig, ResolvedClaim, SettlementGrade, SourceHistory,
-    calibration_metrics,
+    calibration_metrics, CalibrationMetrics, CashCalibration, ClaimAssessment, ConvictionSignal,
+    EvidenceState, OpenUncertainty, OpenUncertaintyConfig, ResolvedClaim, SettlementGrade,
+    SourceHistory,
 };
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};

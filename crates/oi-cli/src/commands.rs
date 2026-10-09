@@ -39,8 +39,33 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
             .map(|d| d.join("stakes.json").to_string_lossy().to_string()),
         creator_ledger_path: crate::config_file::ConfigFile::config_dir()
             .map(|d| d.join("creator_ledger.json").to_string_lossy().to_string()),
+        answer_model: answer_model_from_env(),
     };
     OpenSonarXClient::new(sdk_config)
+}
+
+/// The model behind `--answer`, from `OI_ANSWER_MODEL` (a model served by an
+/// Ollama-compatible endpoint, e.g. `gpt-oss:20b`) and optionally
+/// `OI_ANSWER_MODEL_URL` and `OI_ANSWER_MODEL_THINK` (`low`/`medium`/`high`
+/// for models with a reasoning setting). Unset = no model: `--answer`
+/// returns the slate.
+fn answer_model_from_env() -> Option<oi_sdk::AnswerModelConfig> {
+    let model = std::env::var("OI_ANSWER_MODEL").ok()?;
+    let model = model.trim();
+    if model.is_empty() {
+        return None;
+    }
+    let mut config = oi_sdk::AnswerModelConfig::new(model);
+    if let Ok(url) = std::env::var("OI_ANSWER_MODEL_URL")
+        && !url.trim().is_empty()
+    {
+        config.base_url = url.trim().to_string();
+    }
+    config.think = std::env::var("OI_ANSWER_MODEL_THINK")
+        .ok()
+        .map(|think| think.trim().to_string())
+        .filter(|think| !think.is_empty());
+    Some(config)
 }
 
 /// Build a client in the appropriate mode.
@@ -258,8 +283,7 @@ pub fn search(
                     ClientMode::Gateway(_) => "gateway".to_string(),
                 };
                 eprintln!(
-                    "(path: intent={} candidates={} sources={} local={} web={} evidence={} decision_moves={} avg_ignorance={average_ignorance} search_ms={search_ms:.1})",
-                    oi_sdk::classify_query(query),
+                    "(path: candidates={} sources={} local={} web={} evidence={} decision_moves={} avg_ignorance={average_ignorance} search_ms={search_ms:.1})",
                     candidate_depth,
                     sources.join("+"),
                     local_results,
@@ -357,19 +381,16 @@ fn search_with_answer(
                             sources_used.push(result.source.clone());
                         }
                     }
+                    // The gateway returns a slate; no model reads it here.
+                    let (answer, _) =
+                        oi_sdk::answer::results_only(&oi_sdk::AnswerPolicy::default());
                     oi_sdk::AnsweredSearch {
                         query: query.to_string(),
-                        answer: oi_sdk::construct_answer(
-                            query,
-                            oi_sdk::classify_query(query),
-                            &results,
-                        ),
+                        answer,
                         results,
                         sources_used,
-                        search_passes: 1,
                         hydrated_pages: 0,
                         poll_registry: Vec::new(),
-                        market_quotes: Vec::new(),
                         trace: oi_sdk::AnswerTrace::default(),
                     }
                 })
@@ -381,10 +402,12 @@ fn search_with_answer(
         Ok(response) => {
             if explain {
                 eprintln!(
-                    "(path: intent={} answer_status={} passes={} hydrated={} sources={} uncertainty={} avg_ignorance={} total_ms={elapsed_ms:.1})",
+                    "(path: intent={} answer_status={} model={} passages={} rejected_quotes={} hydrated={} sources={} uncertainty={} avg_ignorance={} total_ms={elapsed_ms:.1})",
                     response.answer.intent,
                     response.answer.status,
-                    response.search_passes,
+                    response.trace.extractor_model.as_deref().unwrap_or("none"),
+                    response.trace.retained_passages,
+                    response.trace.rejected_quotes,
                     response.hydrated_pages,
                     response.sources_used.join("+"),
                     response.answer.uncertainty_mode,
@@ -426,7 +449,7 @@ fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) 
             println!("Aviso: {warning}");
         }
         for (index, claim) in response.answer.claims.iter().enumerate() {
-            println!("Claim {}: {}", index + 1, claim.text);
+            println!("Claim {} [{}]: {}", index + 1, claim.status, claim.text);
             for citation in &claim.citations {
                 println!(
                     "  [{} | {}] {} — {}",
@@ -583,10 +606,9 @@ fn answer_via_node(
     };
     if explain {
         eprintln!(
-            "(path: node_answer intent={} status={} passes={} hydrated={} sources={} total_ms={:.1})",
+            "(path: node_answer intent={} status={} hydrated={} sources={} total_ms={:.1})",
             answer.answer.intent,
             answer.answer.status,
-            answer.search_passes,
             answer.hydrated_pages,
             answer.sources_used.join("+"),
             started.elapsed().as_secs_f64() * 1_000.0,
@@ -1353,6 +1375,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                     .map(|d| {
                                         d.join("creator_ledger.json").to_string_lossy().to_string()
                                     }),
+                                answer_model: answer_model_from_env(),
                                 ..Default::default()
                             };
                             let api_index_path = crate::config_file::ConfigFile::index_dir();

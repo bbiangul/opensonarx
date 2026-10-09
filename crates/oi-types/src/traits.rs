@@ -131,8 +131,12 @@ pub trait EconomicsEngine: Send + Sync {
 
     /// Compute curator yield cap.
     /// `cap_bps` — governable yield cap in basis points (default 1500 = 15.00% APY).
-    fn compute_curator_yield_cap(&self, stake_amount: u64, duration_secs: u64, cap_bps: u64)
-    -> Result<u64>;
+    fn compute_curator_yield_cap(
+        &self,
+        stake_amount: u64,
+        duration_secs: u64,
+        cap_bps: u64,
+    ) -> Result<u64>;
 
     /// Compute escrow yield for a state channel
     fn compute_escrow_yield(&self, channel_amount: u64, duration_secs: u64) -> Result<u64>;

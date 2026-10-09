@@ -1,4 +1,4 @@
-use oi_sdk::{AnswerTrace, OpenSonarXClient, SdkConfig, SearchAnswer, classify_query};
+use oi_sdk::{AnswerTrace, OpenSonarXClient, SdkConfig, SearchAnswer};
 use oi_types::{EvidenceLineageMetadata, QueryFilters};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -71,7 +71,6 @@ struct QueryCapture {
     error: Option<String>,
     answer: Option<SearchAnswer>,
     sources_used: Vec<String>,
-    search_passes: u32,
     hydrated_pages: usize,
     trace: Option<AnswerTrace>,
     results: Vec<CapturedResult>,
@@ -149,7 +148,7 @@ pub fn run(
 
     std::fs::create_dir_all(data_dir)
         .map_err(|error| format!("cannot create holdout data dir {data_dir}: {error}"))?;
-    let search_engines = crate::live_search_bench::parse_engine_override(engine_override)?;
+    let search_engines = parse_engine_override(engine_override)?;
     let config = SdkConfig {
         local_index_path: Some(
             std::path::Path::new(data_dir)
@@ -157,8 +156,8 @@ pub fn run(
                 .to_string_lossy()
                 .to_string(),
         ),
-        brave_api_key: crate::live_search_bench::nonempty_env("BRAVE_API_KEY"),
-        serper_api_key: crate::live_search_bench::nonempty_env("SERPER_API_KEY"),
+        brave_api_key: nonempty_env("BRAVE_API_KEY"),
+        serper_api_key: nonempty_env("SERPER_API_KEY"),
         search_engines,
         crawl_on_query: true,
         crawl_on_query_max_urls: 3,
@@ -320,9 +319,9 @@ fn validate_manifest(manifest: &Manifest) -> Result<(), String> {
             manifest.queries.len()
         ));
     }
-    let seen = crate::live_search_bench::development_query_texts()
-        .into_iter()
-        .map(normalize_query)
+    let seen = development_query_texts()?
+        .iter()
+        .map(|query| normalize_query(query))
         .collect::<HashSet<_>>();
     let mut ids = HashSet::new();
     let mut queries = HashSet::new();
@@ -479,13 +478,12 @@ fn capture_query(
             QueryCapture {
                 pass,
                 manifest: query.clone(),
-                classified_intent: classify_query(&query.query).to_string(),
+                classified_intent: response.answer.intent.clone(),
                 search_ms: started.elapsed().as_secs_f64() * 1_000.0,
                 succeeded: true,
                 error: None,
                 answer: Some(response.answer),
                 sources_used: response.sources_used,
-                search_passes: response.search_passes,
                 hydrated_pages: response.hydrated_pages,
                 trace: Some(response.trace),
                 results,
@@ -494,13 +492,12 @@ fn capture_query(
         Err(error) => QueryCapture {
             pass,
             manifest: query.clone(),
-            classified_intent: classify_query(&query.query).to_string(),
+            classified_intent: "unclassified".to_string(),
             search_ms: started.elapsed().as_secs_f64() * 1_000.0,
             succeeded: false,
             error: Some(error.to_string()),
             answer: None,
             sources_used: Vec::new(),
-            search_passes: 0,
             hydrated_pages: 0,
             trace: None,
             results: Vec::new(),
@@ -640,30 +637,24 @@ mod tests {
     fn rejects_small_or_duplicate_holdouts() {
         let mut too_small = manifest();
         too_small.queries.pop();
-        assert!(
-            validate_manifest(&too_small)
-                .expect_err("small holdout must fail")
-                .contains("at least")
-        );
+        assert!(validate_manifest(&too_small)
+            .expect_err("small holdout must fail")
+            .contains("at least"));
 
         let mut duplicate = manifest();
         duplicate.queries[1].query = duplicate.queries[0].query.clone();
-        assert!(
-            validate_manifest(&duplicate)
-                .expect_err("duplicate query must fail")
-                .contains("duplicate normalized")
-        );
+        assert!(validate_manifest(&duplicate)
+            .expect_err("duplicate query must fail")
+            .contains("duplicate normalized"));
     }
 
     #[test]
     fn rejects_seen_development_queries() {
         let mut holdout = manifest();
         holdout.queries[0].query = "claude".to_string();
-        assert!(
-            validate_manifest(&holdout)
-                .expect_err("seen query must fail")
-                .contains("development regression")
-        );
+        assert!(validate_manifest(&holdout)
+            .expect_err("seen query must fail")
+            .contains("development regression"));
     }
 
     #[test]
@@ -685,4 +676,64 @@ mod tests {
         validate_no_overlap_with_prior(&current.queries, &prior.queries, "prior.json")
             .expect("disjoint prior manifest must pass");
     }
+}
+
+const DEVELOPMENT_QUERIES: &str = include_str!("../fixtures/development-queries-seen.json");
+
+/// Queries already inspected during development. A holdout that repeats one
+/// of them is not a holdout.
+fn development_query_texts() -> Result<Vec<String>, String> {
+    #[derive(serde::Deserialize)]
+    struct Seen {
+        queries: Vec<String>,
+    }
+    serde_json::from_str::<Seen>(DEVELOPMENT_QUERIES)
+        .map(|seen| seen.queries)
+        .map_err(|error| format!("development query fixture is invalid: {error}"))
+}
+
+pub(crate) fn nonempty_env(name: &str) -> Option<String> {
+    std::env::var(name)
+        .ok()
+        .filter(|value| !value.trim().is_empty())
+}
+
+pub(crate) fn parse_engine_override(
+    engine_override: Option<&str>,
+) -> Result<Option<Vec<oi_sdk::config::SearchEngineConfig>>, String> {
+    let Some(raw) = engine_override else {
+        return Ok(None);
+    };
+    let mut configs = Vec::new();
+    for (index, name) in raw
+        .split(',')
+        .map(str::trim)
+        .filter(|name| !name.is_empty())
+        .enumerate()
+    {
+        let canonical = name.to_ascii_lowercase();
+        let api_key = match canonical.as_str() {
+            "brave" => Some(
+                nonempty_env("BRAVE_API_KEY")
+                    .ok_or_else(|| "--engines brave requires BRAVE_API_KEY".to_string())?,
+            ),
+            "serper" => Some(
+                nonempty_env("SERPER_API_KEY")
+                    .ok_or_else(|| "--engines serper requires SERPER_API_KEY".to_string())?,
+            ),
+            "bing" | "brave-html" | "brave_html" | "duckduckgo" | "ddg" | "google" | "qwant"
+            | "stract" | "yep" => None,
+            _ => return Err(format!("unknown --engines adapter: {name}")),
+        };
+        configs.push(oi_sdk::config::SearchEngineConfig {
+            name: canonical,
+            api_key,
+            enabled: true,
+            priority: (index + 1) as u32,
+        });
+    }
+    if configs.is_empty() {
+        return Err("--engines requires at least one adapter".to_string());
+    }
+    Ok(Some(configs))
 }

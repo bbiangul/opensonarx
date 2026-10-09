@@ -7,6 +7,7 @@
 )]
 
 mod agent_cost;
+mod answer_eval;
 mod beir;
 mod bench_quality;
 mod dataset;
@@ -23,7 +24,6 @@ mod generalization_compare;
 mod generalization_market_capture;
 mod generator;
 mod image_gen;
-mod live_search_bench;
 mod market_compare_bench;
 mod market_latency_bench;
 mod metrics;
@@ -261,6 +261,29 @@ enum Command {
         /// Gemini model to use
         #[arg(short, long, default_value = "gemini-flash-latest")]
         model: String,
+    },
+    /// Evaluate the answer path (model extraction + stance + deterministic
+    /// assembly) on fixed cases; needs a chat model served by Ollama
+    AnswerEval {
+        /// JSONL case file
+        #[arg(long, default_value = "bench/fixtures/answer-eval-cases-v1.jsonl")]
+        cases: String,
+
+        /// Model name on the Ollama-compatible server
+        #[arg(long)]
+        model: String,
+
+        /// Server base URL (default http://localhost:11434)
+        #[arg(long)]
+        base_url: Option<String>,
+
+        /// Reasoning effort for models that expose one (low, medium, high)
+        #[arg(long)]
+        think: Option<String>,
+
+        /// Output JSON report
+        #[arg(long, default_value = "answer_eval_results.json")]
+        output: String,
     },
     /// Validate OpenUncertainty cash ablation, guards, calibration, and throughput
     Uncertainty {
@@ -639,64 +662,6 @@ enum Command {
         output: String,
 
         /// Also persist the aggregate JSON verdict
-        #[arg(long)]
-        report_path: Option<String>,
-    },
-    /// Run the real local+web+crawl+OpenUncertainty production path
-    LiveSearch {
-        /// Persistent isolated state directory for this evaluation
-        #[arg(long)]
-        data_dir: String,
-
-        /// Override production discovery adapters (for live failover/chaos runs)
-        #[arg(long)]
-        engines: Option<String>,
-
-        /// Number of passes over the multi-intent suite
-        #[arg(long, default_value_t = 1)]
-        passes: usize,
-
-        /// Maximum simultaneous production-path searches sharing one client
-        #[arg(long, default_value_t = 1)]
-        concurrency: usize,
-
-        /// Unmeasured, quality-gated suite passes used to warm model/query caches
-        #[arg(long, default_value_t = 0)]
-        warmup_passes: usize,
-
-        /// Exercise natural paraphrases/word-order variants instead of only the canonical query
-        #[arg(long, default_value_t = false)]
-        query_variants: bool,
-
-        /// Run one zero-based natural query variant (requires --case)
-        #[arg(long)]
-        query_variant: Option<usize>,
-
-        /// Maximum displayed results per query
-        #[arg(short = 'k', long, default_value_t = 5)]
-        top_k: usize,
-
-        /// Run only one named case (useful for iterative production debugging)
-        #[arg(long)]
-        case: Option<String>,
-
-        /// Process the real crawl-on-query queue after every search
-        #[arg(long, default_value_t = true, action = clap::ArgAction::Set)]
-        crawl: bool,
-
-        /// Run the retained-evidence answer path (includes synchronous hydration for claims)
-        #[arg(long, default_value_t = false)]
-        answer: bool,
-
-        /// Output format (table or json)
-        #[arg(short, long, default_value = "table")]
-        output: String,
-
-        /// Print aggregate metrics and failures without every passing request
-        #[arg(long, default_value_t = false)]
-        summary_only: bool,
-
-        /// Also persist the complete JSON report at this path
         #[arg(long)]
         report_path: Option<String>,
     },
@@ -1353,6 +1318,24 @@ async fn main() {
         } => {
             agent_cost::run_agent_cost(&pipeline, &output, &backends, top_k, &model).await;
         }
+        Command::AnswerEval {
+            cases,
+            model,
+            base_url,
+            think,
+            output,
+        } => {
+            if let Err(error) = answer_eval::run(
+                &cases,
+                &model,
+                base_url.as_deref(),
+                think.as_deref(),
+                &output,
+            ) {
+                eprintln!("answer-eval failed: {error}");
+                std::process::exit(2);
+            }
+        }
         Command::Uncertainty {
             train_cases,
             eval_cases,
@@ -1608,42 +1591,6 @@ async fn main() {
                 report_path.as_deref(),
             ) {
                 eprintln!("production-readiness failed: {error}");
-                std::process::exit(2);
-            }
-        }
-        Command::LiveSearch {
-            data_dir,
-            engines,
-            passes,
-            concurrency,
-            warmup_passes,
-            query_variants,
-            query_variant,
-            top_k,
-            case,
-            crawl,
-            answer,
-            output,
-            summary_only,
-            report_path,
-        } => {
-            if let Err(error) = live_search_bench::run(
-                &data_dir,
-                engines.as_deref(),
-                passes,
-                concurrency,
-                warmup_passes,
-                query_variants,
-                query_variant,
-                top_k,
-                case.as_deref(),
-                crawl,
-                answer,
-                &output,
-                summary_only,
-                report_path.as_deref(),
-            ) {
-                eprintln!("live-search benchmark failed: {error}");
                 std::process::exit(2);
             }
         }

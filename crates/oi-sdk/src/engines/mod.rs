@@ -249,122 +249,22 @@ fn strip_tracking_params(raw_url: &str) -> String {
     parsed.to_string()
 }
 
-/// Minimal lexical sanity check for a raw provider result surface.
+/// Whether a raw provider result shares any term with the request.
 ///
-/// This is not the final relevance ranker. It detects a more basic adapter
-/// failure: a non-empty parsed page whose entire result set is unrelated to
-/// the requested topic (for example, adult URLs returned for an Anthropic
-/// founders query after a provider markup change). The query-intent and
-/// semantic layers still decide individual candidates after this batch check.
+/// This is an adapter-failure check, not a relevance judgement: a parser
+/// that breaks after a provider markup change tends to return a full batch
+/// in which no title, snippet or URL contains a single word of the query.
+/// Ranking is decided later by the embedding and lexical blend.
 pub fn provider_surface_topic_relevant(query: &str, result: &SearchResultItem) -> bool {
-    use crate::query_intent::{
-        QueryIntent, classify_query, entity_words, factual_query_terms, relevance_terms,
-    };
-
-    const GENERIC_PREDICATES: &[&str] = &[
-        "created", "founded", "latest", "news", "noticia", "noticias", "hoje", "today",
-    ];
-    const QUERY_SCAFFOLD: &[&str] = &[
-        "a",
-        "an",
-        "and",
-        "advantage",
-        "advantages",
-        "are",
-        "benefit",
-        "benefits",
-        "can",
-        "could",
-        "da",
-        "de",
-        "did",
-        "do",
-        "does",
-        "e",
-        "how",
-        "keep",
-        "like",
-        "look",
-        "o",
-        "of",
-        "on",
-        "should",
-        "the",
-        "what",
-        "when",
-        "where",
-        "which",
-        "who",
-        "why",
-        "with",
-        "would",
-    ];
-    let intent = classify_query(query);
-    if intent == QueryIntent::Tool
-        && !crate::query_intent::intent_adjustment(query, result)
-            .signals
-            .contains(&"functional_tool_surface")
-    {
-        // A page about Python is not necessarily an online Python compiler.
-        // The default waterfall must measure usable tool depth, otherwise a
-        // topical but non-functional Bing batch suppresses the DDG fallback.
-        return false;
-    }
-    let mut topic_terms = match intent {
-        QueryIntent::Navigational
-        | QueryIntent::Transactional
-        | QueryIntent::Tool
-        | QueryIntent::DueDiligence => entity_words(query, intent),
-        QueryIntent::Factual => factual_query_terms(query),
-        QueryIntent::CurrentEvents | QueryIntent::Exploratory => relevance_terms(query),
-    };
-    topic_terms.retain(|term| {
-        !GENERIC_PREDICATES.contains(&term.as_str()) && !QUERY_SCAFFOLD.contains(&term.as_str())
-    });
-    topic_terms.sort();
-    topic_terms.dedup();
-    if topic_terms.is_empty() {
+    let query_terms = crate::text::terms(query);
+    if query_terms.is_empty() {
         return true;
     }
-
-    let surface_terms = relevance_terms(&format!(
+    let surface_terms = crate::text::terms(&format!(
         "{} {} {}",
         result.title, result.snippet, result.url
     ));
-    let matches = topic_terms
-        .iter()
-        .filter(|topic| {
-            surface_terms.iter().any(|surface| {
-                topic == &surface
-                    || (topic.len() >= 5
-                        && surface.len() >= 5
-                        && (topic.starts_with(surface.as_str())
-                            || surface.starts_with(topic.as_str())))
-            })
-        })
-        .count();
-    // Current-event rewrites often contain a full name, office, jurisdiction,
-    // and year. A legitimate headline commonly uses only a surname plus the
-    // office (for example, "Brazil's President Lula"), so requiring half of
-    // every rewrite token can discard an otherwise healthy provider batch.
-    // This is only a batch-level parser sanity check: the original-query
-    // scope, freshness, crawl, and evidence gates still evaluate every item.
-    let required = match intent {
-        QueryIntent::CurrentEvents => topic_terms.len().div_ceil(2).clamp(1, 2),
-        // This function is a batch-level parser/challenge-page sanity check,
-        // not the relevance ranker. Natural answer pages often mention the
-        // subject without repeating question scaffolding or the requested
-        // predicate in their public title/snippet. One discriminative subject
-        // match is enough to preserve the batch for the later semantic,
-        // intent, freshness, crawl, and evidence gates.
-        QueryIntent::Exploratory => 1,
-        QueryIntent::Navigational
-        | QueryIntent::Transactional
-        | QueryIntent::Tool
-        | QueryIntent::DueDiligence
-        | QueryIntent::Factual => topic_terms.len().div_ceil(2).max(1),
-    };
-    matches >= required
+    crate::text::term_coverage(&query_terms, &surface_terms) > 0.0
 }
 
 // ── Engine orchestration ───────────────────────────────────────────────────
@@ -781,21 +681,6 @@ pub fn default_engines(config: &SdkConfig) -> Vec<Arc<dyn SearchEngine>> {
     }
 }
 
-/// Build the bounded encyclopedia-reference fallback separately from general
-/// web discovery. Keeping it out of `default_engines` prevents one corpus
-/// from masquerading as a redundant web provider in health/readiness probes.
-pub(crate) fn factual_reference_engines(config: &SdkConfig) -> Vec<Arc<dyn SearchEngine>> {
-    let persistent_cache_dir = config
-        .local_index_path
-        .as_deref()
-        .map(std::path::Path::new)
-        .map(|path| path.join("discovery-cache"));
-    vec![wrap_engine(
-        Arc::new(wikipedia::WikipediaSearch),
-        persistent_cache_dir.as_deref(),
-    )]
-}
-
 /// Build a single engine from its config entry.
 ///
 /// Key-free engine status is inherently volatile. Bing, Brave HTML, and
@@ -909,93 +794,31 @@ mod tests {
     }
 
     #[test]
-    fn provider_surface_sanity_rejects_unrelated_but_valid_urls() {
-        let poisoned = make_result("https://www.xnxx.com/video-example", "bing");
+    fn provider_surface_check_only_flags_results_sharing_no_term_with_the_query() {
+        let mut unrelated = make_result("https://example.com/casino-bonus", "bing");
+        unrelated.title = "Best casino bonus codes".to_string();
         assert!(!provider_surface_topic_relevant(
-            "quem fundou a Anthropic?",
-            &poisoned
-        ));
-
-        let mut relevant = make_result("https://example.com/anthropic-founders", "bing");
-        relevant.title = "Who founded Anthropic?".to_string();
-        assert!(provider_surface_topic_relevant(
-            "quem fundou a Anthropic?",
-            &relevant
-        ));
-    }
-
-    #[test]
-    fn provider_surface_sanity_keeps_navigation_and_tool_topics() {
-        let mut claude = make_result("https://claude.ai/", "bing");
-        claude.title = "Claude".to_string();
-        assert!(provider_surface_topic_relevant("claude", &claude));
-
-        let mut compiler = make_result("https://www.onlinegdb.com/online_python_compiler", "bing");
-        compiler.title = "Online Python Compiler".to_string();
-        assert!(provider_surface_topic_relevant(
-            "python online compiler",
-            &compiler
-        ));
-
-        let mut tutorial = make_result("https://docs.python.org/3/tutorial/", "bing");
-        tutorial.title = "The Python Tutorial".to_string();
-        assert!(!provider_surface_topic_relevant(
-            "python online compiler",
-            &tutorial
-        ));
-    }
-
-    #[test]
-    fn provider_surface_sanity_accepts_current_office_alias_headline() {
-        let mut result = make_result("https://example.com/brazil-president", "bing");
-        result.title = "Brazil's President Lula opens campaign".to_string();
-        assert!(provider_surface_topic_relevant(
-            "\"Luiz Inácio Lula da Silva\" \"atual presidente\" Brasil",
-            &result
-        ));
-
-        let unrelated = make_result("https://example.com/football", "bing");
-        assert!(!provider_surface_topic_relevant(
-            "\"Luiz Inácio Lula da Silva\" \"atual presidente\" Brasil",
-            &unrelated
-        ));
-    }
-
-    #[test]
-    fn provider_surface_sanity_preserves_natural_answer_surfaces() {
-        let mut medical = make_result("https://health.example/melatonin", "serper");
-        medical.title = "Melatonin and heart rate".to_string();
-        assert!(provider_surface_topic_relevant(
-            "effects of melatonin on pulse",
-            &medical
-        ));
-
-        let mut anatomy = make_result("https://health.example/respiratory", "serper");
-        anatomy.title = "Respiratory system anatomy and function".to_string();
-        assert!(provider_surface_topic_relevant(
-            "what body system does the respiratory system interact with",
-            &anatomy
-        ));
-
-        let unrelated = make_result("https://unrelated.example/celebrity-gossip", "serper");
-        assert!(!provider_surface_topic_relevant(
-            "effects of melatonin on pulse",
+            "borrow checker lifetimes",
             &unrelated
         ));
 
-        let mut generic_benefits = make_result("https://public.example/general-assistance", "bing");
-        generic_benefits.title = "Government benefits and assistance".to_string();
-        assert!(!provider_surface_topic_relevant(
-            "benefits of moringa and ginger",
-            &generic_benefits
+        let mut related = make_result("https://example.com/lifetimes", "bing");
+        related.title = "Understanding lifetimes".to_string();
+        assert!(provider_surface_topic_relevant(
+            "borrow checker lifetimes",
+            &related
         ));
 
-        let mut topical_benefits = make_result("https://health.example/moringa", "serper");
-        topical_benefits.title = "Moringa and ginger: evidence and safety".to_string();
+        // A term in the URL alone is enough: this is a parser sanity check,
+        // not a relevance judgement.
+        let by_url = make_result("https://docs.example.com/checker", "bing");
         assert!(provider_surface_topic_relevant(
-            "benefits of moringa and ginger",
-            &topical_benefits
+            "borrow checker lifetimes",
+            &by_url
         ));
+
+        // No usable query term means nothing can be flagged.
+        assert!(provider_surface_topic_relevant("?", &unrelated));
     }
 
     #[test]

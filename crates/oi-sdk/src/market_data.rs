@@ -1,9 +1,9 @@
-//! Typed, query-time market observations for mutable-value answers.
+//! Typed market observations for one explicitly requested asset pair.
 //!
-//! Search results remain useful discovery/context, but a snippet or crawled
-//! price page cannot safely answer a live quote. This module joins two bounded
-//! public market-data observations, validates asset/currency/time identity,
-//! and exposes disagreement instead of manufacturing precision.
+//! The caller names the asset and currency; nothing here reads a query. Two
+//! bounded public market-data observations are joined, their asset, currency
+//! and time identity validated, and disagreement exposed instead of
+//! manufacturing precision.
 
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
@@ -29,29 +29,24 @@ pub struct MarketQuoteRecord {
 }
 
 #[derive(Debug, Clone, Default)]
-pub(crate) struct MarketQuoteLookup {
+pub struct MarketQuoteLookup {
     pub records: Vec<MarketQuoteRecord>,
     pub errors: Vec<String>,
     pub lookup_ms: f64,
 }
 
+/// One asset pair, in each provider's own identifiers.
 #[derive(Debug, Clone, Copy)]
-struct QuoteSpec {
-    asset_id: &'static str,
-    asset_symbol: &'static str,
-    quote_currency: &'static str,
-    coingecko_id: &'static str,
-    binance_symbol: &'static str,
+pub struct QuoteSpec<'a> {
+    pub asset_id: &'a str,
+    pub asset_symbol: &'a str,
+    pub quote_currency: &'a str,
+    pub coingecko_id: &'a str,
+    pub binance_symbol: &'a str,
 }
 
-pub(crate) fn lookup_for_query(
-    query: &str,
-    locale: Option<&str>,
-    country: Option<&str>,
-) -> MarketQuoteLookup {
-    let Some(spec) = quote_spec(query, locale, country) else {
-        return MarketQuoteLookup::default();
-    };
+/// Fetch the pair from both providers in parallel.
+pub fn lookup(spec: QuoteSpec<'_>) -> MarketQuoteLookup {
     let started = Instant::now();
     let (coingecko, binance) = std::thread::scope(|scope| {
         let coingecko = scope.spawn(|| fetch_coingecko(spec));
@@ -85,7 +80,7 @@ pub(crate) fn lookup_for_query(
 /// observation. CoinGecko is an aggregator and may consume Binance, so two
 /// records are not labelled independent observations; the answer lineage
 /// keeps that dependency unresolved.
-pub(crate) fn validated_quote_records(
+pub fn validated_quote_records(
     records: &[MarketQuoteRecord],
     now_ms: u64,
 ) -> Option<Vec<MarketQuoteRecord>> {
@@ -124,7 +119,7 @@ pub(crate) fn validated_quote_records(
     Some(eligible)
 }
 
-pub(crate) fn unix_time_ms() -> u64 {
+pub fn unix_time_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
@@ -133,34 +128,7 @@ pub(crate) fn unix_time_ms() -> u64 {
         .unwrap_or(u64::MAX)
 }
 
-fn quote_spec(query: &str, locale: Option<&str>, country: Option<&str>) -> Option<QuoteSpec> {
-    let terms = crate::query_intent::relevance_terms(query);
-    let bitcoin = terms
-        .iter()
-        .any(|term| matches!(term.as_str(), "bitcoin" | "btc"));
-    if !bitcoin {
-        return None;
-    }
-    let explicitly_usd = terms
-        .iter()
-        .any(|term| matches!(term.as_str(), "dolar" | "dollar" | "usd"));
-    let brazil_context = country.is_some_and(|value| value.eq_ignore_ascii_case("br"))
-        || locale.is_some_and(|value| value.to_ascii_lowercase().starts_with("pt-br"));
-    let (quote_currency, binance_symbol) = if explicitly_usd || !brazil_context {
-        ("USD", "BTCUSDT")
-    } else {
-        ("BRL", "BTCBRL")
-    };
-    Some(QuoteSpec {
-        asset_id: "bitcoin",
-        asset_symbol: "BTC",
-        quote_currency,
-        coingecko_id: "bitcoin",
-        binance_symbol,
-    })
-}
-
-fn fetch_coingecko(spec: QuoteSpec) -> Result<MarketQuoteRecord, String> {
+fn fetch_coingecko(spec: QuoteSpec<'_>) -> Result<MarketQuoteRecord, String> {
     let currency = spec.quote_currency.to_ascii_lowercase();
     let url = format!(
         "https://api.coingecko.com/api/v3/simple/price?ids={}&vs_currencies={currency}&include_last_updated_at=true&precision=full",
@@ -170,7 +138,7 @@ fn fetch_coingecko(spec: QuoteSpec) -> Result<MarketQuoteRecord, String> {
     parse_coingecko(spec, &url, &value, unix_time_ms())
 }
 
-fn fetch_binance_average(spec: QuoteSpec) -> Result<MarketQuoteRecord, String> {
+fn fetch_binance_average(spec: QuoteSpec<'_>) -> Result<MarketQuoteRecord, String> {
     let url = format!(
         "https://data-api.binance.vision/api/v3/avgPrice?symbol={}",
         spec.binance_symbol
@@ -202,7 +170,7 @@ fn get_json(url: &str) -> Result<serde_json::Value, String> {
 }
 
 fn parse_coingecko(
-    spec: QuoteSpec,
+    spec: QuoteSpec<'_>,
     url: &str,
     value: &serde_json::Value,
     fetched_at_unix_ms: u64,
@@ -236,7 +204,7 @@ fn parse_coingecko(
 }
 
 fn parse_binance(
-    spec: QuoteSpec,
+    spec: QuoteSpec<'_>,
     url: &str,
     value: &serde_json::Value,
     fetched_at_unix_ms: u64,
@@ -268,7 +236,7 @@ fn parse_binance(
 mod tests {
     use super::*;
 
-    fn spec() -> QuoteSpec {
+    fn spec() -> QuoteSpec<'static> {
         QuoteSpec {
             asset_id: "bitcoin",
             asset_symbol: "BTC",
@@ -325,15 +293,5 @@ mod tests {
         stale.provider = "binance".to_string();
         stale.observed_at_unix_ms = now - MAX_QUOTE_AGE_MS - 1;
         assert!(validated_quote_records(&[base, stale], now).is_none());
-    }
-
-    #[test]
-    fn brazilian_locale_defaults_ambiguous_bitcoin_quote_to_brl() {
-        let br = quote_spec("bitcoin price today", Some("pt-BR"), Some("br")).unwrap();
-        assert_eq!(br.quote_currency, "BRL");
-        assert_eq!(br.binance_symbol, "BTCBRL");
-        let usd = quote_spec("bitcoin price today", Some("en-US"), Some("us")).unwrap();
-        assert_eq!(usd.quote_currency, "USD");
-        assert_eq!(usd.binance_symbol, "BTCUSDT");
     }
 }

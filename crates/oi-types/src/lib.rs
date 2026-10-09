@@ -3,6 +3,7 @@ pub mod economics;
 pub mod embed;
 pub mod entity;
 pub mod error;
+pub mod evidence;
 pub mod facts;
 pub mod gateway;
 pub mod proto;
@@ -13,6 +14,10 @@ pub mod types;
 
 pub use earnings::{EarningsSnapshot, EarningsTracker};
 pub use error::{Error, ErrorCode, Result};
+pub use evidence::{
+    ClaimExtraction, ClaimExtractor, EvidencePassage, ProposedClaim, ProposedQuote, RequestKind,
+    StanceJudge, StanceJudgment, StanceLabel,
+};
 pub use gateway::*;
 pub use reputation::*;
 pub use shard::{BUILTIN_TOPICS, TopicDefinition, TopicRouter, compute_shard_id};

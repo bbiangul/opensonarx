@@ -7,7 +7,7 @@ pub struct QualityCheck {
     pub quality_score: f64,
     /// Spam score (0.0-1.0): keyword stuffing, repeated content, caps abuse
     pub spam_score: f64,
-    /// AI slop score (0.0-1.0): formulaic AI patterns, low vocabulary diversity
+    /// Repetitiveness score (0.0-1.0): low vocabulary diversity, uniform sentences
     pub slop_score: f64,
 }
 
@@ -101,7 +101,7 @@ pub fn check_quality_with_profile(markdown: &str, profile: QualityProfile) -> Qu
     if slop_score > 0.7 {
         return QualityCheck {
             passed: false,
-            reason: Some(format!("AI slop detected (score: {slop_score:.2})")),
+            reason: Some(format!("Repetitive text (score: {slop_score:.2})")),
             quality_score,
             spam_score,
             slop_score,
@@ -135,17 +135,13 @@ fn compute_spam_score(text: &str) -> f64 {
 
     let mut signals = Vec::new();
 
-    // 1. Keyword density: any single word > 10% of total (excluding stopwords)
-    let stopwords = [
-        "the", "a", "an", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had",
-        "do", "does", "did", "will", "would", "could", "should", "may", "might", "shall", "can",
-        "to", "of", "in", "for", "on", "with", "at", "by", "from", "as", "into", "and", "or",
-        "but", "not", "no", "if", "then", "than", "that", "this", "it",
-    ];
+    // 1. Keyword density: any single word > 10% of total. Words of three
+    //    characters or fewer are skipped: function words are short in most
+    //    languages, and no vocabulary has to be listed to exclude them.
     let mut lower_freq: HashMap<String, usize> = HashMap::new();
     for w in &words {
         let lw = w.to_lowercase();
-        if !stopwords.contains(&lw.as_str()) {
+        if lw.chars().count() > 3 {
             *lower_freq.entry(lw).or_default() += 1;
         }
     }
@@ -197,8 +193,9 @@ fn compute_spam_score(text: &str) -> f64 {
     }
 }
 
-/// Compute AI slop score from heuristics.
-/// Signals: formulaic openings, low vocabulary diversity, sentence length uniformity.
+/// Compute a repetitiveness score from text statistics: low vocabulary
+/// diversity and uniform sentence length. It measures form, not origin or
+/// meaning: no phrase list, and no claim about whether a model wrote the text.
 fn compute_slop_score(text: &str) -> f64 {
     let words: Vec<&str> = text.split_whitespace().collect();
     if words.len() < 20 {
@@ -207,39 +204,7 @@ fn compute_slop_score(text: &str) -> f64 {
 
     let mut signals = Vec::new();
 
-    // 1. Formulaic AI openings
-    let lower = text.to_lowercase();
-    let formulaic_patterns = [
-        "in today's rapidly evolving",
-        "in the ever-changing landscape",
-        "it is important to note that",
-        "in this comprehensive guide",
-        "in the world of",
-        "as we navigate the complexities",
-        "in an era where",
-        "it's worth noting that",
-        "when it comes to",
-        "at the end of the day",
-        "it goes without saying",
-        "needless to say",
-        "let's dive in",
-        "without further ado",
-        "buckle up",
-        "game-changer",
-        "paradigm shift",
-        "synergy",
-        "leverage cutting-edge",
-        "holistic approach",
-    ];
-    let formula_hits = formulaic_patterns
-        .iter()
-        .filter(|p| lower.contains(**p))
-        .count();
-    if formula_hits > 0 {
-        signals.push((formula_hits as f64 / 3.0).min(1.0));
-    }
-
-    // 2. Vocabulary diversity: unique_words / total_words
+    // 1. Vocabulary diversity: unique_words / total_words
     let lower_words: Vec<String> = words.iter().map(|w| w.to_lowercase()).collect();
     let unique: std::collections::HashSet<&str> = lower_words.iter().map(|s| s.as_str()).collect();
     let diversity = unique.len() as f64 / lower_words.len() as f64;
@@ -248,7 +213,7 @@ fn compute_slop_score(text: &str) -> f64 {
         signals.push(1.0 - diversity / 0.3);
     }
 
-    // 3. Sentence length uniformity: low variance = robotic text
+    // 2. Sentence length uniformity: low variance = robotic text
     let sentences: Vec<&str> = text
         .split(['.', '!', '?'])
         .filter(|s| !s.trim().is_empty())
@@ -358,10 +323,17 @@ mod tests {
     // AI slop detection tests
 
     #[test]
-    fn test_formulaic_ai_opening() {
+    fn test_stock_phrases_alone_do_not_score() {
+        // Wording is not evidence of origin or quality: a text full of stock
+        // phrases but otherwise varied is not flagged.
         let content = "In today's rapidly evolving technological landscape, it is important to note that artificial intelligence has become a game-changer. This comprehensive guide will explore the synergy between modern approaches and leverage cutting-edge solutions for a holistic approach to the problem.";
-        let score = compute_slop_score(content);
-        assert!(score > 0.3, "AI formulaic content not detected: {score}");
+        assert_eq!(compute_slop_score(content), 0.0);
+    }
+
+    #[test]
+    fn test_function_words_are_not_stuffing_in_any_language() {
+        let portuguese = "O banco de dados do sistema de pagamentos do país foi criado pela equipe de engenharia de software da instituição, que cuidou da integração de cada uma das partes de forma gradual ao longo de vários anos de trabalho.";
+        assert_eq!(compute_spam_score(portuguese), 0.0);
     }
 
     #[test]

@@ -54,6 +54,10 @@ pub struct SdkConfig {
     /// Max URLs to crawl per query when crawl-on-query is enabled (default 3)
     #[serde(default = "default_crawl_max")]
     pub crawl_on_query_max_urls: usize,
+    /// Model that reads retained passages for `search_answered`. None
+    /// (default) = no model: the answered path returns the slate unanswered.
+    #[serde(default)]
+    pub answer_model: Option<crate::chat_model::AnswerModelConfig>,
 }
 
 fn default_crawl_max() -> usize {
@@ -76,6 +80,7 @@ impl fmt::Debug for SdkConfig {
                 &self.serper_api_key.as_ref().map(|_| "[REDACTED]"),
             )
             .field("search_engines", &self.search_engines)
+            .field("answer_model", &self.answer_model)
             .finish()
     }
 }
@@ -94,6 +99,7 @@ impl Default for SdkConfig {
             creator_ledger_path: None,
             crawl_on_query: false,
             crawl_on_query_max_urls: 3,
+            answer_model: None,
         }
     }
 }
