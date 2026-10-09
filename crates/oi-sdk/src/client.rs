@@ -202,7 +202,7 @@ impl OpenSonarXClient {
         let answer_model = config
             .answer_model
             .clone()
-            .map(|model| Arc::new(crate::chat_model::OllamaChatModel::new(model)));
+            .map(|model| Arc::new(crate::chat_model::ChatModel::new(model)));
         Self {
             config,
             index,
@@ -251,7 +251,7 @@ impl OpenSonarXClient {
         let answer_model = config
             .answer_model
             .clone()
-            .map(|model| Arc::new(crate::chat_model::OllamaChatModel::new(model)));
+            .map(|model| Arc::new(crate::chat_model::ChatModel::new(model)));
         Self {
             config,
             index,

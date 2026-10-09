@@ -8,7 +8,7 @@
 //! new failure mode is a new line in the case file, not a new rule in code.
 
 use oi_sdk::answer::{assemble_answer, build_passages, merge_repeated_claims};
-use oi_sdk::{AnswerModelConfig, AnswerPolicy, OllamaChatModel};
+use oi_sdk::{AnswerModelConfig, AnswerPolicy, ChatModel};
 use oi_types::{ClaimExtractor, SearchResultItem, StanceJudge};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -69,6 +69,10 @@ struct CaseReport {
     model_reported_gaps: Vec<String>,
     rejected_quotes: usize,
     complete_answer_supported: bool,
+    /// For cases with alternative gold answers: whether a gold answer occurs
+    /// in a span the pipeline cited as support. A diagnostic for paraphrased
+    /// claims; it never decides `passed`.
+    gold_in_cited_span: Option<bool>,
     model_error: Option<String>,
     latency_ms: f64,
 }
@@ -94,6 +98,12 @@ struct Report {
     /// Cases expected to answer that produced the expected answer.
     answerable_cases: usize,
     answerable_passed: usize,
+    /// Answerable cases where the pipeline declined to answer.
+    answerable_abstained: usize,
+    /// Answerable cases where an answer was emitted without a gold answer.
+    answerable_wrong_answer: usize,
+    /// Answerable cases with a gold answer inside a cited supporting span.
+    answerable_gold_in_cited_span: usize,
     /// Cases where no answer is supported by the documents.
     unanswerable_cases: usize,
     /// Of those, cases where the pipeline still emitted an `extractive` answer.
@@ -101,9 +111,39 @@ struct Report {
     rejected_quotes: usize,
     model_errors: usize,
     latency_ms_p50: f64,
+    latency_ms_p95: f64,
     latency_ms_max: f64,
+    concurrency: usize,
     limitations: Vec<&'static str>,
     results: Vec<CaseReport>,
+}
+
+/// The SQuAD evaluation normalization: lowercase, drop punctuation and the
+/// English articles, collapse whitespace. It belongs to the dataset's metric,
+/// not to the system under test.
+fn normalize_answer(text: &str) -> String {
+    text.to_lowercase()
+        .chars()
+        .map(|character| {
+            if character.is_alphanumeric() || character.is_whitespace() {
+                character
+            } else {
+                ' '
+            }
+        })
+        .collect::<String>()
+        .split_whitespace()
+        .filter(|word| !matches!(*word, "a" | "an" | "the"))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn contains_gold(text: &str, golds: &[String]) -> bool {
+    let haystack = format!(" {} ", normalize_answer(text));
+    golds.iter().any(|gold| {
+        let gold = normalize_answer(gold);
+        !gold.is_empty() && haystack.contains(&format!(" {gold} "))
+    })
 }
 
 fn result_item(rank: usize, document: &Document) -> SearchResultItem {
@@ -145,7 +185,7 @@ fn result_item(rank: usize, document: &Document) -> SearchResultItem {
     }
 }
 
-fn evaluate(case: &Case, model: &OllamaChatModel, policy: &AnswerPolicy) -> CaseReport {
+fn evaluate(case: &Case, model: &ChatModel, policy: &AnswerPolicy) -> CaseReport {
     let started = Instant::now();
     let results: Vec<SearchResultItem> = case
         .documents
@@ -215,13 +255,18 @@ fn evaluate(case: &Case, model: &OllamaChatModel, policy: &AnswerPolicy) -> Case
         }
     }
     let alternatives = &case.expect.answer_contains_any;
-    if !alternatives.is_empty()
-        && !alternatives
-            .iter()
-            .any(|needle| answer_text.contains(&needle.to_lowercase()))
-    {
+    if !alternatives.is_empty() && !contains_gold(&answer_text, alternatives) {
         failures.push(format!("answer has none of {alternatives:?}"));
     }
+    let gold_in_cited_span = (!alternatives.is_empty()).then(|| {
+        answer
+            .claims
+            .iter()
+            .flat_map(|claim| &claim.citations)
+            .filter(|citation| citation.evidence_role == "supports")
+            .filter_map(|citation| citation.evidence_excerpt.as_deref())
+            .any(|excerpt| contains_gold(excerpt, alternatives))
+    });
     for needle in &case.expect.answer_excludes {
         if answer.status == "extractive" && answer_text.contains(&needle.to_lowercase()) {
             failures.push(format!("answer asserts {needle:?}"));
@@ -265,17 +310,21 @@ fn evaluate(case: &Case, model: &OllamaChatModel, policy: &AnswerPolicy) -> Case
         model_reported_gaps: extraction.missing.clone(),
         rejected_quotes: stats.rejected_quotes,
         complete_answer_supported: checklist.complete_answer_supported,
+        gold_in_cited_span,
         model_error,
         latency_ms: started.elapsed().as_secs_f64() * 1_000.0,
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn run(
     cases_path: &str,
+    provider: &str,
     model: &str,
     base_url: Option<&str>,
     think: Option<&str>,
     min_source_families: Option<usize>,
+    concurrency: usize,
     output: &str,
 ) -> Result<(), String> {
     let raw = std::fs::read_to_string(cases_path)
@@ -293,12 +342,16 @@ pub fn run(
         return Err(format!("{cases_path} has no cases"));
     }
 
-    let mut config = AnswerModelConfig::new(model);
+    let mut config = match provider {
+        "ollama" => AnswerModelConfig::new(model),
+        "openrouter" => AnswerModelConfig::openrouter(model),
+        other => return Err(format!("unknown --provider {other:?} (ollama, openrouter)")),
+    };
     if let Some(base_url) = base_url {
-        config.base_url = base_url.to_string();
+        config.base_url = Some(base_url.to_string());
     }
     config.think = think.map(str::to_string);
-    let chat_model = OllamaChatModel::new(config);
+    let chat_model = ChatModel::new(config);
     let mut policy = AnswerPolicy::default();
     if let Some(families) = min_source_families {
         // Single-document datasets cannot meet the default two-family rule;
@@ -311,18 +364,35 @@ pub fn run(
         );
     }
 
+    let concurrency = concurrency.max(1);
     let mut results = Vec::with_capacity(cases.len());
-    for case in &cases {
-        let report = evaluate(case, &chat_model, &policy);
-        eprintln!(
-            "{} {:<28} status={:<22} {:.1}s {}",
-            if report.passed { "PASS" } else { "FAIL" },
-            report.id,
-            report.status,
-            report.latency_ms / 1_000.0,
-            report.failures.join("; ")
-        );
-        results.push(report);
+    for batch in cases.chunks(concurrency) {
+        let reports: Vec<CaseReport> = std::thread::scope(|scope| {
+            let workers: Vec<_> = batch
+                .iter()
+                .map(|case| scope.spawn(|| evaluate(case, &chat_model, &policy)))
+                .collect();
+            workers
+                .into_iter()
+                .map(|worker| worker.join().expect("evaluation worker panicked"))
+                .collect()
+        });
+        for report in reports {
+            eprintln!(
+                "{} {:<28} status={:<22} {:.1}s {}",
+                if report.passed { "PASS" } else { "FAIL" },
+                report.id,
+                report.status,
+                report.latency_ms / 1_000.0,
+                report
+                    .failures
+                    .iter()
+                    .map(|failure| failure.chars().take(60).collect::<String>())
+                    .collect::<Vec<_>>()
+                    .join("; ")
+            );
+            results.push(report);
+        }
     }
 
     let expects_answer = |case: &Case| case.expect.status.as_deref() == Some("extractive");
@@ -346,6 +416,18 @@ pub fn run(
         answerable_passed: paired()
             .filter(|(case, result)| expects_answer(case) && result.passed)
             .count(),
+        answerable_abstained: paired()
+            .filter(|(case, result)| expects_answer(case) && result.status != "extractive")
+            .count(),
+        answerable_wrong_answer: paired()
+            .filter(|(case, result)| {
+                expects_answer(case) && result.status == "extractive" && !result.passed
+            })
+            .count(),
+        answerable_gold_in_cited_span: results
+            .iter()
+            .filter(|result| result.gold_in_cited_span == Some(true))
+            .count(),
         unanswerable_cases: cases.iter().filter(|case| supports_no_answer(case)).count(),
         unsupported_answers_emitted: paired()
             .filter(|(case, result)| supports_no_answer(case) && result.status == "extractive")
@@ -356,9 +438,10 @@ pub fn run(
             .filter(|result| result.model_error.is_some())
             .count(),
         latency_ms_p50: latencies[latencies.len() / 2],
+        latency_ms_p95: latencies[(latencies.len() * 95 / 100).min(latencies.len() - 1)],
         latency_ms_max: latencies[latencies.len() - 1],
+        concurrency,
         limitations: vec![
-            "Cases were written by the implementer and have been inspected: a development regression, not evidence of generalization.",
             "Documents are supplied; retrieval, crawling and extraction from HTML are not exercised.",
             "One model, one run; model output is not deterministic across versions or servers.",
         ],
@@ -367,16 +450,20 @@ pub fn run(
     let json = serde_json::to_string_pretty(&report).map_err(|error| error.to_string())?;
     std::fs::write(output, json).map_err(|error| format!("cannot write {output}: {error}"))?;
     println!(
-        "answer-eval: {}/{} cases as expected; answerable {}/{}; unsupported answers emitted {}/{}; rejected quotes {}; model errors {}; p50 {:.1}s max {:.1}s → {output}",
+        "answer-eval: {}/{} cases as expected\n  answerable: {} correct, {} wrong answer, {} abstained (of {}); gold in cited span {}\n  unanswerable: {} answered anyway (of {})\n  rejected quotes {}; model errors {}; latency p50 {:.1}s p95 {:.1}s max {:.1}s\n  → {output}",
         report.passed,
         report.cases,
         report.answerable_passed,
+        report.answerable_wrong_answer,
+        report.answerable_abstained,
         report.answerable_cases,
+        report.answerable_gold_in_cited_span,
         report.unsupported_answers_emitted,
         report.unanswerable_cases,
         report.rejected_quotes,
         report.model_errors,
         report.latency_ms_p50 / 1_000.0,
+        report.latency_ms_p95 / 1_000.0,
         report.latency_ms_max / 1_000.0,
     );
     Ok(())
@@ -410,6 +497,19 @@ mod tests {
             Some("extractive")
         );
         assert!(unanswerable.expect.answer_contains_any.is_empty());
+    }
+
+    #[test]
+    fn gold_answers_match_after_squad_normalization_on_word_boundaries() {
+        let golds = vec!["The 10th century".to_string(), "1932".to_string()];
+        assert!(contains_gold("It opened in 1932.", &golds));
+        assert!(contains_gold(
+            "Founded in 10th-century Normandy? No: 10th century.",
+            &golds
+        ));
+        assert!(!contains_gold("It opened in 19320.", &golds));
+        assert!(!contains_gold("Nothing relevant.", &golds));
+        assert!(!contains_gold("anything", &["the".to_string()]));
     }
 
     #[test]

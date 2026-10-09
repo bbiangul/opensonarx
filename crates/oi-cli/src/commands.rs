@@ -44,8 +44,9 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
     OpenSonarXClient::new(sdk_config)
 }
 
-/// The model behind `--answer`, from `OI_ANSWER_MODEL` (a model served by an
-/// Ollama-compatible endpoint, e.g. `gpt-oss:20b`) and optionally
+/// The model behind `--answer`, from `OI_ANSWER_MODEL`. `OI_ANSWER_PROVIDER`
+/// selects where it is served: `ollama` (default, a local server) or
+/// `openrouter` (hosted; reads `OPENROUTER_API_KEY`). Optional:
 /// `OI_ANSWER_MODEL_URL` and `OI_ANSWER_MODEL_THINK` (`low`/`medium`/`high`
 /// for models with a reasoning setting). Unset = no model: `--answer`
 /// returns the slate.
@@ -55,11 +56,17 @@ fn answer_model_from_env() -> Option<oi_sdk::AnswerModelConfig> {
     if model.is_empty() {
         return None;
     }
-    let mut config = oi_sdk::AnswerModelConfig::new(model);
+    let hosted = std::env::var("OI_ANSWER_PROVIDER")
+        .is_ok_and(|provider| provider.trim().eq_ignore_ascii_case("openrouter"));
+    let mut config = if hosted {
+        oi_sdk::AnswerModelConfig::openrouter(model)
+    } else {
+        oi_sdk::AnswerModelConfig::new(model)
+    };
     if let Ok(url) = std::env::var("OI_ANSWER_MODEL_URL")
         && !url.trim().is_empty()
     {
-        config.base_url = url.trim().to_string();
+        config.base_url = Some(url.trim().to_string());
     }
     config.think = std::env::var("OI_ANSWER_MODEL_THINK")
         .ok()

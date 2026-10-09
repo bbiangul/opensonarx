@@ -20,7 +20,7 @@ pub use answer::{
     AnswerCitation, AnswerClaim, AnswerPolicy, AnswerTrace, AnsweredSearch, ClaimEvidenceLineage,
     SearchAnswer,
 };
-pub use chat_model::{AnswerModelConfig, OllamaChatModel};
+pub use chat_model::{AnswerModelConfig, AnswerModelProvider, ChatModel};
 pub use client::{OpenSonarXClient, retrieval_candidate_depth};
 pub use config::SdkConfig;
 pub use gateway_client::GatewayClient;

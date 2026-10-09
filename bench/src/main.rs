@@ -270,13 +270,22 @@ enum Command {
         #[arg(long, default_value = "bench/fixtures/answer-eval-cases-v1.jsonl")]
         cases: String,
 
-        /// Model name on the Ollama-compatible server
+        /// Where the model is served: ollama (local) or openrouter (reads
+        /// OPENROUTER_API_KEY from the environment)
+        #[arg(long, default_value = "ollama")]
+        provider: String,
+
+        /// Model name on that provider
         #[arg(long)]
         model: String,
 
-        /// Server base URL (default http://localhost:11434)
+        /// Server base URL (default: the provider's)
         #[arg(long)]
         base_url: Option<String>,
+
+        /// Cases evaluated at the same time
+        #[arg(long, default_value_t = 1)]
+        concurrency: usize,
 
         /// Reasoning effort for models that expose one (low, medium, high)
         #[arg(long)]
@@ -1345,18 +1354,22 @@ async fn main() {
         }
         Command::AnswerEval {
             cases,
+            provider,
             model,
             base_url,
+            concurrency,
             think,
             min_source_families,
             output,
         } => {
             if let Err(error) = answer_eval::run(
                 &cases,
+                &provider,
                 &model,
                 base_url.as_deref(),
                 think.as_deref(),
                 min_source_families,
+                concurrency,
                 &output,
             ) {
                 eprintln!("answer-eval failed: {error}");
