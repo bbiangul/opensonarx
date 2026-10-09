@@ -8,8 +8,9 @@ use oi_index::{HybridIndex, Storage};
 use oi_staking::InMemoryStakeRegistry;
 use oi_types::traits::{SearchIndex, StakeRegistry};
 use oi_types::{
-    ClaimExtractor, ContentChunk, EmbeddingPipeline, QueryFilters, QueryLeaderboard, Result,
-    SearchEngine, SearchParams, SearchResultItem, StakeInfo, StanceJudge, TopicRouter,
+    ClaimExtractor, ContentChunk, EmbeddingPipeline, QueryFilters, QueryLeaderboard,
+    ResponsivenessJudge, Result, SearchEngine, SearchParams, SearchResultItem, StakeInfo,
+    StanceJudge, TopicRouter,
 };
 use std::sync::Arc;
 
@@ -97,6 +98,8 @@ pub struct OpenSonarXClient {
     claim_extractor: Option<Arc<dyn ClaimExtractor>>,
     /// Labels each retained passage's stance toward each proposed claim.
     stance_judge: Option<Arc<dyn StanceJudge>>,
+    /// Decides whether each proposed claim answers the request as asked.
+    responsiveness_judge: Option<Arc<dyn ResponsivenessJudge>>,
     answer_policy: AnswerPolicy,
     /// Usage attribution → creator credits (the payoff leg of the market).
     creator_ledger: crate::creator_ledger::CreatorLedger,
@@ -222,7 +225,10 @@ impl OpenSonarXClient {
             claim_extractor: answer_model
                 .clone()
                 .map(|model| model as Arc<dyn ClaimExtractor>),
-            stance_judge: answer_model.map(|model| model as Arc<dyn StanceJudge>),
+            stance_judge: answer_model
+                .clone()
+                .map(|model| model as Arc<dyn StanceJudge>),
+            responsiveness_judge: answer_model.map(|model| model as Arc<dyn ResponsivenessJudge>),
             answer_policy: AnswerPolicy::default(),
             creator_ledger: crate::creator_ledger::CreatorLedger::load(config_creator_ledger_path),
         }
@@ -271,7 +277,10 @@ impl OpenSonarXClient {
             claim_extractor: answer_model
                 .clone()
                 .map(|model| model as Arc<dyn ClaimExtractor>),
-            stance_judge: answer_model.map(|model| model as Arc<dyn StanceJudge>),
+            stance_judge: answer_model
+                .clone()
+                .map(|model| model as Arc<dyn StanceJudge>),
+            responsiveness_judge: answer_model.map(|model| model as Arc<dyn ResponsivenessJudge>),
             answer_policy: AnswerPolicy::default(),
             creator_ledger: crate::creator_ledger::CreatorLedger::load(config_creator_ledger_path),
         }
@@ -342,6 +351,12 @@ impl OpenSonarXClient {
     /// Attach the model that judges passage stance toward proposed claims.
     pub fn with_stance_judge(mut self, judge: Arc<dyn StanceJudge>) -> Self {
         self.stance_judge = Some(judge);
+        self
+    }
+
+    /// Attach the model that decides whether a claim answers the request.
+    pub fn with_responsiveness_judge(mut self, judge: Arc<dyn ResponsivenessJudge>) -> Self {
+        self.responsiveness_judge = Some(judge);
         self
     }
 
@@ -891,15 +906,49 @@ impl OpenSonarXClient {
                             trace.proposed_claims = extraction.claims.len();
                             crate::answer::merge_repeated_claims(&mut extraction);
                             let started = std::time::Instant::now();
-                            let judgments = self.stance_judge.as_ref().and_then(|judge| {
-                                trace.stance_model = Some(judge.model_version());
-                                let claims: Vec<&str> = extraction
-                                    .claims
-                                    .iter()
-                                    .take(policy.max_claims)
-                                    .map(|claim| claim.text.as_str())
-                                    .collect();
-                                judge_claims(judge.as_ref(), &claims, &retained)
+                            let claims: Vec<&str> = extraction
+                                .claims
+                                .iter()
+                                .take(policy.max_claims)
+                                .map(|claim| claim.text.as_str())
+                                .collect();
+                            // Stance and responsiveness are independent
+                            // judgments; run them side by side.
+                            let (stance, responsive) = std::thread::scope(|scope| {
+                                let stance = self.stance_judge.as_ref().map(|judge| {
+                                    scope.spawn(|| judge_claims(judge.as_ref(), &claims, &retained))
+                                });
+                                let responsive = self
+                                    .responsiveness_judge
+                                    .as_ref()
+                                    .filter(|_| !claims.is_empty())
+                                    .map(|judge| judge.answers_request(query, &claims));
+                                (
+                                    stance.map(|call| {
+                                        call.join().unwrap_or_else(|_| {
+                                            Err(oi_types::Error::Internal(
+                                                "stance judge panicked".into(),
+                                            ))
+                                        })
+                                    }),
+                                    responsive,
+                                )
+                            });
+                            trace.stance_model = self
+                                .stance_judge
+                                .as_ref()
+                                .map(|judge| judge.model_version());
+                            trace.responsiveness_model = self
+                                .responsiveness_judge
+                                .as_ref()
+                                .map(|judge| judge.model_version());
+                            let judgments = stance.and_then(|judged| {
+                                judged
+                                    .map_err(|error| trace.model_error = Some(error.to_string()))
+                                    .ok()
+                            });
+                            let responsive = responsive.and_then(|judged| {
+                                judged
                                     .map_err(|error| trace.model_error = Some(error.to_string()))
                                     .ok()
                             });
@@ -908,9 +957,17 @@ impl OpenSonarXClient {
                                 &results,
                                 &passages,
                                 &extraction,
-                                judgments.as_deref(),
+                                crate::answer::ClaimJudgments {
+                                    stance: judgments.as_deref(),
+                                    responsive: responsive.as_deref(),
+                                },
                                 policy,
                             );
+                            trace.off_request_claims = answer
+                                .claims
+                                .iter()
+                                .filter(|claim| claim.status == "off_request")
+                                .count();
                             trace.rejected_quotes = stats.rejected_quotes;
                             (answer, checklist)
                         }
@@ -922,7 +979,12 @@ impl OpenSonarXClient {
         // Stage 2: results cited for or against a claim now carry stance.
         let mut stance: std::collections::HashMap<String, ClaimStance> =
             std::collections::HashMap::new();
-        for citation in answer.claims.iter().flat_map(|claim| &claim.citations) {
+        for citation in answer
+            .claims
+            .iter()
+            .filter(|claim| claim.status != "off_request")
+            .flat_map(|claim| &claim.citations)
+        {
             let entry = stance.entry(citation.url.clone()).or_default();
             if citation.evidence_role == "contradicts" {
                 entry.contradicts += 1;
@@ -2151,6 +2213,21 @@ mod tests {
         }
     }
 
+    /// Gives every claim the same verdict.
+    struct ScriptedResponsiveness {
+        answers: bool,
+    }
+
+    impl ResponsivenessJudge for ScriptedResponsiveness {
+        fn answers_request(&self, _query: &str, claims: &[&str]) -> Result<Vec<bool>> {
+            Ok(vec![self.answers; claims.len()])
+        }
+
+        fn model_version(&self) -> String {
+            "scripted-responsiveness".to_string()
+        }
+    }
+
     fn client_with_two_sources() -> OpenSonarXClient {
         let embedder = Arc::new(MockEmbedder::new(16));
         let client = OpenSonarXClient::with_embedder(SdkConfig::default(), embedder.clone())
@@ -2201,7 +2278,8 @@ mod tests {
             .with_claim_extractor(ScriptedExtractor::quoting(SPAN))
             .with_stance_judge(Arc::new(ScriptedJudge {
                 contradicting_host: None,
-            }));
+            }))
+            .with_responsiveness_judge(Arc::new(ScriptedResponsiveness { answers: true }));
         let answered = client
             .search_answered("who started Acme", 5, &QueryFilters::default())
             .unwrap();
@@ -2280,6 +2358,33 @@ mod tests {
             .find(|result| result.url == SECOND_URL)
             .unwrap();
         assert!(contradicting.decision.as_ref().unwrap().conflict > 0.0);
+    }
+
+    #[test]
+    fn answered_search_sets_aside_a_supported_claim_that_misses_the_request() {
+        let client = client_with_two_sources()
+            .with_claim_extractor(ScriptedExtractor::quoting(SPAN))
+            .with_stance_judge(Arc::new(ScriptedJudge {
+                contradicting_host: None,
+            }))
+            .with_responsiveness_judge(Arc::new(ScriptedResponsiveness { answers: false }));
+        let answered = client
+            .search_answered("who started Acme Robotics", 5, &QueryFilters::default())
+            .unwrap();
+        assert_eq!(answered.answer.status, "insufficient_evidence");
+        assert_eq!(answered.answer.claims[0].status, "off_request");
+        assert_eq!(answered.trace.off_request_claims, 1);
+        assert_eq!(
+            answered.trace.responsiveness_model.as_deref(),
+            Some("scripted-responsiveness")
+        );
+        // Sources of an off-request claim gain no Stage-2 support.
+        assert!(
+            answered
+                .results
+                .iter()
+                .all(|result| result.decision.as_ref().unwrap().support == 0.0)
+        );
     }
 
     #[test]

@@ -7,9 +7,9 @@
 //! and how many model quotes failed verbatim verification. Cases are data: a
 //! new failure mode is a new line in the case file, not a new rule in code.
 
-use oi_sdk::answer::{assemble_answer, build_passages, merge_repeated_claims};
+use oi_sdk::answer::{assemble_answer, build_passages, merge_repeated_claims, ClaimJudgments};
 use oi_sdk::{AnswerModelConfig, AnswerPolicy, ChatModel};
-use oi_types::{ClaimExtractor, SearchResultItem, StanceJudge};
+use oi_types::{ClaimExtractor, ResponsivenessJudge, SearchResultItem, StanceJudge};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::time::Instant;
@@ -114,6 +114,10 @@ struct Report {
     latency_ms_p95: f64,
     latency_ms_max: f64,
     concurrency: usize,
+    /// Whether the responsiveness judge ran (off = the earlier pipeline).
+    responsiveness_judge: bool,
+    /// Claims set aside as supported but not answering the request.
+    off_request_claims: usize,
     limitations: Vec<&'static str>,
     results: Vec<CaseReport>,
 }
@@ -185,7 +189,12 @@ fn result_item(rank: usize, document: &Document) -> SearchResultItem {
     }
 }
 
-fn evaluate(case: &Case, model: &ChatModel, policy: &AnswerPolicy) -> CaseReport {
+fn evaluate(
+    case: &Case,
+    model: &ChatModel,
+    policy: &AnswerPolicy,
+    responsiveness: bool,
+) -> CaseReport {
     let started = Instant::now();
     let results: Vec<SearchResultItem> = case
         .documents
@@ -217,11 +226,28 @@ fn evaluate(case: &Case, model: &ChatModel, policy: &AnswerPolicy) -> CaseReport
         .collect::<Result<_, _>>()
         .map_err(|error| model_error = Some(error.to_string()))
         .ok();
+    let claim_texts: Vec<&str> = extraction
+        .claims
+        .iter()
+        .take(policy.max_claims)
+        .map(|claim| claim.text.as_str())
+        .collect();
+    let responsive = if responsiveness && !claim_texts.is_empty() {
+        model
+            .answers_request(&case.query, &claim_texts)
+            .map_err(|error| model_error = Some(error.to_string()))
+            .ok()
+    } else {
+        None
+    };
     let (answer, checklist, stats) = assemble_answer(
         &results,
         &passages,
         &extraction,
-        judgments.as_deref(),
+        ClaimJudgments {
+            stance: judgments.as_deref(),
+            responsive: responsive.as_deref(),
+        },
         policy,
     );
 
@@ -325,6 +351,7 @@ pub fn run(
     think: Option<&str>,
     min_source_families: Option<usize>,
     concurrency: usize,
+    responsiveness: bool,
     output: &str,
 ) -> Result<(), String> {
     let raw = std::fs::read_to_string(cases_path)
@@ -370,7 +397,7 @@ pub fn run(
         let reports: Vec<CaseReport> = std::thread::scope(|scope| {
             let workers: Vec<_> = batch
                 .iter()
-                .map(|case| scope.spawn(|| evaluate(case, &chat_model, &policy)))
+                .map(|case| scope.spawn(|| evaluate(case, &chat_model, &policy, responsiveness)))
                 .collect();
             workers
                 .into_iter()
@@ -441,6 +468,12 @@ pub fn run(
         latency_ms_p95: latencies[(latencies.len() * 95 / 100).min(latencies.len() - 1)],
         latency_ms_max: latencies[latencies.len() - 1],
         concurrency,
+        responsiveness_judge: responsiveness,
+        off_request_claims: results
+            .iter()
+            .flat_map(|result| &result.claims)
+            .filter(|claim| claim.status == "off_request")
+            .count(),
         limitations: vec![
             "Documents are supplied; retrieval, crawling and extraction from HTML are not exercised.",
             "One model, one run; model output is not deterministic across versions or servers.",
@@ -478,7 +511,7 @@ mod tests {
         let raw = r#"{"data":[{"title":"T","paragraphs":[{"context":"The bridge opened in 1932.","qas":[
             {"id":"a","question":"When did the bridge open?","is_impossible":false,"answers":[{"text":"1932"}]},
             {"id":"u","question":"Who built the bridge?","is_impossible":true,"answers":[]}]}]}]}"#;
-        let cases: Vec<Case> = crate::answer_eval_squad::convert(raw, 2, "v1")
+        let cases: Vec<Case> = crate::answer_eval_squad::convert(raw, 2, "v1", &Default::default())
             .unwrap()
             .iter()
             .map(|line| serde_json::from_str(line).unwrap())

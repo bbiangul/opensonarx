@@ -287,6 +287,10 @@ enum Command {
         #[arg(long, default_value_t = 1)]
         concurrency: usize,
 
+        /// Skip the responsiveness judge (reproduces the pipeline before it)
+        #[arg(long)]
+        no_responsiveness: bool,
+
         /// Reasoning effort for models that expose one (low, medium, high)
         #[arg(long)]
         think: Option<String>,
@@ -314,6 +318,10 @@ enum Command {
         /// label yields a new, disjoint-by-chance sample
         #[arg(long)]
         label: String,
+
+        /// Earlier sample files whose case ids must not be drawn again
+        #[arg(long)]
+        exclude: Vec<String>,
 
         /// Output JSONL case file
         #[arg(long)]
@@ -1358,6 +1366,7 @@ async fn main() {
             model,
             base_url,
             concurrency,
+            no_responsiveness,
             think,
             min_source_families,
             output,
@@ -1370,6 +1379,7 @@ async fn main() {
                 think.as_deref(),
                 min_source_families,
                 concurrency,
+                !no_responsiveness,
                 &output,
             ) {
                 eprintln!("answer-eval failed: {error}");
@@ -1380,9 +1390,10 @@ async fn main() {
             input,
             sample,
             label,
+            exclude,
             output,
         } => {
-            if let Err(error) = answer_eval_squad::run(&input, sample, &label, &output) {
+            if let Err(error) = answer_eval_squad::run(&input, sample, &label, &exclude, &output) {
                 eprintln!("answer-eval-import-squad failed: {error}");
                 std::process::exit(2);
             }

@@ -50,8 +50,14 @@ fn hex(bytes: &[u8]) -> String {
 }
 
 /// Convert `raw` into at most `sample` JSONL cases, half answerable and half
-/// unanswerable, ordered by `sha256(label:id)`.
-pub fn convert(raw: &str, sample: usize, label: &str) -> Result<Vec<String>, String> {
+/// unanswerable, ordered by `sha256(label:id)`. Case ids in `exclude` (from
+/// earlier samples) are never drawn again.
+pub fn convert(
+    raw: &str,
+    sample: usize,
+    label: &str,
+    exclude: &std::collections::HashSet<String>,
+) -> Result<Vec<String>, String> {
     let squad: Squad =
         serde_json::from_str(raw).map_err(|error| format!("not a SQuAD 2.0 file: {error}"))?;
     let mut answerable = Vec::new();
@@ -68,6 +74,9 @@ pub fn convert(raw: &str, sample: usize, label: &str) -> Result<Vec<String>, Str
                 golds.sort_unstable();
                 golds.dedup();
                 if !question.is_impossible && golds.is_empty() {
+                    continue;
+                }
+                if exclude.contains(&format!("squad2:{}", question.id)) {
                     continue;
                 }
                 let expect = if question.is_impossible {
@@ -111,20 +120,39 @@ pub fn convert(raw: &str, sample: usize, label: &str) -> Result<Vec<String>, Str
         .collect())
 }
 
-pub fn run(input: &str, sample: usize, label: &str, output: &str) -> Result<(), String> {
+pub fn run(
+    input: &str,
+    sample: usize,
+    label: &str,
+    exclude_paths: &[String],
+    output: &str,
+) -> Result<(), String> {
     let raw =
         std::fs::read_to_string(input).map_err(|error| format!("cannot read {input}: {error}"))?;
-    let cases = convert(&raw, sample, label)?;
+    let mut exclude = std::collections::HashSet::new();
+    for path in exclude_paths {
+        let earlier = std::fs::read_to_string(path)
+            .map_err(|error| format!("cannot read {path}: {error}"))?;
+        for line in earlier.lines().filter(|line| !line.trim().is_empty()) {
+            let case: serde_json::Value =
+                serde_json::from_str(line).map_err(|error| format!("{path}: {error}"))?;
+            if let Some(id) = case["id"].as_str() {
+                exclude.insert(id.to_string());
+            }
+        }
+    }
+    let cases = convert(&raw, sample, label, &exclude)?;
     if cases.is_empty() {
         return Err(format!("{input} produced no cases"));
     }
     let body = cases.join("\n") + "\n";
     std::fs::write(output, &body).map_err(|error| format!("cannot write {output}: {error}"))?;
     println!(
-        "wrote {} cases to {output}\n  source sha256: {}\n  cases sha256:  {}\n  sample label:  {label}\nRun: oi-bench answer-eval --cases {output} --min-source-families 1 --model <model>",
+        "wrote {} cases to {output}\n  source sha256: {}\n  cases sha256:  {}\n  sample label:  {label}\n  excluded ids:  {}\nRun: oi-bench answer-eval --cases {output} --min-source-families 1 --model <model>",
         cases.len(),
         hex(&Sha256::digest(raw.as_bytes())),
         hex(&Sha256::digest(body.as_bytes())),
+        exclude.len(),
     );
     Ok(())
 }
@@ -145,7 +173,7 @@ mod tests {
         {"id":"u2","question":"Who built the bridge?","is_impossible":true,"answers":[]}]}]}]}"#;
 
     fn parsed(sample: usize, label: &str) -> Vec<serde_json::Value> {
-        convert(SAMPLE, sample, label)
+        convert(SAMPLE, sample, label, &Default::default())
             .unwrap()
             .iter()
             .map(|line| serde_json::from_str(line).unwrap())
@@ -189,8 +217,11 @@ mod tests {
 
     #[test]
     fn sample_is_balanced_reproducible_and_depends_on_the_label() {
-        let first = convert(SAMPLE, 2, "v1").unwrap();
-        assert_eq!(first, convert(SAMPLE, 2, "v1").unwrap());
+        let first = convert(SAMPLE, 2, "v1", &Default::default()).unwrap();
+        assert_eq!(
+            first,
+            convert(SAMPLE, 2, "v1", &Default::default()).unwrap()
+        );
         let cases = parsed(2, "v1");
         let answerable = cases
             .iter()
@@ -201,13 +232,29 @@ mod tests {
         assert!(
             labels
                 .iter()
-                .any(|label| convert(SAMPLE, 2, label).unwrap() != first),
+                .any(|label| convert(SAMPLE, 2, label, &Default::default()).unwrap() != first),
             "the label must change which questions are sampled"
         );
     }
 
     #[test]
+    fn ids_from_earlier_samples_are_never_drawn_again() {
+        let all = parsed(10, "v1");
+        let exclude: std::collections::HashSet<String> =
+            ["squad2:a1".to_string(), "squad2:u2".to_string()].into();
+        let remaining: Vec<serde_json::Value> = convert(SAMPLE, 10, "v1", &exclude)
+            .unwrap()
+            .iter()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect();
+        assert_eq!(remaining.len(), all.len() - 2);
+        assert!(remaining
+            .iter()
+            .all(|case| case["id"] != "squad2:a1" && case["id"] != "squad2:u2"));
+    }
+
+    #[test]
     fn a_file_in_another_format_is_rejected() {
-        assert!(convert(r#"{"rows":[]}"#, 4, "v1").is_err());
+        assert!(convert(r#"{"rows":[]}"#, 4, "v1", &Default::default()).is_err());
     }
 }

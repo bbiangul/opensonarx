@@ -65,7 +65,9 @@ pub struct AnswerCitation {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnswerClaim {
     pub text: String,
-    /// `corroborated`, `single_source`, or `contested`.
+    /// `corroborated`, `single_source`, `contested`, or `off_request` for a
+    /// claim the passages support but that does not answer the request as
+    /// asked. An off-request claim is related evidence, never the answer.
     pub status: String,
     pub citations: Vec<AnswerCitation>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -138,6 +140,11 @@ pub struct AnswerTrace {
     pub passages_read: usize,
     pub retained_passages: usize,
     pub proposed_claims: usize,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub responsiveness_model: Option<String>,
+    /// Supported claims set aside because they do not answer the request.
+    #[serde(default)]
+    pub off_request_claims: usize,
     /// Quotes proposed by a model that were not found verbatim.
     pub rejected_quotes: usize,
     pub hydration_requested: usize,
@@ -324,17 +331,27 @@ struct Located<'a> {
     excerpt: String,
 }
 
-/// Assemble the answer from model proposals. `judgments[i]` holds the stance
-/// judgments for `extraction.claims[i]`; pass `None` when no judge ran, in
-/// which case a claim rests on its extractor quotes alone and contradiction
-/// is unknown.
+/// Model judgments about the proposed claims, indexed like
+/// `extraction.claims`. A `None` field means that judge did not run: the
+/// claim is then assembled without it and the checklist records the gap.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct ClaimJudgments<'a> {
+    /// Per claim, each retained passage's stance. Without it a claim rests on
+    /// its extractor quotes alone and contradiction is unknown.
+    pub stance: Option<&'a [Vec<StanceJudgment>]>,
+    /// Per claim, whether it answers the request as asked.
+    pub responsive: Option<&'a [bool]>,
+}
+
+/// Assemble the answer from model proposals and judgments.
 pub fn assemble_answer(
     results: &[SearchResultItem],
     passages: &[EvidencePassage],
     extraction: &ClaimExtraction,
-    judgments: Option<&[Vec<StanceJudgment>]>,
+    judged: ClaimJudgments<'_>,
     policy: &AnswerPolicy,
 ) -> (SearchAnswer, EvidenceChecklist, AssemblyStats) {
+    let judgments = judged.stance;
     let mut stats = AssemblyStats::default();
     let mut checklist = EvidenceChecklist {
         policy_id: policy.policy_id.clone(),
@@ -460,7 +477,13 @@ pub fn assemble_answer(
             .map(BTreeSet::len)
             .sum();
 
-        let status = if !contradicting_families.is_empty() {
+        let responsive = judged
+            .responsive
+            .and_then(|verdicts| verdicts.get(index))
+            .copied();
+        let status = if responsive == Some(false) {
+            "off_request"
+        } else if !contradicting_families.is_empty() {
             "contested"
         } else if supporting_families.len() >= policy.min_source_families {
             "corroborated"
@@ -503,6 +526,24 @@ pub fn assemble_answer(
                 status: RequirementStatus::Unknown,
                 evidence_refs: Vec::new(),
             });
+        }
+        requirements.push(EvidenceRequirement {
+            id: "answers_the_request".to_string(),
+            claim_index: Some(index),
+            critical: true,
+            status: match responsive {
+                Some(true) => RequirementStatus::Satisfied,
+                Some(false) => RequirementStatus::Missing,
+                None => RequirementStatus::Unknown,
+            },
+            evidence_refs: Vec::new(),
+        });
+        if responsive == Some(false) {
+            // An off-request claim is not part of the answer, so what it
+            // lacks cannot block the claims that are.
+            for item in &mut requirements {
+                item.critical = false;
+            }
         }
         let unmet = requirements
             .iter()
@@ -581,8 +622,12 @@ pub fn assemble_answer(
         .iter()
         .filter(|claim| claim.status == "corroborated")
         .count();
+    let on_request = claims
+        .iter()
+        .filter(|claim| claim.status != "off_request")
+        .count();
     let contested = claims.iter().any(|claim| claim.status == "contested");
-    if claims.is_empty() && extraction.request_kind == RequestKind::Question {
+    if on_request == 0 && extraction.request_kind == RequestKind::Question {
         checklist.requirements.push(EvidenceRequirement {
             id: "answer_bearing_evidence".to_string(),
             claim_index: None,
@@ -596,7 +641,7 @@ pub fn assemble_answer(
         .iter()
         .any(|item| item.critical && item.status != RequirementStatus::Satisfied);
     checklist.complete_answer_supported =
-        corroborated > 0 && corroborated == claims.len() && !checklist.critical_missing;
+        corroborated > 0 && corroborated == on_request && !checklist.critical_missing;
 
     let average_ignorance = (!claims.is_empty())
         .then(|| claims.iter().map(|claim| claim.ignorance).sum::<f64>() / claims.len() as f64);
@@ -614,6 +659,13 @@ pub fn assemble_answer(
                 None,
             )
         }
+    } else if on_request == 0 {
+        (
+            "insufficient_evidence",
+            "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta."
+                .to_string(),
+            None,
+        )
     } else if contested {
         (
             "insufficient_evidence",
@@ -630,7 +682,7 @@ pub fn assemble_answer(
                 .collect::<Vec<_>>()
                 .join(" "),
             (corroborated < claims.len()).then(|| {
-                "Parte das afirmações tem apenas uma família de fontes; veja o status de cada uma."
+                "Nem todas as afirmações listadas são a resposta corroborada; veja o status de cada uma."
                     .to_string()
             }),
         )
@@ -823,8 +875,13 @@ mod tests {
             "Ada Example started the company.",
             &[("p1", "The company was started by Ada Example.")],
         )]);
-        let (answer, checklist, stats) =
-            assemble_answer(&[], &passages, &extraction, None, &AnswerPolicy::default());
+        let (answer, checklist, stats) = assemble_answer(
+            &[],
+            &passages,
+            &extraction,
+            ClaimJudgments::default(),
+            &AnswerPolicy::default(),
+        );
         assert_eq!(answer.status, "insufficient_evidence");
         assert!(answer.claims.is_empty());
         assert_eq!(stats.rejected_quotes, 1);
@@ -858,7 +915,10 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            Some(&judgments),
+            ClaimJudgments {
+                stance: Some(&judgments),
+                responsive: Some(&[true]),
+            },
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.status, "extractive");
@@ -895,7 +955,7 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            None,
+            ClaimJudgments::default(),
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.status, "insufficient_evidence");
@@ -931,7 +991,7 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            None,
+            ClaimJudgments::default(),
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.status, "insufficient_evidence");
@@ -975,7 +1035,7 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            None,
+            ClaimJudgments::default(),
             &AnswerPolicy::default(),
         );
         let lineage = answer.claims[0].evidence_lineage.as_ref().unwrap();
@@ -1023,7 +1083,10 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            Some(&judgments),
+            ClaimJudgments {
+                stance: Some(&judgments),
+                responsive: None,
+            },
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.status, "insufficient_evidence");
@@ -1036,6 +1099,122 @@ mod tests {
         assert_eq!(roles, vec!["supports", "contradicts"]);
         assert!(answer.claims[0].conflict > 0.0);
         assert!(!checklist.complete_answer_supported);
+    }
+
+    #[test]
+    fn supported_claim_that_does_not_answer_the_request_is_set_aside() {
+        let results = two_sources();
+        let passages = build_passages(&results, &AnswerPolicy::default());
+        let quotes = [
+            ("p1", "The company was started by Ada Example in Recife."),
+            ("p2", "the company was started by Ada Example"),
+        ];
+        let extraction = question(vec![claim("Ada Example started the company.", &quotes)]);
+        let (answer, checklist, _) = assemble_answer(
+            &results,
+            &passages,
+            &extraction,
+            ClaimJudgments {
+                stance: None,
+                responsive: Some(&[false]),
+            },
+            &AnswerPolicy::default(),
+        );
+        assert_eq!(answer.status, "insufficient_evidence");
+        assert!(answer.summary.contains("não responde à pergunta"));
+        assert_eq!(answer.claims.len(), 1, "the related claim stays visible");
+        assert_eq!(answer.claims[0].status, "off_request");
+        assert_eq!(answer.claims[0].citations.len(), 2);
+        assert!(!checklist.complete_answer_supported);
+        assert!(checklist.critical_missing, "a question was left unanswered");
+        assert!(checklist.requirements.iter().any(|item| {
+            item.id == "answers_the_request" && item.status == RequirementStatus::Missing
+        }));
+    }
+
+    #[test]
+    fn off_request_claim_does_not_block_the_claim_that_answers() {
+        let results = two_sources();
+        let passages = build_passages(&results, &AnswerPolicy::default());
+        let quotes = [
+            ("p1", "The company was started by Ada Example in Recife."),
+            ("p2", "the company was started by Ada Example"),
+        ];
+        let extraction = question(vec![
+            claim("Ada Example started the company.", &quotes),
+            claim("The company is based in Recife.", &quotes),
+        ]);
+        let judgments = vec![
+            vec![
+                judged(
+                    "p1",
+                    StanceLabel::Supports,
+                    "The company was started by Ada Example"
+                ),
+                judged(
+                    "p2",
+                    StanceLabel::Supports,
+                    "the company was started by Ada Example"
+                ),
+            ];
+            2
+        ];
+        let (answer, checklist, _) = assemble_answer(
+            &results,
+            &passages,
+            &extraction,
+            ClaimJudgments {
+                stance: Some(&judgments),
+                responsive: Some(&[true, false]),
+            },
+            &AnswerPolicy::default(),
+        );
+        assert_eq!(answer.status, "extractive");
+        assert_eq!(answer.summary, "Ada Example started the company.");
+        let statuses: Vec<_> = answer.claims.iter().map(|c| c.status.as_str()).collect();
+        assert_eq!(statuses, vec!["corroborated", "off_request"]);
+        assert!(checklist.complete_answer_supported);
+        assert!(answer.warning.is_some());
+    }
+
+    #[test]
+    fn without_a_responsiveness_judge_the_answer_is_not_marked_complete() {
+        let results = two_sources();
+        let passages = build_passages(&results, &AnswerPolicy::default());
+        let extraction = question(vec![claim(
+            "Ada Example started the company.",
+            &[
+                ("p1", "The company was started by Ada Example in Recife."),
+                ("p2", "the company was started by Ada Example"),
+            ],
+        )]);
+        let judgments = vec![vec![
+            judged(
+                "p1",
+                StanceLabel::Supports,
+                "The company was started by Ada Example",
+            ),
+            judged(
+                "p2",
+                StanceLabel::Supports,
+                "the company was started by Ada Example",
+            ),
+        ]];
+        let (answer, checklist, _) = assemble_answer(
+            &results,
+            &passages,
+            &extraction,
+            ClaimJudgments {
+                stance: Some(&judgments),
+                responsive: None,
+            },
+            &AnswerPolicy::default(),
+        );
+        assert_eq!(answer.claims[0].status, "corroborated");
+        assert!(!checklist.complete_answer_supported);
+        assert!(checklist.requirements.iter().any(|item| {
+            item.id == "answers_the_request" && item.status == RequirementStatus::Unknown
+        }));
     }
 
     #[test]
@@ -1055,7 +1234,10 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            Some(&judgments),
+            ClaimJudgments {
+                stance: Some(&judgments),
+                responsive: None,
+            },
             &AnswerPolicy::default(),
         );
         assert!(answer.claims.is_empty());
@@ -1077,7 +1259,7 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            None,
+            ClaimJudgments::default(),
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.claims[0].status, "corroborated");
@@ -1105,7 +1287,7 @@ mod tests {
             &[snippet_only],
             &passages,
             &extraction,
-            None,
+            ClaimJudgments::default(),
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.status, "destination");
@@ -1127,7 +1309,7 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            None,
+            ClaimJudgments::default(),
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.status, "results_only");
@@ -1170,7 +1352,7 @@ mod tests {
             &results,
             &passages,
             &extraction,
-            None,
+            ClaimJudgments::default(),
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.claims.len(), AnswerPolicy::default().max_claims);
