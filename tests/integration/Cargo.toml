@@ -9,6 +9,10 @@ name = "integration"
 path = "main.rs"
 
 [[test]]
+name = "benchmark_leakage"
+path = "benchmark_leakage.rs"
+
+[[test]]
 name = "solana_e2e"
 path = "solana_e2e.rs"
 
