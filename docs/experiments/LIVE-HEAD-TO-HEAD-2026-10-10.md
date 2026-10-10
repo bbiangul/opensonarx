@@ -84,4 +84,87 @@ consultas novas.
 
 ## Resultados
 
-Pendente.
+Execução completa: 120 consultas, todas com trechos, zero erros de modelo.
+158 respostas corrigidas uma a uma (64 do pipeline, 94 da linha de base).
+
+### Resumo
+
+**Não demonstrado.** Com as mesmas páginas e o mesmo modelo, a camada de
+evidência não reduziu o erro de forma mensurável, respondeu metade das
+consultas e levou o dobro do tempo.
+
+| | Pipeline (completas) | Pipeline (completas + parciais) | Linha de base |
+|---|---|---|---|
+| Respostas emitidas (de 120) | 48 | 64 | 94 |
+| Certas | 46 | 57 | 84 |
+| Erradas | 2 | 7 | 10 |
+| Taxa de erro no que emitiu | 4,2% | 10,9% | 10,6% |
+| Latência p50 / p95 | 11,6 s / 18,7 s | idem | 6,1 s / 8,3 s |
+
+### Medida primária: erro com a mesma cobertura
+
+Nas 48 consultas em que o pipeline deu resposta completa (a linha de base
+respondeu todas elas): pipeline 2 erradas, linha de base 3 erradas. Redução
+relativa de 33%, bootstrap pareado de 95% de 0% a 100%. O limite inferior não
+é positivo: **não demonstrado**.
+
+A diferença inteira é uma consulta ("what county is omaha ne in"), em que a
+linha de base deu o condado certo e acrescentou uma frase invertida. Se esse
+deslize periférico contar como certo, o placar fica 2 a 2.
+
+Incluindo as parciais (64 consultas): pipeline 7 erradas, linha de base 6.
+
+### O que a abstenção custou
+
+| Onde o pipeline... | Consultas | Linha de base respondeu | Linha de base certa |
+|---|---|---|---|
+| deu resposta completa | 48 | 48 | 45 |
+| deu resposta parcial | 16 | 16 | 13 |
+| se absteve | 35 | 16 | 14 |
+| devolveu só resultados ou destino | 21 | 14 | 12 |
+
+A linha de base respondeu 30 consultas que o pipeline não respondeu e
+acertou 26. A abstenção evitou 4 erros e descartou 26 respostas certas.
+
+As 21 consultas tratadas como "não é pergunta" são na maioria pedidos de
+"como fazer" e de listas ("how to get smells out of dresser drawers", "types
+ant poison"). O pipeline as classifica como exploração e não sintetiza nada.
+
+### De onde vêm os erros
+
+Dos 7 erros do pipeline, 5 são erros também da linha de base, na mesma
+consulta: as páginas diziam a coisa errada ou não diziam o que foi pedido, e
+os dois sistemas repetiram (tempo de carro NYC–Washington de 5 h 43; salário
+de "Associate" na T-Mobile; "sinônimos" de iridociclite tirados de uma página
+ruim). Os dois erros de respostas *completas* do pipeline são desse tipo.
+
+A verificação do pipeline garante que a frase está na página. Ela não diz se
+a página está certa, e foi daí que veio o erro nas duas abordagens.
+
+A linha de base também cita bem: 216 das 225 citações dela foram localizadas
+literalmente no trecho indicado (96%).
+
+### O que isto diz e o que não diz
+
+- Em consultas factuais comuns, com páginas majoritariamente corretas, a
+  camada de afirmação / citação / gate não comprou confiabilidade sobre o
+  modelo lendo as mesmas páginas, e custou cobertura e tempo.
+- Isto não testa conteúdo adversarial nem desinformação, que é onde a tese do
+  projeto promete diferença. Também não testa histórico de fonte, que é o
+  sinal que poderia pegar a página errada.
+- Uma família de fonte contra duas ou mais, nas completas: 28/30 e 18/18.
+
+### Limites
+
+- 120 consultas; com 2 e 3 erros, uma consulta muda o resultado.
+- Um leitor, que é um modelo. O formato da resposta muitas vezes denuncia o
+  sistema, então a correção não foi de fato cega quanto a isso.
+- Inglês, consultas do MS MARCO, descoberta sem chave (DuckDuckGo e Brave).
+- A linha de base lê os mesmos trechos; não é um concorrente real.
+
+### Arquivos
+
+- Relatório: `outputs/validation-20261009/answer-live-haiku-5.5-msmarco-live-1.json`
+- Folha, mapa de chaves e rótulos:
+  `outputs/validation-20261009/answer-live-msmarco-live-1-{grade-sheet,key-map,reader-labels}.jsonl`
+- Gerador da folha: `scripts/answer_live_sheet.py`

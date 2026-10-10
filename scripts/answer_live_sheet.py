@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+"""Blind grading sheet for an `oi-bench answer-live` report.
+
+Every response either system emitted becomes one item: the request, the
+dataset's reference answers, the response and the spans it cites. Items carry
+an opaque key and are ordered by it, so the sheet says neither which system
+wrote a response nor what status it had. The key-to-system map goes to a
+separate file that is only read after grading.
+
+Usage: answer_live_sheet.py <report.json> <sheet.jsonl> <key-map.jsonl>
+"""
+import hashlib
+import json
+import sys
+
+
+def main() -> None:
+    report_path, sheet_path, map_path = sys.argv[1:4]
+    report = json.load(open(report_path))
+    stem = report_path.rsplit("/", 1)[-1].removesuffix(".json")
+    items = []
+    for result in report["results"]:
+        if "search_error" in result:
+            continue
+        pipeline = result["pipeline"]
+        emitted = []
+        if pipeline["status"] in ("extractive", "partial_answer"):
+            spans = [
+                citation["excerpt"]
+                for claim in pipeline["claims"]
+                if claim["status"] == "corroborated"
+                for citation in claim["citations"]
+                if citation["role"] == "supports" and citation["excerpt"]
+            ]
+            emitted.append(("pipeline", pipeline["summary"], spans))
+        baseline = result["baseline"]
+        if baseline.get("answered") and baseline.get("answer", "").strip():
+            emitted.append(("baseline", baseline["answer"], [q["quote"] for q in baseline["quotes"]]))
+        for system, response, spans in emitted:
+            key = hashlib.sha256(f"{stem}#{result['id']}#{system}".encode()).hexdigest()[:16]
+            items.append(
+                (
+                    key,
+                    {
+                        "key": key,
+                        "request": result["query"],
+                        "reference_answers": result.get("reference_answers") or [],
+                        "response": response,
+                        "cited_spans": spans,
+                    },
+                    {"key": key, "report": stem, "id": result["id"], "system": system},
+                )
+            )
+    items.sort(key=lambda item: item[0])
+    with open(sheet_path, "w") as sheet, open(map_path, "w") as key_map:
+        for _, item, origin in items:
+            sheet.write(json.dumps(item, ensure_ascii=False) + "\n")
+            key_map.write(json.dumps(origin) + "\n")
+    print(f"wrote {len(items)} responses to grade to {sheet_path}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,158 @@
+{"key": "0134f738cbc6ea17", "id": "msmarco-qa:535150", "system": "pipeline", "correct": true, "note": ""}
+{"key": "0172d5f2cf0f68e0", "id": "msmarco-qa:1095345", "system": "baseline", "correct": true, "note": ""}
+{"key": "0294799669e14676", "id": "msmarco-qa:730819", "system": "baseline", "correct": true, "note": ""}
+{"key": "04493a00e23423e5", "id": "msmarco-qa:1097758", "system": "baseline", "correct": true, "note": ""}
+{"key": "0693623252a0d7c2", "id": "msmarco-qa:34073", "system": "baseline", "correct": true, "note": ""}
+{"key": "0dab3053d715736a", "id": "msmarco-qa:1101505", "system": "pipeline", "correct": true, "note": ""}
+{"key": "0ebc8fca41239918", "id": "msmarco-qa:1101505", "system": "baseline", "correct": true, "note": ""}
+{"key": "0f8cb12618266632", "id": "msmarco-qa:664099", "system": "baseline", "correct": true, "note": "partial list, not bathroom-specific but nothing wrong"}
+{"key": "1173c378a61276f2", "id": "msmarco-qa:1044195", "system": "pipeline", "correct": true, "note": ""}
+{"key": "1180fd88e065860c", "id": "msmarco-qa:587121", "system": "baseline", "correct": true, "note": ""}
+{"key": "1316489dcf740d66", "id": "msmarco-qa:1036088", "system": "pipeline", "correct": true, "note": ""}
+{"key": "15e61ae435ff58a4", "id": "msmarco-qa:599740", "system": "baseline", "correct": true, "note": ""}
+{"key": "1746524ca213f41f", "id": "msmarco-qa:535150", "system": "baseline", "correct": true, "note": ""}
+{"key": "17ac17ea9dda1d7b", "id": "msmarco-qa:1096565", "system": "baseline", "correct": true, "note": ""}
+{"key": "199a56ea99a09e52", "id": "msmarco-qa:56988", "system": "pipeline", "correct": true, "note": ""}
+{"key": "1ae1751dce726c18", "id": "msmarco-qa:1091475", "system": "pipeline", "correct": true, "note": ""}
+{"key": "1bfaf94343754f81", "id": "msmarco-qa:1009598", "system": "pipeline", "correct": true, "note": ""}
+{"key": "1c278992a265ffb6", "id": "msmarco-qa:1038659", "system": "baseline", "correct": true, "note": ""}
+{"key": "1c7511f75ae9d53b", "id": "msmarco-qa:645205", "system": "pipeline", "correct": false, "note": "gives a secondary requirement (membrane proteins for some substances), omits what passive transport requires (a gradient, no energy)"}
+{"key": "1cb289fb61379767", "id": "msmarco-qa:278597", "system": "pipeline", "correct": true, "note": ""}
+{"key": "1cfd79e3731eb07a", "id": "msmarco-qa:109854", "system": "pipeline", "correct": true, "note": ""}
+{"key": "1e428f9394cf39c1", "id": "msmarco-qa:1015004", "system": "baseline", "correct": true, "note": ""}
+{"key": "1fbd5302c506731c", "id": "msmarco-qa:872856", "system": "pipeline", "correct": false, "note": "does not say what such a law is; restates when a measure becomes law"}
+{"key": "1ff0118879d4e7e1", "id": "msmarco-qa:278597", "system": "baseline", "correct": true, "note": ""}
+{"key": "244de7d1b2ff810d", "id": "msmarco-qa:289304", "system": "pipeline", "correct": true, "note": ""}
+{"key": "246f32222d7f9f79", "id": "msmarco-qa:1087184", "system": "baseline", "correct": true, "note": ""}
+{"key": "24e1559935b64ffe", "id": "msmarco-qa:1052273", "system": "baseline", "correct": true, "note": ""}
+{"key": "252517353754b800", "id": "msmarco-qa:1049697", "system": "pipeline", "correct": true, "note": ""}
+{"key": "2ac8dd3dcb3640af", "id": "msmarco-qa:1015004", "system": "pipeline", "correct": true, "note": ""}
+{"key": "2b58ab8deab3a0dc", "id": "msmarco-qa:1087208", "system": "pipeline", "correct": true, "note": ""}
+{"key": "2f69e0e168b3a1b3", "id": "msmarco-qa:289586", "system": "baseline", "correct": true, "note": ""}
+{"key": "31e32a1481a1d42d", "id": "msmarco-qa:265045", "system": "pipeline", "correct": true, "note": ""}
+{"key": "34551d2e777b2400", "id": "msmarco-qa:150106", "system": "baseline", "correct": true, "note": ""}
+{"key": "3687869debdfedaf", "id": "msmarco-qa:1036088", "system": "baseline", "correct": true, "note": ""}
+{"key": "388632a0a5cbbb58", "id": "msmarco-qa:400055", "system": "baseline", "correct": true, "note": ""}
+{"key": "3a71bc8be2aa9d70", "id": "msmarco-qa:796308", "system": "pipeline", "correct": true, "note": ""}
+{"key": "3b14032b4a9ba988", "id": "msmarco-qa:1091475", "system": "baseline", "correct": true, "note": ""}
+{"key": "3f7a04e7d27afd64", "id": "msmarco-qa:548530", "system": "baseline", "correct": true, "note": ""}
+{"key": "4018fb5ee6a62b79", "id": "msmarco-qa:889289", "system": "baseline", "correct": true, "note": ""}
+{"key": "40c0e81e78d80135", "id": "msmarco-qa:884616", "system": "pipeline", "correct": true, "note": ""}
+{"key": "41dc8b17702b7c1e", "id": "msmarco-qa:208124", "system": "baseline", "correct": true, "note": ""}
+{"key": "437592a386663db0", "id": "msmarco-qa:737004", "system": "pipeline", "correct": true, "note": ""}
+{"key": "45d3b18f4a176a75", "id": "msmarco-qa:898248", "system": "baseline", "correct": true, "note": ""}
+{"key": "48fb4abed3665473", "id": "msmarco-qa:1033296", "system": "baseline", "correct": true, "note": ""}
+{"key": "49583428f759feba", "id": "msmarco-qa:384088", "system": "baseline", "correct": false, "note": "first path (Settings > Network & Internet > VPN) is the Windows 10 interface, presented as Windows 8"}
+{"key": "4990c762739aca60", "id": "msmarco-qa:1025970", "system": "pipeline", "correct": true, "note": ""}
+{"key": "4d5a917a6ae9062c", "id": "msmarco-qa:825988", "system": "pipeline", "correct": true, "note": ""}
+{"key": "4ea7169a22fcb6de", "id": "msmarco-qa:112748", "system": "baseline", "correct": true, "note": ""}
+{"key": "4f31c3f0ec1b2953", "id": "msmarco-qa:525459", "system": "baseline", "correct": true, "note": ""}
+{"key": "4f8fe2819440eaa5", "id": "msmarco-qa:421616", "system": "baseline", "correct": true, "note": ""}
+{"key": "4fe434fa5257a588", "id": "msmarco-qa:1073542", "system": "baseline", "correct": true, "note": ""}
+{"key": "50d274dd4b8df905", "id": "msmarco-qa:1033296", "system": "pipeline", "correct": true, "note": ""}
+{"key": "521fcdf09a2bd1d9", "id": "msmarco-qa:509968", "system": "baseline", "correct": false, "note": "rubor and redness are not synonyms of iridocyclitis"}
+{"key": "52e18fb95abd5062", "id": "msmarco-qa:889289", "system": "pipeline", "correct": true, "note": ""}
+{"key": "56da72a25464ba77", "id": "msmarco-qa:1038491", "system": "baseline", "correct": true, "note": ""}
+{"key": "56ffbf5356564c5a", "id": "msmarco-qa:341724", "system": "baseline", "correct": true, "note": ""}
+{"key": "586c4f777ad73716", "id": "msmarco-qa:1073542", "system": "pipeline", "correct": true, "note": ""}
+{"key": "5995ebb07d550172", "id": "msmarco-qa:234718", "system": "baseline", "correct": true, "note": ""}
+{"key": "5cb2f2078dd9da85", "id": "msmarco-qa:842978", "system": "baseline", "correct": true, "note": ""}
+{"key": "5fade720439bbaa7", "id": "msmarco-qa:256292", "system": "pipeline", "correct": false, "note": "5 h 43 min contradicts the reference (3 h 40) and the usual four hours"}
+{"key": "61780b0c85f08367", "id": "msmarco-qa:949696", "system": "pipeline", "correct": true, "note": ""}
+{"key": "619016736ad5b22a", "id": "msmarco-qa:320162", "system": "baseline", "correct": true, "note": ""}
+{"key": "62474d1c57c1a6f2", "id": "msmarco-qa:1061168", "system": "baseline", "correct": true, "note": ""}
+{"key": "6347a902364e95a6", "id": "msmarco-qa:509968", "system": "pipeline", "correct": false, "note": "rubor and redness are not synonyms of iridocyclitis"}
+{"key": "63ce60c256e5787f", "id": "msmarco-qa:364962", "system": "baseline", "correct": true, "note": ""}
+{"key": "655900b4b668aee2", "id": "msmarco-qa:56988", "system": "baseline", "correct": true, "note": ""}
+{"key": "65c9fd402d538583", "id": "msmarco-qa:265045", "system": "baseline", "correct": true, "note": ""}
+{"key": "669aff7302aca213", "id": "msmarco-qa:112748", "system": "pipeline", "correct": true, "note": ""}
+{"key": "67e93a4fdc78c189", "id": "msmarco-qa:1044279", "system": "baseline", "correct": true, "note": ""}
+{"key": "6ad2186f6f056180", "id": "msmarco-qa:1101304", "system": "baseline", "correct": true, "note": ""}
+{"key": "6d339b1d38d4f5ac", "id": "msmarco-qa:362778", "system": "baseline", "correct": true, "note": ""}
+{"key": "6dc2e6a086c9ac67", "id": "msmarco-qa:781999", "system": "baseline", "correct": false, "note": "defines patient-centered care, not the terminology asked about"}
+{"key": "6dd4e194a0372b2c", "id": "msmarco-qa:307504", "system": "pipeline", "correct": false, "note": "three inconsistent salary figures, far above what retail associates earn; unclear which role"}
+{"key": "6e0a08b3b299eff0", "id": "msmarco-qa:542210", "system": "baseline", "correct": true, "note": ""}
+{"key": "7222040cbf1ea738", "id": "msmarco-qa:1025970", "system": "baseline", "correct": true, "note": ""}
+{"key": "73103310be510499", "id": "msmarco-qa:208124", "system": "pipeline", "correct": true, "note": ""}
+{"key": "775ac9148317a0d0", "id": "msmarco-qa:554511", "system": "baseline", "correct": true, "note": ""}
+{"key": "7895a0ddb0f52560", "id": "msmarco-qa:1035959", "system": "baseline", "correct": false, "note": "describes the company as a local gas supplier; the reference and the address point to the cryogenic equipment group"}
+{"key": "78d35a537fedbf0a", "id": "msmarco-qa:565897", "system": "pipeline", "correct": false, "note": "names the category (thermal conductors), no things"}
+{"key": "79e3399bbe5517f8", "id": "msmarco-qa:35850", "system": "baseline", "correct": true, "note": ""}
+{"key": "7d11c90f45761f78", "id": "msmarco-qa:1038491", "system": "pipeline", "correct": true, "note": ""}
+{"key": "7e1e2eb8f188978e", "id": "msmarco-qa:109854", "system": "baseline", "correct": true, "note": ""}
+{"key": "7e277695d903f01c", "id": "msmarco-qa:7121", "system": "baseline", "correct": false, "note": "the abbey etymology comes from a name site; the place name Labatut is usually explained as felled wood (abatut)"}
+{"key": "80465708800efe35", "id": "msmarco-qa:645205", "system": "baseline", "correct": true, "note": ""}
+{"key": "806b5e8046bb2873", "id": "msmarco-qa:1087208", "system": "baseline", "correct": true, "note": ""}
+{"key": "81b2d40ef1f1a066", "id": "msmarco-qa:987356", "system": "baseline", "correct": true, "note": ""}
+{"key": "820be51bee168f24", "id": "msmarco-qa:1026387", "system": "pipeline", "correct": true, "note": ""}
+{"key": "82f0de79aa29f77c", "id": "msmarco-qa:887988", "system": "baseline", "correct": true, "note": ""}
+{"key": "83cb5049d91a8e21", "id": "msmarco-qa:1009598", "system": "baseline", "correct": true, "note": ""}
+{"key": "867e5e1b2dcf519b", "id": "msmarco-qa:1095345", "system": "pipeline", "correct": true, "note": ""}
+{"key": "88ecf9764abaf9e6", "id": "msmarco-qa:289304", "system": "baseline", "correct": true, "note": ""}
+{"key": "8d01a16eeda7b0fc", "id": "msmarco-qa:1096797", "system": "baseline", "correct": true, "note": ""}
+{"key": "8e399356a7fa7776", "id": "msmarco-qa:525459", "system": "pipeline", "correct": true, "note": ""}
+{"key": "911adf02787789d3", "id": "msmarco-qa:341724", "system": "pipeline", "correct": true, "note": ""}
+{"key": "93ebdc4e3361ab0d", "id": "msmarco-qa:438577", "system": "baseline", "correct": true, "note": ""}
+{"key": "97da741289343c54", "id": "msmarco-qa:346526", "system": "baseline", "correct": true, "note": ""}
+{"key": "a1cb2cc9d46369a6", "id": "msmarco-qa:1049997", "system": "baseline", "correct": true, "note": ""}
+{"key": "a2da8dc39b68fc4c", "id": "msmarco-qa:949696", "system": "baseline", "correct": true, "note": ""}
+{"key": "a4e34c1936b68f25", "id": "msmarco-qa:723416", "system": "baseline", "correct": true, "note": ""}
+{"key": "a594cdec01d7dc7d", "id": "msmarco-qa:898248", "system": "pipeline", "correct": true, "note": ""}
+{"key": "a5ef48fbb667b41c", "id": "msmarco-qa:872856", "system": "baseline", "correct": false, "note": "says how a measure becomes law, not what such a law is; admits it gives no definition"}
+{"key": "a894557e6d3a5414", "id": "msmarco-qa:737004", "system": "baseline", "correct": true, "note": ""}
+{"key": "a95e0486e573cfca", "id": "msmarco-qa:887988", "system": "pipeline", "correct": true, "note": ""}
+{"key": "ab712febabf14af7", "id": "msmarco-qa:264243", "system": "baseline", "correct": true, "note": ""}
+{"key": "ac02b1b54563ea32", "id": "msmarco-qa:805109", "system": "pipeline", "correct": true, "note": ""}
+{"key": "aee1469a7db881ce", "id": "msmarco-qa:1044238", "system": "pipeline", "correct": true, "note": ""}
+{"key": "af0844dbe5384db1", "id": "msmarco-qa:859637", "system": "pipeline", "correct": false, "note": "says WEP was repealed, never says what WEP is"}
+{"key": "afd288748bde6e1a", "id": "msmarco-qa:344191", "system": "baseline", "correct": true, "note": ""}
+{"key": "b02fd32b0c05e9fb", "id": "msmarco-qa:338084", "system": "baseline", "correct": true, "note": ""}
+{"key": "b11d4332d9d90993", "id": "msmarco-qa:659639", "system": "pipeline", "correct": true, "note": ""}
+{"key": "b2b1442b067d6cee", "id": "msmarco-qa:1044238", "system": "baseline", "correct": true, "note": ""}
+{"key": "b55eed0e54066921", "id": "msmarco-qa:805109", "system": "baseline", "correct": true, "note": ""}
+{"key": "b67c5fbeb5e7a2ed", "id": "msmarco-qa:730819", "system": "pipeline", "correct": true, "note": ""}
+{"key": "b75f8735931b0776", "id": "msmarco-qa:659639", "system": "baseline", "correct": true, "note": ""}
+{"key": "bb12c53a3a3186f9", "id": "msmarco-qa:1101349", "system": "baseline", "correct": true, "note": ""}
+{"key": "bda245830fe9ba20", "id": "msmarco-qa:1052273", "system": "pipeline", "correct": true, "note": ""}
+{"key": "bfa3a494a4089fb4", "id": "msmarco-qa:237484", "system": "baseline", "correct": true, "note": ""}
+{"key": "bfc2cb2db1590db6", "id": "msmarco-qa:35850", "system": "pipeline", "correct": true, "note": ""}
+{"key": "c06b947210a6864d", "id": "msmarco-qa:256292", "system": "baseline", "correct": false, "note": "5 h 43 min and 267 miles contradict the reference (3 h 40, 227 miles) and the usual four hours, even with the caveat"}
+{"key": "c1e43277358613e7", "id": "msmarco-qa:526141", "system": "baseline", "correct": true, "note": ""}
+{"key": "c46b59541f93479f", "id": "msmarco-qa:440605", "system": "baseline", "correct": true, "note": ""}
+{"key": "c5290ac435865f84", "id": "msmarco-qa:1061168", "system": "pipeline", "correct": true, "note": ""}
+{"key": "cc69bcfb4e5401d9", "id": "msmarco-qa:400055", "system": "pipeline", "correct": true, "note": ""}
+{"key": "cc96826c528fc5e5", "id": "msmarco-qa:1049997", "system": "pipeline", "correct": true, "note": ""}
+{"key": "d00bcf081012dd76", "id": "msmarco-qa:1089234", "system": "baseline", "correct": true, "note": ""}
+{"key": "d2eb7a76aa4e70c3", "id": "msmarco-qa:610705", "system": "pipeline", "correct": true, "note": ""}
+{"key": "d4b388caab9c361b", "id": "msmarco-qa:709696", "system": "pipeline", "correct": true, "note": ""}
+{"key": "d4fa031b67a25d0d", "id": "msmarco-qa:264243", "system": "pipeline", "correct": true, "note": ""}
+{"key": "d5b3118164e5ae4c", "id": "msmarco-qa:1049697", "system": "baseline", "correct": true, "note": ""}
+{"key": "d70b7d2ade07a9b4", "id": "msmarco-qa:6609", "system": "baseline", "correct": true, "note": ""}
+{"key": "d7456e2605e8a884", "id": "msmarco-qa:1044195", "system": "baseline", "correct": true, "note": ""}
+{"key": "d805f82a7b8f3d9f", "id": "msmarco-qa:884616", "system": "baseline", "correct": true, "note": ""}
+{"key": "d9cdaa81bd87bc5a", "id": "msmarco-qa:874827", "system": "baseline", "correct": true, "note": ""}
+{"key": "da050ac6d8e549dc", "id": "msmarco-qa:1038659", "system": "pipeline", "correct": true, "note": ""}
+{"key": "dad9ed8334ded7aa", "id": "msmarco-qa:842978", "system": "pipeline", "correct": true, "note": ""}
+{"key": "db790a807929dc86", "id": "msmarco-qa:554511", "system": "pipeline", "correct": true, "note": ""}
+{"key": "dbcd03fdc3e91e4a", "id": "msmarco-qa:825988", "system": "baseline", "correct": true, "note": ""}
+{"key": "dc5017460f781296", "id": "msmarco-qa:796308", "system": "baseline", "correct": true, "note": ""}
+{"key": "dd21afa80a579d48", "id": "msmarco-qa:440605", "system": "pipeline", "correct": true, "note": ""}
+{"key": "ded801de8c0ff1e1", "id": "msmarco-qa:1026387", "system": "baseline", "correct": true, "note": ""}
+{"key": "dfb7402202f3cf9e", "id": "msmarco-qa:1024227", "system": "baseline", "correct": true, "note": ""}
+{"key": "dfee54342d4c6ab9", "id": "msmarco-qa:599740", "system": "pipeline", "correct": true, "note": ""}
+{"key": "e28a0ae734499a98", "id": "msmarco-qa:587121", "system": "pipeline", "correct": true, "note": ""}
+{"key": "e4425b8113390f94", "id": "msmarco-qa:859637", "system": "baseline", "correct": true, "note": ""}
+{"key": "e4de91f24a981b82", "id": "msmarco-qa:307504", "system": "baseline", "correct": false, "note": "salary figures for the title Associate, internally inconsistent and far above retail associate pay; unclear which role"}
+{"key": "e740a544da0cfd55", "id": "msmarco-qa:1016912", "system": "baseline", "correct": true, "note": ""}
+{"key": "e9d84e65398ba4bb", "id": "msmarco-qa:610705", "system": "baseline", "correct": false, "note": "right county, but adds that Douglas County is the county seat of Omaha (reversed); peripheral slip"}
+{"key": "eb55adbe67178e3c", "id": "msmarco-qa:320162", "system": "pipeline", "correct": true, "note": ""}
+{"key": "ebf97ab4bbd7fc78", "id": "msmarco-qa:548530", "system": "pipeline", "correct": true, "note": ""}
+{"key": "ec71736e3dae3ff1", "id": "msmarco-qa:874827", "system": "pipeline", "correct": true, "note": ""}
+{"key": "ee458f3b16811c7d", "id": "msmarco-qa:1097758", "system": "pipeline", "correct": true, "note": ""}
+{"key": "eec017ea85f37090", "id": "msmarco-qa:1101349", "system": "pipeline", "correct": true, "note": ""}
+{"key": "f5cd8f876b5354e0", "id": "msmarco-qa:234718", "system": "pipeline", "correct": true, "note": ""}
+{"key": "f5d73a1a66b34cba", "id": "msmarco-qa:1102168", "system": "baseline", "correct": true, "note": ""}
+{"key": "f61f69cd636f4890", "id": "msmarco-qa:565897", "system": "baseline", "correct": false, "note": "says itself that it names no materials"}
+{"key": "fa1e7f809a8247e7", "id": "msmarco-qa:696918", "system": "baseline", "correct": true, "note": ""}
+{"key": "fcd775879974c72d", "id": "msmarco-qa:338084", "system": "pipeline", "correct": true, "note": ""}
+{"key": "fce0294490086fdc", "id": "msmarco-qa:709696", "system": "baseline", "correct": true, "note": ""}
