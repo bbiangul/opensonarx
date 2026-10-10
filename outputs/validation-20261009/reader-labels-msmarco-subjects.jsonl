@@ -1,0 +1,185 @@
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:113483", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:641607", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:458118", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1096068", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1097748", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1100991", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1041251", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:581054", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1089216", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1100988", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1043940", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:259781", "correct": false, "reader_subject": "technology", "note": "contradicts credible reference (2 weeks); reports forum anecdotes"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:775684", "correct": false, "reader_subject": "general", "note": "cited span does not say it is near Linville; differs from reference"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:395579", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1087295", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:656962", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:526239", "correct": false, "reader_subject": "science", "note": "only one of the three germ layers"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:503132", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1093663", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:441820", "correct": false, "reader_subject": "education", "note": "answers a different sense (banking) than the reference"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1094655", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:913070", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:254730", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:850541", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:796262", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:484020", "correct": true, "reader_subject": "sports", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:722872", "correct": false, "reader_subject": "lifestyle", "note": "names a non-timber product; \"best\" not established"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:427482", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1102172", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1062128", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1033199", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:317840", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:985284", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1021874", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:230373", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:626827", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1044310", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1089164", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:987341", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:84473", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:36388", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:889044", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1030571", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1092877", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:52536", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:125351", "correct": false, "reader_subject": "technology", "note": "gives an alias, not the definition asked for"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:80517", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:987809", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:505040", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:88107", "correct": false, "reader_subject": "health", "note": "narrows \"repeated hives\" to one cause of physical urticaria"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:990393", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:329531", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1087211", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:916306", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:993472", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:82552", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1030214", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1087294", "correct": false, "reader_subject": "science", "note": "repeats a source error (Mauna Kea and Etna are not cinder cones); another cited span says Mauna Kea is a shield volcano"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:52582", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:684463", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:647265", "correct": false, "reader_subject": "science", "note": "lists examples; does not say what the term means"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:57220", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1038786", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:987337", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1036387", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1042179", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1096188", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:541505", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1044249", "correct": true, "reader_subject": "sports", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:483794", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:14375", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1091225", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:929604", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1043941", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:575699", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:120642", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:149226", "correct": false, "reader_subject": "business", "note": "does not state the difference asked for"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:255579", "correct": false, "reader_subject": "education", "note": "gives a special case (12-15 months) instead of the 2-4 years in the reference"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:268548", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1036159", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:541135", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:749931", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:568018", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:504044", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:56911", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:96152", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:662597", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1097747", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:579564", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:572201", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:767896", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1038724", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:636990", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:178480", "correct": false, "reader_subject": "news", "note": "says only that the impact would be catastrophic; names no effect"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:585441", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:119046", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1087195", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1009183", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:749423", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1089177", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:995284", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:135678", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1038859", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1093156", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1030385", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1036434", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1089167", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:986125", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:664377", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1036412", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1043955", "correct": false, "reader_subject": "lifestyle", "note": "a generic \"best shovel\"; not the one for digging palms, differs from the reference"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:263366", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1096319", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:118758", "correct": false, "reader_subject": "health", "note": "builds a definition the cited spans do not state"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:167479", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:987678", "correct": true, "reader_subject": "news", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:166643", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1094507", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:894938", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1026149", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:189588", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1093656", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1081647", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1015447", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:816424", "correct": false, "reader_subject": "science", "note": "defines each term but never states the difference asked for"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:769718", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1100067", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:990091", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:987661", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1009640", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1089208", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1087279", "correct": false, "reader_subject": "business", "note": "generic employability skills, nothing specific to an IT career"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1087258", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:85506", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1093411", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1087289", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1030383", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1101164", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1091228", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:875585", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1033223", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:825770", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:987627", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:277977", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1087280", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1096317", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1100982", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:673118", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:687725", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:857156", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:630617", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:883031", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:825948", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:432492", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:684313", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1101165", "correct": false, "reader_subject": "health", "note": "misreads the span (the shift was of the Fahrenheit range, not to Fahrenheit) and never says which is recommended"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1087298", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1033442", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:763719", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1087177", "correct": true, "reader_subject": "sports", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:765662", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:5799", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:952118", "correct": false, "reader_subject": "lifestyle", "note": "presents Tuesday as fact; reference says Fridays and Sundays, sources disagree"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1034207", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1096630", "correct": true, "reader_subject": "education", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1092125", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:146343", "correct": true, "reader_subject": "technology", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:733099", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1095141", "correct": true, "reader_subject": "entertainment", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:658265", "correct": false, "reader_subject": "general", "note": "surname-origin page claim (Castile) is implausible for a Slavic surname; unclear support"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:737475", "correct": false, "reader_subject": "lifestyle", "note": "answers which lens colour is popular, not what was asked"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:850951", "correct": false, "reader_subject": "entertainment", "note": "lists issues the book touches, not its theme; reference differs"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1089245", "correct": false, "reader_subject": "business", "note": "names oral communication only; no types"}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:550331", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:580981", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:78838", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:815015", "correct": true, "reader_subject": "general", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:1093163", "correct": true, "reader_subject": "lifestyle", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1036070", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:70739", "correct": true, "reader_subject": "health", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:838945", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-1#msmarco-qa:765604", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:1030577", "correct": true, "reader_subject": "business", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:672838", "correct": true, "reader_subject": "science", "note": ""}
+{"key": "answer-eval-gate-haiku-5.5-msmarco-subjects-2#msmarco-qa:674460", "correct": true, "reader_subject": "lifestyle", "note": ""}

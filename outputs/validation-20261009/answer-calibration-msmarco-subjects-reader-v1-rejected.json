@@ -1,0 +1,92 @@
+{
+  "calibration_id": "answer-correctness/msmarco-subjects-reader-v1",
+  "target": "A complete answer responds to the request as asked and is supported by the spans it cites, as judged by a reader who graded each answer individually without seeing its evidence state.",
+  "declared_distribution_shift": 0.5,
+  "accepted": false,
+  "bins": [
+    {
+      "supporting_families": 1,
+      "correct": 39,
+      "incorrect": 2
+    },
+    {
+      "supporting_families": 2,
+      "correct": 20,
+      "incorrect": 1
+    }
+  ],
+  "provenance": {
+    "bin_features": "source families behind the weakest answering claim (the last bin includes larger counts)",
+    "evaluated_on": [
+      {
+        "cases_sha256": "4ef3fa2ff8daa56f247b9fe483f3be25008daced6890daacea8e789a11bfde93",
+        "complete_answers": 65,
+        "judge_model": "openrouter/anthropic/claude-haiku-5.5",
+        "pipeline_model": "openrouter/anthropic/claude-haiku-5.5",
+        "policy_id": "answer-evidence-v2+max_passages=10",
+        "report": "outputs/validation-20261009/answer-eval-gate-haiku-5.5-msmarco-subjects-2.json",
+        "report_sha256": "d0efa3febd9c3128fef5101fb03616ac29376ee5077ea19fd94b5faeb005923e"
+      }
+    ],
+    "fitted_on": [
+      {
+        "cases_sha256": "0ea18194bbb0d2713adb4bbb540b4804172d36b9253caef6a3e1d1089ffdac01",
+        "complete_answers": 62,
+        "judge_model": "openrouter/anthropic/claude-haiku-5.5",
+        "pipeline_model": "openrouter/anthropic/claude-haiku-5.5",
+        "policy_id": "answer-evidence-v2+max_passages=10",
+        "report": "outputs/validation-20261009/answer-eval-gate-haiku-5.5-msmarco-subjects-1.json",
+        "report_sha256": "de03d6d09d14004e64dd9ece65b18faa89fe8529d1c23c1a2eb1022347ff9ae7"
+      }
+    ],
+    "held_out_evaluation": {
+      "accepted": false,
+      "bins": [
+        {
+          "predicted": 0.9302325581395349,
+          "reported_gap": null,
+          "supporting_families": 1,
+          "test_correct": 43,
+          "test_observed": 0.9347826086956522,
+          "test_outcomes": 46,
+          "train_correct": 39,
+          "train_incorrect": 2
+        },
+        {
+          "predicted": 0.9130434782608695,
+          "reported_gap": null,
+          "supporting_families": 2,
+          "test_correct": 19,
+          "test_observed": 1.0,
+          "test_outcomes": 19,
+          "train_correct": 20,
+          "train_incorrect": 1
+        }
+      ],
+      "brier": 0.04536873013901935,
+      "brier_of_constant_base_rate": 0.04402865604738655,
+      "expected_calibration_error": 0.02863809597884427,
+      "log_loss": 0.19732331869090916,
+      "minimum_relative_brier_gain_to_accept": 0.03,
+      "relative_brier_gain_bootstrap_95": [
+        -1.4329960679798894,
+        0.012547790244467429
+      ],
+      "relative_brier_gain_over_base_rate": -0.03043640692076812,
+      "test_outcomes": 65,
+      "test_outcomes_with_a_probability": 65,
+      "train_base_rate": 0.9516129032258065,
+      "train_outcomes": 62
+    },
+    "limitations": [
+      "Correctness of answerable cases is a model's grade against reference answers, not a human judgement.",
+      "Unanswerable labels come from the datasets and are noisy.",
+      "The share of unanswerable requests in the calibration data fixes the base rate; a different mix in use shifts every probability.",
+      "Passages come from datasets, not from live retrieval; declared_distribution_shift is the deployer's statement of that gap, not a measurement.",
+      "English, one pipeline model, one grader model."
+    ],
+    "minimum_outcomes_for_a_probability": 20,
+    "outcomes_resolved_by": "reader labels (outputs/validation-20261009/reader-labels-msmarco-subjects.jsonl)",
+    "variant": "full_one_source"
+  }
+}
