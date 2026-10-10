@@ -1,5 +1,6 @@
 pub mod answer;
 pub mod auth;
+pub mod calibration;
 pub mod chat_model;
 pub mod checklist;
 pub mod client;
@@ -20,6 +21,7 @@ pub use answer::{
     AnswerCitation, AnswerClaim, AnswerPolicy, AnswerTrace, AnsweredSearch, ClaimEvidenceLineage,
     SearchAnswer,
 };
+pub use calibration::{AnswerCalibration, CalibrationBin};
 pub use chat_model::{AnswerModelConfig, AnswerModelProvider, ChatModel};
 pub use client::{OpenSonarXClient, retrieval_candidate_depth};
 pub use config::SdkConfig;

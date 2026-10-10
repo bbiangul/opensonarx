@@ -58,6 +58,10 @@ pub struct SdkConfig {
     /// (default) = no model: the answered path returns the slate unanswered.
     #[serde(default)]
     pub answer_model: Option<crate::chat_model::AnswerModelConfig>,
+    /// Path to an answer calibration table (`crate::calibration`). None
+    /// (default) = complete answers carry no probability.
+    #[serde(default)]
+    pub answer_calibration_path: Option<String>,
 }
 
 fn default_crawl_max() -> usize {
@@ -100,6 +104,7 @@ impl Default for SdkConfig {
             crawl_on_query: false,
             crawl_on_query_max_urls: 3,
             answer_model: None,
+            answer_calibration_path: None,
         }
     }
 }

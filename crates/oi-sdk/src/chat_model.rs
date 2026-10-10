@@ -197,6 +197,13 @@ impl ChatModel {
         format!("{}/{}", self.config.provider.name(), self.config.model)
     }
 
+    /// Ask the model for JSON matching `schema`. Used by evaluation tooling
+    /// that needs a judgment outside the answer path, such as grading an
+    /// answer against reference answers.
+    pub fn structured(&self, system: &str, user: &str, schema: Value) -> Result<Value> {
+        self.chat(system, user, schema)
+    }
+
     fn chat(&self, system: &str, user: &str, schema: Value) -> Result<Value> {
         // The schema constrains decoding where the server supports it and is
         // also stated in the prompt, so adherence does not depend on that.

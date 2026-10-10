@@ -40,6 +40,9 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
         creator_ledger_path: crate::config_file::ConfigFile::config_dir()
             .map(|d| d.join("creator_ledger.json").to_string_lossy().to_string()),
         answer_model: answer_model_from_env(),
+        answer_calibration_path: std::env::var("OI_ANSWER_CALIBRATION")
+            .ok()
+            .filter(|path| !path.trim().is_empty()),
     };
     OpenSonarXClient::new(sdk_config)
 }
@@ -1383,6 +1386,9 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                         d.join("creator_ledger.json").to_string_lossy().to_string()
                                     }),
                                 answer_model: answer_model_from_env(),
+                                answer_calibration_path: std::env::var("OI_ANSWER_CALIBRATION")
+                                    .ok()
+                                    .filter(|path| !path.trim().is_empty()),
                                 ..Default::default()
                             };
                             let api_index_path = crate::config_file::ConfigFile::index_dir();

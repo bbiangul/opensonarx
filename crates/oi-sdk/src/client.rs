@@ -101,6 +101,9 @@ pub struct OpenSonarXClient {
     /// Decides whether each proposed claim answers the request as asked.
     responsiveness_judge: Option<Arc<dyn ResponsivenessJudge>>,
     answer_policy: AnswerPolicy,
+    /// Table that turns a complete answer's evidence state into a
+    /// probability. None = answers stay evidential.
+    answer_calibration: Option<crate::calibration::AnswerCalibration>,
     /// Usage attribution → creator credits (the payoff leg of the market).
     creator_ledger: crate::creator_ledger::CreatorLedger,
 }
@@ -206,6 +209,11 @@ impl OpenSonarXClient {
             .answer_model
             .clone()
             .map(|model| Arc::new(crate::chat_model::ChatModel::new(model)));
+        let answer_calibration = config.answer_calibration_path.as_deref().and_then(|path| {
+            crate::calibration::AnswerCalibration::load(path)
+                .map_err(|error| tracing::warn!("answer calibration not loaded: {error}"))
+                .ok()
+        });
         Self {
             config,
             index,
@@ -230,6 +238,7 @@ impl OpenSonarXClient {
                 .map(|model| model as Arc<dyn StanceJudge>),
             responsiveness_judge: answer_model.map(|model| model as Arc<dyn ResponsivenessJudge>),
             answer_policy: AnswerPolicy::default(),
+            answer_calibration,
             creator_ledger: crate::creator_ledger::CreatorLedger::load(config_creator_ledger_path),
         }
     }
@@ -258,6 +267,11 @@ impl OpenSonarXClient {
             .answer_model
             .clone()
             .map(|model| Arc::new(crate::chat_model::ChatModel::new(model)));
+        let answer_calibration = config.answer_calibration_path.as_deref().and_then(|path| {
+            crate::calibration::AnswerCalibration::load(path)
+                .map_err(|error| tracing::warn!("answer calibration not loaded: {error}"))
+                .ok()
+        });
         Self {
             config,
             index,
@@ -282,6 +296,7 @@ impl OpenSonarXClient {
                 .map(|model| model as Arc<dyn StanceJudge>),
             responsiveness_judge: answer_model.map(|model| model as Arc<dyn ResponsivenessJudge>),
             answer_policy: AnswerPolicy::default(),
+            answer_calibration,
             creator_ledger: crate::creator_ledger::CreatorLedger::load(config_creator_ledger_path),
         }
     }
@@ -357,6 +372,15 @@ impl OpenSonarXClient {
     /// Attach the model that decides whether a claim answers the request.
     pub fn with_responsiveness_judge(mut self, judge: Arc<dyn ResponsivenessJudge>) -> Self {
         self.responsiveness_judge = Some(judge);
+        self
+    }
+
+    /// Attach a calibration table so complete answers carry a probability.
+    pub fn with_answer_calibration(
+        mut self,
+        calibration: crate::calibration::AnswerCalibration,
+    ) -> Self {
+        self.answer_calibration = Some(calibration);
         self
     }
 
@@ -988,6 +1012,9 @@ impl OpenSonarXClient {
                                     &mut checklist,
                                     complete,
                                 );
+                            }
+                            if let Some(calibration) = &self.answer_calibration {
+                                calibration.apply(&mut answer, &checklist);
                             }
                             trace.off_request_claims = answer
                                 .claims

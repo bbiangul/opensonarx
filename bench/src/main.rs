@@ -7,6 +7,7 @@
 )]
 
 mod agent_cost;
+mod answer_calibrate;
 mod answer_eval;
 mod answer_eval_msmarco;
 mod answer_eval_squad;
@@ -313,6 +314,48 @@ enum Command {
         /// Output JSON report
         #[arg(long, default_value = "answer_eval_results.json")]
         output: String,
+    },
+    /// Fit an answer calibration table on answer-eval reports and score it
+    /// on held-out reports (calls a grader model)
+    AnswerCalibrate {
+        /// Training input, `<report.json>:<cases.jsonl>`; repeatable
+        #[arg(long)]
+        train: Vec<String>,
+
+        /// Held-out input, `<report.json>:<cases.jsonl>`; repeatable
+        #[arg(long)]
+        test: Vec<String>,
+
+        /// Assembly variant whose complete answers are calibrated
+        #[arg(long, default_value = "full_one_source")]
+        variant: String,
+
+        #[arg(long, default_value = "openrouter")]
+        grader_provider: String,
+
+        /// Model that grades answers against reference answers
+        #[arg(long)]
+        grader_model: String,
+
+        /// Identifier recorded on every answer that uses the table
+        #[arg(long)]
+        calibration_id: String,
+
+        /// Declared gap between the calibration data and the place of use,
+        /// in [0, 1]; widens intervals
+        #[arg(long, default_value_t = 0.5)]
+        declared_distribution_shift: f64,
+
+        #[arg(long, default_value_t = 8)]
+        concurrency: usize,
+
+        /// Output calibration table (JSON)
+        #[arg(long)]
+        output: String,
+
+        /// Also write every resolved outcome (JSONL)
+        #[arg(long)]
+        outcomes_output: Option<String>,
     },
     /// Convert MS MARCO QA v2.1 rows (JSONL) into multi-source answer-eval
     /// cases (no model needed)
@@ -1420,6 +1463,34 @@ async fn main() {
                 &output,
             ) {
                 eprintln!("answer-eval failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::AnswerCalibrate {
+            train,
+            test,
+            variant,
+            grader_provider,
+            grader_model,
+            calibration_id,
+            declared_distribution_shift,
+            concurrency,
+            output,
+            outcomes_output,
+        } => {
+            if let Err(error) = answer_calibrate::run(
+                &train,
+                &test,
+                &variant,
+                &grader_provider,
+                &grader_model,
+                &calibration_id,
+                declared_distribution_shift,
+                concurrency,
+                &output,
+                outcomes_output.as_deref(),
+            ) {
+                eprintln!("answer-calibrate failed: {error}");
                 std::process::exit(2);
             }
         }

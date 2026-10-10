@@ -90,6 +90,11 @@ struct CaseReport {
 #[derive(Debug, Clone, Serialize)]
 struct VariantOutcome {
     status: String,
+    /// The emitted response text, kept so it can be graded later.
+    summary: String,
+    /// Source families behind the weakest answering claim; 0 when no claim
+    /// answers.
+    min_supporting_families: usize,
     passed: bool,
     /// Whether a reference answer occurs in the emitted text, whatever the
     /// status. None when the case lists no alternative reference answers.
@@ -433,6 +438,15 @@ fn evaluate(
                         .join(" ");
                     contains_gold(&text, &case.expect.answer_contains_any)
                 }),
+                summary: answer.summary.clone(),
+                min_supporting_families: answer
+                    .claims
+                    .iter()
+                    .filter(|claim| claim.status == "corroborated")
+                    .filter_map(|claim| claim.evidence_lineage.as_ref())
+                    .map(|lineage| lineage.reporting_source_families)
+                    .min()
+                    .unwrap_or(0),
                 status: answer.status,
                 cited_gold_evidence,
             },

@@ -76,6 +76,14 @@ pub struct AnswerClaim {
     pub support: f64,
     pub conflict: f64,
     pub ignorance: f64,
+    /// Probability that this claim is correct, from a calibration table
+    /// (`crate::calibration`). Present only on complete answers whose
+    /// evidence state has enough resolved outcomes; see the answer's
+    /// `calibration_id` for the target and the data behind the number.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub p_correct: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub interval_90: Option<(f64, f64)>,
 }
 
 /// What retained bytes establish about how a claim is reported. Source count
@@ -104,6 +112,9 @@ pub struct SearchAnswer {
     pub uncertainty_mode: String,
     pub average_ignorance: Option<f64>,
     pub warning: Option<String>,
+    /// The calibration table behind any `p_correct` in `claims`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub calibration_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -475,6 +486,7 @@ pub fn assemble_answer(
                     "Destino indicado pelo modelo a partir dos resultados; não é verificação de titularidade do site."
                         .to_string(),
                 ),
+                calibration_id: None,
             },
             checklist,
             stats,
@@ -692,6 +704,8 @@ pub fn assemble_answer(
             support: estimate.support,
             conflict: estimate.conflict,
             ignorance: estimate.ignorance,
+            p_correct: None,
+            interval_90: None,
         });
     }
 
@@ -801,6 +815,7 @@ pub fn assemble_answer(
             uncertainty_mode: "evidential_only".to_string(),
             average_ignorance,
             warning,
+            calibration_id: None,
         },
         checklist,
         stats,
@@ -879,6 +894,7 @@ pub fn results_only(policy: &AnswerPolicy) -> (SearchAnswer, EvidenceChecklist) 
             uncertainty_mode: "not_applicable".to_string(),
             average_ignorance: None,
             warning: None,
+            calibration_id: None,
         },
         EvidenceChecklist {
             policy_id: policy.policy_id.clone(),
