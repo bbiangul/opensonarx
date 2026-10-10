@@ -91,21 +91,31 @@ struct CaseReport {
 struct VariantOutcome {
     status: String,
     passed: bool,
+    /// Whether a reference answer occurs in the emitted text, whatever the
+    /// status. None when the case lists no alternative reference answers.
+    gold_in_answer: Option<bool>,
     /// Whether a supporting citation points at a document the dataset marks
     /// as answer evidence. None when the case marks none.
     cited_gold_evidence: Option<bool>,
 }
 
-/// Per-variant totals over all cases.
+/// Per-variant totals over all cases. An emitted response is either
+/// `complete` (status `extractive`: supported and approved as covering the
+/// whole request) or `partial` (status `partial_answer`: supported, coverage
+/// not approved). Everything else counts as abstained.
 #[derive(Debug, Default, Serialize)]
 struct VariantTotals {
-    answerable_correct: usize,
-    answerable_other_wording: usize,
+    answerable_complete: usize,
+    /// Of the complete ones, those containing a reference answer.
+    answerable_complete_with_gold: usize,
+    answerable_partial: usize,
+    answerable_partial_with_gold: usize,
     answerable_abstained: usize,
-    /// Answerable cases answered with a citation to a document the dataset
-    /// marks as answer evidence (a proxy when gold answers are free text).
-    answerable_answered_citing_gold_evidence: usize,
-    unanswerable_answered: usize,
+    /// Answerable cases with a complete or partial response citing a document
+    /// the dataset marks as answer evidence.
+    answerable_emitted_citing_gold_evidence: usize,
+    unanswerable_complete: usize,
+    unanswerable_partial: usize,
 }
 
 #[derive(Debug, Serialize)]
@@ -358,7 +368,9 @@ fn evaluate(
             policy,
         );
         if answer.status == "partial_answer" {
-            let complete = if use_judge && responsiveness {
+            // The gate applies to every variant: they differ in how
+            // responsiveness is decided, not in whether coverage is checked.
+            let complete = if responsiveness {
                 *coverage_cache
                     .entry(answer.summary.clone())
                     .or_insert_with(|| {
@@ -408,6 +420,19 @@ fn evaluate(
             name.to_string(),
             VariantOutcome {
                 passed: expectation_failures(case, &answer).is_empty(),
+                gold_in_answer: (!case.expect.answer_contains_any.is_empty()).then(|| {
+                    let text = std::iter::once(answer.summary.as_str())
+                        .chain(
+                            answer
+                                .claims
+                                .iter()
+                                .filter(|claim| claim.status != "off_request")
+                                .map(|claim| claim.text.as_str()),
+                        )
+                        .collect::<Vec<_>>()
+                        .join(" ");
+                    contains_gold(&text, &case.expect.answer_contains_any)
+                }),
                 status: answer.status,
                 cited_gold_evidence,
             },
@@ -571,18 +596,25 @@ pub fn run(
     for (case, result) in paired() {
         for (name, outcome) in &result.variants {
             let totals = variant_totals.entry(name.clone()).or_default();
-            let answered = outcome.status == "extractive";
+            let complete = outcome.status == "extractive";
+            let partial = outcome.status == "partial_answer";
+            let with_gold = outcome.gold_in_answer == Some(true);
             if expects_answer(case) {
-                match (answered, outcome.passed) {
-                    (_, true) => totals.answerable_correct += 1,
-                    (true, false) => totals.answerable_other_wording += 1,
-                    (false, false) => totals.answerable_abstained += 1,
+                if complete {
+                    totals.answerable_complete += 1;
+                    totals.answerable_complete_with_gold += usize::from(with_gold);
+                } else if partial {
+                    totals.answerable_partial += 1;
+                    totals.answerable_partial_with_gold += usize::from(with_gold);
+                } else {
+                    totals.answerable_abstained += 1;
                 }
-                if answered && outcome.cited_gold_evidence == Some(true) {
-                    totals.answerable_answered_citing_gold_evidence += 1;
+                if (complete || partial) && outcome.cited_gold_evidence == Some(true) {
+                    totals.answerable_emitted_citing_gold_evidence += 1;
                 }
-            } else if supports_no_answer(case) && answered {
-                totals.unanswerable_answered += 1;
+            } else if supports_no_answer(case) {
+                totals.unanswerable_complete += usize::from(complete);
+                totals.unanswerable_partial += usize::from(partial);
             }
         }
     }
@@ -664,12 +696,15 @@ pub fn run(
     );
     for (name, totals) in &report.variants {
         println!(
-            "  variant {name:<18} answerable: {} correct, {} other wording, {} abstained ({} answered citing gold evidence) | unanswerable answered: {}",
-            totals.answerable_correct,
-            totals.answerable_other_wording,
+            "  variant {name:<18} answerable: {} complete ({} with gold), {} partial ({} with gold), {} abstained; {} citing gold evidence | unanswerable: {} complete, {} partial",
+            totals.answerable_complete,
+            totals.answerable_complete_with_gold,
+            totals.answerable_partial,
+            totals.answerable_partial_with_gold,
             totals.answerable_abstained,
-            totals.answerable_answered_citing_gold_evidence,
-            totals.unanswerable_answered,
+            totals.answerable_emitted_citing_gold_evidence,
+            totals.unanswerable_complete,
+            totals.unanswerable_partial,
         );
     }
     Ok(())
