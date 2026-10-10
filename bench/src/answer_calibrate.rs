@@ -20,8 +20,9 @@ use std::collections::BTreeMap;
 /// Engine minimum: a bin with fewer outcomes yields no probability.
 const MIN_BIN_OUTCOMES: u32 = 20;
 /// A table is accepted only if its held-out Brier score beats the constant
-/// training base rate by this relative margin. The project's stop gates use
-/// the same 3% for a probabilistic signal over its baseline.
+/// training base rate by this relative margin and the bootstrap 95% lower
+/// bound of that gain is positive. The project's stop gates set the same two
+/// conditions for a probabilistic signal over its baseline.
 const MIN_RELATIVE_BRIER_GAIN: f64 = 0.03;
 /// Family counts above this share the last bin. Two bins — one source, two
 /// or more — because answers with three or more families are too rare in
@@ -211,6 +212,42 @@ fn outcomes(
     Ok((resolved, provenance))
 }
 
+/// 95% percentile interval of the relative Brier gain over the constant base
+/// rate, from a seeded bootstrap over held-out outcomes (same seed, same
+/// result).
+fn bootstrap_gain_interval(pairs: &[(f64, f64)], base_rate: f64) -> (f64, f64) {
+    const RESAMPLES: usize = 4_000;
+    if pairs.is_empty() {
+        return (0.0, 0.0);
+    }
+    let mut state: u64 = 0x9E37_79B9_7F4A_7C15;
+    let mut next = || {
+        state ^= state << 13;
+        state ^= state >> 7;
+        state ^= state << 17;
+        state
+    };
+    let mut gains = Vec::with_capacity(RESAMPLES);
+    for _ in 0..RESAMPLES {
+        let (mut model, mut baseline) = (0.0, 0.0);
+        for _ in 0..pairs.len() {
+            let (p, y) = pairs[(next() % pairs.len() as u64) as usize];
+            model += (p - y).powi(2);
+            baseline += (base_rate - y).powi(2);
+        }
+        gains.push(if baseline > 0.0 {
+            (baseline - model) / baseline
+        } else {
+            0.0
+        });
+    }
+    gains.sort_by(f64::total_cmp);
+    (
+        gains[RESAMPLES * 25 / 1000],
+        gains[RESAMPLES * 975 / 1000 - 1],
+    )
+}
+
 /// The bin an outcome falls in: its family count, and its gap note when the
 /// table splits on it.
 fn bin_key(outcome: &Outcome, split_on_gap: bool) -> (usize, Option<bool>) {
@@ -328,6 +365,11 @@ fn evaluate(
     } else {
         0.0
     };
+    let pairs: Vec<(f64, f64)> = covered
+        .iter()
+        .map(|(outcome, p)| (*p, f64::from(u8::from(outcome.correct))))
+        .collect();
+    let (gain_lower, gain_upper) = bootstrap_gain_interval(&pairs, base_rate);
     json!({
         "train_outcomes": train.len(),
         "test_outcomes": test.len(),
@@ -337,7 +379,10 @@ fn evaluate(
         "brier_of_constant_base_rate": baseline_brier,
         "relative_brier_gain_over_base_rate": relative_gain,
         "minimum_relative_brier_gain_to_accept": MIN_RELATIVE_BRIER_GAIN,
-        "accepted": !covered.is_empty() && relative_gain >= MIN_RELATIVE_BRIER_GAIN,
+        "relative_brier_gain_bootstrap_95": [gain_lower, gain_upper],
+        "accepted": !covered.is_empty()
+            && relative_gain >= MIN_RELATIVE_BRIER_GAIN
+            && gain_lower > 0.0,
         "log_loss": log_loss,
         "expected_calibration_error": calibration_error,
         "bins": per_bin,
@@ -519,8 +564,8 @@ mod tests {
         };
         let mut train = with_gap(1, false, 27, 3);
         train.extend(with_gap(1, true, 9, 21));
-        let mut test = with_gap(1, false, 9, 1);
-        test.extend(with_gap(1, true, 3, 7));
+        let mut test = with_gap(1, false, 45, 5);
+        test.extend(with_gap(1, true, 15, 35));
 
         let bins = fit(&train, true);
         assert_eq!(bins.len(), 2);
@@ -529,6 +574,12 @@ mod tests {
         assert_eq!(bins[1].reported_gap, Some(true));
         let split = evaluate(&bins, &train, &test, true);
         assert_eq!(split["accepted"], true);
+        assert!(
+            split["relative_brier_gain_bootstrap_95"][0]
+                .as_f64()
+                .unwrap()
+                > 0.0
+        );
         assert!(
             split["relative_brier_gain_over_base_rate"]
                 .as_f64()
@@ -541,6 +592,22 @@ mod tests {
         assert_eq!(merged.len(), 1);
         let unsplit = evaluate(&merged, &train, &test, false);
         assert_eq!(unsplit["accepted"], false);
+    }
+
+    #[test]
+    fn a_gain_whose_lower_bound_is_not_positive_is_not_accepted() {
+        // Bin 1 predicts 25/32 from training. On four held-out outcomes the
+        // point gain is large, but with so few outcomes the bootstrap lower
+        // bound falls below zero.
+        let train = many(1, 24, 6);
+        let test = many(1, 3, 1);
+        let bins = fit(&train, false);
+        let evaluation = evaluate(&bins, &train, &test, false);
+        let interval = &evaluation["relative_brier_gain_bootstrap_95"];
+        assert!(interval[0].as_f64().unwrap() <= interval[1].as_f64().unwrap());
+        assert_eq!(evaluation["accepted"], false);
+        // Same seed, same interval.
+        assert_eq!(evaluate(&bins, &train, &test, false), evaluation);
     }
 
     #[test]
