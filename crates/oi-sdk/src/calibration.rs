@@ -18,11 +18,16 @@ use oi_index::uncertainty::{
 };
 use serde::{Deserialize, Serialize};
 
-/// Resolved outcomes of complete answers whose weakest claim was supported
-/// by this many source families. The largest bin also covers larger counts.
+/// Resolved outcomes of complete answers in one evidence state: the weakest
+/// answering claim was supported by this many source families (the largest
+/// count also covers larger ones) and, when `reported_gap` is set, the
+/// extractor did or did not note that the passages lack something.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CalibrationBin {
     pub supporting_families: usize,
+    /// None when the table does not split on the extractor's gap note.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reported_gap: Option<bool>,
     pub correct: u32,
     pub incorrect: u32,
 }
@@ -37,6 +42,11 @@ pub struct AnswerCalibration {
     /// declared by whoever deploys the table. It widens every interval and,
     /// at the engine's out-of-distribution limit, suppresses the probability.
     pub declared_distribution_shift: f64,
+    /// Whether the table beat its declared baseline on held-out outcomes.
+    /// A table that did not is kept as a record and never produces a
+    /// probability.
+    #[serde(default)]
+    pub accepted: bool,
     pub bins: Vec<CalibrationBin>,
     /// How the table was produced and evaluated; not interpreted here.
     #[serde(default)]
@@ -50,33 +60,38 @@ impl AnswerCalibration {
             .map_err(|error| oi_types::Error::Serialization(format!("{path}: {error}")))
     }
 
-    /// The bin for a claim supported by `families` source families: an exact
-    /// match, or the largest bin when `families` exceeds it. A count below
-    /// the smallest bin has no reference class.
-    pub fn bin_for(&self, families: usize) -> Option<CalibrationBin> {
-        self.bins
+    /// The bin for a claim supported by `families` source families in an
+    /// answer whose extractor did (`reported_gap`) or did not note a gap: an
+    /// exact family match, or the largest family bin when `families` exceeds
+    /// it. A table that does not split on the gap note matches either value.
+    /// A count below the smallest bin has no reference class.
+    pub fn bin_for(&self, families: usize, reported_gap: bool) -> Option<CalibrationBin> {
+        let candidates: Vec<&CalibrationBin> = self
+            .bins
             .iter()
-            .filter(|bin| bin.supporting_families <= families)
-            .max_by_key(|bin| bin.supporting_families)
-            .filter(|bin| {
-                bin.supporting_families == families
-                    || self
-                        .bins
-                        .iter()
-                        .all(|other| other.supporting_families <= bin.supporting_families)
-            })
+            .filter(|bin| bin.reported_gap.is_none_or(|gap| gap == reported_gap))
+            .collect();
+        let largest = candidates.iter().map(|bin| bin.supporting_families).max()?;
+        candidates
+            .into_iter()
+            .find(|bin| bin.supporting_families == families.min(largest))
             .copied()
     }
 
     /// Attach a probability to each answering claim of a complete answer.
     /// Does nothing to partial, abstained or incomplete answers.
     pub fn apply(&self, answer: &mut SearchAnswer, checklist: &EvidenceChecklist) {
-        if answer.status != "extractive"
+        if !self.accepted
+            || answer.status != "extractive"
             || checklist.critical_missing
             || !checklist.complete_answer_supported
         {
             return;
         }
+        let reported_gap = checklist
+            .requirements
+            .iter()
+            .any(|item| item.id.starts_with(crate::answer::MODEL_REPORTED_GAP));
         let config = OpenUncertaintyConfig::default();
         let estimator = OpenUncertainty::new(config.clone(), CashCalibration::fit(&[], &config));
         let mut calibrated = false;
@@ -87,7 +102,7 @@ impl AnswerCalibration {
             let Some(lineage) = &claim.evidence_lineage else {
                 continue;
             };
-            let Some(bin) = self.bin_for(lineage.reporting_source_families) else {
+            let Some(bin) = self.bin_for(lineage.reporting_source_families, reported_gap) else {
                 continue;
             };
             let estimate = estimator.estimate(&ClaimAssessment {
@@ -145,11 +160,13 @@ mod tests {
             calibration_id: "test-calibration".to_string(),
             target: "matches a reference answer".to_string(),
             declared_distribution_shift: shift,
+            accepted: true,
             bins: bins
                 .iter()
                 .map(
                     |&(supporting_families, correct, incorrect)| CalibrationBin {
                         supporting_families,
+                        reported_gap: None,
                         correct,
                         incorrect,
                     },
@@ -235,14 +252,65 @@ mod tests {
     #[test]
     fn larger_family_counts_use_the_largest_bin_only() {
         let calibration = table(&[(1, 70, 30), (2, 90, 10)], 0.0);
-        assert_eq!(calibration.bin_for(1).unwrap().supporting_families, 1);
-        assert_eq!(calibration.bin_for(2).unwrap().supporting_families, 2);
-        assert_eq!(calibration.bin_for(5).unwrap().supporting_families, 2);
-        assert!(calibration.bin_for(0).is_none());
-        // A gap in the table is not filled from the bin below it.
-        let gapped = table(&[(1, 70, 30), (3, 95, 5)], 0.0);
-        assert!(gapped.bin_for(2).is_none());
-        assert_eq!(gapped.bin_for(4).unwrap().supporting_families, 3);
+        assert_eq!(
+            calibration.bin_for(1, false).unwrap().supporting_families,
+            1
+        );
+        assert_eq!(calibration.bin_for(2, true).unwrap().supporting_families, 2);
+        assert_eq!(
+            calibration.bin_for(5, false).unwrap().supporting_families,
+            2
+        );
+        assert!(calibration.bin_for(0, false).is_none());
+        // A hole in the table is not filled from the bin below it.
+        let holed = table(&[(1, 70, 30), (3, 95, 5)], 0.0);
+        assert!(holed.bin_for(2, false).is_none());
+        assert_eq!(holed.bin_for(4, false).unwrap().supporting_families, 3);
+    }
+
+    #[test]
+    fn a_table_split_on_the_gap_note_uses_the_matching_bin() {
+        let mut calibration = table(&[(2, 35, 1), (2, 21, 12)], 0.0);
+        calibration.bins[0].reported_gap = Some(false);
+        calibration.bins[1].reported_gap = Some(true);
+        assert_eq!(calibration.bin_for(2, false).unwrap().correct, 35);
+        assert_eq!(calibration.bin_for(3, true).unwrap().correct, 21);
+
+        let with_gap = |gap: bool| {
+            let mut answer = answer("extractive", vec![claim("corroborated", 2, 0)]);
+            let mut checklist = complete();
+            if gap {
+                checklist
+                    .requirements
+                    .push(crate::checklist::EvidenceRequirement {
+                        id: format!("{} founding year", crate::answer::MODEL_REPORTED_GAP),
+                        claim_index: None,
+                        critical: false,
+                        status: crate::checklist::RequirementStatus::Missing,
+                        evidence_refs: Vec::new(),
+                    });
+            }
+            calibration.apply(&mut answer, &checklist);
+            answer.claims[0].p_correct.unwrap()
+        };
+        assert!((with_gap(false) - 36.0 / 38.0).abs() < 1e-9);
+        assert!((with_gap(true) - 22.0 / 35.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn a_table_that_was_not_accepted_never_produces_a_probability() {
+        let mut calibration = table(&[(2, 90, 10)], 0.0);
+        calibration.accepted = false;
+        let mut answer = answer("extractive", vec![claim("corroborated", 2, 0)]);
+        calibration.apply(&mut answer, &complete());
+        assert_eq!(answer.claims[0].p_correct, None);
+        assert_eq!(answer.uncertainty_mode, "evidential_only");
+        // A table file without the field is not accepted either.
+        let parsed: AnswerCalibration = serde_json::from_str(
+            r#"{"calibration_id":"x","target":"t","declared_distribution_shift":0.0,"bins":[]}"#,
+        )
+        .unwrap();
+        assert!(!parsed.accepted);
     }
 
     #[test]

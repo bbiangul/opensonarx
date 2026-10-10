@@ -19,6 +19,10 @@ use std::collections::BTreeMap;
 
 /// Engine minimum: a bin with fewer outcomes yields no probability.
 const MIN_BIN_OUTCOMES: u32 = 20;
+/// A table is accepted only if its held-out Brier score beats the constant
+/// training base rate by this relative margin. The project's stop gates use
+/// the same 3% for a probabilistic signal over its baseline.
+const MIN_RELATIVE_BRIER_GAIN: f64 = 0.03;
 /// Family counts above this share the last bin. Two bins — one source, two
 /// or more — because answers with three or more families are too rare in
 /// the available data to fill a bin of their own.
@@ -40,6 +44,8 @@ struct Outcome {
     case_id: String,
     report: String,
     families: usize,
+    /// The extractor noted that the passages lack something.
+    reported_gap: bool,
     correct: bool,
     /// `grader` or `dataset_marks_unanswerable`.
     resolved_by: String,
@@ -48,6 +54,7 @@ struct Outcome {
 #[derive(Debug, Serialize)]
 struct BinEvaluation {
     supporting_families: usize,
+    reported_gap: Option<bool>,
     train_correct: u32,
     train_incorrect: u32,
     predicted: Option<f64>,
@@ -115,7 +122,8 @@ fn outcomes(
         .filter_map(|case| Some((case["id"].as_str()?.to_string(), case)))
         .collect();
 
-    // (case id, families, summary, query, references or None when unanswerable)
+    // (case id, families, reported gap, summary, query, references or None
+    // when unanswerable)
     let mut pending = Vec::new();
     for result in report["results"].as_array().into_iter().flatten() {
         let outcome = &result["variants"][variant];
@@ -141,9 +149,13 @@ fn outcomes(
                     .filter_map(|answer| answer.as_str().map(str::to_string))
                     .collect()
             });
+        let reported_gap = result["model_reported_gaps"]
+            .as_array()
+            .is_some_and(|gaps| !gaps.is_empty());
         pending.push((
             id,
             families,
+            reported_gap,
             outcome["summary"].as_str().unwrap_or_default().to_string(),
             case["query"].as_str().unwrap_or_default().to_string(),
             references,
@@ -155,7 +167,7 @@ fn outcomes(
         let graded: Vec<Result<Outcome, String>> = std::thread::scope(|scope| {
             let workers: Vec<_> = batch
                 .iter()
-                .map(|(id, families, summary, query, references)| {
+                .map(|(id, families, reported_gap, summary, query, references)| {
                     scope.spawn(move || {
                         let (correct, resolved_by) = match references {
                             None => (false, "dataset_marks_unanswerable"),
@@ -167,6 +179,7 @@ fn outcomes(
                             case_id: id.clone(),
                             report: report_path.to_string(),
                             families: *families,
+                            reported_gap: *reported_gap,
                             correct,
                             resolved_by: resolved_by.to_string(),
                         })
@@ -198,10 +211,19 @@ fn outcomes(
     Ok((resolved, provenance))
 }
 
-fn fit(train: &[Outcome]) -> Vec<CalibrationBin> {
-    let mut counts: BTreeMap<usize, (u32, u32)> = BTreeMap::new();
+/// The bin an outcome falls in: its family count, and its gap note when the
+/// table splits on it.
+fn bin_key(outcome: &Outcome, split_on_gap: bool) -> (usize, Option<bool>) {
+    (
+        family_bin(outcome.families),
+        split_on_gap.then_some(outcome.reported_gap),
+    )
+}
+
+fn fit(train: &[Outcome], split_on_gap: bool) -> Vec<CalibrationBin> {
+    let mut counts: BTreeMap<(usize, Option<bool>), (u32, u32)> = BTreeMap::new();
     for outcome in train {
-        let entry = counts.entry(family_bin(outcome.families)).or_default();
+        let entry = counts.entry(bin_key(outcome, split_on_gap)).or_default();
         if outcome.correct {
             entry.0 += 1;
         } else {
@@ -211,8 +233,9 @@ fn fit(train: &[Outcome]) -> Vec<CalibrationBin> {
     counts
         .into_iter()
         .map(
-            |(supporting_families, (correct, incorrect))| CalibrationBin {
+            |((supporting_families, reported_gap), (correct, incorrect))| CalibrationBin {
                 supporting_families,
+                reported_gap,
                 correct,
                 incorrect,
             },
@@ -222,14 +245,21 @@ fn fit(train: &[Outcome]) -> Vec<CalibrationBin> {
 
 /// Score the fitted table on held-out outcomes. Only outcomes whose bin has
 /// enough training data receive a prediction; the rest are counted as
-/// uncovered rather than scored.
-fn evaluate(bins: &[CalibrationBin], train: &[Outcome], test: &[Outcome]) -> Value {
-    let usable: BTreeMap<usize, f64> = bins
+/// uncovered rather than scored. The table is accepted when its Brier score
+/// is at least `MIN_RELATIVE_BRIER_GAIN` better than predicting the training
+/// base rate for every answer.
+fn evaluate(
+    bins: &[CalibrationBin],
+    train: &[Outcome],
+    test: &[Outcome],
+    split_on_gap: bool,
+) -> Value {
+    let usable: BTreeMap<(usize, Option<bool>), f64> = bins
         .iter()
         .filter(|bin| bin.correct + bin.incorrect >= MIN_BIN_OUTCOMES)
         .map(|bin| {
             (
-                bin.supporting_families,
+                (bin.supporting_families, bin.reported_gap),
                 predicted(bin.correct, bin.incorrect),
             )
         })
@@ -241,7 +271,7 @@ fn evaluate(bins: &[CalibrationBin], train: &[Outcome], test: &[Outcome]) -> Val
     };
     let covered: Vec<(&Outcome, f64)> = test
         .iter()
-        .filter_map(|outcome| Some((outcome, *usable.get(&family_bin(outcome.families))?)))
+        .filter_map(|outcome| Some((outcome, *usable.get(&bin_key(outcome, split_on_gap))?)))
         .collect();
     let n = covered.len() as f64;
     let squared = |p: f64, outcome: &Outcome| (p - f64::from(u8::from(outcome.correct))).powi(2);
@@ -271,18 +301,20 @@ fn evaluate(bins: &[CalibrationBin], train: &[Outcome], test: &[Outcome]) -> Val
     let mut per_bin = Vec::new();
     let mut calibration_error = 0.0;
     for bin in bins {
+        let key = (bin.supporting_families, bin.reported_gap);
         let in_bin: Vec<&Outcome> = test
             .iter()
-            .filter(|outcome| family_bin(outcome.families) == bin.supporting_families)
+            .filter(|outcome| bin_key(outcome, split_on_gap) == key)
             .collect();
         let correct = in_bin.iter().filter(|outcome| outcome.correct).count();
         let observed = (!in_bin.is_empty()).then(|| correct as f64 / in_bin.len() as f64);
-        let prediction = usable.get(&bin.supporting_families).copied();
+        let prediction = usable.get(&key).copied();
         if let (Some(prediction), Some(observed)) = (prediction, observed) {
             calibration_error += (in_bin.len() as f64 / n.max(1.0)) * (prediction - observed).abs();
         }
         per_bin.push(BinEvaluation {
             supporting_families: bin.supporting_families,
+            reported_gap: bin.reported_gap,
             train_correct: bin.correct,
             train_incorrect: bin.incorrect,
             predicted: prediction,
@@ -291,6 +323,11 @@ fn evaluate(bins: &[CalibrationBin], train: &[Outcome], test: &[Outcome]) -> Val
             test_observed: observed,
         });
     }
+    let relative_gain = if baseline_brier > 0.0 {
+        (baseline_brier - brier) / baseline_brier
+    } else {
+        0.0
+    };
     json!({
         "train_outcomes": train.len(),
         "test_outcomes": test.len(),
@@ -298,6 +335,9 @@ fn evaluate(bins: &[CalibrationBin], train: &[Outcome], test: &[Outcome]) -> Val
         "train_base_rate": base_rate,
         "brier": brier,
         "brier_of_constant_base_rate": baseline_brier,
+        "relative_brier_gain_over_base_rate": relative_gain,
+        "minimum_relative_brier_gain_to_accept": MIN_RELATIVE_BRIER_GAIN,
+        "accepted": !covered.is_empty() && relative_gain >= MIN_RELATIVE_BRIER_GAIN,
         "log_loss": log_loss,
         "expected_calibration_error": calibration_error,
         "bins": per_bin,
@@ -312,6 +352,7 @@ pub fn run(
     grader_provider: &str,
     grader_model: &str,
     calibration_id: &str,
+    split_on_gap: bool,
     declared_distribution_shift: f64,
     concurrency: usize,
     output: &str,
@@ -341,17 +382,22 @@ pub fn run(
     let (train_outcomes, train_sources) = resolve(train)?;
     let (test_outcomes, test_sources) = resolve(test)?;
 
-    let bins = fit(&train_outcomes);
-    let evaluation = evaluate(&bins, &train_outcomes, &test_outcomes);
+    let bins = fit(&train_outcomes, split_on_gap);
+    let evaluation = evaluate(&bins, &train_outcomes, &test_outcomes, split_on_gap);
     let table = AnswerCalibration {
         calibration_id: calibration_id.to_string(),
         target: "A complete answer conveys the same answer as a dataset reference answer, as graded by a model; an answer to a case the dataset marks unanswerable counts as incorrect.".to_string(),
         declared_distribution_shift,
+        accepted: evaluation["accepted"] == true,
         bins: bins.clone(),
         provenance: json!({
             "variant": variant,
             "grader_model": format!("{grader_provider}/{grader_model}"),
-            "bin_feature": "source families behind the weakest answering claim; the last bin includes larger counts",
+            "bin_features": if split_on_gap {
+                "source families behind the weakest answering claim (the last bin includes larger counts) x whether the extractor noted a gap"
+            } else {
+                "source families behind the weakest answering claim (the last bin includes larger counts)"
+            },
             "minimum_outcomes_for_a_probability": MIN_BIN_OUTCOMES,
             "fitted_on": train_sources,
             "evaluated_on": test_sources,
@@ -394,6 +440,7 @@ mod tests {
             case_id: String::new(),
             report: String::new(),
             families,
+            reported_gap: false,
             correct,
             resolved_by: "grader".to_string(),
         }
@@ -411,17 +458,19 @@ mod tests {
         train.extend(many(2, 9, 1));
         train.extend(many(3, 2, 0));
         train.extend(many(5, 1, 1));
-        let bins = fit(&train);
+        let bins = fit(&train, false);
         assert_eq!(
             bins,
             vec![
                 CalibrationBin {
                     supporting_families: 1,
+                    reported_gap: None,
                     correct: 7,
                     incorrect: 3
                 },
                 CalibrationBin {
                     supporting_families: 2,
+                    reported_gap: None,
                     correct: 12,
                     incorrect: 2
                 },
@@ -437,8 +486,8 @@ mod tests {
         train.extend(many(2, 9, 1));
         let mut test = many(1, 3, 1);
         test.extend(many(2, 5, 0));
-        let bins = fit(&train);
-        let evaluation = evaluate(&bins, &train, &test);
+        let bins = fit(&train, false);
+        let evaluation = evaluate(&bins, &train, &test, false);
         let p: f64 = 25.0 / 32.0;
         let brier = (3.0 * (p - 1.0).powi(2) + p.powi(2)) / 4.0;
         assert_eq!(evaluation["test_outcomes"], 9);
@@ -455,6 +504,43 @@ mod tests {
         );
         assert!(evaluation["bins"][1]["predicted"].is_null());
         assert_eq!(evaluation["bins"][1]["test_outcomes"], 5);
+    }
+
+    #[test]
+    fn splitting_on_the_gap_note_separates_bins_and_can_earn_acceptance() {
+        let with_gap = |families: usize, gap: bool, correct: usize, incorrect: usize| {
+            many(families, correct, incorrect)
+                .into_iter()
+                .map(move |mut outcome| {
+                    outcome.reported_gap = gap;
+                    outcome
+                })
+                .collect::<Vec<_>>()
+        };
+        let mut train = with_gap(1, false, 27, 3);
+        train.extend(with_gap(1, true, 9, 21));
+        let mut test = with_gap(1, false, 9, 1);
+        test.extend(with_gap(1, true, 3, 7));
+
+        let bins = fit(&train, true);
+        assert_eq!(bins.len(), 2);
+        assert_eq!(bins[0].reported_gap, Some(false));
+        assert_eq!((bins[0].correct, bins[0].incorrect), (27, 3));
+        assert_eq!(bins[1].reported_gap, Some(true));
+        let split = evaluate(&bins, &train, &test, true);
+        assert_eq!(split["accepted"], true);
+        assert!(
+            split["relative_brier_gain_over_base_rate"]
+                .as_f64()
+                .unwrap()
+                > 0.2
+        );
+
+        // Without the split the single bin predicts the base rate: no gain.
+        let merged = fit(&train, false);
+        assert_eq!(merged.len(), 1);
+        let unsplit = evaluate(&merged, &train, &test, false);
+        assert_eq!(unsplit["accepted"], false);
     }
 
     #[test]

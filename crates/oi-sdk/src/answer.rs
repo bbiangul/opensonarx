@@ -19,6 +19,10 @@ use oi_types::{
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
+/// Prefix of the checklist entries that record what the extractor said the
+/// passages lack.
+pub const MODEL_REPORTED_GAP: &str = "model_reported_gap:";
+
 /// Numeric policy for answer assembly. Versioned by `policy_id`, which is
 /// recorded on every checklist so an answer names the policy that shaped it.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -711,7 +715,7 @@ pub fn assemble_answer(
 
     for missing in &extraction.missing {
         checklist.requirements.push(EvidenceRequirement {
-            id: format!("model_reported_gap: {}", missing.trim()),
+            id: format!("{MODEL_REPORTED_GAP} {}", missing.trim()),
             claim_index: None,
             critical: false,
             status: RequirementStatus::Missing,

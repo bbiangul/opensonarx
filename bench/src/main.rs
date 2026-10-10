@@ -341,6 +341,11 @@ enum Command {
         #[arg(long)]
         calibration_id: String,
 
+        /// Also split bins on whether the extractor noted a gap in the
+        /// passages
+        #[arg(long)]
+        split_on_gap: bool,
+
         /// Declared gap between the calibration data and the place of use,
         /// in [0, 1]; widens intervals
         #[arg(long, default_value_t = 0.5)]
@@ -1473,6 +1478,7 @@ async fn main() {
             grader_provider,
             grader_model,
             calibration_id,
+            split_on_gap,
             declared_distribution_shift,
             concurrency,
             output,
@@ -1485,6 +1491,7 @@ async fn main() {
                 &grader_provider,
                 &grader_model,
                 &calibration_id,
+                split_on_gap,
                 declared_distribution_shift,
                 concurrency,
                 &output,
