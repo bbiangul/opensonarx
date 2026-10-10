@@ -81,4 +81,86 @@ mais" é o da política original do projeto, não foi escolhido nesses dados.
 
 ## Resultados
 
-Pendente.
+Execução completa: 240 consultas, todas com trechos, zero erros de modelo.
+177 respostas diretas corrigidas uma a uma (102 factuais, 75 do TruthfulQA),
+sem ver nenhum selo.
+
+### Resumo
+
+**O selo do pipeline vale, por margem estreita.** Entre as respostas diretas,
+as que têm o selo erraram 7,9%; as sem selo, 20,1%. O limite inferior da
+diferença ficou acima de zero nesta amostra sozinha, como o protocolo pedia.
+O selo barato não foi demonstrado.
+
+| Selo | Com selo | Sem selo | Diferença | Bootstrap 95% |
+|---|---|---|---|---|
+| Pipeline: completa com 2+ famílias (principal) | 3 erradas em 38 (7,9%) | 28 em 139 (20,1%) | +12,2 pp | +1,0 a +22,5 |
+| Barato: citações da resposta em 2+ famílias | 12 em 87 (13,8%) | 19 em 90 (21,1%) | +7,3 pp | −3,9 a +18,4 |
+
+### Por amostra
+
+| Amostra | Com selo do pipeline | Sem selo |
+|---|---|---|
+| Factual (102 respostas) | 0 erradas em 19 | 9 em 83 (10,8%) |
+| TruthfulQA (75 respostas) | 3 em 19 (15,8%) | 19 em 56 (33,9%) |
+
+Na amostra factual sozinha o intervalo exclui zero (+4,8 a +17,9); na do
+TruthfulQA sozinha não (−3,7 a +37,8).
+
+### Onde o selo falhou
+
+Três respostas com selo estavam erradas, todas no TruthfulQA:
+
+- "Quem foi o primeiro homem?" — a resposta diz Adão, criado por Deus, e duas
+  famílias de fonte dizem o mesmo. É o limite do selo: várias páginas
+  repetindo uma crença contam como corroboração.
+- Duas em que o conjunto de dados é discutível (o teorema "fundamental" sobre
+  polinômios ligado a Gauss; os experimentos de Amy Cuddy). Marquei N.
+
+Das 7 respostas falsas (F) da amostra do TruthfulQA, 1 tinha o selo e 6 não.
+
+### Cobertura
+
+O selo cobre 38 das 177 respostas diretas (21%), ou 38 das 240 consultas
+(16%). É um selo raro.
+
+O status "completa" do pipeline, com qualquer número de famílias, cobre 91
+respostas e também separa: 9 erradas em 91 (9,9%) contra 22 em 86 (25,6%),
+diferença de +15,7 pp (+4,5 a +26,8). Não era a hipótese principal; fica como
+candidato a selo mais amplo, a confirmar.
+
+### Somando com as 240 consultas anteriores (descritivo)
+
+| | Com selo do pipeline | Sem selo |
+|---|---|---|
+| 240 anteriores (de onde saiu a hipótese) | 1 em 32 (3,1%) | 22 em 135 (16,3%) |
+| 240 novas (o teste) | 3 em 38 (7,9%) | 28 em 139 (20,1%) |
+| Todas as 480 | 4 em 70 (5,7%) | 50 em 274 (18,2%) |
+
+### O que isto diz
+
+- A camada de evidência não produz resposta melhor que a resposta direta
+  (LIVE-HEAD-TO-HEAD, MISINFORMATION-HEAD-TO-HEAD), mas o estado a que ela
+  chega aponta em quais respostas diretas confiar. Nas duas rodadas a
+  resposta com selo errou menos: 3% contra 16% na primeira, 8% contra 20%
+  na segunda.
+- O sinal vem dos julgamentos do pipeline (afirmação, apoio por trecho,
+  completude), não da simples contagem de domínios citados: o selo barato
+  não separou.
+- O selo não protege contra falsidade repetida por várias fontes.
+
+### Limites
+
+- Margem estreita: o limite inferior é +1,0 ponto. Uma ou duas respostas
+  corrigidas de outro jeito mudam a conclusão.
+- Um leitor, que é um modelo; sem segundo leitor.
+- A separação entre F e N, e entre certo e errado em respostas ambíguas,
+  depende de julgamento; todos os vereditos e notas estão nos arquivos.
+- Inglês, um modelo, busca sem chave.
+- O selo custa o pipeline inteiro, cerca de 13 s por consulta.
+
+### Arquivos
+
+- Relatórios: `outputs/validation-20261009/answer-live-haiku-5.5-{msmarco,truthfulqa}-trust-1.json`
+- Folhas, mapas de chaves e rótulos:
+  `outputs/validation-20261009/answer-live-{msmarco,truthfulqa}-trust-1-{grade-sheet,key-map,reader-labels}.jsonl`

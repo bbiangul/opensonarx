@@ -1,0 +1,102 @@
+{"key": "00be61a986c3a5fe", "id": "msmarco-qa:423034", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "036e3dd08e9bd89a", "id": "msmarco-qa:1014455", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "0444a4c603210be3", "id": "msmarco-qa:684589", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "047a375d85693ddb", "id": "msmarco-qa:736360", "system": "baseline", "verdict": "X", "note": "says CSN \"most commonly\" means a creator sports network; unsupported, and not the usual referent"}
+{"key": "0914295af9734313", "id": "msmarco-qa:1038736", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "0b211fbea76b2252", "id": "msmarco-qa:1101840", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "0f52b95271a15e28", "id": "msmarco-qa:1036023", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "113492b55efdc7f8", "id": "msmarco-qa:464658", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "12c6002850d09322", "id": "msmarco-qa:387549", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "142b6194d436c2e8", "id": "msmarco-qa:591646", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "181f7e401e079b45", "id": "msmarco-qa:1099857", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "182fb5e68710c7df", "id": "msmarco-qa:1089158", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "1a09a44053190ca4", "id": "msmarco-qa:935615", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "1a5da6a2451cbed6", "id": "msmarco-qa:1099515", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "1e421d8803a6205d", "id": "msmarco-qa:359494", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "1e7d0bd5cc041cd2", "id": "msmarco-qa:1015339", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "1fa160cc9c1a0d7f", "id": "msmarco-qa:1087303", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "20fae68c3dd7fd55", "id": "msmarco-qa:1025908", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "279e91eeef050b55", "id": "msmarco-qa:1098032", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "2a42c0c110017a0a", "id": "msmarco-qa:38098", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "2b3e317145fa77a0", "id": "msmarco-qa:1063793", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "2b847317e4b57eb9", "id": "msmarco-qa:197129", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "308699f12d6b8c0d", "id": "msmarco-qa:50227", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "343df662d5236a2b", "id": "msmarco-qa:438010", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "3452f36e843474f9", "id": "msmarco-qa:1026367", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "35e5ca4d1dcfd190", "id": "msmarco-qa:1049287", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "369e6e08988c5ffc", "id": "msmarco-qa:58892", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "36fedbe7c9716ff5", "id": "msmarco-qa:1014909", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "37824dd51e5377b7", "id": "msmarco-qa:844523", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "379f71d8670ad363", "id": "msmarco-qa:1009499", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "3824c83e1c64e74f", "id": "msmarco-qa:296095", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "390a5c147c0790be", "id": "msmarco-qa:1026396", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "3ae6b634efb2a4d5", "id": "msmarco-qa:987642", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "3d49a74501552ba1", "id": "msmarco-qa:673080", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "3fe0bce3e712880b", "id": "msmarco-qa:842589", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "58789b2dbf6dcaaf", "id": "msmarco-qa:857314", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "5babff1d7b6fb75f", "id": "msmarco-qa:908330", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "5ceff7daf62fa08c", "id": "msmarco-qa:68083", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "5d2e5b3219c3b9d6", "id": "msmarco-qa:536254", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "5e3b4fd398777ca6", "id": "msmarco-qa:1044170", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "62d8409b1593575c", "id": "msmarco-qa:1038873", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "642d36f657ec6c06", "id": "msmarco-qa:1033250", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "6aa6d9015b79830e", "id": "msmarco-qa:573969", "system": "baseline", "verdict": "X", "note": "gives the decorating steps and says itself that the first six steps are missing"}
+{"key": "6c894d6d03dad66a", "id": "msmarco-qa:267641", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "7226ad82271486fb", "id": "msmarco-qa:588093", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "7276d48f3c108966", "id": "msmarco-qa:260791", "system": "baseline", "verdict": "X", "note": "answers about S1 shops amending orders from one blog post; unclear that this is what was asked about ASK"}
+{"key": "746248ddb103da4a", "id": "msmarco-qa:550174", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "747c0625a16c7794", "id": "msmarco-qa:1044204", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "75236c815d7222cc", "id": "msmarco-qa:1009503", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "7b10e92f2b01cc92", "id": "msmarco-qa:317185", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "7d7693ec3fcb168e", "id": "msmarco-qa:373126", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "7f8b5f589e9cc7bc", "id": "msmarco-qa:585464", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "811571866f2c30c4", "id": "msmarco-qa:1030542", "system": "baseline", "verdict": "X", "note": "annual figure ($55,900) and hourly figure ($17.47) from the same page cannot both hold"}
+{"key": "8374226172cab0a9", "id": "msmarco-qa:1091481", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "8638025eb7095f7b", "id": "msmarco-qa:1015312", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "8c2719c99c8cac55", "id": "msmarco-qa:1096189", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "8ed9844996382e46", "id": "msmarco-qa:1041546", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "92f63c350ac80535", "id": "msmarco-qa:1038298", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "9323ca592c9dea81", "id": "msmarco-qa:732776", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "969f73bdf8ccfab4", "id": "msmarco-qa:1009279", "system": "baseline", "verdict": "X", "note": "list is cut off and it says itself that the two busiest weekends are missing"}
+{"key": "9a6c762d79306fa5", "id": "msmarco-qa:1038587", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "9ce9b7bf8998a1de", "id": "msmarco-qa:1036123", "system": "baseline", "verdict": "X", "note": "gives 75.3 J/(mol K), which is liquid water; water vapour is about 33.6"}
+{"key": "a54e1f8aa47cbafb", "id": "msmarco-qa:1099899", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "a73042a897828e4e", "id": "msmarco-qa:646765", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "a8ed430cb360cb7d", "id": "msmarco-qa:872794", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "b03013013a04295e", "id": "msmarco-qa:606410", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "b719de4cfca3fd09", "id": "msmarco-qa:763428", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "b77de46d30f99a9c", "id": "msmarco-qa:81783", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "b7ad7facfb12af8a", "id": "msmarco-qa:759341", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "babc9d06c7cc90a6", "id": "msmarco-qa:857733", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "be3859457c5aac13", "id": "msmarco-qa:842108", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "bf9c7f7c7e0dfa86", "id": "msmarco-qa:865074", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "c299544a0d211a63", "id": "msmarco-qa:1036416", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "c71d4c18ef0922d8", "id": "msmarco-qa:524864", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "c77a44576729364a", "id": "msmarco-qa:692160", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "c874aad608b360f8", "id": "msmarco-qa:1074570", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "c938370c10246ad3", "id": "msmarco-qa:265556", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "c974c0e702bbdf88", "id": "msmarco-qa:77301", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "c9e1b54b499ab2d0", "id": "msmarco-qa:406968", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "cf3a17d629648b70", "id": "msmarco-qa:371252", "system": "baseline", "verdict": "X", "note": "swaps the test formats (minors take 46 questions, adults 36) and applies the six-month hold to everyone"}
+{"key": "d179c5544b8533ef", "id": "msmarco-qa:1036439", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "d256ac798629e8a5", "id": "msmarco-qa:6554", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "d4c86fe870fc1cc0", "id": "msmarco-qa:1097749", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "d7e7e520f2a8cd3c", "id": "msmarco-qa:79448", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "dc1fd0e9b02dfd16", "id": "msmarco-qa:1022332", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "dd548db6cd4dc834", "id": "msmarco-qa:365437", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "df1d47b0df966a2b", "id": "msmarco-qa:610431", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "dfb39d7305ad7d8f", "id": "msmarco-qa:714921", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "e0e4fa98201f6cff", "id": "msmarco-qa:231139", "system": "baseline", "verdict": "X", "note": "gives 127 km, which is the Orlando station; says itself the match is uncertain"}
+{"key": "e2863a15685f7e49", "id": "msmarco-qa:518948", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "e37dcf449fc6bfd3", "id": "msmarco-qa:835798", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "e4f70a26ddeda324", "id": "msmarco-qa:308936", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "e891aa51c05a85a6", "id": "msmarco-qa:1048014", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "edc48c02aecef9bd", "id": "msmarco-qa:399968", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "ef3b642e160c5699", "id": "msmarco-qa:1096064", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "f2368bfd846d192a", "id": "msmarco-qa:730031", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "f3214db3ee83493f", "id": "msmarco-qa:217514", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "f9aeb271b74ef983", "id": "msmarco-qa:1044248", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "fb755d7a53420e18", "id": "msmarco-qa:203703", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "fb96d5ff8bbc3526", "id": "msmarco-qa:241826", "system": "baseline", "verdict": "X", "note": "gives one to two days as fact; the reference and food-safety guidance say three to four"}
+{"key": "fd813dfeeb2f3713", "id": "msmarco-qa:1014827", "system": "baseline", "verdict": "C", "note": ""}
+{"key": "ffc922f247a064f2", "id": "msmarco-qa:1015363", "system": "baseline", "verdict": "C", "note": ""}
