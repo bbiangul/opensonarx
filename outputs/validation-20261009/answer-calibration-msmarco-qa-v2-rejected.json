@@ -2,7 +2,7 @@
   "calibration_id": "answer-correctness-msmarco-qa-v2",
   "target": "A complete answer conveys the same answer as a dataset reference answer, as graded by a model; an answer to a case the dataset marks unanswerable counts as incorrect.",
   "declared_distribution_shift": 0.5,
-  "accepted": true,
+  "accepted": false,
   "bins": [
     {
       "supporting_families": 1,
@@ -137,14 +137,14 @@
           "reported_gap": true,
           "supporting_families": 2,
           "test_correct": 8,
-          "test_observed": 0.38095238095238093,
+          "test_observed": 0.380952380952381,
           "test_outcomes": 21,
           "train_correct": 35,
           "train_incorrect": 17
         }
       ],
       "brier": 0.22371358259489155,
-      "brier_of_constant_base_rate": 0.24306076621847394,
+      "brier_of_constant_base_rate": 0.24306076621847392,
       "expected_calibration_error": 0.08134050114690472,
       "log_loss": 0.6366210405221614,
       "minimum_relative_brier_gain_to_accept": 0.03,
@@ -162,6 +162,98 @@
       "English, one pipeline model, one grader model."
     ],
     "minimum_outcomes_for_a_probability": 20,
+    "replication": {
+      "evaluated_on": [
+        {
+          "cases_sha256": "7c59d43da6e131c6f11f081b16c55eebfe0745341cd7f7ef7fe3075cf9ebe650",
+          "complete_answers": 63,
+          "judge_model": "openrouter/anthropic/claude-haiku-5.5",
+          "pipeline_model": "openrouter/anthropic/claude-haiku-5.5",
+          "policy_id": "answer-evidence-v2+max_passages=10",
+          "report": "outputs/validation-20261009/answer-eval-gate-haiku-5.5-msmarco-cal-test-8.json",
+          "report_sha256": "3d9ef5099b089f7bdfe9f70dd01cebdcd9794f5f88ebbf2c543b2667a436afdc"
+        },
+        {
+          "cases_sha256": "9991d44e689ae286773dcd186e319ecec4ddbcf07cda773ab6a9c758777a389d",
+          "complete_answers": 71,
+          "judge_model": "openrouter/anthropic/claude-haiku-5.5",
+          "pipeline_model": "openrouter/anthropic/claude-haiku-5.5",
+          "policy_id": "answer-evidence-v2+max_passages=10",
+          "report": "outputs/validation-20261009/answer-eval-gate-haiku-5.5-msmarco-cal-test-9.json",
+          "report_sha256": "89007d14e78dea2710364cfa7e1199971b511b61ebf4b811061ac37a2af15cb3"
+        },
+        {
+          "cases_sha256": "315f1ab36ad43a340592e824ea92b1e4c8f7e0c60a22dec7bef0a528bdf3371a",
+          "complete_answers": 76,
+          "judge_model": "openrouter/anthropic/claude-haiku-5.5",
+          "pipeline_model": "openrouter/anthropic/claude-haiku-5.5",
+          "policy_id": "answer-evidence-v2+max_passages=10",
+          "report": "outputs/validation-20261009/answer-eval-gate-haiku-5.5-msmarco-cal-test-10.json",
+          "report_sha256": "264cf727c11ae7badf2d087f7ccef857446e7f9a3724030ee27b0bbce01526f8"
+        }
+      ],
+      "grader_model": "openrouter/anthropic/claude-sonnet-5.5",
+      "held_out_evaluation": {
+        "accepted": false,
+        "bins": [
+          {
+            "predicted": 0.7058823529411765,
+            "reported_gap": false,
+            "supporting_families": 1,
+            "test_correct": 30,
+            "test_observed": 0.7894736842105263,
+            "test_outcomes": 38,
+            "train_correct": 35,
+            "train_incorrect": 14
+          },
+          {
+            "predicted": 0.5063291139240507,
+            "reported_gap": true,
+            "supporting_families": 1,
+            "test_correct": 64,
+            "test_observed": 0.6464646464646465,
+            "test_outcomes": 99,
+            "train_correct": 79,
+            "train_incorrect": 77
+          },
+          {
+            "predicted": 0.8412698412698413,
+            "reported_gap": false,
+            "supporting_families": 2,
+            "test_correct": 32,
+            "test_observed": 0.8,
+            "test_outcomes": 40,
+            "train_correct": 52,
+            "train_incorrect": 9
+          },
+          {
+            "predicted": 0.6666666666666666,
+            "reported_gap": true,
+            "supporting_families": 2,
+            "test_correct": 17,
+            "test_observed": 0.5151515151515151,
+            "test_outcomes": 33,
+            "train_correct": 35,
+            "train_incorrect": 17
+          }
+        ],
+        "brier": 0.22199935370312385,
+        "brier_of_constant_base_rate": 0.21964518808591438,
+        "expected_calibration_error": 0.11286039028832348,
+        "log_loss": 0.6344184263428497,
+        "minimum_relative_brier_gain_to_accept": 0.03,
+        "relative_brier_gain_bootstrap_95": [
+          -0.08585208514541981,
+          0.05975096021890116
+        ],
+        "relative_brier_gain_over_base_rate": -0.010718038659188089,
+        "test_outcomes": 210,
+        "test_outcomes_with_a_probability": 210,
+        "train_base_rate": 0.6320754716981132,
+        "train_outcomes": 318
+      },
+      "note": "Table not refitted. Scored on reports never used to fit or to evaluate it before; `accepted` follows this replication alone."
+    },
     "variant": "full_one_source"
   }
 }
