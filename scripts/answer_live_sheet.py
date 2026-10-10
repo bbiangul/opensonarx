@@ -7,7 +7,10 @@ an opaque key and are ordered by it, so the sheet says neither which system
 wrote a response nor what status it had. The key-to-system map goes to a
 separate file that is only read after grading.
 
-Usage: answer_live_sheet.py <report.json> <sheet.jsonl> <key-map.jsonl>
+When a cases file is given, each item also lists the false answers the
+dataset records for that request.
+
+Usage: answer_live_sheet.py <report.json> <sheet.jsonl> <key-map.jsonl> [cases.jsonl]
 """
 import hashlib
 import json
@@ -16,6 +19,12 @@ import sys
 
 def main() -> None:
     report_path, sheet_path, map_path = sys.argv[1:4]
+    false_answers = {}
+    if len(sys.argv) > 4:
+        for line in open(sys.argv[4]):
+            if line.strip():
+                case = json.loads(line)
+                false_answers[case["id"]] = case.get("known_false_answers") or []
     report = json.load(open(report_path))
     stem = report_path.rsplit("/", 1)[-1].removesuffix(".json")
     items = []
@@ -45,6 +54,7 @@ def main() -> None:
                         "key": key,
                         "request": result["query"],
                         "reference_answers": result.get("reference_answers") or [],
+                        "known_false_answers": false_answers.get(result["id"], []),
                         "response": response,
                         "cited_spans": spans,
                     },
