@@ -389,6 +389,87 @@ fn evaluate(
     })
 }
 
+/// Score an existing table on new held-out reports without refitting it.
+/// The table's bins are taken as they are; the baseline is the base rate of
+/// the outcomes the table was fitted on. The table is rewritten with the
+/// replication recorded and `accepted` set by the replication alone.
+pub fn replicate(
+    table_path: &str,
+    test: &[String],
+    variant: &str,
+    grader_provider: &str,
+    grader_model: &str,
+    concurrency: usize,
+    outcomes_output: Option<&str>,
+) -> Result<(), String> {
+    if test.is_empty() {
+        return Err("at least one --test report is required".to_string());
+    }
+    let mut table = AnswerCalibration::load(table_path).map_err(|error| error.to_string())?;
+    let config = match grader_provider {
+        "ollama" => AnswerModelConfig::new(grader_model),
+        "openrouter" => AnswerModelConfig::openrouter(grader_model),
+        other => return Err(format!("unknown --grader-provider {other:?}")),
+    };
+    let grader = ChatModel::new(config);
+    let mut held_out = Vec::new();
+    let mut sources = Vec::new();
+    for spec in test {
+        let (resolved, source) = outcomes(spec, variant, &grader, concurrency)?;
+        eprintln!("{spec}: {} complete answers resolved", resolved.len());
+        held_out.extend(resolved);
+        sources.push(source);
+    }
+    // Stand-ins that reproduce the fitted counts, so the baseline is the
+    // training base rate without re-reading or re-grading training data.
+    let fitted: Vec<Outcome> = table
+        .bins
+        .iter()
+        .flat_map(|bin| {
+            let outcome = |correct: bool| Outcome {
+                case_id: String::new(),
+                report: String::new(),
+                families: bin.supporting_families,
+                reported_gap: bin.reported_gap.unwrap_or(false),
+                correct,
+                resolved_by: "fitted_table".to_string(),
+            };
+            std::iter::repeat_n(outcome(true), bin.correct as usize)
+                .chain(std::iter::repeat_n(outcome(false), bin.incorrect as usize))
+        })
+        .collect();
+    let split_on_gap = table.bins.iter().any(|bin| bin.reported_gap.is_some());
+    let evaluation = evaluate(&table.bins, &fitted, &held_out, split_on_gap);
+    table.accepted = evaluation["accepted"] == true;
+    if let Some(provenance) = table.provenance.as_object_mut() {
+        provenance.insert(
+            "replication".to_string(),
+            json!({
+                "note": "Table not refitted. Scored on reports never used to fit or to evaluate it before; `accepted` follows this replication alone.",
+                "grader_model": format!("{grader_provider}/{grader_model}"),
+                "evaluated_on": sources,
+                "held_out_evaluation": evaluation,
+            }),
+        );
+    }
+    let json = serde_json::to_string_pretty(&table).map_err(|error| error.to_string())?;
+    std::fs::write(table_path, json + "\n")
+        .map_err(|error| format!("cannot write {table_path}: {error}"))?;
+    if let Some(path) = outcomes_output {
+        let lines: Vec<String> = held_out
+            .iter()
+            .map(|outcome| json!({ "split": "replication", "outcome": outcome }).to_string())
+            .collect();
+        std::fs::write(path, lines.join("\n") + "\n")
+            .map_err(|error| format!("cannot write {path}: {error}"))?;
+    }
+    println!(
+        "answer-calibrate replication → {table_path}\n{}",
+        serde_json::to_string_pretty(&evaluation).unwrap_or_default()
+    );
+    Ok(())
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn run(
     train: &[String],

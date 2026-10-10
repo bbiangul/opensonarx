@@ -322,6 +322,11 @@ enum Command {
         #[arg(long)]
         train: Vec<String>,
 
+        /// Score this existing table on --test without refitting it, and
+        /// record the replication in the table (ignores --train)
+        #[arg(long)]
+        replicate: Option<String>,
+
         /// Held-out input, `<report.json>:<cases.jsonl>`; repeatable
         #[arg(long)]
         test: Vec<String>,
@@ -338,7 +343,7 @@ enum Command {
         grader_model: String,
 
         /// Identifier recorded on every answer that uses the table
-        #[arg(long)]
+        #[arg(long, default_value = "")]
         calibration_id: String,
 
         /// Also split bins on whether the extractor noted a gap in the
@@ -355,7 +360,7 @@ enum Command {
         concurrency: usize,
 
         /// Output calibration table (JSON)
-        #[arg(long)]
+        #[arg(long, default_value = "")]
         output: String,
 
         /// Also write every resolved outcome (JSONL)
@@ -1473,6 +1478,7 @@ async fn main() {
         }
         Command::AnswerCalibrate {
             train,
+            replicate,
             test,
             variant,
             grader_provider,
@@ -1484,19 +1490,34 @@ async fn main() {
             output,
             outcomes_output,
         } => {
-            if let Err(error) = answer_calibrate::run(
-                &train,
-                &test,
-                &variant,
-                &grader_provider,
-                &grader_model,
-                &calibration_id,
-                split_on_gap,
-                declared_distribution_shift,
-                concurrency,
-                &output,
-                outcomes_output.as_deref(),
-            ) {
+            let outcome = if let Some(table) = replicate {
+                answer_calibrate::replicate(
+                    &table,
+                    &test,
+                    &variant,
+                    &grader_provider,
+                    &grader_model,
+                    concurrency,
+                    outcomes_output.as_deref(),
+                )
+            } else if calibration_id.is_empty() || output.is_empty() {
+                Err("--calibration-id and --output are required when fitting".to_string())
+            } else {
+                answer_calibrate::run(
+                    &train,
+                    &test,
+                    &variant,
+                    &grader_provider,
+                    &grader_model,
+                    &calibration_id,
+                    split_on_gap,
+                    declared_distribution_shift,
+                    concurrency,
+                    &output,
+                    outcomes_output.as_deref(),
+                )
+            };
+            if let Err(error) = outcome {
                 eprintln!("answer-calibrate failed: {error}");
                 std::process::exit(2);
             }
