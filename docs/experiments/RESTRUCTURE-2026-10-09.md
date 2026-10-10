@@ -258,6 +258,19 @@ Leitura:
 - A latência de ponta a ponta com o modelo hospedado (busca + coleta +
   modelo) não foi medida, só a do caminho de resposta.
 
+## Depois deste registro
+
+- **Gate de completude** (`5fbc46a`, de outra sessão): uma resposta apoiada
+  sai como `partial_answer` e só vira `extractive` se uma checagem da
+  resposta final aprovar que ela cobre a pergunta inteira. Ver
+  [COMPLETENESS-GATE-2026-10-09.md](COMPLETENESS-GATE-2026-10-09.md). **Todas
+  as medições deste arquivo são anteriores ao gate.**
+- **Regra das duas fontes**, medida em consultas reais do MS MARCO QA: ver
+  [TWO-SOURCE-RULE-2026-10-10.md](TWO-SOURCE-RULE-2026-10-10.md).
+- No `answer-eval`, as variantes sem juiz não recebem a checagem de
+  completude e por isso nunca chegam a `extractive` depois do gate; a
+  comparação entre variantes precisa passar a contar `partial_answer`.
+
 ## Próximos passos
 
 1. Medir o efeito da regra de duas fontes sobre as respostas indevidas (hoje
