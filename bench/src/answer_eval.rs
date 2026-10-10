@@ -315,10 +315,10 @@ fn evaluate(
         None
     };
 
-    // One model pass, several assemblies: each variant decides responsiveness
-    // from a different subset of the same model outputs, so the variants
-    // differ only by what the pipeline does with them.
-    let assemble = |use_substitution: bool, use_judge: bool| {
+    // Share extraction and per-claim judgments. Coverage is evaluated on each
+    // distinct final response, because filtering can change what is answered.
+    let mut coverage_cache = BTreeMap::new();
+    let mut assemble = |use_substitution: bool, use_judge: bool| {
         let mut claims = considered.to_vec();
         if !use_substitution {
             for claim in &mut claims {
@@ -330,7 +330,7 @@ fn evaluate(
             &claims,
             verdicts.as_deref().filter(|_| use_judge),
         );
-        assemble_answer(
+        let (mut answer, mut checklist, stats) = assemble_answer(
             &results,
             &passages,
             &extraction,
@@ -339,7 +339,24 @@ fn evaluate(
                 responsive: &decisions,
             },
             policy,
-        )
+        );
+        if answer.status == "partial_answer" {
+            let complete = if use_judge && responsiveness {
+                *coverage_cache
+                    .entry(answer.summary.clone())
+                    .or_insert_with(|| {
+                        judge
+                            .complete_request(&case.query, &answer.summary)
+                            .map_err(|error| model_error = Some(error.to_string()))
+                            .ok()
+                            .flatten()
+                    })
+            } else {
+                None
+            };
+            oi_sdk::answer::apply_completeness(&mut answer, &mut checklist, complete);
+        }
+        (answer, checklist, stats)
     };
     let variants: BTreeMap<String, VariantOutcome> = [
         ("stance_only", false, false),

@@ -1,0 +1,19 @@
+{
+  "status": "implementer_selected_development_pilot_not_holdout",
+  "pages": [
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "https://docs.python.org/3/tutorial/errors.html",
+    "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html"
+  ],
+  "queries": [
+    {"query":"Which three states can a JavaScript Promise be in?", "answerable":true, "gold_all":["pending","fulfilled","rejected"]},
+    {"query":"Quais são os três estados de uma Promise em JavaScript?", "answerable":true, "gold_all":[], "gold_any":["pendente","pending"]},
+    {"query":"When is the else clause of a Python try statement executed?", "answerable":true, "gold_all":[], "gold_any":["no exception","does not raise","without","nenhuma exce"]},
+    {"query":"How many owners can a value have at a time in Rust?", "answerable":true, "gold_all":[], "gold_any":["one","single"]},
+    {"query":"Which year was JavaScript Promise invented by Ada Lovelace?", "answerable":false},
+    {"query":"Qual é a taxa em reais cobrada pela Mozilla para criar uma Promise?", "answerable":false},
+    {"query":"What is the annual dollar fee for using Python try except statements?", "answerable":false},
+    {"query":"How many owners does Rust allow for a value on Mars specifically?", "answerable":false}
+  ]
+}

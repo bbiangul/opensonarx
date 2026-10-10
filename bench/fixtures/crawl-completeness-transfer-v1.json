@@ -1,0 +1,18 @@
+{
+  "status": "development_transfer_cases_frozen_before_execution_not_sealed_holdout",
+  "scope": "New questions on the same four retained documents; no market baseline or generalization claim.",
+  "pages": [
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "https://docs.python.org/3/tutorial/errors.html",
+    "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html"
+  ],
+  "queries": [
+    {"query":"List all three ownership rules in Rust, including what happens when the owner goes out of scope.", "answerable":true, "gold_all":["owner"], "gold_any":["dropped","drop"], "manual_expectation":"Owner exists, only one at a time, dropped when owner leaves scope; all three required."},
+    {"query":"Quais são as três regras de ownership do Rust, incluindo o que acontece quando o dono sai do escopo?", "answerable":true, "gold_all":[], "gold_any":["escopo","scope"], "manual_expectation":"Same three rules in Portuguese; no single rule may count as complete."},
+    {"query":"Can multiple Python except handlers execute for one exception, and do they handle exceptions raised in other handlers of the same try statement?", "answerable":true, "gold_all":[], "gold_any":["one","um"], "manual_expectation":"At most one handler executes; it handles exceptions in corresponding try clause, not sibling handlers. Both requested parts required."},
+    {"query":"Does a resolved JavaScript Promise necessarily mean it has fulfilled, or can it still be pending or rejected?", "answerable":true, "gold_all":["pending","rejected"], "manual_expectation":"Resolved does not imply fulfilled; pending or rejected is possible."},
+    {"query":"List the three states of a JavaScript Promise and give the annual licensing fee charged by Mozilla for using each state.", "answerable":false, "manual_expectation":"Partial answer is allowed only if explicitly marked partial; no fee invented and no complete answer."},
+    {"query":"List the three Rust ownership rules and the exact date on which each rule was first adopted.", "answerable":false, "manual_expectation":"Partial sourced rules are allowed only if explicitly partial; adoption dates are not in retained evidence."}
+  ]
+}

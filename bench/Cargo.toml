@@ -8,6 +8,16 @@ publish = false
 name = "oi-bench"
 path = "src/main.rs"
 
+# These examples load real ONNX models; without the features they do not
+# build, so they are skipped by a plain `cargo test --workspace`.
+[[example]]
+name = "crawl_ablation"
+required-features = ["onnx", "facts-onnx"]
+
+[[example]]
+name = "ner_smoke_measure"
+required-features = ["facts-onnx"]
+
 [features]
 default = []
 onnx = ["oi-embed/onnx", "oi-sdk/onnx"]

@@ -95,7 +95,7 @@ pub struct ClaimEvidenceLineage {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SearchAnswer {
-    /// `destination`, `extractive`, `insufficient_evidence`, or `results_only`.
+    /// `destination`, `extractive`, `partial_answer`, `insufficient_evidence`, or `results_only`.
     pub status: String,
     /// The request kind as read by the model, or `unclassified`.
     pub intent: String,
@@ -156,6 +156,8 @@ pub struct AnswerTrace {
     pub hydration_ms: f64,
     pub extraction_ms: f64,
     pub stance_ms: f64,
+    #[serde(default)]
+    pub completeness_ms: f64,
     pub registry_lookup_ms: f64,
     #[serde(default)]
     pub registry_lookup_errors: usize,
@@ -230,11 +232,9 @@ pub fn build_passages(results: &[SearchResultItem], policy: &AnswerPolicy) -> Ve
         .filter_map(|(index, result)| {
             let retained = !result.content_md.trim().is_empty();
             let body = if retained {
-                result
-                    .content_relevant
-                    .as_deref()
-                    .filter(|relevant| !relevant.trim().is_empty())
-                    .unwrap_or(&result.content_md)
+                // Search previews can omit list items, negations and qualifiers.
+                // Evidence must remain a contiguous slice of the retained source.
+                &result.content_md
             } else {
                 &result.snippet
             };
@@ -431,7 +431,8 @@ pub struct ClaimJudgments<'a> {
     pub responsive: &'a [Option<bool>],
 }
 
-/// Assemble the answer from model proposals and judgments.
+/// Assemble a candidate from model proposals and judgments. Supported candidates
+/// remain partial until `apply_completeness` checks the final response's coverage.
 pub fn assemble_answer(
     results: &[SearchResultItem],
     passages: &[EvidencePassage],
@@ -603,7 +604,7 @@ pub fn assemble_answer(
                     .collect(),
             ),
         ];
-        if judgments.is_none() {
+        if judgments.and_then(|items| items.get(index)).is_none() {
             requirements.push(EvidenceRequirement {
                 id: "stance_judged".to_string(),
                 claim_index: Some(index),
@@ -725,8 +726,9 @@ pub fn assemble_answer(
         .requirements
         .iter()
         .any(|item| item.critical && item.status != RequirementStatus::Satisfied);
-    checklist.complete_answer_supported =
-        corroborated > 0 && corroborated == on_request && !checklist.critical_missing;
+    // Assembly establishes claim support, not coverage of the entire request.
+    // A separate check must inspect the response after off-request filtering.
+    checklist.complete_answer_supported = false;
 
     let average_ignorance = (!claims.is_empty())
         .then(|| claims.iter().map(|claim| claim.ignorance).sum::<f64>() / claims.len() as f64);
@@ -757,9 +759,9 @@ pub fn assemble_answer(
             "As fontes retidas divergem; veja as citações de apoio e de contradição.".to_string(),
             Some("Há contradição no texto retido.".to_string()),
         )
-    } else if corroborated > 0 {
+    } else if corroborated > 0 && !checklist.critical_missing {
         (
-            "extractive",
+            "partial_answer",
             claims
                 .iter()
                 .filter(|claim| claim.status == "corroborated")
@@ -774,13 +776,21 @@ pub fn assemble_answer(
     } else {
         (
             "insufficient_evidence",
-            format!(
-                "Afirmação localizada em menos de {} famílias de fontes distintas.",
-                policy.min_source_families
-            ),
+            "As evidências ou verificações obrigatórias são insuficientes; veja os requisitos pendentes.".to_string(),
             None,
         )
     };
+
+    if status == "partial_answer" {
+        checklist.requirements.push(EvidenceRequirement {
+            id: "whole_request_covered".into(),
+            claim_index: None,
+            critical: true,
+            status: RequirementStatus::Unknown,
+            evidence_refs: Vec::new(),
+        });
+        checklist.critical_missing = true;
+    }
 
     (
         SearchAnswer {
@@ -795,6 +805,52 @@ pub fn assemble_answer(
         checklist,
         stats,
     )
+}
+
+/// Finalize a supported candidate using a whole-response coverage verdict.
+/// Unknown and failed checks preserve the useful partial response but never
+/// label it complete. This does not establish truth beyond retained evidence.
+pub fn apply_completeness(
+    answer: &mut SearchAnswer,
+    checklist: &mut EvidenceChecklist,
+    complete: Option<bool>,
+) {
+    if answer.status != "partial_answer" {
+        return;
+    }
+    let coverage = EvidenceRequirement {
+        id: "whole_request_covered".to_string(),
+        claim_index: None,
+        critical: true,
+        status: match complete {
+            Some(true) => RequirementStatus::Satisfied,
+            Some(false) => RequirementStatus::Missing,
+            None => RequirementStatus::Unknown,
+        },
+        evidence_refs: Vec::new(),
+    };
+    if let Some(existing) = checklist
+        .requirements
+        .iter_mut()
+        .find(|item| item.id == "whole_request_covered")
+    {
+        *existing = coverage;
+    } else {
+        checklist.requirements.push(coverage);
+    }
+    checklist.critical_missing = checklist
+        .requirements
+        .iter()
+        .any(|item| item.critical && item.status != RequirementStatus::Satisfied);
+    checklist.complete_answer_supported = complete == Some(true) && !checklist.critical_missing;
+    if checklist.complete_answer_supported {
+        answer.status = "extractive".to_string();
+    } else {
+        answer.warning = Some(match complete {
+            Some(false) => "Resposta parcial: não cobre toda a pergunta; as citações apoiam somente as afirmações listadas.",
+            _ => "Completude não verificada: não trate as afirmações listadas como uma resposta completa.",
+        }.to_string());
+    }
 }
 
 fn requirement(id: &str, claim: usize, satisfied: bool, refs: Vec<String>) -> EvidenceRequirement {
@@ -898,6 +954,39 @@ mod tests {
             request_kind: RequestKind::Question,
             claims,
             ..Default::default()
+        }
+    }
+
+    #[test]
+    fn evidence_keeps_list_and_negation_omitted_from_preview() {
+        let mut source = result(
+            1,
+            "https://example.org",
+            "Modes",
+            "The modes are:\n- manual\n- automatic\nAutomatic mode does not permit remote writes.",
+        );
+        source.content_relevant = Some("The modes are: manual".into());
+        let passages = build_passages(&[source], &AnswerPolicy::default());
+        assert!(passages[0].text.contains("automatic"));
+        assert!(passages[0].text.contains("does not permit remote writes"));
+    }
+
+    #[test]
+    fn whole_response_requires_positive_coverage_verdict() {
+        for (verdict, expected, complete) in [
+            (None, "partial_answer", false),
+            (Some(false), "partial_answer", false),
+            (Some(true), "extractive", true),
+        ] {
+            let (mut answer, mut checklist) = results_only(&AnswerPolicy::default());
+            answer.status = "partial_answer".into();
+            answer.summary = "Only the first requested item.".into();
+            checklist.requirements.clear();
+            apply_completeness(&mut answer, &mut checklist, verdict);
+            assert_eq!(answer.status, expected);
+            assert_eq!(checklist.complete_answer_supported, complete);
+            assert_eq!(checklist.critical_missing, !complete);
+            assert_eq!(answer.summary, "Only the first requested item.");
         }
     }
 
@@ -1007,7 +1096,7 @@ mod tests {
             },
             &AnswerPolicy::default(),
         );
-        assert_eq!(answer.status, "extractive");
+        assert_eq!(answer.status, "partial_answer");
         assert_eq!(answer.summary, "Ada Example started the company.");
         assert_eq!(answer.claims[0].status, "corroborated");
         assert_eq!(answer.claims[0].citations.len(), 2);
@@ -1019,8 +1108,8 @@ mod tests {
         let lineage = answer.claims[0].evidence_lineage.as_ref().unwrap();
         assert_eq!(lineage.reporting_source_families, 2);
         assert_eq!(lineage.independence_status, "unresolved");
-        assert!(checklist.complete_answer_supported);
-        assert!(!checklist.critical_missing);
+        assert!(!checklist.complete_answer_supported);
+        assert!(checklist.critical_missing);
         assert_eq!(stats.rejected_quotes, 0);
         assert!(answer.claims[0].support > 0.0);
         assert!(answer.claims[0].ignorance > 0.0);
@@ -1355,11 +1444,11 @@ mod tests {
             },
             &AnswerPolicy::default(),
         );
-        assert_eq!(answer.status, "extractive");
+        assert_eq!(answer.status, "partial_answer");
         assert_eq!(answer.summary, "Ada Example started the company.");
         let statuses: Vec<_> = answer.claims.iter().map(|c| c.status.as_str()).collect();
         assert_eq!(statuses, vec!["corroborated", "off_request"]);
-        assert!(checklist.complete_answer_supported);
+        assert!(!checklist.complete_answer_supported);
         assert!(answer.warning.is_some());
     }
 

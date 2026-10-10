@@ -832,6 +832,7 @@ impl OpenSonarXClient {
                 evidence_checklist: cached.trace.evidence_checklist.take(),
                 extractor_model: cached.trace.extractor_model.take(),
                 stance_model: cached.trace.stance_model.take(),
+                responsiveness_model: cached.trace.responsiveness_model.take(),
                 fresh_answer_cache_hit: true,
                 total_ms: elapsed_ms(total_started),
                 ..Default::default()
@@ -959,7 +960,7 @@ impl OpenSonarXClient {
                             );
                             trace.unshown_rejections = discarded;
                             trace.stance_ms = elapsed_ms(started);
-                            let (answer, checklist, stats) = crate::answer::assemble_answer(
+                            let (mut answer, mut checklist, stats) = crate::answer::assemble_answer(
                                 &results,
                                 &passages,
                                 &extraction,
@@ -969,6 +970,25 @@ impl OpenSonarXClient {
                                 },
                                 policy,
                             );
+                            if answer.status == "partial_answer" {
+                                let started = std::time::Instant::now();
+                                let complete =
+                                    self.responsiveness_judge.as_ref().and_then(|judge| {
+                                        judge
+                                            .complete_request(query, &answer.summary)
+                                            .map_err(|error| {
+                                                trace.model_error = Some(error.to_string())
+                                            })
+                                            .ok()
+                                            .flatten()
+                                    });
+                                trace.completeness_ms = elapsed_ms(started);
+                                crate::answer::apply_completeness(
+                                    &mut answer,
+                                    &mut checklist,
+                                    complete,
+                                );
+                            }
                             trace.off_request_claims = answer
                                 .claims
                                 .iter()
@@ -2232,6 +2252,9 @@ mod tests {
     }
 
     impl ResponsivenessJudge for ScriptedResponsiveness {
+        fn complete_request(&self, _query: &str, _answer: &str) -> Result<Option<bool>> {
+            Ok(Some(self.answers))
+        }
         fn answers_request(
             &self,
             _query: &str,
@@ -2335,6 +2358,67 @@ mod tests {
         let checklist = trace.evidence_checklist.as_ref().unwrap();
         assert!(checklist.complete_answer_supported);
         assert_eq!(checklist.policy_id, AnswerPolicy::default().policy_id);
+    }
+
+    struct UnavailableCoverage {
+        fail: bool,
+    }
+
+    impl ResponsivenessJudge for UnavailableCoverage {
+        fn answers_request(
+            &self,
+            query: &str,
+            claims: &[&str],
+        ) -> Result<Vec<oi_types::ResponsivenessVerdict>> {
+            ScriptedResponsiveness { answers: true }.answers_request(query, claims)
+        }
+
+        fn complete_request(&self, _query: &str, _answer: &str) -> Result<Option<bool>> {
+            if self.fail {
+                Err(oi_types::Error::Internal("coverage unavailable".into()))
+            } else {
+                Ok(None)
+            }
+        }
+
+        fn model_version(&self) -> String {
+            "coverage-unavailable".into()
+        }
+    }
+
+    #[test]
+    fn unavailable_coverage_never_promotes_a_supported_answer() {
+        for fail in [false, true] {
+            let extractor = ScriptedExtractor::quoting(SPAN);
+            let client = client_with_two_sources()
+                .with_claim_extractor(extractor.clone())
+                .with_stance_judge(Arc::new(ScriptedJudge {
+                    contradicting_host: None,
+                }))
+                .with_responsiveness_judge(Arc::new(UnavailableCoverage { fail }));
+            for _ in 0..2 {
+                let answered = client
+                    .search_answered("who started Acme", 5, &QueryFilters::default())
+                    .unwrap();
+                assert_eq!(answered.answer.status, "partial_answer");
+                assert_eq!(answered.answer.claims[0].status, "corroborated");
+                let checklist = answered.trace.evidence_checklist.as_ref().unwrap();
+                assert!(!checklist.complete_answer_supported);
+                assert!(
+                    checklist
+                        .requirements
+                        .iter()
+                        .any(|item| item.id == "whole_request_covered"
+                            && item.status == crate::checklist::RequirementStatus::Unknown)
+                );
+                assert_eq!(answered.trace.model_error.is_some(), fail);
+            }
+            // A failed call is retried, never cached as a successful decision.
+            assert_eq!(
+                extractor.calls.load(Ordering::SeqCst),
+                if fail { 2 } else { 1 }
+            );
+        }
     }
 
     #[test]
@@ -2476,7 +2560,15 @@ mod tests {
             .unwrap();
         assert!(!first.trace.fresh_answer_cache_hit);
         assert!(second.trace.fresh_answer_cache_hit);
-        assert_eq!(second.answer.status, "extractive");
+        assert_eq!(second.answer.status, "insufficient_evidence");
+        assert!(
+            !second
+                .trace
+                .evidence_checklist
+                .as_ref()
+                .unwrap()
+                .complete_answer_supported
+        );
         assert!(second.trace.evidence_checklist.is_some());
         assert_eq!(extractor.calls.load(Ordering::SeqCst), 1);
 

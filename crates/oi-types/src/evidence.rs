@@ -140,5 +140,11 @@ pub trait ResponsivenessJudge: Send + Sync {
     /// One verdict per claim, in order.
     fn answers_request(&self, query: &str, claims: &[&str]) -> Result<Vec<ResponsivenessVerdict>>;
 
+    /// Evaluate coverage of the actual assembled response, not individual claims.
+    /// `None` means unexamined; implementations must not default to approval.
+    fn complete_request(&self, _query: &str, _answer: &str) -> Result<Option<bool>> {
+        Ok(None)
+    }
+
     fn model_version(&self) -> String;
 }
