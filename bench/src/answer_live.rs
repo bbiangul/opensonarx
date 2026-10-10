@@ -161,7 +161,22 @@ fn direct_answer(
                     })
                 })
                 .collect();
+            // Distinct source families among the quotes that were located
+            // verbatim in a retained passage: what the answer's own
+            // citations corroborate, counted without any further model call.
+            let families: BTreeSet<String> = quotes
+                .iter()
+                .filter(|quote| quote["found_verbatim"] == true)
+                .filter_map(|quote| {
+                    let id = quote["passage_id"].as_str()?;
+                    passages
+                        .iter()
+                        .find(|passage| passage.id == id && passage.retained)
+                })
+                .map(|passage| oi_sdk::source::source_family(&passage.url))
+                .collect();
             json!({
+                "verified_quote_families": families.len(),
                 "answered": value["answered"].as_bool().unwrap_or(false),
                 "answer": value["answer"].as_str().unwrap_or_default(),
                 "quotes": quotes,

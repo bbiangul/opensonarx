@@ -10,7 +10,11 @@ separate file that is only read after grading.
 When a cases file is given, each item also lists the false answers the
 dataset records for that request.
 
-Usage: answer_live_sheet.py <report.json> <sheet.jsonl> <key-map.jsonl> [cases.jsonl]
+A fifth argument restricts the sheet to some systems (`baseline`,
+`pipeline`, or both separated by a comma); pass `-` as the cases file when
+there is none.
+
+Usage: answer_live_sheet.py <report.json> <sheet.jsonl> <key-map.jsonl> [cases.jsonl|-] [systems]
 """
 import hashlib
 import json
@@ -20,7 +24,8 @@ import sys
 def main() -> None:
     report_path, sheet_path, map_path = sys.argv[1:4]
     false_answers = {}
-    if len(sys.argv) > 4:
+    systems = set(sys.argv[5].split(",")) if len(sys.argv) > 5 else {"pipeline", "baseline"}
+    if len(sys.argv) > 4 and sys.argv[4] != "-":
         for line in open(sys.argv[4]):
             if line.strip():
                 case = json.loads(line)
@@ -46,6 +51,8 @@ def main() -> None:
         if baseline.get("answered") and baseline.get("answer", "").strip():
             emitted.append(("baseline", baseline["answer"], [q["quote"] for q in baseline["quotes"]]))
         for system, response, spans in emitted:
+            if system not in systems:
+                continue
             key = hashlib.sha256(f"{stem}#{result['id']}#{system}".encode()).hexdigest()[:16]
             items.append(
                 (

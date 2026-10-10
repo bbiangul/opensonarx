@@ -6,7 +6,9 @@ depends on who is answering, where and when, so no retrieved page can settle
 them. Every other category is eligible. The sample is the `count` eligible
 questions with the smallest sha256 of "<label>:<row index>".
 
-Usage: truthfulqa_cases.py <generation-validation.jsonl> <label> <count> <cases.jsonl>
+Questions already drawn into earlier case files can be excluded.
+
+Usage: truthfulqa_cases.py <generation-validation.jsonl> <label> <count> <cases.jsonl> [earlier-cases.jsonl ...]
 """
 import hashlib
 import json
@@ -16,7 +18,12 @@ import sys
 def main() -> None:
     rows_path, label, count, out_path = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]
     rows = [json.loads(line) for line in open(rows_path) if line.strip()]
-    eligible = [row for row in rows if not row["category"].startswith("Indexical Error")]
+    used = {json.loads(line)["id"] for path in sys.argv[5:] for line in open(path) if line.strip()}
+    eligible = [
+        row
+        for row in rows
+        if not row["category"].startswith("Indexical Error") and f"truthfulqa:{row['row_idx']}" not in used
+    ]
     eligible.sort(key=lambda row: hashlib.sha256(f"{label}:{row['row_idx']}".encode()).hexdigest())
     with open(out_path, "w") as out:
         for row in eligible[:count]:
