@@ -12,6 +12,7 @@ mod answer_eval;
 mod answer_eval_msmarco;
 mod answer_eval_squad;
 mod answer_grade;
+mod answer_live;
 mod beir;
 mod bench_quality;
 mod dataset;
@@ -383,6 +384,45 @@ enum Command {
         input: String,
 
         /// Output JSONL of {"query_id","subject","similarity"}
+        #[arg(long)]
+        output: String,
+    },
+    /// Live head-to-head: the answered-search path against one direct answer
+    /// from the same model over the same passages (reads SERPER_API_KEY /
+    /// BRAVE_API_KEY when set; the provider's key for the model)
+    AnswerLive {
+        /// JSONL cases; only `id`, `query`, `subject` and reference answers
+        /// are read
+        #[arg(long)]
+        cases: String,
+
+        #[arg(long, default_value = "openrouter")]
+        provider: String,
+
+        #[arg(long)]
+        model: String,
+
+        /// Directory of the local index for this run; start from an empty one
+        #[arg(long)]
+        index_dir: String,
+
+        /// Discovery engines in priority order, comma-separated (for
+        /// example `duckduckgo,brave-html` or `serper`); empty = the
+        /// default fleet
+        #[arg(long, value_delimiter = ',')]
+        engines: Vec<String>,
+
+        /// Source families a claim needs to be presented as an answer
+        #[arg(long, default_value_t = 1)]
+        min_source_families: usize,
+
+        #[arg(long, default_value_t = 10)]
+        top_k: usize,
+
+        /// Pause between queries, to stay within provider limits
+        #[arg(long, default_value_t = 1000)]
+        pause_ms: u64,
+
         #[arg(long)]
         output: String,
     },
@@ -1626,6 +1666,32 @@ async fn main() {
         Command::TopicLabel { input, output } => {
             if let Err(error) = topic_label(&input, &output) {
                 eprintln!("topic-label failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::AnswerLive {
+            cases,
+            provider,
+            model,
+            index_dir,
+            engines,
+            min_source_families,
+            top_k,
+            pause_ms,
+            output,
+        } => {
+            if let Err(error) = answer_live::run(
+                &cases,
+                &provider,
+                &model,
+                &index_dir,
+                &engines,
+                min_source_families,
+                top_k,
+                pause_ms,
+                &output,
+            ) {
+                eprintln!("answer-live failed: {error}");
                 std::process::exit(2);
             }
         }
