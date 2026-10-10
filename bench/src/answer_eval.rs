@@ -35,6 +35,9 @@ struct Document {
     content: String,
     #[serde(default)]
     snippet: String,
+    /// The dataset's annotators marked this document as answer evidence.
+    #[serde(default)]
+    gold_evidence: bool,
 }
 
 #[derive(Debug, Default, Deserialize)]
@@ -88,6 +91,9 @@ struct CaseReport {
 struct VariantOutcome {
     status: String,
     passed: bool,
+    /// Whether a supporting citation points at a document the dataset marks
+    /// as answer evidence. None when the case marks none.
+    cited_gold_evidence: Option<bool>,
 }
 
 /// Per-variant totals over all cases.
@@ -96,6 +102,9 @@ struct VariantTotals {
     answerable_correct: usize,
     answerable_other_wording: usize,
     answerable_abstained: usize,
+    /// Answerable cases answered with a citation to a document the dataset
+    /// marks as answer evidence (a proxy when gold answers are free text).
+    answerable_answered_citing_gold_evidence: usize,
     unanswerable_answered: usize,
 }
 
@@ -318,7 +327,12 @@ fn evaluate(
     // One model pass, several assemblies: each variant decides responsiveness
     // from a different subset of the same model outputs, so the variants
     // differ only by what the pipeline does with them.
-    let assemble = |use_substitution: bool, use_judge: bool| {
+    let assemble = |use_substitution: bool, use_judge: bool, families: Option<usize>| {
+        let mut variant_policy = policy.clone();
+        if let Some(families) = families {
+            variant_policy.min_source_families = families;
+        }
+        let policy = &variant_policy;
         let mut claims = considered.to_vec();
         if !use_substitution {
             for claim in &mut claims {
@@ -341,25 +355,46 @@ fn evaluate(
             policy,
         )
     };
+    let gold_urls: Vec<&str> = case
+        .documents
+        .iter()
+        .filter(|document| document.gold_evidence)
+        .map(|document| document.url.as_str())
+        .collect();
     let variants: BTreeMap<String, VariantOutcome> = [
-        ("stance_only", false, false),
-        ("plus_substitution", true, false),
-        ("plus_judge", false, true),
-        ("full", true, true),
+        ("stance_only", false, false, None),
+        ("plus_substitution", true, false, None),
+        ("plus_judge", false, true, None),
+        ("full", true, true, None),
+        // The same responsiveness checks under each source rule.
+        ("full_one_source", true, true, Some(1)),
+        ("full_two_sources", true, true, Some(2)),
     ]
     .into_iter()
-    .map(|(name, use_substitution, use_judge)| {
-        let (answer, _, _) = assemble(use_substitution, use_judge);
+    .map(|(name, use_substitution, use_judge, families)| {
+        let (answer, _, _) = assemble(use_substitution, use_judge, families);
+        let cited_gold_evidence = (!gold_urls.is_empty()).then(|| {
+            answer
+                .claims
+                .iter()
+                .filter(|claim| claim.status != "off_request")
+                .flat_map(|claim| &claim.citations)
+                .any(|citation| {
+                    citation.evidence_role == "supports"
+                        && gold_urls.contains(&citation.url.as_str())
+                })
+        });
         (
             name.to_string(),
             VariantOutcome {
                 passed: expectation_failures(case, &answer).is_empty(),
                 status: answer.status,
+                cited_gold_evidence,
             },
         )
     })
     .collect();
-    let (answer, checklist, stats) = assemble(true, true);
+    let (answer, checklist, stats) = assemble(true, true, None);
 
     let mut failures = expectation_failures(case, &answer);
     if let Some(error) = &model_error {
@@ -424,6 +459,7 @@ pub fn run(
     base_url: Option<&str>,
     think: Option<&str>,
     min_source_families: Option<usize>,
+    max_passages: Option<usize>,
     concurrency: usize,
     responsiveness: bool,
     output: &str,
@@ -471,6 +507,11 @@ pub fn run(
     }
 
     let concurrency = concurrency.max(1);
+    if let Some(max_passages) = max_passages {
+        policy.max_passages = max_passages.max(1);
+        policy.policy_id = format!("{}+max_passages={}", policy.policy_id, policy.max_passages);
+    }
+
     let mut results = Vec::with_capacity(cases.len());
     for batch in cases.chunks(concurrency) {
         let reports: Vec<CaseReport> = std::thread::scope(|scope| {
@@ -516,6 +557,9 @@ pub fn run(
                     (_, true) => totals.answerable_correct += 1,
                     (true, false) => totals.answerable_other_wording += 1,
                     (false, false) => totals.answerable_abstained += 1,
+                }
+                if answered && outcome.cited_gold_evidence == Some(true) {
+                    totals.answerable_answered_citing_gold_evidence += 1;
                 }
             } else if supports_no_answer(case) && answered {
                 totals.unanswerable_answered += 1;
@@ -600,10 +644,11 @@ pub fn run(
     );
     for (name, totals) in &report.variants {
         println!(
-            "  variant {name:<18} answerable: {} correct, {} other wording, {} abstained | unanswerable answered: {}",
+            "  variant {name:<18} answerable: {} correct, {} other wording, {} abstained ({} answered citing gold evidence) | unanswerable answered: {}",
             totals.answerable_correct,
             totals.answerable_other_wording,
             totals.answerable_abstained,
+            totals.answerable_answered_citing_gold_evidence,
             totals.unanswerable_answered,
         );
     }

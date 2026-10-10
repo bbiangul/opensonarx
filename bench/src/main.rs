@@ -8,6 +8,7 @@
 
 mod agent_cost;
 mod answer_eval;
+mod answer_eval_msmarco;
 mod answer_eval_squad;
 mod beir;
 mod bench_quality;
@@ -292,6 +293,10 @@ enum Command {
         #[arg(long, default_value_t = 1)]
         concurrency: usize,
 
+        /// Override how many documents per case the model reads (default 6)
+        #[arg(long)]
+        max_passages: Option<usize>,
+
         /// Skip the responsiveness judge (reproduces the pipeline before it)
         #[arg(long)]
         no_responsiveness: bool,
@@ -307,6 +312,29 @@ enum Command {
 
         /// Output JSON report
         #[arg(long, default_value = "answer_eval_results.json")]
+        output: String,
+    },
+    /// Convert MS MARCO QA v2.1 rows (JSONL) into multi-source answer-eval
+    /// cases (no model needed)
+    AnswerEvalImportMsmarco {
+        /// JSONL file, one `microsoft/ms_marco` v2.1 row per line
+        #[arg(long)]
+        input: String,
+
+        /// Number of cases, half answerable and half unanswerable
+        #[arg(long, default_value_t = 200)]
+        sample: usize,
+
+        /// Label hashed with each query id to choose the sample
+        #[arg(long)]
+        label: String,
+
+        /// Text file of queries, one per line, that must not be drawn
+        #[arg(long)]
+        exclude_queries: Option<String>,
+
+        /// Output JSONL case file
+        #[arg(long)]
         output: String,
     },
     /// Convert a SQuAD 2.0 JSON file into answer-eval cases (no model needed)
@@ -1372,6 +1400,7 @@ async fn main() {
             judge_model,
             base_url,
             concurrency,
+            max_passages,
             no_responsiveness,
             think,
             min_source_families,
@@ -1385,11 +1414,30 @@ async fn main() {
                 base_url.as_deref(),
                 think.as_deref(),
                 min_source_families,
+                max_passages,
                 concurrency,
                 !no_responsiveness,
                 &output,
             ) {
                 eprintln!("answer-eval failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::AnswerEvalImportMsmarco {
+            input,
+            sample,
+            label,
+            exclude_queries,
+            output,
+        } => {
+            if let Err(error) = answer_eval_msmarco::run(
+                &input,
+                sample,
+                &label,
+                exclude_queries.as_deref(),
+                &output,
+            ) {
+                eprintln!("answer-eval-import-msmarco failed: {error}");
                 std::process::exit(2);
             }
         }
