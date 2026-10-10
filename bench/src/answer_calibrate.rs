@@ -99,11 +99,51 @@ fn grade(
         .ok_or_else(|| "grader returned no boolean verdict".to_string())
 }
 
+/// The key a grading sheet and a labels file use for one case of one report.
+pub fn label_key(report_path: &str, case_id: &str) -> String {
+    let report = std::path::Path::new(report_path)
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .unwrap_or(report_path);
+    format!("{report}#{case_id}")
+}
+
+/// Verdicts written by a reader who graded each answer: JSONL lines of
+/// `{"key": ..., "correct": bool}`.
+pub fn read_labels(path: &str) -> Result<BTreeMap<String, bool>, String> {
+    std::fs::read_to_string(path)
+        .map_err(|error| format!("cannot read {path}: {error}"))?
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .map(|line| {
+            let value: Value =
+                serde_json::from_str(line).map_err(|error| format!("{path}: {error}"))?;
+            let key = value["key"]
+                .as_str()
+                .ok_or_else(|| format!("{path}: a label has no key"))?;
+            let correct = value["correct"]
+                .as_bool()
+                .ok_or_else(|| format!("{path}: label {key} has no boolean verdict"))?;
+            Ok((key.to_string(), correct))
+        })
+        .collect()
+}
+
+/// How complete answers get their outcome.
+pub enum Resolver<'a> {
+    /// A model grades answerable cases against reference answers; an answer
+    /// to a case the dataset marks unanswerable is incorrect.
+    Grader(&'a ChatModel),
+    /// A reader graded every answer on its merits; the dataset's
+    /// unanswerable marker does not decide anything.
+    Labels(&'a BTreeMap<String, bool>),
+}
+
 /// Resolve every complete answer of `variant` in one report.
 fn outcomes(
     spec: &str,
     variant: &str,
-    grader: &ChatModel,
+    resolver: &Resolver<'_>,
     concurrency: usize,
 ) -> Result<(Vec<Outcome>, Value), String> {
     let (report_path, cases_path) = spec
@@ -170,11 +210,20 @@ fn outcomes(
                 .iter()
                 .map(|(id, families, reported_gap, summary, query, references)| {
                     scope.spawn(move || {
-                        let (correct, resolved_by) = match references {
-                            None => (false, "dataset_marks_unanswerable"),
-                            Some(references) => {
-                                (grade(grader, query, references, summary)?, "grader")
+                        let (correct, resolved_by) = match resolver {
+                            Resolver::Labels(labels) => {
+                                let key = label_key(report_path, id);
+                                let correct = *labels
+                                    .get(&key)
+                                    .ok_or_else(|| format!("no label for {key}"))?;
+                                (correct, "reader_label")
                             }
+                            Resolver::Grader(grader) => match references {
+                                None => (false, "dataset_marks_unanswerable"),
+                                Some(references) => {
+                                    (grade(grader, query, references, summary)?, "grader")
+                                }
+                            },
                         };
                         Ok(Outcome {
                             case_id: id.clone(),
@@ -399,6 +448,7 @@ pub fn replicate(
     variant: &str,
     grader_provider: &str,
     grader_model: &str,
+    labels_path: Option<&str>,
     concurrency: usize,
     outcomes_output: Option<&str>,
 ) -> Result<(), String> {
@@ -406,16 +456,25 @@ pub fn replicate(
         return Err("at least one --test report is required".to_string());
     }
     let mut table = AnswerCalibration::load(table_path).map_err(|error| error.to_string())?;
-    let config = match grader_provider {
-        "ollama" => AnswerModelConfig::new(grader_model),
-        "openrouter" => AnswerModelConfig::openrouter(grader_model),
-        other => return Err(format!("unknown --grader-provider {other:?}")),
+    let labels = labels_path.map(read_labels).transpose()?;
+    let grader = match (&labels, grader_model.is_empty()) {
+        (Some(_), _) => None,
+        (None, true) => return Err("give --labels or --grader-model".to_string()),
+        (None, false) => Some(ChatModel::new(match grader_provider {
+            "ollama" => AnswerModelConfig::new(grader_model),
+            "openrouter" => AnswerModelConfig::openrouter(grader_model),
+            other => return Err(format!("unknown --grader-provider {other:?}")),
+        })),
     };
-    let grader = ChatModel::new(config);
+    let resolver = match (&labels, &grader) {
+        (Some(labels), _) => Resolver::Labels(labels),
+        (None, Some(grader)) => Resolver::Grader(grader),
+        (None, None) => unreachable!("checked above"),
+    };
     let mut held_out = Vec::new();
     let mut sources = Vec::new();
     for spec in test {
-        let (resolved, source) = outcomes(spec, variant, &grader, concurrency)?;
+        let (resolved, source) = outcomes(spec, variant, &resolver, concurrency)?;
         eprintln!("{spec}: {} complete answers resolved", resolved.len());
         held_out.extend(resolved);
         sources.push(source);
@@ -446,7 +505,11 @@ pub fn replicate(
             "replication".to_string(),
             json!({
                 "note": "Table not refitted. Scored on reports never used to fit or to evaluate it before; `accepted` follows this replication alone.",
-                "grader_model": format!("{grader_provider}/{grader_model}"),
+                "outcomes_resolved_by": if labels.is_some() {
+                    format!("reader labels ({})", labels_path.unwrap_or_default())
+                } else {
+                    format!("grader model {grader_provider}/{grader_model}")
+                },
                 "evaluated_on": sources,
                 "held_out_evaluation": evaluation,
             }),
@@ -477,6 +540,7 @@ pub fn run(
     variant: &str,
     grader_provider: &str,
     grader_model: &str,
+    labels_path: Option<&str>,
     calibration_id: &str,
     split_on_gap: bool,
     declared_distribution_shift: f64,
@@ -487,18 +551,27 @@ pub fn run(
     if train.is_empty() || test.is_empty() {
         return Err("at least one --train and one --test report are required".to_string());
     }
-    let config = match grader_provider {
-        "ollama" => AnswerModelConfig::new(grader_model),
-        "openrouter" => AnswerModelConfig::openrouter(grader_model),
-        other => return Err(format!("unknown --grader-provider {other:?}")),
+    let labels = labels_path.map(read_labels).transpose()?;
+    let grader = match (&labels, grader_model.is_empty()) {
+        (Some(_), _) => None,
+        (None, true) => return Err("give --labels or --grader-model".to_string()),
+        (None, false) => Some(ChatModel::new(match grader_provider {
+            "ollama" => AnswerModelConfig::new(grader_model),
+            "openrouter" => AnswerModelConfig::openrouter(grader_model),
+            other => return Err(format!("unknown --grader-provider {other:?}")),
+        })),
     };
-    let grader = ChatModel::new(config);
+    let resolver = match (&labels, &grader) {
+        (Some(labels), _) => Resolver::Labels(labels),
+        (None, Some(grader)) => Resolver::Grader(grader),
+        (None, None) => unreachable!("checked above"),
+    };
 
     let resolve = |specs: &[String]| -> Result<(Vec<Outcome>, Vec<Value>), String> {
         let mut all = Vec::new();
         let mut provenance = Vec::new();
         for spec in specs {
-            let (resolved, source) = outcomes(spec, variant, &grader, concurrency)?;
+            let (resolved, source) = outcomes(spec, variant, &resolver, concurrency)?;
             eprintln!("{spec}: {} complete answers resolved", resolved.len());
             all.extend(resolved);
             provenance.push(source);
@@ -512,13 +585,22 @@ pub fn run(
     let evaluation = evaluate(&bins, &train_outcomes, &test_outcomes, split_on_gap);
     let table = AnswerCalibration {
         calibration_id: calibration_id.to_string(),
-        target: "A complete answer conveys the same answer as a dataset reference answer, as graded by a model; an answer to a case the dataset marks unanswerable counts as incorrect.".to_string(),
+        target: if labels.is_some() {
+            "A complete answer responds to the request as asked and is supported by the spans it cites, as judged by a reader who graded each answer individually without seeing its evidence state."
+        } else {
+            "A complete answer conveys the same answer as a dataset reference answer, as graded by a model; an answer to a case the dataset marks unanswerable counts as incorrect."
+        }
+        .to_string(),
         declared_distribution_shift,
         accepted: evaluation["accepted"] == true,
         bins: bins.clone(),
         provenance: json!({
             "variant": variant,
-            "grader_model": format!("{grader_provider}/{grader_model}"),
+            "outcomes_resolved_by": if labels.is_some() {
+                    format!("reader labels ({})", labels_path.unwrap_or_default())
+                } else {
+                    format!("grader model {grader_provider}/{grader_model}")
+                },
             "bin_features": if split_on_gap {
                 "source families behind the weakest answering claim (the last bin includes larger counts) x whether the extractor noted a gap"
             } else {

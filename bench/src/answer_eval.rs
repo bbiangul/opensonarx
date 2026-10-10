@@ -21,6 +21,9 @@ use std::time::Instant;
 #[derive(Debug, Deserialize)]
 struct Case {
     id: String,
+    /// Subject area assigned when the sample was drawn, if it was stratified.
+    #[serde(default)]
+    subject: Option<String>,
     query: String,
     documents: Vec<Document>,
     expect: Expectation,
@@ -64,6 +67,8 @@ struct Expectation {
 #[derive(Debug, Serialize)]
 struct CaseReport {
     id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    subject: Option<String>,
     query: String,
     passed: bool,
     failures: Vec<String>,
@@ -95,6 +100,10 @@ struct VariantOutcome {
     /// Source families behind the weakest answering claim; 0 when no claim
     /// answers.
     min_supporting_families: usize,
+    /// Spans cited in support of the answering claims, kept so a reader can
+    /// grade the response against what it cites.
+    #[serde(default)]
+    supporting_excerpts: Vec<String>,
     passed: bool,
     /// Whether a reference answer occurs in the emitted text, whatever the
     /// status. None when the case lists no alternative reference answers.
@@ -439,6 +448,14 @@ fn evaluate(
                     contains_gold(&text, &case.expect.answer_contains_any)
                 }),
                 summary: answer.summary.clone(),
+                supporting_excerpts: answer
+                    .claims
+                    .iter()
+                    .filter(|claim| claim.status != "off_request")
+                    .flat_map(|claim| &claim.citations)
+                    .filter(|citation| citation.evidence_role == "supports")
+                    .filter_map(|citation| citation.evidence_excerpt.clone())
+                    .collect(),
                 min_supporting_families: answer
                     .claims
                     .iter()
@@ -472,6 +489,7 @@ fn evaluate(
 
     CaseReport {
         id: case.id.clone(),
+        subject: case.subject.clone(),
         query: case.query.clone(),
         passed: failures.is_empty(),
         failures,

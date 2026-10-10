@@ -55,14 +55,19 @@ fn normalized(query: &str) -> String {
 /// Convert JSONL `rows` into at most `sample` cases, half answerable and half
 /// unanswerable, ordered by `sha256(label:query_id)`. A row whose normalized
 /// query is in `exclude_queries` is never drawn.
+///
+/// With `subjects` (query id → subject), `sample` applies to each subject
+/// separately, every case records its subject, and rows without a subject
+/// are skipped: the result is balanced across subjects as well.
 pub fn convert(
     rows: &str,
     sample: usize,
     label: &str,
     exclude_queries: &HashSet<String>,
+    subjects: Option<&std::collections::HashMap<String, String>>,
 ) -> Result<Vec<String>, String> {
-    let mut answerable = Vec::new();
-    let mut unanswerable = Vec::new();
+    let mut answerable: Vec<(String, String, serde_json::Value)> = Vec::new();
+    let mut unanswerable: Vec<(String, String, serde_json::Value)> = Vec::new();
     let mut seen = HashSet::new();
     for (index, line) in rows.lines().enumerate() {
         if line.trim().is_empty() {
@@ -118,31 +123,49 @@ pub fn convert(
             // Neither clearly answerable nor clearly unanswerable.
             _ => continue,
         };
-        let case = serde_json::json!({
+        let subject = match subjects {
+            Some(subjects) => match subjects.get(&query_id) {
+                Some(subject) => subject.clone(),
+                None => continue,
+            },
+            None => String::new(),
+        };
+        let mut case = serde_json::json!({
             "id": format!("msmarco-qa:{query_id}"),
             "query": query,
             "documents": documents,
             "expect": expect,
         });
+        if !subject.is_empty() {
+            case["subject"] = serde_json::Value::String(subject.clone());
+        }
         let key = hex(&Sha256::digest(format!("{label}:{query_id}").as_bytes()));
         if no_answer {
-            unanswerable.push((key, case));
+            unanswerable.push((key, subject, case));
         } else {
-            answerable.push((key, case));
+            answerable.push((key, subject, case));
         }
     }
     answerable.sort_by(|left, right| left.0.cmp(&right.0));
     unanswerable.sort_by(|left, right| left.0.cmp(&right.0));
     let half = sample / 2;
-    let mut chosen: Vec<_> = answerable
-        .into_iter()
-        .take(sample - half)
-        .chain(unanswerable.into_iter().take(half))
-        .collect();
+    // Take the first `limit` of each subject, in hash order.
+    let take = |pool: Vec<(String, String, serde_json::Value)>, limit: usize| {
+        let mut taken: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+        pool.into_iter()
+            .filter(|(_, subject, _)| {
+                let count = taken.entry(subject.clone()).or_default();
+                *count += 1;
+                *count <= limit
+            })
+            .collect::<Vec<_>>()
+    };
+    let mut chosen = take(answerable, sample - half);
+    chosen.extend(take(unanswerable, half));
     chosen.sort_by(|left, right| left.0.cmp(&right.0));
     Ok(chosen
         .into_iter()
-        .map(|(_, case)| case.to_string())
+        .map(|(_, _, case)| case.to_string())
         .collect())
 }
 
@@ -151,6 +174,7 @@ pub fn run(
     sample: usize,
     label: &str,
     exclude_queries_path: Option<&str>,
+    subjects_path: Option<&str>,
     output: &str,
 ) -> Result<(), String> {
     let rows =
@@ -164,7 +188,30 @@ pub fn run(
             .collect(),
         None => HashSet::new(),
     };
-    let cases = convert(&rows, sample, label, &exclude)?;
+    // Subject labels: JSONL lines of {"query_id": ..., "subject": ...}.
+    let subjects = match subjects_path {
+        Some(path) => Some(
+            std::fs::read_to_string(path)
+                .map_err(|error| format!("cannot read {path}: {error}"))?
+                .lines()
+                .filter(|line| !line.trim().is_empty())
+                .map(|line| {
+                    let value: serde_json::Value =
+                        serde_json::from_str(line).map_err(|error| format!("{path}: {error}"))?;
+                    let id = match &value["query_id"] {
+                        serde_json::Value::String(id) => id.clone(),
+                        other => other.to_string(),
+                    };
+                    let subject = value["subject"]
+                        .as_str()
+                        .ok_or_else(|| format!("{path}: query {id} has no subject"))?;
+                    Ok((id, subject.to_string()))
+                })
+                .collect::<Result<std::collections::HashMap<_, _>, String>>()?,
+        ),
+        None => None,
+    };
+    let cases = convert(&rows, sample, label, &exclude, subjects.as_ref())?;
     if cases.is_empty() {
         return Err(format!("{input} produced no cases"));
     }
@@ -202,7 +249,7 @@ mod tests {
 
     fn parsed(rows: &[String], sample: usize, exclude: &[&str]) -> Vec<serde_json::Value> {
         let exclude = exclude.iter().map(|query| normalized(query)).collect();
-        convert(&rows.join("\n"), sample, "v1", &exclude)
+        convert(&rows.join("\n"), sample, "v1", &exclude, None)
             .unwrap()
             .iter()
             .map(|line| serde_json::from_str(line).unwrap())
@@ -290,7 +337,51 @@ mod tests {
     }
 
     #[test]
+    fn with_subjects_the_sample_is_balanced_per_subject_and_cases_carry_it() {
+        let mut rows = Vec::new();
+        let mut subjects = std::collections::HashMap::new();
+        for id in 0..12u32 {
+            let answers: &[&str] = if id % 2 == 0 {
+                &["yes"]
+            } else {
+                &["No Answer Present."]
+            };
+            rows.push(row(id, &format!("query {id}"), answers, &[1, 0, 0]));
+            // Ten rows of one subject, two of another; one row left unlabelled.
+            if id < 9 {
+                subjects.insert(id.to_string(), "topic-science".to_string());
+            } else if id < 11 {
+                subjects.insert(id.to_string(), "topic-health".to_string());
+            }
+        }
+        let cases: Vec<serde_json::Value> =
+            convert(&rows.join("\n"), 4, "v1", &HashSet::new(), Some(&subjects))
+                .unwrap()
+                .iter()
+                .map(|line| serde_json::from_str(line).unwrap())
+                .collect();
+        let count = |subject: &str, answerable: bool| {
+            cases
+                .iter()
+                .filter(|case| {
+                    case["subject"] == subject
+                        && (case["expect"]["status"] == "extractive") == answerable
+                })
+                .count()
+        };
+        assert_eq!(
+            (count("topic-science", true), count("topic-science", false)),
+            (2, 2)
+        );
+        assert_eq!(
+            (count("topic-health", true), count("topic-health", false)),
+            (1, 1)
+        );
+        assert_eq!(cases.len(), 6, "the unlabelled row is not drawn");
+    }
+
+    #[test]
     fn a_line_in_another_schema_is_an_error() {
-        assert!(convert(r#"{"question":"x"}"#, 4, "v1", &HashSet::new()).is_err());
+        assert!(convert(r#"{"question":"x"}"#, 4, "v1", &HashSet::new(), None).is_err());
     }
 }

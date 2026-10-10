@@ -11,6 +11,7 @@ mod answer_calibrate;
 mod answer_eval;
 mod answer_eval_msmarco;
 mod answer_eval_squad;
+mod answer_grade;
 mod beir;
 mod bench_quality;
 mod dataset;
@@ -338,9 +339,15 @@ enum Command {
         #[arg(long, default_value = "openrouter")]
         grader_provider: String,
 
-        /// Model that grades answers against reference answers
-        #[arg(long)]
+        /// Model that grades answers against reference answers. Not needed
+        /// with --labels
+        #[arg(long, default_value = "")]
         grader_model: String,
+
+        /// Verdicts from a reader who graded each answer (JSONL of
+        /// {"key","correct"}); replaces the grader model
+        #[arg(long)]
+        labels: Option<String>,
 
         /// Identifier recorded on every answer that uses the table
         #[arg(long, default_value = "")]
@@ -367,6 +374,32 @@ enum Command {
         #[arg(long)]
         outcomes_output: Option<String>,
     },
+    /// Assign each MS MARCO QA row one of the node's built-in topics, using
+    /// the same embedding router the nodes use to shard content
+    #[cfg(feature = "onnx")]
+    TopicLabel {
+        /// JSONL rows in the `microsoft/ms_marco` v2.1 schema
+        #[arg(long)]
+        input: String,
+
+        /// Output JSONL of {"query_id","subject","similarity"}
+        #[arg(long)]
+        output: String,
+    },
+    /// Write a sheet of emitted responses for a reader to grade one by one;
+    /// the sheet hides each response's evidence state
+    AnswerGradeSheet {
+        /// `<report.json>:<cases.jsonl>`; repeatable
+        #[arg(long)]
+        input: Vec<String>,
+
+        #[arg(long, default_value = "full_one_source")]
+        variant: String,
+
+        /// Output JSONL sheet
+        #[arg(long)]
+        output: String,
+    },
     /// Convert MS MARCO QA v2.1 rows (JSONL) into multi-source answer-eval
     /// cases (no model needed)
     AnswerEvalImportMsmarco {
@@ -385,6 +418,11 @@ enum Command {
         /// Text file of queries, one per line, that must not be drawn
         #[arg(long)]
         exclude_queries: Option<String>,
+
+        /// Subject labels (JSONL of {"query_id","subject"}, from
+        /// `topic-label`). With it, --sample applies per subject
+        #[arg(long)]
+        subjects: Option<String>,
 
         /// Output JSONL case file
         #[arg(long)]
@@ -897,6 +935,65 @@ async fn search_handler(
         query_ms,
         timings: Some(timings),
     })
+}
+
+/// Label each row's query with the topic whose description embedding is
+/// closest, exactly as a node's sentinel classifies content at ingest.
+#[cfg(feature = "onnx")]
+fn topic_label(input: &str, output: &str) -> Result<(), String> {
+    let embedder = oi_embed::MiniLmEmbedder::new().map_err(|error| error.to_string())?;
+    let descriptions: Vec<&str> = oi_types::BUILTIN_TOPICS
+        .iter()
+        .map(|topic| topic.description)
+        .collect();
+    let centroids = oi_types::BUILTIN_TOPICS
+        .iter()
+        .zip(
+            embedder
+                .embed_text_batch(&descriptions)
+                .map_err(|error| error.to_string())?,
+        )
+        .map(|(topic, embedding)| (topic.shard_id.to_string(), embedding))
+        .collect();
+    let router = oi_types::TopicRouter::new(centroids);
+
+    let rows =
+        std::fs::read_to_string(input).map_err(|error| format!("cannot read {input}: {error}"))?;
+    let rows: Vec<serde_json::Value> = rows
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .map(|line| serde_json::from_str(line).map_err(|error| format!("{input}: {error}")))
+        .collect::<Result<_, _>>()?;
+    let mut lines = Vec::with_capacity(rows.len());
+    let mut counts: std::collections::BTreeMap<String, usize> = std::collections::BTreeMap::new();
+    for batch in rows.chunks(64) {
+        let queries: Vec<&str> = batch
+            .iter()
+            .map(|row| row["query"].as_str().unwrap_or_default())
+            .collect();
+        let embeddings = embedder
+            .embed_text_batch(&queries)
+            .map_err(|error| error.to_string())?;
+        for (row, embedding) in batch.iter().zip(embeddings) {
+            let (subject, similarity) = router.classify_with_confidence(&embedding);
+            *counts.entry(subject.to_string()).or_default() += 1;
+            lines.push(
+                serde_json::json!({
+                    "query_id": row["query_id"],
+                    "subject": subject,
+                    "similarity": similarity,
+                })
+                .to_string(),
+            );
+        }
+    }
+    std::fs::write(output, lines.join("\n") + "\n")
+        .map_err(|error| format!("cannot write {output}: {error}"))?;
+    println!("labelled {} rows → {output}", lines.len());
+    for (subject, count) in counts {
+        println!("  {subject:<22} {count}");
+    }
+    Ok(())
 }
 
 // --- Benchmark logic ---
@@ -1483,6 +1580,7 @@ async fn main() {
             variant,
             grader_provider,
             grader_model,
+            labels,
             calibration_id,
             split_on_gap,
             declared_distribution_shift,
@@ -1497,6 +1595,7 @@ async fn main() {
                     &variant,
                     &grader_provider,
                     &grader_model,
+                    labels.as_deref(),
                     concurrency,
                     outcomes_output.as_deref(),
                 )
@@ -1509,6 +1608,7 @@ async fn main() {
                     &variant,
                     &grader_provider,
                     &grader_model,
+                    labels.as_deref(),
                     &calibration_id,
                     split_on_gap,
                     declared_distribution_shift,
@@ -1522,11 +1622,29 @@ async fn main() {
                 std::process::exit(2);
             }
         }
+        #[cfg(feature = "onnx")]
+        Command::TopicLabel { input, output } => {
+            if let Err(error) = topic_label(&input, &output) {
+                eprintln!("topic-label failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::AnswerGradeSheet {
+            input,
+            variant,
+            output,
+        } => {
+            if let Err(error) = answer_grade::run(&input, &variant, &output) {
+                eprintln!("answer-grade-sheet failed: {error}");
+                std::process::exit(2);
+            }
+        }
         Command::AnswerEvalImportMsmarco {
             input,
             sample,
             label,
             exclude_queries,
+            subjects,
             output,
         } => {
             if let Err(error) = answer_eval_msmarco::run(
@@ -1534,6 +1652,7 @@ async fn main() {
                 sample,
                 &label,
                 exclude_queries.as_deref(),
+                subjects.as_deref(),
                 &output,
             ) {
                 eprintln!("answer-eval-import-msmarco failed: {error}");
