@@ -1,5 +1,7 @@
 # OpenSonarX
 
+> **Colosseum Fall 2026:** start with [HACKATHON.md](HACKATHON.md) — what we measured, what runs, what is on Solana, and what is not built yet.
+
 **Free, open-source, self-building search engine for AI agents.** Answers from a local index in ~1ms when it knows, reaches for the live web when it doesn't — and permanently learns from every miss.
 
 ## The Problem
@@ -34,8 +36,8 @@ cargo build --release --bin oi
 # 1. Bootstrap the index with ~80 curated pages (reference + dev docs)
 ./target/release/oi seed starter
 
-# 2. Search — local results blend with live web (Bing, Brave public HTML,
-#    and DuckDuckGo need no key; production should add an authenticated API)
+# 2. Search — local results blend with live web (DuckDuckGo and Brave
+#    public HTML need no key; production should add an authenticated API)
 ./target/release/oi search "how does the rust borrow checker work"
 #    Watch the "(learning: indexing N new sources...)" line — that's the
 #    index growing from your query. Run the same query again: it's local now.
