@@ -618,8 +618,11 @@ fn wrap_engine(
 /// Build the default engine list from SDK config.
 ///
 /// If `search_engines` is configured, uses those (sorted by priority).
-/// Falls back to legacy behavior: Bing, Brave HTML, and DDG keyless fallbacks,
+/// Falls back to legacy behavior: DuckDuckGo and Brave HTML keyless fallbacks,
 /// with contracted Brave or Serper APIs ahead of them when keys are configured.
+/// The Bing scraper is not a default: on 2026-10-10 it answered every probe
+/// with results unrelated to the query, and a non-empty decoy list never
+/// trips a breaker or lets the next engine run. It stays available by name.
 ///
 /// Every engine is automatically wrapped with a circuit breaker (exponential
 /// backoff on failures) and a response cache (5-minute TTL).
@@ -666,15 +669,11 @@ pub fn default_engines(config: &SdkConfig) -> Vec<Arc<dyn SearchEngine>> {
             ));
         }
         engines.push(wrap_engine(
-            Arc::new(bing::BingScraper),
+            Arc::new(duckduckgo::DuckDuckGo),
             persistent_cache_dir.as_deref(),
         ));
         engines.push(wrap_engine(
             Arc::new(brave_html::BraveHtml),
-            persistent_cache_dir.as_deref(),
-        ));
-        engines.push(wrap_engine(
-            Arc::new(duckduckgo::DuckDuckGo),
             persistent_cache_dir.as_deref(),
         ));
         engines
@@ -683,10 +682,10 @@ pub fn default_engines(config: &SdkConfig) -> Vec<Arc<dyn SearchEngine>> {
 
 /// Build a single engine from its config entry.
 ///
-/// Key-free engine status is inherently volatile. Bing, Brave HTML, and
-/// DuckDuckGo are the current defaults behind independent circuit breakers;
-/// Google/Qwant/Stract/Yep remain opt-in because recent probes returned bot
-/// walls, empty results, or unavailable services. Mojeek requires a paid key. Persistent
+/// Key-free engine status is inherently volatile. DuckDuckGo and Brave HTML
+/// are the current defaults behind independent circuit breakers;
+/// Bing/Google/Qwant/Stract/Yep remain opt-in because recent probes returned
+/// decoy results, bot walls, empty results, or unavailable services. Mojeek requires a paid key. Persistent
 /// failures trip the per-engine circuit breaker, so dead engines self-mute
 /// — but production deployments should configure at least one API-backed
 /// engine (brave/serper) rather than lean on scrapers.
@@ -1123,10 +1122,9 @@ mod tests {
     fn test_default_engines_legacy_mode() {
         let config = SdkConfig::default();
         let engines = default_engines(&config);
-        assert_eq!(engines.len(), 3);
-        assert_eq!(engines[0].name(), "bing");
+        assert_eq!(engines.len(), 2);
+        assert_eq!(engines[0].name(), "duckduckgo");
         assert_eq!(engines[1].name(), "brave-html");
-        assert_eq!(engines[2].name(), "duckduckgo");
     }
 
     #[test]
@@ -1137,11 +1135,10 @@ mod tests {
             ..SdkConfig::default()
         };
         let engines = default_engines(&config);
-        assert_eq!(engines.len(), 4);
+        assert_eq!(engines.len(), 3);
         assert_eq!(engines[0].name(), "brave");
-        assert_eq!(engines[1].name(), "bing");
+        assert_eq!(engines[1].name(), "duckduckgo");
         assert_eq!(engines[2].name(), "brave-html");
-        assert_eq!(engines[3].name(), "duckduckgo");
     }
 
     #[test]
@@ -1152,12 +1149,11 @@ mod tests {
             ..SdkConfig::default()
         };
         let engines = default_engines(&config);
-        assert_eq!(engines.len(), 5);
+        assert_eq!(engines.len(), 4);
         assert_eq!(engines[0].name(), "serper");
         assert_eq!(engines[1].name(), "brave");
-        assert_eq!(engines[2].name(), "bing");
+        assert_eq!(engines[2].name(), "duckduckgo");
         assert_eq!(engines[3].name(), "brave-html");
-        assert_eq!(engines[4].name(), "duckduckgo");
     }
 
     #[test]
