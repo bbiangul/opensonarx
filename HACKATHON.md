@@ -31,9 +31,21 @@ we treat the numbers accordingly.
   narrow (bootstrap 95% lower bound of the difference: +1.0 point) and it
   comes from one AI reader, so we call it a first result, not a law.
 
+- **The work can move to ingestion, and the signal survives.** We extracted
+  each page's claims once, when the page entered the index, verified every
+  quote, and computed corroboration at query time from the stored claims
+  alone: one query embedding and one vector lookup, no model. Query-side
+  cost: 3.6 ms at the median, against about 13 s. On the held-out test,
+  answers carrying that label were wrong 8.2% of the time and the rest
+  22.4% (bootstrap 95% of the difference: +4.1 to +24.3 points)
+  ([claims at ingestion](docs/experiments/INGEST-CLAIMS-2026-10-11.md)).
+  The index held exactly the pages those queries had retrieved, so this is
+  the covered case; it says nothing yet about coverage.
+
 So the missing piece in search for agents is not a better answer. It is a
-trust signal on each source, and someone who is financially accountable for
-what they publish. That is what the index and the Solana program are for.
+trust signal on each source, computed before the question is asked, and
+someone who is accountable for it. That is what the index, its nodes and the
+Solana program are for.
 
 ## What runs today
 
@@ -101,8 +113,13 @@ there are no external stakers.
 
 - Our own index is small. Discovery leans on third-party search and the
   index grows from the pages each query fetches.
-- The corroboration signal is computed by a model at query time (about 13 s).
-  Moving claim extraction to ingestion time is the next piece of work.
+- Ingestion-time claims live in the SDK (`oi_sdk::claims`) and were measured
+  by feeding stored pages through it. They are not yet wired into the crawl
+  pipeline or the P2P nodes, and the `--answer` report still uses the slower
+  query-time path.
+- Nodes checking each other's ingestion work on chain is design, not code.
+  What makes it tractable is that the check is mechanical: a quote is in the
+  page with that hash, or it is not.
 - The uncertainty engine (`crates/oi-index/src/uncertainty.rs`) only emits a
   probability when it has resolved outcomes for a source. It has none yet, so
   every result is labelled `evidential_only`.
@@ -121,8 +138,9 @@ This repository predates the hackathon. To be explicit:
   quote location; hosted model backend; the evaluation tooling
   (`oi-bench answer-eval`, `answer-live`, blind grading sheets); three live
   experiments registered before they ran (480 queries, 455 graded
-  responses); the trust-label result; the default-discovery fix; the
-  on-chain bond client; this document and the devnet work.
+  responses); the trust-label result; claim extraction at ingestion time
+  and its registered test; the default-discovery fix; the on-chain bond
+  client; this document and the devnet work.
 
 `git log` has the dates. Several October 9 commits bundle work that had been
 sitting uncommitted since August; their messages say "pending changes".

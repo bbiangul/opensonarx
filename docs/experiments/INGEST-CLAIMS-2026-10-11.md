@@ -91,4 +91,111 @@ consulta (o de TRUST-LABEL) e o custo da ingestão.
 
 ## Resultados
 
-Pendente.
+### Resumo
+
+**As duas respostas são sim.** Com as afirmações já extraídas na ingestão, o
+trabalho de consulta leva cerca de 4 milissegundos, e o selo calculado assim
+passou no critério registrado: no conjunto de teste, respostas com selo
+erraram 8,2% e sem selo 22,4%.
+
+| | Selo na ingestão (este teste) | Selo na consulta (TRUST-LABEL) |
+|---|---|---|
+| Custo por consulta | 3,6 ms (p50), 5,3 ms (p95) | cerca de 13 s |
+| Modelo na consulta | nenhum | três a quatro chamadas |
+| Com selo, erradas | 5 de 61 (8,2%) | 3 de 38 (7,9%) |
+| Sem selo, erradas | 26 de 116 (22,4%) | 28 de 139 (20,1%) |
+| Diferença | +14,2 pp (+4,1 a +24,3) | +12,2 pp (+1,0 a +22,5) |
+| Respostas com selo | 34% | 21% |
+
+As duas colunas usam as mesmas 177 respostas corrigidas do conjunto de teste.
+
+### Ingestão
+
+- 1.288 trechos distintos, uma chamada de modelo por trecho, mediana de
+  4,2 s por chamada. Com 8 em paralelo, 19 minutos no total.
+- 12.396 afirmações guardadas; 147 descartadas porque a citação não foi
+  encontrada no trecho (1,2%). Nenhum erro de modelo.
+- Embedding e indexação das 12.396 afirmações: 40 s.
+
+### Consulta
+
+Um processo, uma consulta por vez, índice com 12.396 afirmações, embedder
+`arctic-embed-s`:
+
+| Etapa | p50 | p95 | máximo |
+|---|---|---|---|
+| Embedding da consulta | 3,4 ms | 5,1 ms | 6,3 ms |
+| Busca das afirmações e contagem | 0,27 ms | 0,47 ms | 0,89 ms |
+| Total | 3,6 ms | 5,3 ms | 6,5 ms |
+
+Isto é o custo do selo. Não inclui buscar as fontes no índice local, que as
+medições antigas do projeto põem em poucos milissegundos e que não foi
+medido de novo aqui.
+
+### Escolha dos limiares (desenvolvimento)
+
+Nove combinações, pelos quartis. Com a regra registrada, a escolhida foi
+similaridade com a consulta ≥ 0,725 e com a cabeça ≥ 0,841. No
+desenvolvimento ela deu 6 erradas em 61 com selo (9,8%) contra 17 em 106
+sem (16,0%): diferença de +6,2 pontos, bem mais fraca do que a do teste.
+
+Os dois números são da mesma política em amostras diferentes. O efeito real
+deve estar entre eles; somando desenvolvimento e teste, 11 em 122 (9,0%)
+contra 43 em 222 (19,4%).
+
+### Por amostra, no teste
+
+| Amostra | Com selo | Sem selo |
+|---|---|---|
+| Factual | 1 errada em 32 | 8 em 70 |
+| TruthfulQA | 4 em 29 | 18 em 46 |
+
+Das 7 respostas que endossavam uma falsidade (veredito F) na amostra do
+TruthfulQA, nenhuma tinha o selo.
+
+### Onde o selo errou
+
+Cinco respostas com selo estavam erradas:
+
+- capacidade calorífica molar do vapor d'água: duas páginas trazem o mesmo
+  número errado (o da água líquida). É a falha esperada: fontes repetindo o
+  mesmo erro contam como corroboração;
+- quatro do TruthfulQA marcadas N (não respondem, sem afirmar falsidade), em
+  que as afirmações guardadas eram sobre o assunto mas não respondiam à
+  pergunta. O selo mede que fontes concordam sobre algo próximo da consulta,
+  não que a pergunta foi respondida.
+
+### Concordância com o selo calculado na consulta
+
+Nas 177 respostas do teste: os dois selos juntos em 23, só o da ingestão em
+38, só o da consulta em 15, nenhum em 101. Eles marcam conjuntos bem
+diferentes de respostas e os dois separam certo de errado. Não são o mesmo
+sinal medido de dois jeitos.
+
+### O que isto diz
+
+- A ideia de fazer o trabalho na ingestão se sustenta na menor escala
+  testável: o sinal de confiança sai em milissegundos, sem modelo na
+  consulta, e não ficou pior do que o calculado na hora.
+- O custo sai da consulta e vai para a ingestão: cerca de 4 s de modelo por
+  página, uma vez. É trabalho que pode ser feito por nodes e conferido por
+  qualquer outro node, porque a citação está ou não está na página.
+
+### Limites
+
+- **Cobertura total por construção.** O índice tinha exatamente as páginas
+  dessas consultas. Num índice real, a maioria das consultas não estará
+  coberta no começo.
+- O efeito no desenvolvimento foi a metade do efeito no teste. Uma terceira
+  amostra diria qual dos dois está mais perto.
+- Os limiares valem para este embedder.
+- Contradição entre fontes não é vista por este selo.
+- Um leitor, que é um modelo; 177 respostas no teste.
+- Um node, um processo. Rede e nodes múltiplos não foram medidos.
+
+### Arquivos
+
+- Afirmações: `outputs/validation-20261009/ingest-claims-live-480.jsonl`
+- Sinal no desenvolvimento e no teste:
+  `outputs/validation-20261009/ingest-claims-signal-{dev,test}.json`
+- Análise: `scripts/ingest_claims_analysis.py`

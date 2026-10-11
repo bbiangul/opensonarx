@@ -40,14 +40,18 @@ pub struct ClaimPolicy {
 }
 
 impl Default for ClaimPolicy {
+    /// The two similarity thresholds were chosen on development queries and
+    /// then held fixed for a separate test (docs/experiments/
+    /// INGEST-CLAIMS-2026-10-11.md). They are specific to the embedder used
+    /// there, `arctic-embed-s`; another embedder needs its own.
     fn default() -> Self {
         Self {
-            policy_id: "ingest-claims-v0".to_string(),
+            policy_id: "ingest-claims-v1".to_string(),
             max_claims_per_passage: 12,
             min_quote_chars: 20,
             top_k: 20,
-            min_query_similarity: 0.5,
-            min_claim_similarity: 0.8,
+            min_query_similarity: 0.725,
+            min_claim_similarity: 0.841,
             min_source_families: 2,
         }
     }
