@@ -256,6 +256,74 @@ faltam duas coisas, as duas no protocolo:
 
 Nenhuma das duas foi feita aqui.
 
+## Passo 3: consulta de afirmações no protocolo
+
+Feito depois do passo 2, para resolver os dois pontos que ele apontou. Não
+registrado antes; os números contra os rótulos são descritivos.
+
+### O que mudou no código do produto
+
+- `oi-types/src/claims.rs`: os tipos de afirmação e o cálculo de
+  corroboração desceram do SDK para os tipos compartilhados, para a rede
+  poder usá-los. Uma afirmação viaja como um resultado comum, com a
+  similaridade absoluta como nota e com o próprio vetor.
+- `oi-index`: `ClaimIndex` agora mora aqui, e o `HybridIndex` de um node
+  guarda as afirmações das suas páginas (`ingest_claims`, `fetch_claims`).
+  Ainda só em memória: o `save` do índice não as grava.
+- `proto/opensonarx.proto`: `QueryRequest.claims` e `SearchResult.embedding`.
+- `oi-network`: um pedido com `claims` é respondido por busca vetorial pura
+  nas afirmações do node, e o node de entrada junta as respostas por
+  similaridade absoluta, sem o corte por URL (`build_merged_claims`). O
+  repasse entre nodes não mudou.
+
+### Resultado
+
+As mesmas 240 consultas de teste, com as afirmações repartidas entre os
+nodes como no passo 2.
+
+| | Índice no processo (passo 1) | 1 node, pela rede | 3 nodes, pela rede |
+|---|---|---|---|
+| Tempo total, p50 | 3,6 ms | 3,8 ms | 4,7 ms |
+| Tempo total, p95 | 5,3 ms | 5,5 ms | 6,4 ms |
+| Consulta ao node, p50 | 0,27 ms | 0,30 ms | 1,23 ms |
+| Embedding refeito por quem consulta | não | não | não |
+| Com selo, erradas (teste) | 5 de 61 | 5 de 61 | 4 de 60 |
+| Sem selo, erradas (teste) | 26 de 116 | 26 de 116 | 27 de 117 |
+
+- **Um node pela rede dá exatamente o mesmo que o índice no processo:** as
+  240 listas de afirmações são idênticas. O caminho de rede não altera nada.
+- **Três nodes custam 1 ms a mais** em localhost e não exigem embedding
+  nenhum além do da consulta.
+- **O selo com três nodes se mantém:** 6,7% contra 23,1%, diferença de
+  +16,4 pontos (+6,6 a +26,3).
+
+### Por que um node e três ainda diferem em 5 consultas
+
+A diferença não vem da rede; vem da busca vetorial ser aproximada (HNSW).
+Comparando cada configuração com uma varredura exaustiva de todas as
+afirmações:
+
+| | Mesmas 20 mais próximas (recall) | Mesma afirmação-cabeça | Mesmo selo |
+|---|---|---|---|
+| Índice único (12.396 afirmações) | 0,914 | 218 de 240 | 236 de 240 |
+| Três nodes (cerca de 4.100 cada) | 0,950 | 226 de 240 | 235 de 240 |
+
+Três índices menores erram menos do que um grande, então a versão
+distribuída fica mais perto do resultado exato do que a de um node só. O
+selo da varredura exaustiva, no teste: 6 erradas em 65 contra 25 em 112
+(+13,1 pontos, +2,7 a +23,4).
+
+O índice vetorial de afirmações usa os parâmetros padrão do HNSW. Subir a
+precisão dele é um ajuste de índice que ficou por fazer.
+
+### O que continua faltando
+
+- Persistência das afirmações no disco e replicação entre nodes.
+- Ligar a extração ao crawler: hoje a ingestão é acionada pelo banco de
+  testes.
+- Nodes em máquinas diferentes. Tudo aqui é um processo em localhost.
+- Conferência do trabalho de um node por outro, e o que vai na cadeia.
+
 ### Limites do passo 2
 
 - Todos os nodes num processo só, numa máquina só, em localhost. Não há
@@ -267,6 +335,8 @@ Nenhuma das duas foi feita aqui.
 
 - Passo 2: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-test.json`
   e `ingest-claims-nodes-{1,3}-rerank-test.json`
+- Passo 3: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-protocol-test.json`;
+  a varredura exaustiva está no campo `exact` de `ingest-claims-signal-test.json`
 - Afirmações: `outputs/validation-20261009/ingest-claims-live-480.jsonl`
 - Sinal no desenvolvimento e no teste:
   `outputs/validation-20261009/ingest-claims-signal-{dev,test}.json`

@@ -178,6 +178,37 @@ pub fn build_merged_response(
     }
 }
 
+/// Merge claim results from this node and its peers. Every claim is kept,
+/// including several from one URL, and the order is the absolute similarity
+/// to the request, which is comparable across nodes. Page results are merged
+/// by `build_merged_response` instead, whose per-URL dedup and per-node
+/// scores do not suit claims.
+pub fn build_merged_claims(
+    request_id: &str,
+    local_results: Vec<SearchResult>,
+    remote_results: Vec<SearchResult>,
+    limit: usize,
+) -> QueryResponse {
+    let similarity =
+        |result: &SearchResult| result.scores.as_ref().map(|s| s.semantic).unwrap_or(0.0);
+    let mut merged: Vec<SearchResult> = local_results.into_iter().chain(remote_results).collect();
+    merged.sort_by(|a, b| {
+        similarity(b)
+            .total_cmp(&similarity(a))
+            .then_with(|| a.result_id.cmp(&b.result_id))
+    });
+    merged.truncate(limit);
+    for (i, result) in merged.iter_mut().enumerate() {
+        result.rank = (i + 1) as u32;
+    }
+    QueryResponse {
+        request_id: request_id.to_string(),
+        meta: None,
+        results: merged,
+        error: None,
+    }
+}
+
 /// Check if a PendingFanout is done (all remotes received OR timed out).
 /// If done, build the merged response and send it via `reply_tx`.
 pub fn maybe_complete_fanout(fanout: &mut PendingFanout, timed_out: bool) -> bool {
@@ -192,7 +223,12 @@ pub fn maybe_complete_fanout(fanout: &mut PendingFanout, timed_out: bool) -> boo
         5
     };
 
-    let response = build_merged_response(
+    let merge = if fanout.request.claims {
+        build_merged_claims
+    } else {
+        build_merged_response
+    };
+    let response = merge(
         &fanout.request.request_id,
         std::mem::take(&mut fanout.local_results),
         std::mem::take(&mut fanout.remote_results),
@@ -231,7 +267,31 @@ mod tests {
             source: "test".to_string(),
             entity: String::new(),
             content_kind: String::new(),
+            embedding: Vec::new(),
         }
+    }
+
+    #[test]
+    fn merged_claims_keep_every_claim_and_order_by_absolute_similarity() {
+        // Two claims from the same URL on the local node, one closer claim
+        // from a peer: page merging would keep one result per URL.
+        let mut near = make_result("https://b.org/x", 0.9, 1);
+        near.result_id = "n2:0".to_string();
+        near.scores.as_mut().unwrap().semantic = 0.9;
+        let mut first = make_result("https://a.org/x", 0.8, 1);
+        first.result_id = "n1:0".to_string();
+        first.scores.as_mut().unwrap().semantic = 0.8;
+        let mut second = make_result("https://a.org/x", 0.7, 2);
+        second.result_id = "n1:1".to_string();
+        second.scores.as_mut().unwrap().semantic = 0.7;
+        let resp = build_merged_claims("req", vec![first, second], vec![near], 10);
+        let ids: Vec<&str> = resp.results.iter().map(|r| r.result_id.as_str()).collect();
+        assert_eq!(ids, ["n2:0", "n1:0", "n1:1"]);
+        assert_eq!(resp.results[0].rank, 1);
+        assert_eq!(
+            build_merged_claims("req", vec![], vec![], 10).results.len(),
+            0
+        );
     }
 
     #[test]

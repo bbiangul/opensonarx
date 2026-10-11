@@ -456,6 +456,11 @@ enum Command {
         #[arg(long)]
         fetch_limit: Option<usize>,
 
+        /// Use the node's claims request (plain vector lookup, results carry
+        /// their vectors) instead of its page search
+        #[arg(long)]
+        claims_protocol: bool,
+
         #[arg(long)]
         output: String,
     },
@@ -1784,6 +1789,7 @@ async fn main() {
             nodes,
             base_port,
             fetch_limit,
+            claims_protocol,
             output,
         } => {
             let policy = oi_sdk::claims::ClaimPolicy::default();
@@ -1794,6 +1800,7 @@ async fn main() {
                 policy,
                 base_port,
                 fetch_limit,
+                claims_protocol,
                 &output,
             )
             .await

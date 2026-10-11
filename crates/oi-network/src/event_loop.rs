@@ -581,7 +581,11 @@ async fn handle_query_command(
         } else {
             5
         };
-        let response = fanout::build_merged_response(&request_id, local_results, vec![], limit);
+        let response = if cmd.request.claims {
+            fanout::build_merged_claims(&request_id, local_results, vec![], limit)
+        } else {
+            fanout::build_merged_response(&request_id, local_results, vec![], limit)
+        };
         let _ = cmd.reply_tx.send(response);
         return;
     }
@@ -959,18 +963,61 @@ fn handle_query_request(
         };
     }
 
+    let limit = if request.limit > 0 {
+        request.limit as usize
+    } else {
+        5
+    };
+
+    // A claims request reads the claims stored with this node's pages: a
+    // plain vector lookup whose score is the absolute similarity to the
+    // request, so the entry node can merge answers from different nodes by
+    // it. Each claim travels with its vector.
+    if request.claims {
+        return match index.fetch_claims(&embedding, limit) {
+            Ok(fetched) => QueryResponse {
+                request_id: request.request_id.clone(),
+                meta: Some(ResponseMeta {
+                    latency_ms: start.elapsed().as_millis() as u32,
+                    cost_micro_usd: 0,
+                    shard_id: shard_ids.first().cloned().unwrap_or_default(),
+                    node_id: node_id.to_string(),
+                    model_version: "local".to_string(),
+                }),
+                results: fetched
+                    .iter()
+                    .enumerate()
+                    .map(|(position, (claim, vector))| {
+                        oi_types::claims::claim_to_result(
+                            claim,
+                            vector,
+                            format!("{node_id}:{position}"),
+                        )
+                    })
+                    .collect(),
+                error: None,
+            },
+            Err(e) => QueryResponse {
+                request_id: request.request_id.clone(),
+                meta: None,
+                results: vec![],
+                error: Some(ErrorInfo {
+                    code: "E1002".to_string(),
+                    name: "QUERY_FAILED".to_string(),
+                    message: format!("Claim lookup failed: {e}"),
+                    retryable: true,
+                    retry_after_ms: 1000,
+                }),
+            },
+        };
+    }
+
     // Build filters
     let filters = request
         .filters
         .as_ref()
         .map(oi_types::QueryFilters::from_proto)
         .unwrap_or_default();
-
-    let limit = if request.limit > 0 {
-        request.limit as usize
-    } else {
-        5
-    };
 
     // Search the index
     match index.query(&embedding, &request.query_text, &filters, limit) {
@@ -1003,6 +1050,7 @@ fn handle_query_request(
                     source: r.source.clone(),
                     entity: r.entity.clone().unwrap_or_default(),
                     content_kind: r.content_kind.clone().unwrap_or_default(),
+                    embedding: Vec::new(),
                 })
                 .collect();
 

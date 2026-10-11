@@ -199,6 +199,7 @@ mod tests {
             signed_ticket: vec![],
             sender_pubkey: "SoLpubkey123".to_string(),
             nonce: 42,
+            claims: false,
         };
 
         // Encode

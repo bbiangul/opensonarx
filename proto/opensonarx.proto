@@ -16,6 +16,7 @@ message QueryRequest {
   bytes signed_ticket = 6;         // State channel payment ticket
   string sender_pubkey = 7;        // Solana wallet pubkey
   uint64 nonce = 8;                // Replay protection
+  bool claims = 9;                 // Look up stored claims instead of pages: plain vector search, absolute scores
 }
 
 message Filters {
@@ -61,7 +62,8 @@ message SearchResult {
   string extraction_quality = 11;  // "full" | "partial"
   string source = 12;              // "staked" | "external"
   string entity = 13;              // Entity ref
-  string content_kind = 14;        // "video", "post", etc.
+  string content_kind = 14;        // "video", "post", "claim", etc.
+  bytes embedding = 15;            // f32 LE vector of a claim result; empty otherwise
 }
 
 message Scores {

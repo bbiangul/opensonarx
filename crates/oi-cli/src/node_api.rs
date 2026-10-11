@@ -140,6 +140,7 @@ async fn search_handler(
             signed_ticket: vec![],
             sender_pubkey: String::new(),
             nonce: 0,
+            claims: false,
         };
         if let Ok(response) = state.handle.query(proto_request).await {
             let seen: std::collections::HashSet<String> =

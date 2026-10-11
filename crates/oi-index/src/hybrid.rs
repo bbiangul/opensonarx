@@ -177,6 +177,9 @@ pub struct HybridIndex {
     next_seq: AtomicU64,
     /// Maps chunk_id -> assigned seq for incremental replication.
     chunk_seqs: RwLock<HashMap<String, u64>>,
+    /// Claims extracted from the indexed pages at ingestion time. Held in
+    /// memory only: they are not written by `save` yet.
+    claims: RwLock<crate::claims::ClaimIndex>,
 }
 
 impl HybridIndex {
@@ -201,6 +204,7 @@ impl HybridIndex {
             unsaved_count: AtomicU64::new(0),
             next_seq: AtomicU64::new(1),
             chunk_seqs: RwLock::new(HashMap::new()),
+            claims: RwLock::new(crate::claims::ClaimIndex::new(dim)),
         }
     }
 
@@ -651,7 +655,37 @@ impl HybridIndex {
             unsaved_count: AtomicU64::new(0),
             next_seq: AtomicU64::new(next_seq),
             chunk_seqs: RwLock::new(chunk_seqs),
+            claims: RwLock::new(crate::claims::ClaimIndex::new(dim)),
         })
+    }
+
+    /// Store claims extracted from indexed pages, each with the embedding of
+    /// its text.
+    pub fn ingest_claims(
+        &self,
+        claims: Vec<(oi_types::claims::ClaimRecord, Vec<f32>)>,
+    ) -> Result<()> {
+        let mut index = write_lock(&self.claims)?;
+        for (record, vector) in claims {
+            index
+                .add(record, vector)
+                .map_err(oi_types::Error::Internal)?;
+        }
+        Ok(())
+    }
+
+    /// The stored claims nearest to a request, each with its vector. A plain
+    /// vector search: no keyword fusion, no per-URL or per-domain cap.
+    pub fn fetch_claims(
+        &self,
+        embedding: &[f32],
+        top_k: usize,
+    ) -> Result<Vec<(oi_types::claims::MatchedClaim, Vec<f32>)>> {
+        Ok(read_lock(&self.claims)?.fetch(embedding, top_k))
+    }
+
+    pub fn claim_count(&self) -> usize {
+        self.claims.read().map(|claims| claims.len()).unwrap_or(0)
     }
 
     /// Returns true if the index has been modified since the last save.

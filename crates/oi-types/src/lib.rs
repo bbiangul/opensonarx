@@ -1,3 +1,4 @@
+pub mod claims;
 pub mod earnings;
 pub mod economics;
 pub mod embed;

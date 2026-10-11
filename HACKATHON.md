@@ -116,13 +116,12 @@ there are no external stakers.
 - Ingestion-time claims live in the SDK (`oi_sdk::claims`) and were measured
   by feeding stored pages through it. They are not yet wired into the crawl
   pipeline, and the `--answer` report still uses the slower query-time path.
-- Serving that signal from several nodes is not solved. We split the claims
-  across three real nodes and queried one: the fan-out works and costs about
-  2 ms on localhost, but the result differed from the single-node one on 16
-  of 240 queries and the label lost its edge. The nodes' page search ranks
-  by a per-node score and returns one result per URL; claims need a plain
-  vector lookup with an absolute score, and the response has to carry the
-  vectors. That is protocol work we have not done.
+- Claims are served by the network layer but not by a production network.
+  A node now answers a claims request with a plain vector lookup and the
+  entry node merges by absolute similarity. Split across three real nodes on
+  localhost the signal costs 4.7 ms at the median and still separates right
+  from wrong (6.7% against 23.1%). Claims are held in memory only, are not
+  replicated, and no two nodes have run on different machines.
 - Nodes checking each other's ingestion work on chain is design, not code.
   What makes it tractable is that the check is mechanical: a quote is in the
   page with that hash, or it is not.

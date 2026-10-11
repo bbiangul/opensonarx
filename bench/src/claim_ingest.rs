@@ -214,12 +214,15 @@ pub fn signal(
     let embedder = oi_sdk::OpenSonarXClient::default_embedder();
     let started = std::time::Instant::now();
     let mut index = ClaimIndex::new(embedder.dimension());
+    // Kept beside the index for the exhaustive comparison below.
+    let mut stored: Vec<(ClaimRecord, Vec<f32>)> = Vec::new();
     for batch in records.chunks(64) {
         let texts: Vec<&str> = batch.iter().map(|record| record.claim.as_str()).collect();
         let vectors = embedder
             .embed_text_batch(&texts)
             .map_err(|error| format!("embedding claims: {error}"))?;
         for (record, vector) in batch.iter().zip(vectors) {
+            stored.push((record.clone(), vector.clone()));
             index
                 .add(record.clone(), vector)
                 .map_err(|error| error.to_string())?;
@@ -247,6 +250,27 @@ pub fn signal(
             let started = std::time::Instant::now();
             let corroboration = index.corroboration(&vector, &policy);
             let lookup_ms = started.elapsed().as_secs_f64() * 1_000.0;
+            // Not timed: the same signal from an exhaustive scan of every
+            // stored claim, to see what the approximate index misses.
+            let exact = oi_sdk::claims::corroboration(
+                stored
+                    .iter()
+                    .map(|(record, stored_vector)| {
+                        (
+                            oi_sdk::claims::MatchedClaim {
+                                claim: record.claim.clone(),
+                                quote: record.quote.clone(),
+                                url: record.url.clone(),
+                                source_family: record.source_family.clone(),
+                                query_similarity: oi_types::claims::cosine(&vector, stored_vector),
+                                head_similarity: 0.0,
+                            },
+                            stored_vector.clone(),
+                        )
+                    })
+                    .collect(),
+                &policy,
+            );
             embed_times.push(embed_ms);
             lookup_times.push(lookup_ms);
             total_times.push(embed_ms + lookup_ms);
@@ -259,6 +283,11 @@ pub fn signal(
                 "embed_ms": embed_ms,
                 "lookup_ms": lookup_ms,
                 "matches": corroboration.matches,
+                "exact": {
+                    "supporting_families": exact.supporting_families,
+                    "corroborated": exact.corroborated,
+                    "matches": exact.matches,
+                },
             }));
         }
     }

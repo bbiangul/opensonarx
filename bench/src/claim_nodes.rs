@@ -166,6 +166,62 @@ async fn start_nodes(
     Ok(handles)
 }
 
+/// The claims a page search returned, as matches. With a wider fetch the
+/// caller re-ranks them by absolute similarity first. The returned claims are
+/// embedded again, because a page result carries no vector.
+fn page_search_matches(
+    results: &[oi_types::proto::opensonarx::SearchResult],
+    fetch_limit: Option<usize>,
+    policy: &ClaimPolicy,
+    embedder: &dyn oi_types::EmbeddingPipeline,
+) -> Result<Vec<MatchedClaim>, String> {
+    // With a wider fetch the caller re-ranks what came back by the
+    // absolute similarity to the request, which means the same thing
+    // on every node, and keeps the closest `top_k`. A node's own
+    // ordering uses a score that is relative to that node's results.
+    let mut returned: Vec<_> = results.iter().collect();
+    if fetch_limit.is_some() {
+        returned.sort_by(|a, b| {
+            let similarity = |item: &&oi_types::proto::opensonarx::SearchResult| {
+                item.scores.as_ref().map_or(0.0, |scores| scores.semantic)
+            };
+            similarity(b).total_cmp(&similarity(a))
+        });
+        returned.truncate(policy.top_k);
+    }
+    // Vectors do not travel in a response, so the returned claims are
+    // embedded again to compare each with the head.
+    let claims: Vec<(String, String)> = returned
+        .iter()
+        .map(|item| match item.content_md.split_once(QUOTE_MARK) {
+            Some((claim, quote)) => (claim.to_string(), quote.to_string()),
+            None => (item.content_md.clone(), String::new()),
+        })
+        .collect();
+    let texts: Vec<&str> = claims.iter().map(|(claim, _)| claim.as_str()).collect();
+    let vectors = if texts.is_empty() {
+        Vec::new()
+    } else {
+        embedder
+            .embed_text_batch(&texts)
+            .map_err(|error| format!("embedding returned claims: {error}"))?
+    };
+    let matches: Vec<MatchedClaim> = returned
+        .iter()
+        .zip(&claims)
+        .zip(&vectors)
+        .map(|((item, (claim, quote)), vector)| MatchedClaim {
+            claim: claim.clone(),
+            quote: quote.clone(),
+            url: item.url.clone(),
+            source_family: oi_sdk::source::source_family(&item.url),
+            query_similarity: item.scores.as_ref().map_or(0.0, |scores| scores.semantic),
+            head_similarity: cosine(&vectors[0], vector),
+        })
+        .collect();
+    Ok(matches)
+}
+
 #[allow(clippy::too_many_arguments)]
 pub async fn run(
     claims_path: &str,
@@ -174,6 +230,7 @@ pub async fn run(
     policy: ClaimPolicy,
     base_port: u16,
     fetch_limit: Option<usize>,
+    claims_protocol: bool,
     output: &str,
 ) -> Result<(), String> {
     let nodes = nodes.max(1);
@@ -206,6 +263,13 @@ pub async fn run(
         for (position, (record, vector)) in batch.iter().zip(vectors).enumerate() {
             let shard = shard_of(&record.url, nodes);
             per_shard[shard] += 1;
+            if claims_protocol {
+                // The node's own claim store, read by a claims request.
+                indexes[shard]
+                    .ingest_claims(vec![(record.clone(), vector)])
+                    .map_err(|error| format!("ingest claims: {error}"))?;
+                continue;
+            }
             indexes[shard]
                 .ingest(&[chunk(
                     offset * 64 + position,
@@ -262,6 +326,7 @@ pub async fn run(
                     ..Filters::default()
                 }),
                 limit: fetch_limit.unwrap_or(policy.top_k) as u32,
+                claims: claims_protocol,
                 ..QueryRequest::default()
             };
             let started = Instant::now();
@@ -271,51 +336,18 @@ pub async fn run(
                 .map_err(|error| format!("node query: {error}"))?;
             let network_ms = started.elapsed().as_secs_f64() * 1_000.0;
 
-            // With a wider fetch the caller re-ranks what came back by the
-            // absolute similarity to the request, which means the same thing
-            // on every node, and keeps the closest `top_k`. A node's own
-            // ordering uses a score that is relative to that node's results.
             let started = Instant::now();
-            let mut returned: Vec<_> = response.results.iter().collect();
-            if fetch_limit.is_some() {
-                returned.sort_by(|a, b| {
-                    let similarity = |item: &&oi_types::proto::opensonarx::SearchResult| {
-                        item.scores.as_ref().map_or(0.0, |scores| scores.semantic)
-                    };
-                    similarity(b).total_cmp(&similarity(a))
-                });
-                returned.truncate(policy.top_k);
-            }
-            // Vectors do not travel in a response, so the returned claims are
-            // embedded again to compare each with the head.
-            let claims: Vec<(String, String)> = returned
-                .iter()
-                .map(|item| match item.content_md.split_once(QUOTE_MARK) {
-                    Some((claim, quote)) => (claim.to_string(), quote.to_string()),
-                    None => (item.content_md.clone(), String::new()),
-                })
-                .collect();
-            let texts: Vec<&str> = claims.iter().map(|(claim, _)| claim.as_str()).collect();
-            let vectors = if texts.is_empty() {
-                Vec::new()
+            let matches: Vec<MatchedClaim> = if claims_protocol {
+                // Claim results arrive ordered by absolute similarity and
+                // carry their vectors: nothing is embedded again.
+                oi_sdk::claims::corroboration(
+                    oi_sdk::claims::claims_from_results(&response.results),
+                    &policy,
+                )
+                .matches
             } else {
-                embedder
-                    .embed_text_batch(&texts)
-                    .map_err(|error| format!("embedding returned claims: {error}"))?
+                page_search_matches(&response.results, fetch_limit, &policy, embedder.as_ref())?
             };
-            let matches: Vec<MatchedClaim> = returned
-                .iter()
-                .zip(&claims)
-                .zip(&vectors)
-                .map(|((item, (claim, quote)), vector)| MatchedClaim {
-                    claim: claim.clone(),
-                    quote: quote.clone(),
-                    url: item.url.clone(),
-                    source_family: oi_sdk::source::source_family(&item.url),
-                    query_similarity: item.scores.as_ref().map_or(0.0, |scores| scores.semantic),
-                    head_similarity: cosine(&vectors[0], vector),
-                })
-                .collect();
             let families = supporting_families(&matches, &policy);
             let count_ms = started.elapsed().as_secs_f64() * 1_000.0;
 
@@ -347,6 +379,7 @@ pub async fn run(
     let summary = json!({
         "nodes": nodes,
         "fetch_limit": fetch_limit,
+        "claims_protocol": claims_protocol,
         "claims": records.len(),
         "claims_per_node": per_shard,
         "embedder": embedder.name(),
