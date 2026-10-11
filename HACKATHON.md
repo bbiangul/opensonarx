@@ -57,6 +57,10 @@ one page says 5 hours 43 minutes, another says about 4 hours. A plain
 search-plus-model pipeline answered "5 hours 43 minutes" in our test. An agent
 reading the evidence report sees the conflict instead.
 
+`examples/python/agent_reads_evidence.py` is the other half: a minimal agent
+that reads that report and decides what it is willing to say ("confirmed by
+three independent sources", "sources disagree", "one source, unverified").
+
 Every quote in the report is located character-for-character in the retained
 page text by deterministic code before it can be shown. A model proposes;
 code verifies.
