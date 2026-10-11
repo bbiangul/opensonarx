@@ -170,7 +170,7 @@ impl ModelCache {
             }
         }
 
-        fs::write(&path, &bytes).map_err(ModelCacheError::Io)?;
+        write_atomically(&path, &bytes).map_err(ModelCacheError::Io)?;
         tracing::info!("Downloaded {} ({} bytes)", manifest.filename, bytes.len());
 
         Ok(path)
@@ -190,6 +190,21 @@ impl ModelCache {
         // Last resort: current directory
         PathBuf::from("models")
     }
+}
+
+/// Write `bytes` to `path` so that no reader ever sees a partial file: the
+/// data goes to a sibling temporary file that is then renamed into place.
+/// Two downloads racing for the same model each rename a complete file.
+fn write_atomically(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+    static COUNTER: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let unique = COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let mut partial = path.as_os_str().to_owned();
+    partial.push(format!(".{}.{unique}.part", std::process::id()));
+    let partial = PathBuf::from(partial);
+    fs::write(&partial, bytes)?;
+    fs::rename(&partial, path).inspect_err(|_| {
+        let _ = fs::remove_file(&partial);
+    })
 }
 
 impl Default for ModelCache {
@@ -253,6 +268,27 @@ fn dirs_home() -> Option<PathBuf> {
 mod tests {
     use super::*;
     use std::fs;
+
+    #[test]
+    fn a_written_model_is_complete_and_leaves_no_partial_file() {
+        let dir =
+            std::env::temp_dir().join(format!("oi_model_cache_atomic_{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("model.bin");
+        std::thread::scope(|scope| {
+            for _ in 0..8 {
+                scope.spawn(|| write_atomically(&path, &[7u8; 4096]).unwrap());
+            }
+        });
+        assert_eq!(fs::read(&path).unwrap(), vec![7u8; 4096]);
+        let names: Vec<_> = fs::read_dir(&dir)
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name())
+            .collect();
+        assert_eq!(names.len(), 1, "{names:?}");
+        let _ = fs::remove_dir_all(&dir);
+    }
 
     #[test]
     fn test_cache_dir_creation() {
