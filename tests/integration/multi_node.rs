@@ -209,7 +209,7 @@ async fn test_replica_keeps_only_claims_it_can_verify() {
         routing_table_path: None,
         ..Default::default()
     };
-    let node_a = Node::new(config(19041, vec![])).with_index(index_a, vec![shard.clone()]);
+    let node_a = Node::new(config(19041, vec![])).with_index(index_a.clone(), vec![shard.clone()]);
     let peer_a = node_a.peer_id;
     let handle_a = node_a.start().await.expect("Node A start");
     tokio::time::sleep(std::time::Duration::from_secs(1)).await;
@@ -261,6 +261,29 @@ async fn test_replica_keeps_only_claims_it_can_verify() {
             .iter()
             .all(|(claim, _)| !claim.claim.contains("Sahara")),
         "the fabricated claim never reached the replica"
+    );
+
+    // A extracts one more claim from the page B already has. No page is
+    // replicated this time; the claim has to arrive on its own.
+    index_a
+        .ingest_claims(vec![(
+            claim(
+                "Antarctica covers 14 million square km.",
+                "It covers 14 million square km.",
+            ),
+            vec![0.0, 0.0, 1.0, 0.0],
+        )])
+        .unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+    while index_b.claim_count() < 2 && std::time::Instant::now() < deadline {
+        handle_b.request_replication(peer_a, shard.clone(), 100);
+        tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+    }
+    assert_eq!(index_b.doc_count(), 1, "no page was replicated again");
+    assert_eq!(
+        index_b.claim_count(),
+        2,
+        "a claim extracted after its page was replicated still reaches the replica"
     );
 
     handle_a.shutdown();

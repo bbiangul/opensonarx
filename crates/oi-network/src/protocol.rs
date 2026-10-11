@@ -274,6 +274,7 @@ mod tests {
             shard_id: "topic-technology".to_string(),
             from_seq: 42,
             max_chunks: 100,
+            from_claim_seq: 7,
         };
 
         let mut buf = Vec::new();
@@ -309,6 +310,7 @@ mod tests {
                 seq: 1,
             }],
             latest_seq: 1,
+            latest_claim_seq: 9,
         };
 
         let mut buf = Vec::new();

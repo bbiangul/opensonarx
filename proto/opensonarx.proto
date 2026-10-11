@@ -177,11 +177,13 @@ message ReplicationReq {
   string shard_id = 1;
   uint64 from_seq = 2;
   uint32 max_chunks = 3;
+  uint64 from_claim_seq = 4;       // Claims already received from this peer
 }
 
 message ReplicationResp {
-  repeated DocumentChunk chunks = 1;
+  repeated DocumentChunk chunks = 1;  // Page chunks, and claims as chunks of kind "claim"
   uint64 latest_seq = 2;
+  uint64 latest_claim_seq = 3;     // Sender's newest claim sequence number
 }
 
 message DocumentChunk {

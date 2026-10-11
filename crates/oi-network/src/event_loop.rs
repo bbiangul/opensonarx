@@ -177,18 +177,22 @@ pub async fn run_event_loop(
                     }
                     GossipCommand::ReplicationRequest { peer_id, shard_id, max_chunks } => {
                         // Use watermark for incremental replication
-                        let from_seq = {
+                        let (from_seq, from_claim_seq) = {
                             let rt = routing_table.read().await;
                             if let Some(nid) = rt.node_id_for_peer(&peer_id) {
-                                rt.get_watermark(&nid, &shard_id)
+                                (
+                                    rt.get_watermark(&nid, &shard_id),
+                                    rt.get_watermark(&nid, &claims_mark(&shard_id)),
+                                )
                             } else {
-                                0
+                                (0, 0)
                             }
                         };
                         let req = ReplicationReq {
                             shard_id: shard_id.clone(),
                             from_seq,
                             max_chunks,
+                            from_claim_seq,
                         };
                         let _outbound_id = swarm
                             .behaviour_mut()
@@ -333,11 +337,18 @@ pub async fn run_event_loop(
             }
             EventAction::IngestReplicatedChunks { peer, response } => {
                 let latest_seq = response.latest_seq;
+                let latest_claim_seq = response.latest_claim_seq;
                 if let Some(idx) = &index {
                     let (claim_documents, page_documents): (Vec<_>, Vec<_>) =
                         response.chunks.into_iter().partition(is_claim_document);
                     let received = convert_proto_chunks_to_content_chunks(&page_documents);
                     let received_count = received.len();
+                    // Progress is what the peer sent, not what passed the
+                    // checks: a rejected chunk would be rejected again, and
+                    // nothing beyond this batch has been seen yet.
+                    let received_max_seq = highest_seq(received.iter().map(|chunk| chunk.seq));
+                    let received_max_claim_seq =
+                        highest_seq(claim_documents.iter().map(|document| document.seq));
                     let chunks = verify_replicated_chunks(received, idx.dim());
                     let rejected = received_count - chunks.len();
                     if rejected > 0 {
@@ -347,13 +358,12 @@ pub async fn run_event_loop(
                         );
                     }
                     let chunk_count = chunks.len() as u64;
-                    // Compute max seq from received chunks
-                    let max_seq = chunks.iter().map(|c| c.seq).max().unwrap_or(latest_seq);
                     match idx.ingest(&chunks) {
                         Ok(()) => {
                             info!(
-                                "Replicated {} chunks from {peer} (latest_seq={max_seq})",
-                                chunk_count
+                                "Replicated {} chunks from {peer} (through seq {})",
+                                chunk_count,
+                                received_max_seq.unwrap_or(0)
                             );
                             // A claim is kept only if its quote is in the text
                             // this node now holds for that page: the sender's
@@ -366,7 +376,7 @@ pub async fn run_event_loop(
                             if accepted.len() < offered {
                                 warn!(
                                     "Rejected {}/{offered} replicated claims from {peer} \
-                                     (quote not found in the replicated page)",
+                                     (quote not found in a page this node holds)",
                                     offered - accepted.len()
                                 );
                             }
@@ -391,29 +401,49 @@ pub async fn run_event_loop(
                             let mut rt = routing_table.write().await;
                             if let Some(nid) = rt.node_id_for_peer(&peer) {
                                 rt.record_replication_received(&nid, chunk_count);
-                                if let Some(ref shard_id) = shard_of_batch
-                                    && max_seq > 0
-                                {
-                                    rt.set_watermark(&nid, shard_id, max_seq);
+                                if let Some(ref shard_id) = shard_of_batch {
+                                    if let Some(seq) = received_max_seq {
+                                        rt.set_watermark(&nid, shard_id, seq);
+                                    }
+                                    if let Some(seq) = received_max_claim_seq {
+                                        rt.set_watermark(&nid, &claims_mark(shard_id), seq);
+                                    }
                                 }
                             }
                             drop(rt);
 
-                            // Continuation: the peer holds more beyond this
-                            // batch — keep pulling from the new watermark until
-                            // caught up (one batch per response, no flooding).
-                            if chunk_count > 0
-                                && latest_seq > max_seq
+                            // Continuation: the peer holds more pages or more
+                            // claims beyond this batch — keep pulling from the
+                            // new marks until caught up (one batch per
+                            // response, no flooding).
+                            let more_pages = received_max_seq.is_some_and(|seq| latest_seq > seq);
+                            let more_claims =
+                                received_max_claim_seq.is_some_and(|seq| latest_claim_seq > seq);
+                            if (more_pages || more_claims)
                                 && let Some(shard_id) = shard_of_batch
                             {
+                                let (from_seq, from_claim_seq) = {
+                                    let rt = routing_table.read().await;
+                                    match rt.node_id_for_peer(&peer) {
+                                        Some(nid) => (
+                                            rt.get_watermark(&nid, &shard_id),
+                                            rt.get_watermark(&nid, &claims_mark(&shard_id)),
+                                        ),
+                                        None => (
+                                            received_max_seq.unwrap_or(0),
+                                            received_max_claim_seq.unwrap_or(0),
+                                        ),
+                                    }
+                                };
                                 info!(
-                                    "Replication catch-up continues: {} of latest_seq {latest_seq} synced",
-                                    max_seq
+                                    "Replication catch-up continues: pages {from_seq}/{latest_seq}, \
+                                     claims {from_claim_seq}/{latest_claim_seq}"
                                 );
                                 let req = ReplicationReq {
                                     shard_id,
-                                    from_seq: max_seq,
+                                    from_seq,
                                     max_chunks: 1000,
+                                    from_claim_seq,
                                 };
                                 let _ = swarm.behaviour_mut().replication.send_request(&peer, req);
                             }
@@ -430,18 +460,22 @@ pub async fn run_event_loop(
                 max_chunks,
             } => {
                 // Use watermark for incremental replication
-                let from_seq = {
+                let (from_seq, from_claim_seq) = {
                     let rt = routing_table.read().await;
                     if let Some(nid) = rt.node_id_for_peer(&peer) {
-                        rt.get_watermark(&nid, &shard_id)
+                        (
+                            rt.get_watermark(&nid, &shard_id),
+                            rt.get_watermark(&nid, &claims_mark(&shard_id)),
+                        )
                     } else {
-                        0
+                        (0, 0)
                     }
                 };
                 let req = ReplicationReq {
                     shard_id: shard_id.clone(),
                     from_seq,
                     max_chunks,
+                    from_claim_seq,
                 };
                 let _outbound_id = swarm.behaviour_mut().replication.send_request(&peer, req);
                 info!(
@@ -790,13 +824,29 @@ fn verify_replicated_chunks(
 /// same floor the SDK applies when it first stores one.
 const MIN_CLAIM_QUOTE_CHARS: usize = 20;
 
+/// Key of a peer's claim progress mark for a shard, kept beside the page
+/// mark for the same shard.
+fn claims_mark(shard_id: &str) -> String {
+    format!("{shard_id}#claims")
+}
+
+/// The highest sequence number among what a peer sent; `None` when it sent
+/// nothing numbered, in which case no progress mark moves.
+fn highest_seq(seqs: impl Iterator<Item = u64>) -> Option<u64> {
+    seqs.filter(|seq| *seq > 0).max()
+}
+
 fn is_claim_document(document: &DocumentChunk) -> bool {
     document.metadata.get("content_kind").map(String::as_str) == Some(oi_types::claims::CLAIM_KIND)
 }
 
 /// A stored claim as a replication document. The claim is the content; its
 /// quote, source family and extractor ride in the metadata.
-fn claim_to_document(record: &oi_types::claims::ClaimRecord, vector: &[f32]) -> DocumentChunk {
+fn claim_to_document(
+    record: &oi_types::claims::ClaimRecord,
+    vector: &[f32],
+    seq: u64,
+) -> DocumentChunk {
     use sha2::{Digest, Sha256};
     let mut metadata = std::collections::HashMap::new();
     metadata.insert(
@@ -820,7 +870,7 @@ fn claim_to_document(record: &oi_types::claims::ClaimRecord, vector: &[f32]) -> 
             .collect(),
         metadata,
         content_hash,
-        seq: 0,
+        seq,
     }
 }
 
@@ -1548,17 +1598,35 @@ async fn handle_behaviour_event(
                                 .filter_map(|chunk| chunk.meta.as_ref())
                                 .map(|meta| meta.url.clone())
                                 .collect();
+                            let mut claim_documents: Vec<DocumentChunk> = Vec::new();
                             match idx.claims_for_urls(&urls) {
-                                Ok(claims) => proto_chunks.extend(
-                                    claims
-                                        .iter()
-                                        .map(|(record, vector)| claim_to_document(record, vector)),
-                                ),
+                                Ok(claims) => {
+                                    claim_documents.extend(claims.iter().map(|(record, vector)| {
+                                        claim_to_document(record, vector, 0)
+                                    }))
+                                }
                                 Err(e) => warn!("Failed to read claims for replication: {e}"),
                             }
+                            // And the claims this peer has not seen yet,
+                            // whenever their pages were sent: a claim can be
+                            // extracted long after its page was replicated.
+                            match idx.claims_since(shard_filter, request.from_claim_seq, max) {
+                                Ok(claims) => claim_documents.extend(claims.iter().map(
+                                    |(seq, record, vector)| claim_to_document(record, vector, *seq),
+                                )),
+                                Err(e) => warn!("Failed to read new claims for replication: {e}"),
+                            }
+                            // A claim found both ways is sent once, with its
+                            // sequence number.
+                            claim_documents.sort_by(|a, b| {
+                                a.chunk_id.cmp(&b.chunk_id).then(b.seq.cmp(&a.seq))
+                            });
+                            claim_documents.dedup_by(|later, kept| later.chunk_id == kept.chunk_id);
+                            proto_chunks.extend(claim_documents);
                             let resp = ReplicationResp {
                                 chunks: proto_chunks,
                                 latest_seq,
+                                latest_claim_seq: idx.claim_count() as u64,
                             };
                             // Record replication sent (tit-for-tat)
                             if chunk_count > 0 {
@@ -1574,6 +1642,7 @@ async fn handle_behaviour_event(
                             let resp = ReplicationResp {
                                 chunks: vec![],
                                 latest_seq: 0,
+                                latest_claim_seq: 0,
                             };
                             EventAction::SendReplicationResponse(channel, resp)
                         }
@@ -1582,6 +1651,7 @@ async fn handle_behaviour_event(
                     let resp = ReplicationResp {
                         chunks: vec![],
                         latest_seq: 0,
+                        latest_claim_seq: 0,
                     };
                     EventAction::SendReplicationResponse(channel, resp)
                 }
@@ -1694,6 +1764,7 @@ mod tests {
                 "Antarctica is the largest desert on Earth.",
             ),
             &[0.1, 0.2, 0.3],
+            0,
         );
         let fabricated = claim_to_document(
             &claim_record(
@@ -1702,6 +1773,7 @@ mod tests {
                 "The Sahara is the largest desert on Earth.",
             ),
             &[0.1, 0.2, 0.3],
+            0,
         );
         let wrong_dimension = claim_to_document(
             &claim_record(
@@ -1710,6 +1782,7 @@ mod tests {
                 "It covers 14 million square km.",
             ),
             &[0.1, 0.2],
+            0,
         );
         assert!(is_claim_document(&honest));
 
@@ -1734,6 +1807,17 @@ mod tests {
     }
 
     #[test]
+    fn progress_follows_what_was_sent_and_never_jumps_ahead() {
+        // Everything in a batch was rejected: the mark still moves to the
+        // end of that batch, not to the peer's newest sequence number.
+        assert_eq!(highest_seq([4u64, 9, 7].into_iter()), Some(9));
+        // Nothing numbered arrived: the mark does not move at all.
+        assert_eq!(highest_seq(std::iter::empty()), None);
+        assert_eq!(highest_seq([0u64, 0].into_iter()), None);
+        assert_eq!(claims_mark("topic-science"), "topic-science#claims");
+    }
+
+    #[test]
     fn a_claim_for_a_page_this_node_does_not_hold_is_dropped() {
         let orphan = claim_to_document(
             &claim_record(
@@ -1742,6 +1826,7 @@ mod tests {
                 "A claim that is long enough to count.",
             ),
             &[0.0, 0.0, 1.0],
+            3,
         );
         assert!(verify_replicated_claims(vec![orphan], 3, |_| Vec::new()).is_empty());
     }

@@ -734,6 +734,37 @@ impl HybridIndex {
         Ok(read_lock(&self.claims)?.for_urls(urls))
     }
 
+    /// Claims stored after `from_seq`, oldest first, at most `max`, each with
+    /// its sequence number. With a shard, only claims of pages that have a
+    /// chunk in that shard.
+    pub fn claims_since(
+        &self,
+        shard_id: Option<&str>,
+        from_seq: u64,
+        max: usize,
+    ) -> Result<Vec<(u64, oi_types::claims::ClaimRecord, Vec<f32>)>> {
+        let claims = read_lock(&self.claims)?;
+        let Some(shard) = shard_id else {
+            return Ok(claims.since(from_seq, max));
+        };
+        let metadata = read_lock(&self.metadata)?;
+        let urls: HashSet<&str> = metadata
+            .values()
+            .filter(|meta| {
+                meta.shard_id
+                    .as_deref()
+                    .is_some_and(|tag| oi_types::shard::is_sub_shard_of(tag, shard))
+            })
+            .map(|meta| meta.url.as_str())
+            .collect();
+        Ok(claims
+            .since(from_seq, usize::MAX)
+            .into_iter()
+            .filter(|(_, record, _)| urls.contains(record.url.as_str()))
+            .take(max)
+            .collect())
+    }
+
     /// The retained text of every chunk indexed for a URL.
     pub fn contents_for_url(&self, url: &str) -> Result<Vec<String>> {
         let metadata = read_lock(&self.metadata)?;

@@ -47,6 +47,22 @@ impl ClaimIndex {
         Ok(true)
     }
 
+    /// Claims stored after sequence number `from_seq`, oldest first, at most
+    /// `max`. A claim's sequence number is its position in insertion order,
+    /// starting at 1, so a replica can ask for what it has not seen yet.
+    pub fn since(&self, from_seq: u64, max: usize) -> Vec<(u64, ClaimRecord, Vec<f32>)> {
+        self.records
+            .iter()
+            .zip(&self.vectors)
+            .enumerate()
+            .skip(from_seq as usize)
+            .take(max)
+            .map(|(position, (record, vector))| {
+                (position as u64 + 1, record.clone(), vector.clone())
+            })
+            .collect()
+    }
+
     /// The stored claims of the given pages, with their vectors: what a
     /// replica is sent along with those pages.
     pub fn for_urls(&self, urls: &HashSet<String>) -> Vec<(ClaimRecord, Vec<f32>)> {
@@ -181,6 +197,24 @@ mod tests {
         let found = index.for_urls(&urls);
         assert_eq!(found.len(), 1);
         assert_eq!(found[0].0.source_family, "two.org");
+    }
+
+    #[test]
+    fn claims_after_a_sequence_number_come_back_in_order_with_their_numbers() {
+        let mut index = ClaimIndex::new(3);
+        for name in ["a", "b", "c"] {
+            index
+                .add(record(name, "one.org"), vec![1.0, 0.0, 0.0])
+                .unwrap();
+        }
+        let later: Vec<(u64, String)> = index
+            .since(1, 10)
+            .into_iter()
+            .map(|(seq, record, _)| (seq, record.claim))
+            .collect();
+        assert_eq!(later, [(2, "b".to_string()), (3, "c".to_string())]);
+        assert_eq!(index.since(0, 1).len(), 1);
+        assert!(index.since(3, 10).is_empty());
     }
 
     #[test]
