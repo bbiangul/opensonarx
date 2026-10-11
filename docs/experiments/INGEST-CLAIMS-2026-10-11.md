@@ -722,6 +722,68 @@ não investiguei por que diferem.
 - As afirmações vieram de 480 consultas; páginas que aparecem em busca não
   são uma amostra da web.
 
+## Passo 7: um modelo julga, na ingestão, se duas afirmações dizem a mesma coisa
+
+### Pergunta
+
+O selo de hoje conta famílias de fonte com afirmações **parecidas** com a
+afirmação mais próxima da consulta (parecidas pelo embedding, acima de
+0,841). Parecido não é igual: "o Saara é o maior deserto quente" e "o
+deserto da Arábia é o maior da Ásia" passam nesse corte. A pergunta é se
+trocar esse corte pelo julgamento de um modelo, feito uma vez quando a
+afirmação entra no índice, dá um selo que separa melhor certo de errado, e
+se o julgamento em si é confiável.
+
+Continua não havendo modelo na consulta: o julgamento é entre duas
+afirmações guardadas, não vê a consulta, e o resultado fica guardado.
+
+### O que é construído (código do produto)
+
+- `ClaimRelationJudge` em `oi-types`: recebe uma afirmação e uma lista de
+  outras e devolve, para cada uma, `same` (o mesmo fato), `contradicts` (não
+  podem ser as duas verdadeiras) ou `different`. A decisão é do modelo; o
+  código não tem regra de linguagem.
+- O índice de afirmações guarda essas relações e responde, para uma
+  afirmação, quantas famílias de fonte dizem o mesmo e quantas contradizem.
+- Nesta etapa as relações ficam em memória. Gravar em disco, replicar e
+  ligar à ingestão do cliente só se a medição se sustentar.
+
+### Protocolo (registrado antes de rodar)
+
+- **Dados.** As mesmas 12.396 afirmações, as mesmas 480 consultas e os
+  mesmos rótulos de leitor dos passos anteriores. Desenvolvimento: as 240
+  de `live-1` e `misinfo-1`. Teste: as 240 de `trust-1`.
+- **Sinal `judged-v1`.** A afirmação de referência é a guardada mais próxima
+  da consulta. Se a semelhança dela com a consulta é menor que 0,725, não há
+  selo. Senão, o modelo julga a referência contra as 20 afirmações de outras
+  famílias mais próximas **dela** (procuradas entre as 60 mais próximas).
+  O selo existe quando pelo menos duas famílias, contando a da referência,
+  têm afirmação julgada `same`.
+- **Nenhum número é escolhido olhando resultado.** 0,725 e "duas famílias"
+  vêm do passo 1 (escolhidos no desenvolvimento). 20 é o mesmo tamanho de
+  busca que o produto já usa; 60 é três vezes isso, fixado agora.
+- **O texto do pedido ao modelo** é escrito antes de rodar. Posso testar o
+  formato em cinco consultas de desenvolvimento; depois disso só mudo se a
+  resposta vier malformada, e registro a mudança.
+- **Modelo.** `claude-haiku-5.5` pelo OpenRouter, o mesmo da extração. Uma
+  chamada por afirmação de referência.
+- **Medida principal, no teste.** Taxa de erro das respostas diretas com
+  selo contra sem selo, com intervalo por reamostragem, como no passo 1. O
+  critério é o mesmo de lá. Ao lado, o selo atual nas mesmas respostas
+  (5 de 61 erradas com selo, 26 de 116 sem).
+- **Conferência do juiz por leitura minha.** 120 pares do teste (referência,
+  candidata): 60 que o modelo julgou `same` e 60 que não, em ordem de hash,
+  embaralhados, sem o julgamento do modelo à vista. Eu marco `same`,
+  `contradicts` ou `different` e só depois comparo. Se houver menos de 60
+  `same` no teste, entram todos.
+- **Descritivo.** Quantas consultas têm referência contradita por outra
+  família, e a taxa de erro nelas.
+- **O que precisa ficar dito.** É a segunda vez que o conjunto de teste é
+  usado para avaliar um selo. Nenhum parâmetro novo é ajustado nele, mas não
+  é uma amostra nova. Na medição o modelo julga só as referências das 480
+  consultas; um node faria isso para toda afirmação que entra, o que aqui
+  seriam 12 mil chamadas.
+
 ### Limites do passo 2
 
 - Todos os nodes num processo só, numa máquina só, em localhost. Não há

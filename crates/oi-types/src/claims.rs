@@ -25,6 +25,21 @@ pub struct ClaimPolicy {
     /// counted as stating the same thing.
     pub min_claim_similarity: f32,
     pub min_source_families: usize,
+    /// How many stored claims of other source families a newly stored claim
+    /// is compared with by the relation judge.
+    #[serde(default = "default_judge_neighbors")]
+    pub judge_neighbors: usize,
+    /// How many nearest stored claims are looked at to find them.
+    #[serde(default = "default_judge_pool")]
+    pub judge_pool: usize,
+}
+
+fn default_judge_neighbors() -> usize {
+    20
+}
+
+fn default_judge_pool() -> usize {
+    60
 }
 
 impl Default for ClaimPolicy {
@@ -41,6 +56,8 @@ impl Default for ClaimPolicy {
             min_query_similarity: 0.725,
             min_claim_similarity: 0.841,
             min_source_families: 2,
+            judge_neighbors: default_judge_neighbors(),
+            judge_pool: default_judge_pool(),
         }
     }
 }
@@ -66,6 +83,46 @@ pub struct MatchedClaim {
     pub query_similarity: f32,
     /// Similarity to the head claim; 1.0 for the head itself.
     pub head_similarity: f32,
+}
+
+/// How one stored claim relates to another, as a model judged it. The
+/// judgment is made between two stored claims and does not see any request.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ClaimRelation {
+    /// Both state the same fact.
+    Same,
+    /// They cannot both be true.
+    Contradicts,
+    /// Anything else.
+    Different,
+}
+
+/// What other sources say about one stored claim, read from the relations
+/// judged when claims were stored.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
+pub struct JudgedSupport {
+    /// Source families with a claim judged the same, the claim's own included.
+    pub agreeing_families: usize,
+    /// Source families with a claim judged to contradict it.
+    pub contradicting_families: usize,
+    /// Claims this one has been compared with.
+    pub judged: usize,
+}
+
+/// What the judged relations say about a request: the stored claim nearest
+/// to it and who agrees with or contradicts that claim.
+#[derive(Debug, Clone, Serialize)]
+pub struct JudgedCorroboration {
+    /// The nearest stored claim, whatever its similarity to the request.
+    pub head: Option<MatchedClaim>,
+    pub support: JudgedSupport,
+    /// The head is about the request and enough source families agree.
+    pub corroborated: bool,
+    /// The head is about the request and another family contradicts it.
+    pub contested: bool,
+    pub agreeing: Vec<ClaimRecord>,
+    pub contradicting: Vec<ClaimRecord>,
 }
 
 /// What the stored claims say about a request.

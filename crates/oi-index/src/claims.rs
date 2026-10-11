@@ -5,8 +5,11 @@
 //! every node, so matches from different nodes can be merged by it.
 
 use crate::hnsw::HnswIndex;
-use oi_types::claims::{ClaimPolicy, ClaimRecord, Corroboration, MatchedClaim};
-use std::collections::HashSet;
+use oi_types::claims::{
+    ClaimPolicy, ClaimRecord, ClaimRelation, Corroboration, JudgedCorroboration, JudgedSupport,
+    MatchedClaim,
+};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 pub struct ClaimIndex {
     records: Vec<ClaimRecord>,
@@ -14,6 +17,9 @@ pub struct ClaimIndex {
     hnsw: HnswIndex,
     /// (url, claim) pairs already stored; a claim received twice is kept once.
     seen: HashSet<(String, String)>,
+    /// Relations a judge gave between two stored claims, keyed by their
+    /// positions with the lower one first.
+    relations: HashMap<(usize, usize), ClaimRelation>,
 }
 
 impl ClaimIndex {
@@ -23,6 +29,7 @@ impl ClaimIndex {
             vectors: Vec::new(),
             hnsw: HnswIndex::new(dimension),
             seen: HashSet::new(),
+            relations: HashMap::new(),
         }
     }
 
@@ -87,11 +94,8 @@ impl ClaimIndex {
     /// The stored claims nearest to a request, each with its vector, in
     /// order of similarity.
     pub fn fetch(&self, query_vector: &[f32], top_k: usize) -> Vec<(MatchedClaim, Vec<f32>)> {
-        self.hnsw
-            .search(query_vector, top_k)
+        self.search(query_vector, top_k)
             .into_iter()
-            .filter_map(|(id, similarity)| Some((id.parse::<usize>().ok()?, similarity)))
-            .filter(|(index, _)| *index < self.records.len())
             .map(|(index, query_similarity)| {
                 let record = &self.records[index];
                 (
@@ -107,6 +111,139 @@ impl ClaimIndex {
                 )
             })
             .collect()
+    }
+
+    /// Positions of the stored claims nearest to a vector, nearest first,
+    /// each with its similarity.
+    fn search(&self, vector: &[f32], top_k: usize) -> Vec<(usize, f32)> {
+        self.hnsw
+            .search(vector, top_k)
+            .into_iter()
+            .filter_map(|(id, similarity)| Some((id.parse::<usize>().ok()?, similarity)))
+            .filter(|(position, _)| *position < self.records.len())
+            .collect()
+    }
+
+    /// The position of the stored claim nearest to a request and its
+    /// similarity to it: the head of what `fetch` returns for `top_k`.
+    pub fn nearest(&self, query_vector: &[f32], top_k: usize) -> Option<(usize, f32)> {
+        self.search(query_vector, top_k).into_iter().next()
+    }
+
+    pub fn record(&self, position: usize) -> Option<&ClaimRecord> {
+        self.records.get(position)
+    }
+
+    /// The stored claims a judge should compare the claim at `position`
+    /// with: its nearest claims from other source families that it has no
+    /// relation with yet, nearest first.
+    pub fn neighbours_to_judge(&self, position: usize, policy: &ClaimPolicy) -> Vec<usize> {
+        let (Some(record), Some(vector)) = (self.records.get(position), self.vectors.get(position))
+        else {
+            return Vec::new();
+        };
+        self.search(vector, policy.judge_pool)
+            .into_iter()
+            .map(|(other, _)| other)
+            .filter(|other| *other != position)
+            .filter(|other| self.records[*other].source_family != record.source_family)
+            .take(policy.judge_neighbors)
+            .filter(|other| self.relation(position, *other).is_none())
+            .collect()
+    }
+
+    pub fn relation(&self, a: usize, b: usize) -> Option<ClaimRelation> {
+        self.relations.get(&(a.min(b), a.max(b))).copied()
+    }
+
+    /// Store what a judge said about two stored claims.
+    pub fn set_relation(&mut self, a: usize, b: usize, relation: ClaimRelation) {
+        if a != b && a < self.records.len() && b < self.records.len() {
+            self.relations.insert((a.min(b), a.max(b)), relation);
+        }
+    }
+
+    /// The claims related to the one at `position`, with the relation.
+    pub fn related(&self, position: usize) -> Vec<(usize, ClaimRelation)> {
+        let mut related: Vec<(usize, ClaimRelation)> = self
+            .relations
+            .iter()
+            .filter_map(|(&(a, b), &relation)| match position {
+                p if p == a => Some((b, relation)),
+                p if p == b => Some((a, relation)),
+                _ => None,
+            })
+            .collect();
+        related.sort_by_key(|(other, _)| *other);
+        related
+    }
+
+    /// Who agrees with and who contradicts the claim at `position`, by
+    /// source family, from the stored relations.
+    pub fn judged_support(&self, position: usize) -> JudgedSupport {
+        let Some(record) = self.records.get(position) else {
+            return JudgedSupport::default();
+        };
+        let related = self.related(position);
+        let families = |wanted: ClaimRelation| -> BTreeSet<&str> {
+            related
+                .iter()
+                .filter(|(_, relation)| *relation == wanted)
+                .map(|(other, _)| self.records[*other].source_family.as_str())
+                .collect()
+        };
+        let mut agreeing = families(ClaimRelation::Same);
+        agreeing.insert(record.source_family.as_str());
+        JudgedSupport {
+            agreeing_families: agreeing.len(),
+            contradicting_families: families(ClaimRelation::Contradicts).len(),
+            judged: related.len(),
+        }
+    }
+
+    /// The judged signal for a request: the nearest stored claim and what
+    /// the stored relations say about it. No model is called.
+    pub fn judged_corroboration(
+        &self,
+        query_vector: &[f32],
+        policy: &ClaimPolicy,
+    ) -> JudgedCorroboration {
+        let Some((position, query_similarity)) = self.nearest(query_vector, policy.top_k) else {
+            return JudgedCorroboration {
+                head: None,
+                support: JudgedSupport::default(),
+                corroborated: false,
+                contested: false,
+                agreeing: Vec::new(),
+                contradicting: Vec::new(),
+            };
+        };
+        let record = &self.records[position];
+        let support = self.judged_support(position);
+        let about_the_request = query_similarity >= policy.min_query_similarity;
+        let with_relation = |wanted: ClaimRelation| -> Vec<ClaimRecord> {
+            self.related(position)
+                .into_iter()
+                .filter(|(_, relation)| *relation == wanted)
+                .map(|(other, _)| self.records[other].clone())
+                .collect()
+        };
+        JudgedCorroboration {
+            head: Some(MatchedClaim {
+                claim: record.claim.clone(),
+                quote: record.quote.clone(),
+                url: record.url.clone(),
+                source_family: record.source_family.clone(),
+                query_similarity,
+                head_similarity: 1.0,
+            }),
+            corroborated: about_the_request
+                && support.agreeing_families >= policy.min_source_families,
+            contested: about_the_request && support.contradicting_families > 0,
+            agreeing: with_relation(ClaimRelation::Same),
+            contradicting: with_relation(ClaimRelation::Contradicts),
+            support,
+        }
     }
 
     /// The corroboration signal for a request, from its embedding alone.
@@ -172,6 +309,56 @@ mod tests {
             .add(record("a3", "one.org"), vec![0.99, 0.1, 0.0])
             .unwrap();
         assert!(!single.corroboration(&[1.0, 0.0, 0.0], &policy).corroborated);
+    }
+
+    #[test]
+    fn judged_support_counts_families_by_the_stored_relations() {
+        let mut index = ClaimIndex::new(3);
+        // Four claims close to each other from four families, and a second
+        // claim from the first family.
+        for (name, family, vector) in [
+            ("a", "one.org", [1.0, 0.0, 0.0]),
+            ("a-same", "two.org", [0.99, 0.1, 0.0]),
+            ("a-against", "three.org", [0.98, 0.2, 0.0]),
+            ("a-other", "four.org", [0.97, 0.25, 0.0]),
+            ("a-own", "one.org", [0.96, 0.28, 0.0]),
+        ] {
+            index.add(record(name, family), vector.to_vec()).unwrap();
+        }
+        let policy = ClaimPolicy::default();
+        // The claim's own family is never a candidate.
+        assert_eq!(index.neighbours_to_judge(0, &policy), [1, 2, 3]);
+        assert_eq!(index.judged_support(0).agreeing_families, 1);
+
+        index.set_relation(0, 1, ClaimRelation::Same);
+        index.set_relation(2, 0, ClaimRelation::Contradicts);
+        index.set_relation(0, 3, ClaimRelation::Different);
+        let support = index.judged_support(0);
+        assert_eq!(support.agreeing_families, 2);
+        assert_eq!(support.contradicting_families, 1);
+        assert_eq!(support.judged, 3);
+        // Seen from the other side of the same relation.
+        assert_eq!(index.judged_support(1).agreeing_families, 2);
+        assert_eq!(index.relation(1, 0), Some(ClaimRelation::Same));
+        // Already judged pairs are not offered again.
+        assert!(index.neighbours_to_judge(0, &policy).is_empty());
+        assert_eq!(index.nearest(&[1.0, 0.0, 0.0], 5).map(|(p, _)| p), Some(0));
+
+        let policy = ClaimPolicy {
+            min_query_similarity: 0.5,
+            ..ClaimPolicy::default()
+        };
+        let signal = index.judged_corroboration(&[1.0, 0.0, 0.0], &policy);
+        assert_eq!(
+            signal.head.as_ref().map(|head| head.claim.as_str()),
+            Some("a")
+        );
+        assert!(signal.corroborated && signal.contested);
+        assert_eq!(signal.agreeing.len(), 1);
+        assert_eq!(signal.contradicting[0].claim, "a-against");
+        // A request nothing stored is about gets neither label.
+        let far = index.judged_corroboration(&[0.0, 0.0, 1.0], &policy);
+        assert!(!far.corroborated && !far.contested);
     }
 
     #[test]

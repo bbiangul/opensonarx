@@ -17,6 +17,7 @@ mod beir;
 mod bench_quality;
 mod claim_audit;
 mod claim_ingest;
+mod claim_judged;
 mod claim_nodes;
 mod claim_routing;
 mod dataset;
@@ -408,6 +409,37 @@ enum Command {
         concurrency: usize,
 
         /// Output JSONL, one line per passage; an existing file is resumed
+        #[arg(long)]
+        output: String,
+    },
+    /// The corroboration signal when a model judges, between stored claims,
+    /// which ones state the same fact; only the heads of the queries are judged
+    ClaimJudged {
+        /// Output of claim-ingest
+        #[arg(long)]
+        claims: String,
+
+        /// answer-live report whose queries are looked up; repeatable
+        #[arg(long)]
+        report: Vec<String>,
+
+        #[arg(long, default_value = "openrouter")]
+        provider: String,
+
+        #[arg(long)]
+        model: String,
+
+        #[arg(long, default_value_t = 8)]
+        concurrency: usize,
+
+        /// JSONL of judged relations; an existing file is resumed
+        #[arg(long)]
+        relations: String,
+
+        /// Only the first N queries (format check)
+        #[arg(long)]
+        limit: Option<usize>,
+
         #[arg(long)]
         output: String,
     },
@@ -1801,6 +1833,30 @@ async fn main() {
                 claim_ingest::ingest(&report, &provider, &model, concurrency, &output)
             {
                 eprintln!("claim-ingest failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::ClaimJudged {
+            claims,
+            report,
+            provider,
+            model,
+            concurrency,
+            relations,
+            limit,
+            output,
+        } => {
+            if let Err(error) = claim_judged::run(
+                &claims,
+                &report,
+                &provider,
+                &model,
+                concurrency,
+                &relations,
+                limit,
+                &output,
+            ) {
+                eprintln!("claim-judged failed: {error}");
                 std::process::exit(2);
             }
         }

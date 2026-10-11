@@ -124,6 +124,21 @@ pub trait PassageClaimExtractor: Send + Sync {
     fn model_version(&self) -> String;
 }
 
+/// Compares one stored claim with other stored claims. Called when a claim
+/// enters an index, so that a query can later read who agrees with it
+/// without calling a model.
+pub trait ClaimRelationJudge: Send + Sync {
+    /// One relation per candidate, in the order given. A candidate the
+    /// model did not judge comes back as `Different`.
+    fn relate(
+        &self,
+        claim: &str,
+        candidates: &[String],
+    ) -> Result<Vec<crate::claims::ClaimRelation>>;
+
+    fn model_version(&self) -> String;
+}
+
 /// Reads the request and the passages and proposes claims with quotes.
 pub trait ClaimExtractor: Send + Sync {
     fn extract(&self, query: &str, passages: &[EvidencePassage]) -> Result<ClaimExtraction>;

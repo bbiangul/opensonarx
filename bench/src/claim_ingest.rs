@@ -19,13 +19,13 @@ use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::Write;
 
-fn read_report(path: &str) -> Result<Value, String> {
+pub(crate) fn read_report(path: &str) -> Result<Value, String> {
     let raw =
         std::fs::read_to_string(path).map_err(|error| format!("cannot read {path}: {error}"))?;
     serde_json::from_str(&raw).map_err(|error| format!("{path}: {error}"))
 }
 
-fn stem(path: &str) -> String {
+pub(crate) fn stem(path: &str) -> String {
     std::path::Path::new(path)
         .file_stem()
         .and_then(|stem| stem.to_str())
