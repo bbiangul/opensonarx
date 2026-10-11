@@ -6,7 +6,7 @@ license.workspace = true
 description = "Solana staking program for OpenSonarX"
 
 [features]
-solana = ["dep:solana-sdk", "dep:solana-client", "dep:borsh"]
+solana = ["dep:solana-sdk", "dep:solana-client", "dep:borsh", "dep:serde_json"]
 dns = ["dep:trust-dns-resolver", "dep:tokio"]
 
 [dependencies]
@@ -22,7 +22,12 @@ dirs = { workspace = true }
 solana-sdk = { version = "2", optional = true }
 solana-client = { version = "2", optional = true }
 borsh = { version = "1", features = ["derive"], optional = true }
+serde_json = { workspace = true, optional = true }
 
 # Optional DNS deps (behind `dns` feature)
 trust-dns-resolver = { version = "0.23", optional = true }
 tokio = { version = "1", features = ["rt"], optional = true }
+
+[[example]]
+name = "chain_bond"
+required-features = ["solana"]

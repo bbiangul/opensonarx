@@ -63,11 +63,14 @@ impl SolanaStakeRegistry {
         pda
     }
 
+    // Program accounts are allocated at their maximum size and written from
+    // the start, so the data ends in zero padding. `deserialize` reads the
+    // value and ignores the padding; `try_from_slice` would reject it.
     fn read_account(&self, domain: &str) -> Result<Option<StakeAccount>> {
         let pda = self.derive_pda(domain);
         match self.rpc.get_account_data(&pda) {
             Ok(data) => {
-                let account = StakeAccount::try_from_slice(&data)
+                let account = StakeAccount::deserialize(&mut &data[..])
                     .map_err(|e| Error::Internal(format!("borsh deserialize: {e}")))?;
                 if account.is_initialized {
                     Ok(Some(account))
@@ -83,7 +86,7 @@ impl SolanaStakeRegistry {
         let pda = self.derive_pda_v2(domain, staker);
         match self.rpc.get_account_data(&pda) {
             Ok(data) => {
-                let account = StakeAccountV2::try_from_slice(&data)
+                let account = StakeAccountV2::deserialize(&mut &data[..])
                     .map_err(|e| Error::Internal(format!("borsh deserialize v2: {e}")))?;
                 if account.is_initialized {
                     Ok(Some(account))
@@ -153,7 +156,7 @@ impl SolanaStakeRegistry {
         let (pda, _) = Pubkey::find_program_address(&[REPUTATION_ROOT_SEED], &self.program_id);
         match self.rpc.get_account_data(&pda) {
             Ok(data) => {
-                let account = ReputationRootAccount::try_from_slice(&data).map_err(|e| {
+                let account = ReputationRootAccount::deserialize(&mut &data[..]).map_err(|e| {
                     Error::Internal(format!("borsh deserialize reputation root: {e}"))
                 })?;
                 if account.is_initialized {
