@@ -9,6 +9,12 @@
 //! - by a hash of the URL: shards are balanced, and nothing about a query
 //!   says which shard holds what it needs.
 //!
+//! and a third that keeps the runtime router but replaces its centroids:
+//!
+//! - by learned clusters: the centroids are the means of ten clusters found
+//!   in the stored claims themselves (spherical k-means, fixed start), so the
+//!   shards follow what the index actually holds.
+//!
 //! For each division and each number of shards asked, the claims fetched from
 //! those shards are merged the way an entry node merges them, and the result
 //! is compared with an exhaustive scan of every stored claim. Each shard is a
@@ -43,6 +49,49 @@ fn hash_shard(url: &str, shards: usize) -> String {
     let digest = Sha256::digest(url.as_bytes());
     let bucket = u64::from_le_bytes(digest[..8].try_into().unwrap_or([0; 8])) as usize % shards;
     format!("hash-{bucket}")
+}
+
+fn normalized(vector: &[f32]) -> Vec<f32> {
+    let norm = vector.iter().map(|x| x * x).sum::<f32>().sqrt();
+    if norm > 0.0 {
+        vector.iter().map(|x| x / norm).collect()
+    } else {
+        vector.to_vec()
+    }
+}
+
+/// Spherical k-means over the stored vectors: `k` unit centroids, each the
+/// normalized mean of the vectors closest to it. The start is fixed (evenly
+/// spaced vectors) so the same input always gives the same clusters.
+fn learn_centroids(vectors: &[Vec<f32>], k: usize, rounds: usize) -> Vec<Vec<f32>> {
+    let k = k.min(vectors.len()).max(1);
+    let mut centroids: Vec<Vec<f32>> = (0..k)
+        .map(|cluster| normalized(&vectors[cluster * vectors.len() / k]))
+        .collect();
+    let dimension = centroids[0].len();
+    for _ in 0..rounds {
+        let mut sums = vec![vec![0.0f32; dimension]; k];
+        let mut counts = vec![0usize; k];
+        for vector in vectors {
+            let unit = normalized(vector);
+            let nearest = (0..k)
+                .max_by(|a, b| {
+                    cosine(&unit, &centroids[*a]).total_cmp(&cosine(&unit, &centroids[*b]))
+                })
+                .unwrap_or(0);
+            counts[nearest] += 1;
+            for (sum, value) in sums[nearest].iter_mut().zip(&unit) {
+                *sum += value;
+            }
+        }
+        for cluster in 0..k {
+            // An empty cluster keeps its previous centroid.
+            if counts[cluster] > 0 {
+                centroids[cluster] = normalized(&sums[cluster]);
+            }
+        }
+    }
+    centroids
 }
 
 fn identity(claim: &MatchedClaim) -> (&str, &str) {
@@ -126,7 +175,33 @@ pub fn run(
             stored.push((record.clone(), vector));
         }
     }
-    eprintln!("{} claims divided two ways", stored.len());
+    let all_vectors: Vec<Vec<f32>> = stored.iter().map(|(_, vector)| vector.clone()).collect();
+    let learned = learn_centroids(&all_vectors, topic_shards.len(), 20);
+    // The runtime router, given learned centroids. The threshold is lowered
+    // so that no claim falls back to a "general" shard that has no centroid.
+    let learned_router = TopicRouter::new(
+        learned
+            .iter()
+            .enumerate()
+            .map(|(cluster, centroid)| (format!("cluster-{cluster}"), centroid.clone()))
+            .collect(),
+    )
+    .with_threshold(-1.0);
+    let mut by_cluster = Division {
+        name: "learned",
+        shards: BTreeMap::new(),
+        sizes: BTreeMap::new(),
+    };
+    for (record, vector) in &stored {
+        let shard = learned_router.classify(vector).to_string();
+        *by_cluster.sizes.entry(shard.clone()).or_default() += 1;
+        by_cluster
+            .shards
+            .entry(shard)
+            .or_insert_with(|| ClaimIndex::new(dimension))
+            .add(record.clone(), vector.clone())?;
+    }
+    eprintln!("{} claims divided three ways", stored.len());
 
     let mut queries: Vec<(String, Value, String)> = Vec::new();
     for path in reports {
@@ -186,7 +261,16 @@ pub fn run(
             .into_iter()
             .map(|(shard, _)| shard.to_string())
             .collect();
-        for (division, order) in [(&by_topic, &topic_order), (&by_hash, &hash_shards)] {
+        let cluster_order: Vec<String> = learned_router
+            .rank_shards(&vector)
+            .into_iter()
+            .map(|(shard, _)| shard.to_string())
+            .collect();
+        for (division, order) in [
+            (&by_topic, &topic_order),
+            (&by_hash, &hash_shards),
+            (&by_cluster, &cluster_order),
+        ] {
             for &fanout in fanouts {
                 let asked: Vec<&String> = order.iter().take(fanout).collect();
                 let fetched = asked
@@ -247,13 +331,14 @@ pub fn run(
         "policy": policy,
         "queries": queries.len(),
         "claims": stored.len(),
-        "shard_sizes": { "topic": by_topic.sizes, "hash": by_hash.sizes },
+        "shard_sizes": { "topic": by_topic.sizes, "hash": by_hash.sizes, "learned": by_cluster.sizes },
         "exhaustive_scan_corroborated": exact_rows.iter().filter(|row| row["corroborated"] == true).count(),
         "summary": summary,
         "limitations": [
             "No network: each shard is an in-process claim index. This measures what routing to a subset of shards loses, not latency.",
             "Each claim is placed by its own embedding; a node places chunks, and the claims of a page would follow their chunk.",
             "For the hash division the shards asked are the first N in a fixed order, because nothing about a query points to a shard.",
+            "The learned centroids are fitted on the same stored claims the queries are looked up in. No label is used, but a growing index would have to refit or keep centroids from an earlier snapshot.",
             "Every query is covered by the stored claims."
         ],
         "exact": exact_rows,
@@ -273,6 +358,26 @@ pub fn run(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn learned_centroids_separate_two_obvious_groups() {
+        let vectors = vec![
+            vec![1.0, 0.0],
+            vec![0.9, 0.1],
+            vec![0.0, 1.0],
+            vec![0.1, 0.9],
+        ];
+        let centroids = learn_centroids(&vectors, 2, 10);
+        assert_eq!(centroids.len(), 2);
+        let side = |vector: &[f32]| {
+            usize::from(cosine(vector, &centroids[1]) > cosine(vector, &centroids[0]))
+        };
+        assert_eq!(side(&vectors[0]), side(&vectors[1]));
+        assert_eq!(side(&vectors[2]), side(&vectors[3]));
+        assert_ne!(side(&vectors[0]), side(&vectors[2]));
+        // Same input, same clusters.
+        assert_eq!(centroids, learn_centroids(&vectors, 2, 10));
+    }
 
     #[test]
     fn a_url_hashes_to_one_of_the_shards_and_always_the_same_one() {

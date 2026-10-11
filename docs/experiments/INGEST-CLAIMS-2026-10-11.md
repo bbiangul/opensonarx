@@ -380,6 +380,28 @@ O selo contra os rótulos do teste:
   assunto como centro; já tinha concordado com o meu rótulo de assunto em
   apenas 40% das consultas (READER-GRADED-SUBJECTS).
 
+### Centros aprendidos do conteúdo
+
+O mesmo roteador do produto, trocando as dez descrições fixas por dez
+centros aprendidos das próprias afirmações guardadas (k-means esférico,
+início fixo, sem usar rótulo nenhum).
+
+| | Assuntos fixos | Centros aprendidos |
+|---|---|---|
+| Maior compartimento | 27% das afirmações | 16% |
+| Menor compartimento | 394 | 578 |
+| Consultando 1 de 10: 20 mais próximas achadas | 43% | 56% |
+| Consultando 3 de 10: 20 mais próximas achadas | 75% | 82% |
+| Consultando 3 de 10: mesmo selo que o exato | 232 de 240 | 236 de 240 |
+| Consultando 3 de 10: selo contra os rótulos | 6 em 59 contra 25 em 118 | 5 em 61 contra 26 em 116 |
+| Consultando 5 de 10: 20 mais próximas achadas | 86% | 91% |
+
+Os centros aprendidos equilibram melhor e acham mais com o mesmo número de
+nodes consultados, em todos os tamanhos de consulta. Os centros foram
+ajustados nas mesmas afirmações em que as consultas buscam; num índice que
+cresce, eles teriam de ser refeitos de tempos em tempos ou herdados de um
+retrato anterior, e isso não foi medido.
+
 ### O que foi construído na rede
 
 - **Gravação em disco.** As afirmações de um node são salvas com o índice
@@ -402,15 +424,38 @@ texto que ia para a réplica. O hash de conteúdo, calculado sem o título,
 deixava de bater, e o node que recebia **rejeitava toda página que tivesse
 título**. Corrigido: a réplica recebe o trecho como foi ingerido.
 
-Fica aberto um segundo ponto, visto no mesmo teste: a marca de progresso da
-réplica avança mesmo quando os trechos são rejeitados, então o node não
-tenta de novo.
+Um segundo defeito, visto no mesmo teste, também foi corrigido: quando um
+lote inteiro era rejeitado, a marca de progresso da réplica pulava para o
+fim do que o outro node tinha, e tudo o que ainda não tinha sido enviado
+ficava para trás. Agora a marca só avança pelo que foi de fato recebido.
+
+### Feito depois: afirmações tardias e ligação ao cliente
+
+- **Afirmações extraídas depois da página.** Cada pedido de réplica informa
+  até qual afirmação o node já recebeu, e a resposta traz as mais novas. No
+  teste com dois nodes, uma afirmação extraída depois de a página já ter
+  sido copiada chega sozinha na rodada seguinte.
+- **Extração ligada à ingestão do cliente.** Com um extrator configurado, as
+  páginas que o cliente indexa entram numa fila e são lidas em segundo
+  plano, depois de os resultados já terem sido entregues. Pela linha de
+  comando: `OI_EXTRACT_CLAIMS=1` liga a extração e `oi search --claims`
+  mostra o que as afirmações guardadas dizem e quanto tempo a leitura
+  levou. Numa primeira busca com índice vazio, duas páginas renderam 67
+  afirmações em 8 s; na segunda busca a leitura levou 3,6 ms.
+- **Um limite que esse exemplo mostrou.** Para "qual é o maior deserto do
+  mundo", as duas afirmações "parecidas" encontradas foram "o deserto da
+  Arábia é o maior da Ásia" e "o Saara é o maior deserto quente". São
+  próximas no embedding e não dizem a mesma coisa, nem respondem à
+  pergunta. O selo separa certo de errado em média, mas o conjunto que ele
+  conta não é concordância. Por isso a linha de comando lista as afirmações
+  por fonte e não escreve "corroborado". Julgar equivalência entre
+  afirmações precisa de modelo; o lugar natural é a ingestão, comparando a
+  afirmação nova com as vizinhas, e isso não foi feito.
 
 ### O que continua faltando na rede
 
-- A extração de afirmações ainda não está ligada ao crawler.
-- Afirmações extraídas depois de a página já ter sido replicada não chegam
-  às réplicas: hoje elas só viajam junto com a página.
+- O roteador do produto ainda usa as descrições fixas; os centros
+  aprendidos só existem na medição.
 - Quem recebe confia no texto da página que o outro node mandou. Conferir a
   página exige buscá-la de novo na web.
 - Nodes em máquinas diferentes. Tudo aqui roda em localhost.
