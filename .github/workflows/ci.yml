@@ -20,8 +20,11 @@ jobs:
         with:
           version: "25.x"
 
+      # Pinned to the toolchain the project is developed with. `stable` moves
+      # every six weeks and brings new clippy lints, so an unpinned
+      # `-D warnings` fails on commits that changed nothing.
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.93.1
         with:
           components: clippy, rustfmt
 
@@ -60,8 +63,11 @@ jobs:
         with:
           version: "25.x"
 
+      # Pinned to the toolchain the project is developed with. `stable` moves
+      # every six weeks and brings new clippy lints, so an unpinned
+      # `-D warnings` fails on commits that changed nothing.
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.93.1
 
       - name: Cache cargo
         uses: actions/cache@v4
