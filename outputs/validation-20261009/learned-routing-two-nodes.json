@@ -1,0 +1,350 @@
+[
+ {
+  "query": "how do vaccines train the immune system",
+  "a": {
+   "supporting_families": 2,
+   "corroborated": true,
+   "lookup_ms": 2.650833,
+   "local_claims": 418,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "b": {
+   "supporting_families": 2,
+   "corroborated": true,
+   "lookup_ms": 0.5786250000000001,
+   "local_claims": 436,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "Vaccines train the immune system to recognize and fight pathogens.",
+   "quote": "Vaccines train the immune system to recognize and fight pathogens.",
+   "url": "https://www.sciencetimes.com/articles/60695/20251105/how-vaccines-work-exploring-immune-system-breakthroughs-vaccine-science.htm",
+   "source_family": "sciencetimes.com",
+   "query_similarity": 0.787547,
+   "head_similarity": 1.0
+  }
+ },
+ {
+  "query": "what causes inflation in an economy",
+  "a": {
+   "supporting_families": 3,
+   "corroborated": true,
+   "lookup_ms": 0.611708,
+   "local_claims": 418,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "b": {
+   "supporting_families": 3,
+   "corroborated": true,
+   "lookup_ms": 1.5855000000000001,
+   "local_claims": 436,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "The causes of inflation can generally be classified into three main types: demand-pull inflation, cost-push inflation, and built-in inflation.",
+   "quote": "Inflation is typically the result of multiple factors, and its causes can generally be classified into three main types: demand-pull inflation, cost-push inflation, and built-in inflation.",
+   "url": "https://socialstudieshelp.com/economics/what-is-inflation-in-economics-causes-and-effects/",
+   "source_family": "socialstudieshelp.com",
+   "query_similarity": 0.7632336,
+   "head_similarity": 1.0
+  }
+ },
+ {
+  "query": "how does a transformer neural network work",
+  "a": {
+   "supporting_families": 0,
+   "corroborated": false,
+   "lookup_ms": 1.755666,
+   "local_claims": 418,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "b": {
+   "supporting_families": 0,
+   "corroborated": false,
+   "lookup_ms": 0.837166,
+   "local_claims": 436,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "In a rechargeable battery the chemical reactions are reversible: discharging makes them go one way and the battery gives out power, while charging makes them go in the opposite direction and the battery absorbs power.",
+   "quote": "The big difference is that the chemical reactions in a rechargeable battery are reversible : when the battery is discharging the reactions go one way and the battery gives out power; when the battery is charging, the reactions go in the opposite direction and the battery absorbs power.",
+   "url": "https://www.explainthatstuff.com/how-lithium-ion-batteries-work.html",
+   "source_family": "explainthatstuff.com",
+   "query_similarity": 0.5250755,
+   "head_similarity": 1.0000001
+  }
+ },
+ {
+  "query": "what is the offside rule in soccer",
+  "a": {
+   "supporting_families": 1,
+   "corroborated": false,
+   "lookup_ms": 0.760708,
+   "local_claims": 418,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "b": {
+   "supporting_families": 1,
+   "corroborated": false,
+   "lookup_ms": 1.500209,
+   "local_claims": 436,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "In soccer's laws the term is always singular, \"offside\".",
+   "quote": "In soccer's own laws the term is always singular: offside .",
+   "url": "https://www.renderfoot.com/blog/offside-rule-in-soccer-explained",
+   "source_family": "renderfoot.com",
+   "query_similarity": 0.78973675,
+   "head_similarity": 1.0000001
+  }
+ },
+ {
+  "query": "how are volcanoes formed",
+  "a": {
+   "supporting_families": 2,
+   "corroborated": true,
+   "lookup_ms": 1.9750409999999998,
+   "local_claims": 418,
+   "from_peers": 3,
+   "peers_answering": 1
+  },
+  "b": {
+   "supporting_families": 2,
+   "corroborated": true,
+   "lookup_ms": 0.677458,
+   "local_claims": 436,
+   "from_peers": 17,
+   "peers_answering": 1
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "Volcanoes form when hot molten materials beneath the earth rise and escape into the crust.",
+   "quote": "Simply put, volcanoes form when the hot molten materials beneath the earth rise and escape into the crust.",
+   "url": "https://eartheclipse.com/environment/natural-disaster/how-are-volcanoes-formed.html",
+   "source_family": "eartheclipse.com",
+   "query_similarity": 0.7731835,
+   "head_similarity": 1.0
+  }
+ },
+ {
+  "query": "why did the roman republic fall",
+  "a": {
+   "supporting_families": 1,
+   "corroborated": false,
+   "lookup_ms": 0.617166,
+   "local_claims": 418,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "b": {
+   "supporting_families": 1,
+   "corroborated": false,
+   "lookup_ms": 1.424792,
+   "local_claims": 436,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "The Roman Republic was founded in 509 BCE after the overthrow of Rome's last king.",
+   "quote": "Founded in 509 BCE after the overthrow of Rome\u2019s last king, the Republic expanded from a small city-state into a vast Mediterranean power.",
+   "url": "https://www.thearchaeologist.org/blog/the-rise-and-fall-of-the-roman-republic",
+   "source_family": "thearchaeologist.org",
+   "query_similarity": 0.73710567,
+   "head_similarity": 1.0000001
+  }
+ },
+ {
+  "query": "how to make a sourdough starter",
+  "a": {
+   "supporting_families": 0,
+   "corroborated": false,
+   "lookup_ms": 1.515834,
+   "local_claims": 418,
+   "from_peers": 11,
+   "peers_answering": 1
+  },
+  "b": {
+   "supporting_families": 0,
+   "corroborated": false,
+   "lookup_ms": 0.686083,
+   "local_claims": 436,
+   "from_peers": 9,
+   "peers_answering": 1
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "Creating a vaccine is a lengthy scientific process.",
+   "quote": "Creating a vaccine is a lengthy scientific process.",
+   "url": "https://www.txbiomed.org/news-press/news/scientist-blog/how-do-vaccines-work-understanding-how-vaccines-train-the-immune-system/",
+   "source_family": "txbiomed.org",
+   "query_similarity": 0.5236355,
+   "head_similarity": 1.0
+  }
+ },
+ {
+  "query": "what is the event horizon of a black hole",
+  "a": {
+   "supporting_families": 0,
+   "corroborated": false,
+   "lookup_ms": 0.6573749999999999,
+   "local_claims": 418,
+   "from_peers": 13,
+   "peers_answering": 1
+  },
+  "b": {
+   "supporting_families": 0,
+   "corroborated": false,
+   "lookup_ms": 1.723125,
+   "local_claims": 436,
+   "from_peers": 7,
+   "peers_answering": 1
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "Adverse events, also called negative supply shocks, cause a leftward shift in the aggregate supply curve, resulting in higher prices and lower economic output.",
+   "quote": "these types of adverse events (also referred to as \u201cnegative\u201d supply shocks) cause a leftward shift in the aggregate supply curve, resulting in higher prices and lower economic output.",
+   "url": "https://www.clevelandfed.org/center-for-inflation-research/inflation-explained-your-guide-to-inflation-basics/what-causes-inflation",
+   "source_family": "clevelandfed.org",
+   "query_similarity": 0.554279,
+   "head_similarity": 1.0000001
+  }
+ },
+ {
+  "query": "symptoms of iron deficiency anemia",
+  "a": {
+   "supporting_families": 1,
+   "corroborated": false,
+   "lookup_ms": 1.6280000000000001,
+   "local_claims": 418,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "b": {
+   "supporting_families": 1,
+   "corroborated": false,
+   "lookup_ms": 0.7350829999999999,
+   "local_claims": 436,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "Common symptoms of iron deficiency anemia include fatigue, paleness, shortness of breath, and dry or damaged hair and skin.",
+   "quote": "Common symptoms include fatigue, paleness, shortness of breath, and dry or damaged hair and skin.",
+   "url": "https://www.healthline.com/nutrition/iron-deficiency-signs-symptoms",
+   "source_family": "healthline.com",
+   "query_similarity": 0.8821082,
+   "head_similarity": 1.0
+  }
+ },
+ {
+  "query": "how do lithium ion batteries work",
+  "a": {
+   "supporting_families": 1,
+   "corroborated": false,
+   "lookup_ms": 0.671666,
+   "local_claims": 418,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "b": {
+   "supporting_families": 1,
+   "corroborated": false,
+   "lookup_ms": 1.4623329999999999,
+   "local_claims": 436,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "When a lithium-ion battery is discharging, lithium ions move back across the electrolyte to the positive electrode, producing the energy that powers the battery.",
+   "quote": "When the battery is discharging, the lithium ions move back across the electrolyte to the positive electrode, producing the energy that powers the battery.",
+   "url": "https://www.explainthatstuff.com/how-lithium-ion-batteries-work.html",
+   "source_family": "explainthatstuff.com",
+   "query_similarity": 0.781071,
+   "head_similarity": 1.0
+  }
+ },
+ {
+  "query": "what is compound interest",
+  "a": {
+   "supporting_families": 2,
+   "corroborated": true,
+   "lookup_ms": 1.551458,
+   "local_claims": 418,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "b": {
+   "supporting_families": 2,
+   "corroborated": true,
+   "lookup_ms": 0.687084,
+   "local_claims": 436,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "Compound interest is the interest an account earns on interest over time.",
+   "quote": "Compound interest is the interest your account earns on interest over time.",
+   "url": "https://www.chase.com/personal/banking/education/basics/compounding-growth",
+   "source_family": "chase.com",
+   "query_similarity": 0.7996071,
+   "head_similarity": 1.0
+  }
+ },
+ {
+  "query": "how does photosynthesis work",
+  "a": {
+   "supporting_families": 3,
+   "corroborated": true,
+   "lookup_ms": 0.6523329999999999,
+   "local_claims": 418,
+   "from_peers": 0,
+   "peers_answering": 0
+  },
+  "b": {
+   "supporting_families": 3,
+   "corroborated": true,
+   "lookup_ms": 1.79725,
+   "local_claims": 436,
+   "from_peers": 20,
+   "peers_answering": 1
+  },
+  "same_matches": true,
+  "n": 20,
+  "head": {
+   "claim": "Photosynthesis is the process of creating sugar and oxygen from carbon dioxide, water and sunlight.",
+   "quote": "Photosynthesis is the process of creating sugar and oxygen from carbon dioxide, water and sunlight.",
+   "url": "https://www.snexplores.org/article/explainer-how-photosynthesis-works",
+   "source_family": "snexplores.org",
+   "query_similarity": 0.77432066,
+   "head_similarity": 1.0
+  }
+ }
+]

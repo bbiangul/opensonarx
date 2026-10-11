@@ -201,9 +201,211 @@ impl TopicRouter {
     }
 }
 
+// ── Routing learned from stored content ─────────────────────────────────
+
+fn unit(vector: &[f32]) -> Vec<f32> {
+    let norm = vector.iter().map(|x| x * x).sum::<f32>().sqrt();
+    if norm > 0.0 {
+        vector.iter().map(|x| x / norm).collect()
+    } else {
+        vector.to_vec()
+    }
+}
+
+/// Spherical k-means with a fixed start: the first centroids are evenly
+/// spaced vectors of the input, so the same input always gives the same
+/// centroids. An empty cluster keeps its previous centroid.
+pub fn learn_centroids(vectors: &[Vec<f32>], k: usize, rounds: usize) -> Vec<Vec<f32>> {
+    if vectors.is_empty() {
+        return Vec::new();
+    }
+    let k = k.min(vectors.len()).max(1);
+    let mut centroids: Vec<Vec<f32>> = (0..k)
+        .map(|cluster| unit(&vectors[cluster * vectors.len() / k]))
+        .collect();
+    let dimension = centroids[0].len();
+    for _ in 0..rounds {
+        let mut sums = vec![vec![0.0f32; dimension]; k];
+        let mut counts = vec![0usize; k];
+        for vector in vectors {
+            let normal = unit(vector);
+            let nearest = (0..k)
+                .max_by(|a, b| {
+                    cosine_similarity(&normal, &centroids[*a])
+                        .total_cmp(&cosine_similarity(&normal, &centroids[*b]))
+                })
+                .unwrap_or(0);
+            counts[nearest] += 1;
+            for (sum, value) in sums[nearest].iter_mut().zip(&normal) {
+                *sum += value;
+            }
+        }
+        for cluster in 0..k {
+            if counts[cluster] > 0 {
+                centroids[cluster] = unit(&sums[cluster]);
+            }
+        }
+    }
+    centroids
+}
+
+/// Shard centroids learned from the content an index holds, in place of the
+/// built-in topic descriptions.
+///
+/// Every node of a network has to route with the same centroids, or one
+/// shard name means different content on different nodes. The version is a
+/// hash of the centroids and is part of every shard name, so nodes that
+/// loaded different files announce different shards and never mix them.
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct LearnedRouting {
+    /// First 12 hex digits of the SHA-256 of the embedder name and centroids.
+    pub version: String,
+    /// The embedder the centroids belong to; another embedder's vectors
+    /// cannot be routed with them.
+    pub embedder: String,
+    pub centroids: Vec<Vec<f32>>,
+}
+
+impl LearnedRouting {
+    /// Rounds of k-means used by `learn`.
+    pub const ROUNDS: usize = 20;
+
+    pub fn from_centroids(embedder: &str, centroids: Vec<Vec<f32>>) -> Self {
+        let mut hasher = Sha256::new();
+        hasher.update(embedder.as_bytes());
+        for centroid in &centroids {
+            hasher.update([0u8]);
+            for value in centroid {
+                hasher.update(value.to_le_bytes());
+            }
+        }
+        let version = format!("{:x}", hasher.finalize())[..12].to_string();
+        Self {
+            version,
+            embedder: embedder.to_string(),
+            centroids,
+        }
+    }
+
+    /// Learn `shards` centroids from stored embeddings. `None` when there is
+    /// nothing to learn from.
+    pub fn learn(vectors: &[Vec<f32>], shards: usize, embedder: &str) -> Option<Self> {
+        let centroids = learn_centroids(vectors, shards, Self::ROUNDS);
+        (!centroids.is_empty()).then(|| Self::from_centroids(embedder, centroids))
+    }
+
+    pub fn shard_id(&self, cluster: usize) -> String {
+        format!("learned-{}-{cluster}", self.version)
+    }
+
+    pub fn shard_ids(&self) -> Vec<String> {
+        (0..self.centroids.len())
+            .map(|cluster| self.shard_id(cluster))
+            .collect()
+    }
+
+    /// A router over these centroids. Every embedding goes to its nearest
+    /// centroid; nothing falls back to a general shard.
+    pub fn router(&self) -> TopicRouter {
+        TopicRouter::new(
+            self.centroids
+                .iter()
+                .enumerate()
+                .map(|(cluster, centroid)| (self.shard_id(cluster), centroid.clone()))
+                .collect(),
+        )
+        .with_threshold(-1.0)
+    }
+
+    pub fn save(&self, path: &std::path::Path) -> std::io::Result<()> {
+        let body = serde_json::to_string(self).map_err(std::io::Error::other)?;
+        std::fs::write(path, body)
+    }
+
+    /// Read a routing file and check that its version is the hash of its
+    /// centroids, so an edited or truncated file is not used under the name
+    /// of another.
+    pub fn load(path: &std::path::Path) -> Result<Self, String> {
+        let raw = std::fs::read_to_string(path)
+            .map_err(|error| format!("cannot read {}: {error}", path.display()))?;
+        let stored: Self =
+            serde_json::from_str(&raw).map_err(|error| format!("{}: {error}", path.display()))?;
+        let expected = Self::from_centroids(&stored.embedder, stored.centroids.clone());
+        if stored.centroids.is_empty() {
+            return Err(format!("{} has no centroids", path.display()));
+        }
+        if expected.version != stored.version {
+            return Err(format!(
+                "{}: version {} does not match its centroids ({})",
+                path.display(),
+                stored.version,
+                expected.version
+            ));
+        }
+        Ok(stored)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn learned_routing_separates_groups_and_names_shards_by_version() {
+        let vectors = vec![
+            vec![1.0, 0.0],
+            vec![0.9, 0.1],
+            vec![0.0, 1.0],
+            vec![0.1, 0.9],
+        ];
+        let routing = LearnedRouting::learn(&vectors, 2, "test-embedder").unwrap();
+        assert_eq!(routing.centroids.len(), 2);
+        assert_eq!(routing.version.len(), 12);
+        let router = routing.router();
+        assert_eq!(router.classify(&[1.0, 0.05]), router.classify(&[0.95, 0.0]));
+        assert_ne!(router.classify(&[1.0, 0.05]), router.classify(&[0.05, 1.0]));
+        assert!(
+            router
+                .classify(&[1.0, 0.0])
+                .starts_with(&format!("learned-{}-", routing.version))
+        );
+        // Nothing falls back to a general shard, however far from a centroid.
+        assert!(router.classify(&[-1.0, -1.0]).starts_with("learned-"));
+
+        // The same input gives the same routing; other centroids or another
+        // embedder give another version.
+        assert_eq!(
+            LearnedRouting::learn(&vectors, 2, "test-embedder").unwrap(),
+            routing
+        );
+        assert_ne!(
+            LearnedRouting::learn(&vectors, 2, "other-embedder")
+                .unwrap()
+                .version,
+            routing.version
+        );
+        assert!(LearnedRouting::learn(&[], 2, "test-embedder").is_none());
+    }
+
+    #[test]
+    fn a_routing_file_is_rejected_when_its_version_is_not_its_content() {
+        let dir = std::env::temp_dir().join(format!("oi-routing-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("routing.json");
+        let routing = LearnedRouting::from_centroids("e", vec![vec![0.6, 0.8], vec![1.0, 0.0]]);
+        routing.save(&path).unwrap();
+        assert_eq!(LearnedRouting::load(&path).unwrap(), routing);
+
+        let mut edited = routing.clone();
+        edited.centroids[0][0] = 0.5;
+        std::fs::write(&path, serde_json::to_string(&edited).unwrap()).unwrap();
+        assert!(
+            LearnedRouting::load(&path)
+                .unwrap_err()
+                .contains("does not match")
+        );
+        std::fs::remove_dir_all(&dir).ok();
+    }
 
     #[test]
     fn test_deterministic() {

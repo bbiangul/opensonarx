@@ -297,6 +297,42 @@ impl HybridIndex {
         Ok(chunks)
     }
 
+    /// The stored embedding of every chunk, in chunk-id order: what a
+    /// routing is learned from.
+    pub fn chunk_vectors(&self) -> Result<Vec<Vec<f32>>> {
+        let metadata = read_lock(&self.metadata)?;
+        let hnsw = read_lock(&self.hnsw)?;
+        let mut ids: Vec<&String> = metadata.keys().collect();
+        ids.sort();
+        Ok(ids
+            .into_iter()
+            .filter_map(|id| hnsw.get_vector(id).cloned())
+            .collect())
+    }
+
+    /// Give every chunk the shard `router` assigns to its embedding, for an
+    /// index whose content was stored before the routing existed or under
+    /// another one. Returns how many chunks changed shard.
+    pub fn reassign_shards(&self, router: &oi_types::TopicRouter) -> Result<usize> {
+        let mut metadata = write_lock(&self.metadata)?;
+        let hnsw = read_lock(&self.hnsw)?;
+        let mut changed = 0;
+        for (chunk_id, meta) in metadata.iter_mut() {
+            let Some(vector) = hnsw.get_vector(chunk_id) else {
+                continue;
+            };
+            let shard = router.classify(vector);
+            if meta.shard_id.as_deref() != Some(shard) {
+                meta.shard_id = Some(shard.to_string());
+                changed += 1;
+            }
+        }
+        if changed > 0 {
+            self.dirty.store(true, Ordering::Release);
+        }
+        Ok(changed)
+    }
+
     /// Merge chunks from another index into this one.
     /// Returns count of new (non-duplicate) chunks added.
     pub fn merge_from(&self, other: &HybridIndex) -> Result<usize> {
@@ -3593,6 +3629,68 @@ mod tests {
 
         let tech = idx.chunks_since(Some("topic-tech"), 0, 100).unwrap();
         assert_eq!(tech.len(), 2);
+    }
+
+    #[test]
+    fn reassigning_shards_follows_the_router_and_reports_what_changed() {
+        let idx = HybridIndex::new(4);
+        // Three unrelated texts, so near-duplicate detection keeps them all.
+        let chunks: Vec<ContentChunk> = [
+            (
+                "left-1",
+                [1.0, 0.0, 0.0, 0.0],
+                "Glaciers carve valleys over thousands of years as ice moves downhill.",
+            ),
+            (
+                "left-2",
+                [0.9, 0.1, 0.0, 0.0],
+                "A sourdough starter needs flour, water and several days of feeding.",
+            ),
+            (
+                "right-1",
+                [0.0, 1.0, 0.0, 0.0],
+                "The violin section sits to the left of the conductor in most orchestras.",
+            ),
+        ]
+        .iter()
+        .map(|(name, vector, text)| ContentChunk {
+            chunk_id: name.to_string(),
+            content: text.to_string(),
+            embedding: Some(vector.to_vec()),
+            seq: 0,
+            meta: Some(ChunkMeta {
+                url: format!("https://example.com/{name}"),
+                title: name.to_string(),
+                domain: "example.com".to_string(),
+                content_hash: format!("hash-{name}"),
+                shard_id: Some("topic-general".to_string()),
+                ..Default::default()
+            }),
+        })
+        .collect();
+        idx.ingest(&chunks).unwrap();
+        assert_eq!(idx.chunk_vectors().unwrap().len(), 3);
+
+        let routing = oi_types::shard::LearnedRouting::learn(
+            &idx.chunk_vectors().unwrap(),
+            2,
+            "test-embedder",
+        )
+        .unwrap();
+        let router = routing.router();
+        assert_eq!(idx.reassign_shards(&router).unwrap(), 3);
+        assert_eq!(idx.reassign_shards(&router).unwrap(), 0, "already in place");
+
+        let left = router.classify(&[1.0, 0.0, 0.0, 0.0]).to_string();
+        let right = router.classify(&[0.0, 1.0, 0.0, 0.0]).to_string();
+        assert_ne!(left, right);
+        assert_eq!(idx.chunks_since(Some(&left), 0, 10).unwrap().len(), 2);
+        assert_eq!(idx.chunks_since(Some(&right), 0, 10).unwrap().len(), 1);
+        assert!(
+            idx.chunks_since(Some("topic-general"), 0, 10)
+                .unwrap()
+                .is_empty()
+        );
     }
 
     #[test]

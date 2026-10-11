@@ -413,6 +413,25 @@ pub enum NetworkCommands {
         /// Enable HTTP API on this port (e.g., 8001)
         #[arg(long)]
         http_port: Option<u16>,
+        /// Copies of a shard the network should hold; a node copies a shard
+        /// it does not serve while fewer nodes than this announce it
+        #[arg(long, default_value = "3")]
+        min_replicas: usize,
+        /// Routing file written by `oi network learn-routing`. The node
+        /// routes with its centroids instead of the built-in topics; with
+        /// --shards, give the cluster numbers this node serves (e.g. 0,1,2)
+        #[arg(long)]
+        routing: Option<String>,
+    },
+    /// Learn shard centroids from the pages in the local index and write a
+    /// routing file that every node of a network must share
+    LearnRouting {
+        /// Number of shards to divide the content into
+        #[arg(long, default_value = "10")]
+        shards: usize,
+        /// Where to write the routing file (default: routing.json in the data dir)
+        #[arg(long)]
+        output: Option<String>,
     },
     /// Show network status
     Status,

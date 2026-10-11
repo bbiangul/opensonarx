@@ -131,8 +131,14 @@ there are no external stakers.
   subject shards and claims kept with their page, as a node keeps them,
   asking three gave the same label as an exhaustive scan on 231 of 240
   queries; dividing by URL hash needs all ten. Centroids learned from the
-  stored pages do better (236 of 240, and 227 asking a single shard) but
-  are only in the measurement: nodes would have to agree on one set.
+  stored pages do better (236 of 240, and 227 asking a single shard). A
+  node can now learn such centroids from its index and route with them
+  (`oi network learn-routing`, `oi network node --routing`); two node
+  processes sharing one routing file each kept only their shards and
+  answered twelve queries identically, pulling from each other what they
+  did not hold. Who publishes that file for a whole network is not solved.
+  Reading this code we also found the node was not following its router's
+  ranking when choosing which shards to ask, and fixed it.
 - The label counts sources with a similar claim, not sources judged to
   agree. We tried replacing the similarity cut with a model's judgment made
   at ingestion (same fact, contradicts, different). It did not help: on the

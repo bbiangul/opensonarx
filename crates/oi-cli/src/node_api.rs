@@ -383,6 +383,10 @@ struct ClaimsResponse {
     lookup_ms: f64,
     /// Claims stored on this node alone.
     local_claims: usize,
+    /// How many of the returned claims came from other nodes.
+    from_peers: usize,
+    /// How many other nodes contributed a returned claim.
+    peers_answering: usize,
 }
 
 /// What the claims stored at ingestion say about a query, from this node and
@@ -433,6 +437,20 @@ async fn claims_handler(
                 format!("Claim lookup failed: {e}"),
             )
         })?;
+    // A claim's result id starts with the id of the node that holds it.
+    let own = format!("{}:", state.handle.peer_id);
+    let remote_holders: std::collections::BTreeSet<&str> = response
+        .results
+        .iter()
+        .filter(|result| !result.result_id.starts_with(&own))
+        .filter_map(|result| result.result_id.split(':').next())
+        .collect();
+    let from_peers = response
+        .results
+        .iter()
+        .filter(|result| !result.result_id.starts_with(&own))
+        .count();
+    let peers_answering = remote_holders.len();
     let signal = oi_sdk::claims::corroboration(
         oi_sdk::claims::claims_from_results(&response.results),
         &policy,
@@ -443,6 +461,8 @@ async fn claims_handler(
         matches: signal.matches,
         lookup_ms: started.elapsed().as_secs_f64() * 1_000.0,
         local_claims: state.client.claim_count(),
+        from_peers,
+        peers_answering,
     }))
 }
 
@@ -452,6 +472,7 @@ pub async fn run_node_api(
     index: Arc<oi_index::HybridIndex>,
     index_path: Option<std::path::PathBuf>,
     sdk_config: oi_sdk::SdkConfig,
+    routing: Option<(Arc<oi_types::TopicRouter>, Vec<String>)>,
 ) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // With OI_EXTRACT_CLAIMS=1 and an answer model configured, the node
     // reads each page it learns for claims.
@@ -459,6 +480,9 @@ pub async fn run_node_api(
         .is_ok_and(|value| matches!(value.trim(), "1" | "true" | "yes"));
     let passage_model = sdk_config.answer_model.clone().filter(|_| extract_claims);
     let mut client = oi_sdk::OpenSonarXClient::with_shared_index(sdk_config, index.clone());
+    if let Some((router, shards)) = routing {
+        client = client.with_topic_router(router).with_shard_filter(shards);
+    }
     if let Some(model) = passage_model {
         client = client.with_passage_claim_extractor(Arc::new(oi_sdk::ChatModel::new(model)));
         println!("  Claims: pages are read for claims after they are indexed");

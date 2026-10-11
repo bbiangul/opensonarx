@@ -511,10 +511,9 @@ não tem nada, o node devolveu zero famílias.
 
 ### O que continua faltando na rede
 
-- O roteador do produto ainda usa as descrições fixas; os centros
-  aprendidos só existem na medição (passos 4 e 6). Para ir ao produto falta
-  decidir quem publica os centros: todos os nodes precisam usar os mesmos,
-  senão o mesmo nome de compartimento quer dizer coisas diferentes.
+- O roteador aprendido está no produto (passo 8), mas quem publica o
+  arquivo de centros não está resolvido: cada operador inicia o node com o
+  mesmo arquivo à mão.
 - Quem recebe confia no texto da página que o outro node mandou. Conferir
   buscando a página de novo foi medido no passo 5 e não está ligado à
   réplica.
@@ -639,6 +638,77 @@ node daquele assunto. Sem a correção o teste falha; com ela passa.
 
 Não medi o roteamento por nodes de verdade com as 240 consultas depois da
 correção; isso fica para quando houver compartimentos em nodes separados.
+
+## Passo 8: o roteador aprendido dentro do produto
+
+### O que foi construído
+
+- **Arquivo de roteamento** (`LearnedRouting`, em `oi-types`): os centros,
+  o nome do embedder e uma versão que é o hash dos centros. O nome de cada
+  compartimento leva a versão (`learned-<versão>-<n>`). Dois nodes com
+  arquivos diferentes anunciam compartimentos de nomes diferentes e nunca
+  os confundem. Um arquivo editado é recusado na leitura.
+- **`oi network learn-routing --shards N`**: aprende os centros dos trechos
+  guardados no índice local (o mesmo k-means dos passos 4 e 6, agora no
+  produto; a medição do passo 6 refeita com ele dá números idênticos).
+- **`oi network node --routing <arquivo> [--shards 0,1]`**: o node roteia
+  com esses centros, reclassifica o que já tinha guardado, anuncia os
+  compartimentos que serve, e as páginas que aprende são classificadas pelos
+  mesmos centros (ele fica com os trechos dos seus compartimentos).
+- **`--min-replicas`**: quantas cópias de um compartimento a rede quer. O
+  padrão é 3, e com dois nodes isso faz cada um copiar tudo do outro em um
+  minuto (visto na primeira tentativa abaixo).
+- `/claims` passou a dizer quantas das afirmações devolvidas vieram de
+  outros nodes.
+
+O que não está resolvido: **quem publica o arquivo**. Hoje cada operador
+tem de iniciar o node com o mesmo arquivo; o lugar natural para o hash dele
+é a cadeia, e isso não foi feito.
+
+### Verificação de ponta a ponta (não é medição com amostra)
+
+Um índice pequeno foi enchido com doze buscas reais de assuntos variados
+(110 trechos). `learn-routing --shards 4` deu a versão `f567a1378e61`, com
+64, 12, 21 e 13 trechos por compartimento. Dois nodes em processos
+separados partiram vazios com esse arquivo: o node A serve o compartimento
+0, o node B serve 1, 2 e 3, os dois com `--min-replicas 1` e extração de
+afirmações ligada. Os dois receberam as mesmas doze buscas.
+
+- Cada um ficou só com a sua parte: 418 afirmações em A, 436 em B.
+- Para as doze consultas, os dois nodes devolveram as mesmas 20 afirmações
+  na mesma ordem.
+- Em todas, o que veio de A somado ao que veio de B dá 20: nenhuma
+  afirmação devolvida estava nos dois. Em cinco consultas as 20 vieram só
+  de A, em quatro só de B, e em três dos dois. Para "o que causa inflação",
+  perguntado ao node A, as 20 vieram do node B.
+- Um arquivo com um centro alterado foi recusado, e `--shards 9` num
+  roteamento de quatro grupos também.
+
+O que deu errado no caminho e está registrado:
+
+- Na primeira tentativa, com o padrão de três cópias, em um minuto os dois
+  nodes tinham tudo. É o comportamento desenhado (um compartimento com
+  menos de três nodes é copiado), mas torna a divisão invisível numa rede
+  de dois. Um node que copia um compartimento assim guarda o conteúdo sem
+  anunciá-lo.
+- Na mesma tentativa só as quatro primeiras buscas renderam páginas: as
+  buscas foram disparadas em rajada e os buscadores externos pararam de
+  responder. Refeito com intervalo entre as buscas.
+- Três dos doze assuntos ficaram sem nenhuma afirmação em nenhum node
+  (páginas que não foram buscadas ou não passaram no filtro de qualidade).
+  Não investiguei.
+
+### Limites do passo 8
+
+- Dois nodes, uma máquina, doze consultas, quatro grupos aprendidos de 110
+  trechos. Mostra que as peças se encaixam, não quanto o roteamento acerta.
+- Com dois nodes e repasse de até três compartimentos, toda consulta acaba
+  perguntando o outro node. A escolha entre vários peers pela ordem do
+  roteador está coberta pelo teste de quatro nodes, não por esta
+  verificação.
+- Os centros são aprendidos uma vez. Um índice que cresce e muda de assunto
+  precisaria de um novo arquivo, e trocar de arquivo muda o nome de todos os
+  compartimentos de uma vez; não há migração gradual.
 
 ## Passo 5: conferir uma afirmação buscando a página por conta própria
 
@@ -896,6 +966,7 @@ produto os chama. O selo servido continua sendo o `ingest-claims-v1`.
 - Passo 2: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-test.json`
   e `ingest-claims-nodes-{1,3}-rerank-test.json`
 - Passo 4: `outputs/validation-20261009/ingest-claims-routing-test.json`
+- Passo 8: `outputs/validation-20261009/learned-routing-two-nodes.json`
 - Passo 7: `outputs/validation-20261009/ingest-claims-relations.jsonl` (o que
   o modelo julgou), `ingest-claims-judged-480.json` (o selo por consulta),
   `ingest-claims-relations-test-{sheet,key,reader-labels}.jsonl` (a leitura

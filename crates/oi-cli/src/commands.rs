@@ -1339,6 +1339,33 @@ pub fn yield_cmd(config: &CliConfig, action: YieldCommands) -> ExitCode {
 
 // ── Network ─────────────────────────────────────────────────────────────────
 
+/// The shard names behind `--shards` when a routing file is in use: each
+/// entry is a cluster number of that routing, or one of its shard names.
+fn learned_shard_ids(
+    routing: &oi_types::shard::LearnedRouting,
+    chosen: &[String],
+) -> Result<Vec<String>, String> {
+    let known = routing.shard_ids();
+    chosen
+        .iter()
+        .map(|entry| {
+            let entry = entry.trim();
+            entry
+                .parse::<usize>()
+                .ok()
+                .and_then(|cluster| known.get(cluster).cloned())
+                .or_else(|| known.iter().find(|id| *id == entry).cloned())
+                .ok_or_else(|| {
+                    format!(
+                        "--shards {entry:?} is not a shard of routing {} (it has clusters 0 to {})",
+                        routing.version,
+                        known.len().saturating_sub(1)
+                    )
+                })
+        })
+        .collect()
+}
+
 pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> ExitCode {
     match action {
         NetworkCommands::Node {
@@ -1349,7 +1376,34 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
             shards,
             concurrency,
             http_port,
+            min_replicas,
+            routing,
         } => {
+            // A routing file replaces the built-in topics. Loaded before
+            // anything starts so a bad file stops the node instead of
+            // letting it announce shards nobody else understands.
+            let learned = match routing
+                .as_deref()
+                .map(|path| oi_types::shard::LearnedRouting::load(std::path::Path::new(path)))
+            {
+                Some(Ok(routing)) => Some(routing),
+                Some(Err(error)) => {
+                    output::print_err(&format!("Routing file: {error}"), &config.format);
+                    return ExitCode::UserError;
+                }
+                None => None,
+            };
+            let shards = match (&learned, shards) {
+                (Some(routing), Some(chosen)) => match learned_shard_ids(routing, &chosen) {
+                    Ok(ids) => Some(ids),
+                    Err(error) => {
+                        output::print_err(&error, &config.format);
+                        return ExitCode::UserError;
+                    }
+                },
+                (Some(routing), None) => Some(routing.shard_ids()),
+                (None, shards) => shards,
+            };
             let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(async {
                 let bootstrap_peers = if let Some(peers) = bootstrap {
@@ -1368,6 +1422,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                     listen_port: port,
                     bootstrap_peers,
                     routing_table_path,
+                    min_replicas_per_shard: min_replicas,
                     ..Default::default()
                 };
 
@@ -1428,7 +1483,27 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                 println!("  Index:    {} docs", index.doc_count());
 
                 // Build topic router for sentinel classification
-                let topic_router = if sentinel && !shard_override {
+                let topic_router = if let Some(routing) = &learned {
+                    let embedder = oi_sdk::OpenSonarXClient::default_embedder();
+                    if embedder.name() != routing.embedder {
+                        eprintln!(
+                            "  Routing file is for embedder {:?}; this node embeds with {:?}",
+                            routing.embedder,
+                            embedder.name()
+                        );
+                        return;
+                    }
+                    let router = routing.router();
+                    match index.reassign_shards(&router) {
+                        Ok(moved) => println!(
+                            "  Routing:  learned, version {} ({} shards; {moved} stored chunks reassigned)",
+                            routing.version,
+                            routing.centroids.len()
+                        ),
+                        Err(e) => eprintln!("  Routing: could not reassign stored chunks ({e})"),
+                    }
+                    Some(std::sync::Arc::new(router))
+                } else if sentinel && !shard_override {
                     let embedder = oi_sdk::OpenSonarXClient::default_embedder();
                     let descriptions: Vec<&str> = oi_types::BUILTIN_TOPICS
                         .iter()
@@ -1512,6 +1587,13 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                 ..Default::default()
                             };
                             let api_index_path = crate::config_file::ConfigFile::index_dir();
+                            // With a learned routing, the pages this node
+                            // learns are classified by it, and the node
+                            // keeps the chunks of the shards it serves.
+                            let api_routing = learned
+                                .as_ref()
+                                .and(topic_router.clone())
+                                .map(|router| (router, shard_ids.clone()));
                             tokio::spawn(async move {
                                 if let Err(e) = crate::node_api::run_node_api(
                                     hp,
@@ -1519,6 +1601,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                     api_index,
                                     api_index_path,
                                     api_sdk_config,
+                                    api_routing,
                                 )
                                 .await
                                 {
@@ -1560,6 +1643,73 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                     }
                 }
             });
+            ExitCode::Success
+        }
+        NetworkCommands::LearnRouting { shards, output } => {
+            let Some(index_path) = crate::config_file::ConfigFile::index_dir() else {
+                output::print_err("No data directory", &config.format);
+                return ExitCode::UserError;
+            };
+            let index = match oi_index::Storage::new(&index_path)
+                .map_err(|e| e.to_string())
+                .and_then(|storage| {
+                    oi_index::HybridIndex::load(&storage).map_err(|e| e.to_string())
+                }) {
+                Ok(index) => index,
+                Err(error) => {
+                    output::print_err(
+                        &format!("Cannot load the index at {}: {error}", index_path.display()),
+                        &config.format,
+                    );
+                    return ExitCode::UserError;
+                }
+            };
+            let vectors = index.chunk_vectors().unwrap_or_default();
+            let embedder = oi_sdk::OpenSonarXClient::default_embedder();
+            let Some(routing) =
+                oi_types::shard::LearnedRouting::learn(&vectors, shards, embedder.name())
+            else {
+                output::print_err(
+                    "The index holds no pages to learn a routing from",
+                    &config.format,
+                );
+                return ExitCode::UserError;
+            };
+            let path = output
+                .map(std::path::PathBuf::from)
+                .or_else(|| {
+                    crate::config_file::ConfigFile::config_dir().map(|d| d.join("routing.json"))
+                })
+                .unwrap_or_else(|| std::path::PathBuf::from("routing.json"));
+            if let Err(error) = routing.save(&path) {
+                output::print_err(
+                    &format!("Cannot write {}: {error}", path.display()),
+                    &config.format,
+                );
+                return ExitCode::UserError;
+            }
+            let router = routing.router();
+            let mut sizes: std::collections::BTreeMap<String, usize> =
+                std::collections::BTreeMap::new();
+            for vector in &vectors {
+                *sizes
+                    .entry(router.classify(vector).to_string())
+                    .or_default() += 1;
+            }
+            println!("Routing learned from {} stored chunks", vectors.len());
+            println!("  Version:  {}", routing.version);
+            println!("  Embedder: {}", routing.embedder);
+            println!("  File:     {}", path.display());
+            for shard in routing.shard_ids() {
+                println!(
+                    "  {shard}: {} chunks",
+                    sizes.get(&shard).copied().unwrap_or(0)
+                );
+            }
+            println!(
+                "Every node of the network must start with this same file: oi network node --routing {}",
+                path.display()
+            );
             ExitCode::Success
         }
         NetworkCommands::Status => {
@@ -2862,5 +3012,26 @@ pub fn index(config: &CliConfig, action: IndexCommands) -> ExitCode {
             );
             ExitCode::Success
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shards_of_a_routing_are_given_by_number_or_by_name() {
+        let routing = oi_types::shard::LearnedRouting::from_centroids(
+            "test-embedder",
+            vec![vec![1.0, 0.0], vec![0.0, 1.0], vec![0.6, 0.8]],
+        );
+        let named = routing.shard_id(2);
+        assert_eq!(
+            learned_shard_ids(&routing, &["0".to_string(), named.clone()]).unwrap(),
+            [routing.shard_id(0), named]
+        );
+        // A cluster the routing does not have, or a shard of another routing.
+        assert!(learned_shard_ids(&routing, &["3".to_string()]).is_err());
+        assert!(learned_shard_ids(&routing, &["learned-000000000000-0".to_string()]).is_err());
     }
 }

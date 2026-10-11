@@ -23,6 +23,7 @@
 
 use oi_sdk::claims::{corroboration, ClaimIndex, ClaimPolicy, ClaimRecord, MatchedClaim};
 use oi_types::claims::cosine;
+use oi_types::shard::learn_centroids;
 use oi_types::{TopicRouter, BUILTIN_TOPICS};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
@@ -70,49 +71,6 @@ fn hash_shard(url: &str, shards: usize) -> String {
     let digest = Sha256::digest(url.as_bytes());
     let bucket = u64::from_le_bytes(digest[..8].try_into().unwrap_or([0; 8])) as usize % shards;
     format!("hash-{bucket}")
-}
-
-fn normalized(vector: &[f32]) -> Vec<f32> {
-    let norm = vector.iter().map(|x| x * x).sum::<f32>().sqrt();
-    if norm > 0.0 {
-        vector.iter().map(|x| x / norm).collect()
-    } else {
-        vector.to_vec()
-    }
-}
-
-/// Spherical k-means over the stored vectors: `k` unit centroids, each the
-/// normalized mean of the vectors closest to it. The start is fixed (evenly
-/// spaced vectors) so the same input always gives the same clusters.
-fn learn_centroids(vectors: &[Vec<f32>], k: usize, rounds: usize) -> Vec<Vec<f32>> {
-    let k = k.min(vectors.len()).max(1);
-    let mut centroids: Vec<Vec<f32>> = (0..k)
-        .map(|cluster| normalized(&vectors[cluster * vectors.len() / k]))
-        .collect();
-    let dimension = centroids[0].len();
-    for _ in 0..rounds {
-        let mut sums = vec![vec![0.0f32; dimension]; k];
-        let mut counts = vec![0usize; k];
-        for vector in vectors {
-            let unit = normalized(vector);
-            let nearest = (0..k)
-                .max_by(|a, b| {
-                    cosine(&unit, &centroids[*a]).total_cmp(&cosine(&unit, &centroids[*b]))
-                })
-                .unwrap_or(0);
-            counts[nearest] += 1;
-            for (sum, value) in sums[nearest].iter_mut().zip(&unit) {
-                *sum += value;
-            }
-        }
-        for cluster in 0..k {
-            // An empty cluster keeps its previous centroid.
-            if counts[cluster] > 0 {
-                centroids[cluster] = normalized(&sums[cluster]);
-            }
-        }
-    }
-    centroids
 }
 
 fn identity(claim: &MatchedClaim) -> (&str, &str) {
