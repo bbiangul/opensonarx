@@ -44,7 +44,17 @@ fn build_local_client(config: &CliConfig) -> OpenSonarXClient {
             .ok()
             .filter(|path| !path.trim().is_empty()),
     };
-    OpenSonarXClient::new(sdk_config)
+    let client = OpenSonarXClient::new(sdk_config);
+    // With OI_EXTRACT_CLAIMS=1 the same model reads each newly indexed page
+    // for claims, in the background.
+    let extract_claims = std::env::var("OI_EXTRACT_CLAIMS")
+        .is_ok_and(|value| matches!(value.trim(), "1" | "true" | "yes"));
+    match answer_model_from_env() {
+        Some(model) if extract_claims => {
+            client.with_passage_claim_extractor(std::sync::Arc::new(oi_sdk::ChatModel::new(model)))
+        }
+        _ => client,
+    }
 }
 
 /// The model behind `--answer`, from `OI_ANSWER_MODEL`. `OI_ANSWER_PROVIDER`
@@ -159,6 +169,7 @@ pub fn search(
     node: Option<String>,
     explain: bool,
     answer: bool,
+    claims: bool,
 ) -> ExitCode {
     if query.trim().is_empty() {
         output::print_err("Query must not be empty", &config.format);
@@ -215,6 +226,10 @@ pub fn search(
             )
         }
     };
+
+    if claims && let ClientMode::Local(local) = &client {
+        print_stored_claims(local, query);
+    }
 
     if answer {
         return search_with_answer(
@@ -369,6 +384,7 @@ pub fn search(
                         );
                     }
                 }
+                read_new_pages_for_claims(c);
             }
             ExitCode::Success
         }
@@ -449,6 +465,9 @@ fn search_with_answer(
             {
                 let _ = client.process_crawl_queue();
             }
+            if let ClientMode::Local(client) = client {
+                read_new_pages_for_claims(client);
+            }
             ExitCode::Success
         }
         Err(error) => {
@@ -466,6 +485,71 @@ fn bond_label(result: &oi_types::SearchResultItem) -> String {
         return "-".to_string();
     }
     result.stake_truth.to_string()
+}
+
+/// Read the pages this search added to the index for claims. Runs after
+/// results are printed; each page costs model calls.
+fn read_new_pages_for_claims(client: &OpenSonarXClient) {
+    let pending = client.pending_claim_count();
+    if pending == 0 {
+        return;
+    }
+    eprintln!("(reading {pending} new pages for claims...)");
+    let started = std::time::Instant::now();
+    let before = client.claim_count();
+    client.process_claim_queue();
+    let after = client.claim_count();
+    eprintln!(
+        "(stored {} verified claims in {:.1} s; {after} in the index)",
+        after - before,
+        started.elapsed().as_secs_f64(),
+    );
+}
+
+/// What the claims stored at ingestion say about a query, with the time the
+/// lookup took. Nothing here calls a model.
+fn print_stored_claims(client: &OpenSonarXClient, query: &str) {
+    if client.claim_count() == 0 {
+        println!("CLAIMS [none stored]\n");
+        return;
+    }
+    let started = std::time::Instant::now();
+    let signal = match client.corroboration(query) {
+        Ok(signal) => signal,
+        Err(error) => {
+            println!("CLAIMS [lookup failed: {error}]\n");
+            return;
+        }
+    };
+    let elapsed_ms = started.elapsed().as_secs_f64() * 1_000.0;
+    let policy = client.claim_policy();
+    // The count is of source families holding a claim close to the nearest
+    // one. Closeness is embedding similarity: the listed claims are similar,
+    // which is not the same as saying one thing, so they are shown rather
+    // than summarized as agreement.
+    let state = match signal.supporting_families {
+        0 => "no stored claim close enough".to_string(),
+        1 => "similar claims from 1 source family".to_string(),
+        families => format!("similar claims from {families} source families"),
+    };
+    println!(
+        "CLAIMS [{state} | {elapsed_ms:.1} ms | {} stored]",
+        client.claim_count()
+    );
+    if signal.supporting_families > 0 {
+        let mut families = std::collections::BTreeSet::new();
+        for claim in signal.matches.iter().filter(|claim| {
+            claim.query_similarity >= policy.min_query_similarity
+                && claim.head_similarity >= policy.min_claim_similarity
+        }) {
+            // One line per source family: the first, closest claim from it.
+            if families.insert(claim.source_family.clone()) {
+                println!("  {}: {}", claim.source_family, claim.claim);
+                println!("      Quote: {}", claim.quote);
+            }
+        }
+    }
+    println!();
 }
 
 fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) {

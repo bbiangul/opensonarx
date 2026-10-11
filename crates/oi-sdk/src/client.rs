@@ -106,6 +106,13 @@ pub struct OpenSonarXClient {
     answer_calibration: Option<crate::calibration::AnswerCalibration>,
     /// Usage attribution → creator credits (the payoff leg of the market).
     creator_ledger: crate::creator_ledger::CreatorLedger,
+    /// Lists the statements of a retained page when it enters the index.
+    /// Without one, pages are indexed without claims.
+    passage_claim_extractor: Option<Arc<dyn oi_types::PassageClaimExtractor>>,
+    /// Pages indexed but not yet read for claims. Drained by
+    /// `process_claim_queue`, never on the path of a search.
+    claim_queue: std::sync::Mutex<Vec<String>>,
+    claim_policy: crate::claims::ClaimPolicy,
 }
 
 impl OpenSonarXClient {
@@ -240,6 +247,9 @@ impl OpenSonarXClient {
             answer_policy: AnswerPolicy::default(),
             answer_calibration,
             creator_ledger: crate::creator_ledger::CreatorLedger::load(config_creator_ledger_path),
+            passage_claim_extractor: None,
+            claim_queue: std::sync::Mutex::new(Vec::new()),
+            claim_policy: crate::claims::ClaimPolicy::default(),
         }
     }
 
@@ -298,6 +308,9 @@ impl OpenSonarXClient {
             answer_policy: AnswerPolicy::default(),
             answer_calibration,
             creator_ledger: crate::creator_ledger::CreatorLedger::load(config_creator_ledger_path),
+            passage_claim_extractor: None,
+            claim_queue: std::sync::Mutex::new(Vec::new()),
+            claim_policy: crate::claims::ClaimPolicy::default(),
         }
     }
 
@@ -372,6 +385,16 @@ impl OpenSonarXClient {
     /// Attach the model that decides whether a claim answers the request.
     pub fn with_responsiveness_judge(mut self, judge: Arc<dyn ResponsivenessJudge>) -> Self {
         self.responsiveness_judge = Some(judge);
+        self
+    }
+
+    /// Attach the model that lists a page's claims when it is indexed.
+    /// Extraction runs from `process_claim_queue`, after results are served.
+    pub fn with_passage_claim_extractor(
+        mut self,
+        extractor: Arc<dyn oi_types::PassageClaimExtractor>,
+    ) -> Self {
+        self.passage_claim_extractor = Some(extractor);
         self
     }
 
@@ -1295,6 +1318,117 @@ impl OpenSonarXClient {
         self.process_crawl_urls(urls)
     }
 
+    /// Pages waiting to be read for claims.
+    pub fn pending_claim_count(&self) -> usize {
+        self.claim_queue
+            .lock()
+            .map(|queue| queue.len())
+            .unwrap_or(0)
+    }
+
+    /// Read the queued pages for claims and store what is verified. Returns
+    /// the number of claims stored. Meant to run after results are served:
+    /// each page costs model calls.
+    pub fn process_claim_queue(&self) -> usize {
+        let urls: Vec<String> = match self.claim_queue.lock() {
+            Ok(mut queue) => queue.drain(..).collect(),
+            Err(_) => return 0,
+        };
+        self.extract_claims_for(&urls).unwrap_or_else(|error| {
+            tracing::warn!("claim extraction failed: {error}");
+            0
+        })
+    }
+
+    /// Extract, verify and store the claims of pages already in the index.
+    /// Each retained chunk is read once; a claim is kept only when its quote
+    /// is located verbatim in that chunk. Returns the number of claims stored.
+    pub fn extract_claims_for(&self, urls: &[String]) -> Result<usize> {
+        let Some(extractor) = &self.passage_claim_extractor else {
+            return Ok(0);
+        };
+        let passages: Vec<oi_types::EvidencePassage> = urls
+            .iter()
+            .flat_map(|url| {
+                self.index
+                    .contents_for_url(url)
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(move |content| oi_types::EvidencePassage {
+                        id: "p1".to_string(),
+                        url: url.clone(),
+                        title: String::new(),
+                        text: crate::answer::plain_text(&content),
+                        retained: true,
+                        published_at: None,
+                        observed_at: None,
+                    })
+            })
+            .collect();
+        const CONCURRENT_EXTRACTIONS: usize = 8;
+        let mut records = Vec::new();
+        for batch in passages.chunks(CONCURRENT_EXTRACTIONS) {
+            let extracted: Vec<_> = std::thread::scope(|scope| {
+                let workers: Vec<_> = batch
+                    .iter()
+                    .map(|passage| {
+                        scope.spawn(|| {
+                            crate::claims::ingest_passage(
+                                extractor.as_ref(),
+                                passage,
+                                &self.claim_policy,
+                            )
+                        })
+                    })
+                    .collect();
+                workers.into_iter().map(|worker| worker.join()).collect()
+            });
+            for outcome in extracted {
+                match outcome {
+                    Ok(Ok((kept, _rejected))) => records.extend(kept),
+                    Ok(Err(error)) => tracing::warn!("claim extraction: {error}"),
+                    Err(_) => tracing::warn!("claim extraction worker panicked"),
+                }
+            }
+        }
+        if records.is_empty() {
+            return Ok(0);
+        }
+        let texts: Vec<&str> = records.iter().map(|record| record.claim.as_str()).collect();
+        let vectors = self.embedder.embed_text_batch(&texts)?;
+        let stored = records.len();
+        self.index
+            .ingest_claims(records.into_iter().zip(vectors).collect())?;
+        if let Ok(_persist_guard) = self.crawl_persist.lock()
+            && let Err(error) = self.save_index()
+        {
+            tracing::warn!("claim extraction: index save failed: {error}");
+        }
+        Ok(stored)
+    }
+
+    /// What the stored claims say about a request: the nearest claims, the
+    /// source families that state the closest one, and whether that reaches
+    /// the policy's corroboration count. One query embedding and one vector
+    /// lookup; no model is called.
+    pub fn corroboration(&self, query: &str) -> Result<crate::claims::Corroboration> {
+        let vector = self.embedder.embed_query(query)?;
+        Ok(crate::claims::corroboration(
+            self.index.fetch_claims(&vector, self.claim_policy.top_k)?,
+            &self.claim_policy,
+        ))
+    }
+
+    /// The policy that decides what counts as corroboration.
+    pub fn claim_policy(&self) -> &crate::claims::ClaimPolicy {
+        &self.claim_policy
+    }
+
+    /// Claims stored in the local index.
+    pub fn claim_count(&self) -> usize {
+        self.index.claim_count()
+    }
+
     fn remove_pending_crawl_urls(&self, urls: &[String]) {
         if urls.is_empty() {
             return;
@@ -1521,7 +1655,18 @@ impl OpenSonarXClient {
                 .collect::<Vec<_>>();
             if !chunks.is_empty() {
                 match self.ingest(&chunks) {
-                    Ok(()) => indexed = outputs.len(),
+                    Ok(()) => {
+                        indexed = outputs.len();
+                        if self.passage_claim_extractor.is_some()
+                            && let Ok(mut queue) = self.claim_queue.lock()
+                        {
+                            for output in &outputs {
+                                if !queue.contains(&output.url) {
+                                    queue.push(output.url.clone());
+                                }
+                            }
+                        }
+                    }
                     Err(e) => tracing::debug!("crawl-on-query: batch ingest failed: {e}"),
                 }
             }
@@ -2328,6 +2473,74 @@ mod tests {
             .collect::<Vec<_>>();
         client.ingest(&chunks).unwrap();
         client
+    }
+
+    /// Proposes the same claim for every page, quoting `SPAN`, plus one claim
+    /// whose quote is in no page.
+    struct ScriptedPassageExtractor;
+
+    impl oi_types::PassageClaimExtractor for ScriptedPassageExtractor {
+        fn passage_claims(
+            &self,
+            _passage: &oi_types::EvidencePassage,
+            _max_claims: usize,
+        ) -> Result<Vec<oi_types::PassageClaim>> {
+            Ok(vec![
+                oi_types::PassageClaim {
+                    text: "Acme was started by Ada Lovelace.".to_string(),
+                    quote: SPAN.to_string(),
+                },
+                oi_types::PassageClaim {
+                    text: "Acme was started by Grace Hopper.".to_string(),
+                    quote: "Acme was started in 1990 by Grace Hopper.".to_string(),
+                },
+            ])
+        }
+
+        fn model_version(&self) -> String {
+            "scripted-passage".to_string()
+        }
+    }
+
+    #[test]
+    fn indexed_pages_are_read_for_claims_and_only_verified_ones_are_stored() {
+        let client = client_with_two_sources()
+            .with_passage_claim_extractor(Arc::new(ScriptedPassageExtractor));
+        assert_eq!(client.claim_count(), 0);
+        let stored = client
+            .extract_claims_for(&[FIRST_URL.to_string(), SECOND_URL.to_string()])
+            .unwrap();
+        // One verified claim per page; the fabricated one is dropped twice.
+        assert_eq!(stored, 2);
+        assert_eq!(client.claim_count(), 2);
+
+        // Reading the same pages again stores nothing new.
+        client
+            .extract_claims_for(&[FIRST_URL.to_string(), SECOND_URL.to_string()])
+            .unwrap();
+        assert_eq!(client.claim_count(), 2);
+
+        // The stored claims are read back for a request without any model.
+        let signal = client.corroboration("who started Acme").unwrap();
+        assert_eq!(signal.matches.len(), 2);
+        let families: std::collections::BTreeSet<&str> = signal
+            .matches
+            .iter()
+            .map(|claim| claim.source_family.as_str())
+            .collect();
+        assert_eq!(families.len(), 2);
+        assert!(signal.matches.iter().all(|claim| claim.quote == SPAN));
+    }
+
+    #[test]
+    fn without_a_passage_extractor_no_page_is_read_for_claims() {
+        let client = client_with_two_sources();
+        assert_eq!(
+            client.extract_claims_for(&[FIRST_URL.to_string()]).unwrap(),
+            0
+        );
+        assert_eq!(client.pending_claim_count(), 0);
+        assert_eq!(client.process_claim_queue(), 0);
     }
 
     #[test]

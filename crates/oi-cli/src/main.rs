@@ -118,6 +118,12 @@ pub enum Commands {
         /// Answer from retained evidence using the model in OI_ANSWER_MODEL; without one, returns the slate
         #[arg(long)]
         answer: bool,
+        /// Show what the claims stored at ingestion say about the query:
+        /// the closest claim and the source families that state it. No
+        /// model is called. Pages are read for claims in the background
+        /// when OI_EXTRACT_CLAIMS=1 and an answer model are set
+        #[arg(long)]
+        claims: bool,
     },
     /// Submit feedback on a search result
     Feedback {
@@ -566,6 +572,7 @@ fn main() {
             node,
             explain,
             answer,
+            claims,
         } => commands::search(
             &config,
             &query,
@@ -583,6 +590,7 @@ fn main() {
             node,
             explain,
             answer,
+            claims,
         ),
         Commands::Feedback {
             result_id,
