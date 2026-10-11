@@ -764,7 +764,14 @@ pub fn stake(config: &CliConfig, domain: &str, amount: u64) -> ExitCode {
             });
             output::print_item(&info, &config.format, |item| {
                 println!("Staked {} $TRUTH for {}", item["amount"], item["domain"]);
-                println!("  Tx: {}", item["tx_hash"]);
+                // The SDK records the bond in the local registry; a
+                // `stub_tx_` reference is not a chain transaction.
+                match item["tx_hash"].as_str() {
+                    Some(reference) if reference.starts_with("stub_tx_") => {
+                        println!("  Recorded in the local registry (no on-chain transaction)")
+                    }
+                    _ => println!("  Tx: {}", item["tx_hash"]),
+                }
             });
             ExitCode::Success
         }

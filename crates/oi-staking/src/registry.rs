@@ -33,10 +33,22 @@ impl Default for InMemoryStakeRegistry {
     }
 }
 
+/// The stake recorded for `name`, treating `www.example.com` and
+/// `example.com` as the same site. No other parent or child name matches: a
+/// bond on a hosting platform must not pass through to the pages of its users.
+fn stake_for<'a>(stakes: &'a HashMap<String, StakeInfo>, name: &str) -> Option<&'a StakeInfo> {
+    stakes
+        .get(name)
+        .or_else(|| match name.strip_prefix("www.") {
+            Some(bare) => stakes.get(bare),
+            None => stakes.get(&format!("www.{name}")),
+        })
+}
+
 impl StakeRegistry for InMemoryStakeRegistry {
     fn get_stake(&self, domain: &str) -> Result<Option<StakeInfo>> {
         let stakes = self.stakes.read().unwrap();
-        Ok(stakes.get(domain).cloned())
+        Ok(stake_for(&stakes, domain).cloned())
     }
 
     fn list_active_stakes(&self) -> Result<Vec<StakeInfo>> {
@@ -50,7 +62,7 @@ impl StakeRegistry for InMemoryStakeRegistry {
 
     fn is_staked(&self, domain: &str) -> Result<bool> {
         let stakes = self.stakes.read().unwrap();
-        match stakes.get(domain) {
+        match stake_for(&stakes, domain) {
             Some(info) => Ok(info.cooldown_until.is_none()),
             None => Ok(false),
         }
@@ -60,7 +72,7 @@ impl StakeRegistry for InMemoryStakeRegistry {
         let stakes = self.stakes.read().unwrap();
         let mut map = HashMap::new();
         for d in domains {
-            if let Some(info) = stakes.get(*d) {
+            if let Some(info) = stake_for(&stakes, d) {
                 map.insert(d.to_string(), info.clone());
             }
         }
@@ -85,6 +97,41 @@ mod tests {
             entity: None,
             disputed: false,
         }
+    }
+
+    #[test]
+    fn a_bond_covers_the_www_form_of_its_domain_and_nothing_else() {
+        let registry = InMemoryStakeRegistry::new();
+        registry
+            .add_stake(make_stake("example.com", 1_000))
+            .unwrap();
+        registry
+            .add_stake(make_stake("www.other.org", 500))
+            .unwrap();
+        assert_eq!(
+            registry
+                .get_stake("www.example.com")
+                .unwrap()
+                .unwrap()
+                .amount_lamports,
+            1_000
+        );
+        assert!(registry.is_staked("www.example.com").unwrap());
+        assert_eq!(
+            registry
+                .get_stake("other.org")
+                .unwrap()
+                .unwrap()
+                .amount_lamports,
+            500
+        );
+        // A user's subdomain on a platform is not covered by the platform's bond.
+        assert!(registry.get_stake("blog.example.com").unwrap().is_none());
+        let batch = registry
+            .get_stakes_batch(&["www.example.com", "blog.example.com"])
+            .unwrap();
+        assert_eq!(batch.len(), 1);
+        assert!(batch.contains_key("www.example.com"));
     }
 
     #[test]
