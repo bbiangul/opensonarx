@@ -15,9 +15,9 @@ pub mod types;
 pub use earnings::{EarningsSnapshot, EarningsTracker};
 pub use error::{Error, ErrorCode, Result};
 pub use evidence::{
-    ClaimExtraction, ClaimExtractor, EvidencePassage, ProposedClaim, ProposedQuote, RequestKind,
-    ResponsivenessJudge, ResponsivenessVerdict, StanceJudge, StanceJudgment, StanceLabel,
-    TermSubstitution,
+    ClaimExtraction, ClaimExtractor, EvidencePassage, PassageClaim, PassageClaimExtractor,
+    ProposedClaim, ProposedQuote, RequestKind, ResponsivenessJudge, ResponsivenessVerdict,
+    StanceJudge, StanceJudgment, StanceLabel, TermSubstitution,
 };
 pub use gateway::*;
 pub use reputation::*;

@@ -3,6 +3,7 @@ pub mod auth;
 pub mod calibration;
 pub mod chat_model;
 pub mod checklist;
+pub mod claims;
 pub mod client;
 pub mod config;
 pub mod creator_ledger;

@@ -103,6 +103,27 @@ pub struct StanceJudgment {
     pub quote: Option<String>,
 }
 
+/// A statement a passage makes, with the span that states it. Produced when
+/// a page enters the index, with no request in view.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PassageClaim {
+    pub text: String,
+    pub quote: String,
+}
+
+/// Reads one passage at ingestion time and lists the statements it makes.
+/// The work happens once per page, so a query can later be served from the
+/// stored claims without calling a model.
+pub trait PassageClaimExtractor: Send + Sync {
+    fn passage_claims(
+        &self,
+        passage: &EvidencePassage,
+        max_claims: usize,
+    ) -> Result<Vec<PassageClaim>>;
+
+    fn model_version(&self) -> String;
+}
+
 /// Reads the request and the passages and proposes claims with quotes.
 pub trait ClaimExtractor: Send + Sync {
     fn extract(&self, query: &str, passages: &[EvidencePassage]) -> Result<ClaimExtraction>;

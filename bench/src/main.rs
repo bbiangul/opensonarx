@@ -15,6 +15,7 @@ mod answer_grade;
 mod answer_live;
 mod beir;
 mod bench_quality;
+mod claim_ingest;
 mod dataset;
 mod dist_sim;
 mod election_polls_bench;
@@ -384,6 +385,49 @@ enum Command {
         input: String,
 
         /// Output JSONL of {"query_id","subject","similarity"}
+        #[arg(long)]
+        output: String,
+    },
+    /// Ingestion-time claims: extract and verify the claims of every
+    /// retained passage in answer-live reports, once per passage
+    ClaimIngest {
+        /// answer-live report; repeatable
+        #[arg(long)]
+        report: Vec<String>,
+
+        #[arg(long, default_value = "openrouter")]
+        provider: String,
+
+        #[arg(long)]
+        model: String,
+
+        #[arg(long, default_value_t = 8)]
+        concurrency: usize,
+
+        /// Output JSONL, one line per passage; an existing file is resumed
+        #[arg(long)]
+        output: String,
+    },
+    /// Corroboration signal from stored claims for each query of answer-live
+    /// reports, with no model call; times the query-side work
+    ClaimSignal {
+        /// Output of claim-ingest
+        #[arg(long)]
+        claims: String,
+
+        /// answer-live report whose queries are looked up; repeatable
+        #[arg(long)]
+        report: Vec<String>,
+
+        #[arg(long)]
+        top_k: Option<usize>,
+
+        #[arg(long)]
+        min_query_similarity: Option<f32>,
+
+        #[arg(long)]
+        min_claim_similarity: Option<f32>,
+
         #[arg(long)]
         output: String,
     },
@@ -1666,6 +1710,43 @@ async fn main() {
         Command::TopicLabel { input, output } => {
             if let Err(error) = topic_label(&input, &output) {
                 eprintln!("topic-label failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::ClaimIngest {
+            report,
+            provider,
+            model,
+            concurrency,
+            output,
+        } => {
+            if let Err(error) =
+                claim_ingest::ingest(&report, &provider, &model, concurrency, &output)
+            {
+                eprintln!("claim-ingest failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::ClaimSignal {
+            claims,
+            report,
+            top_k,
+            min_query_similarity,
+            min_claim_similarity,
+            output,
+        } => {
+            let mut policy = oi_sdk::claims::ClaimPolicy::default();
+            if let Some(value) = top_k {
+                policy.top_k = value;
+            }
+            if let Some(value) = min_query_similarity {
+                policy.min_query_similarity = value;
+            }
+            if let Some(value) = min_claim_similarity {
+                policy.min_claim_similarity = value;
+            }
+            if let Err(error) = claim_ingest::signal(&claims, &report, policy, &output) {
+                eprintln!("claim-signal failed: {error}");
                 std::process::exit(2);
             }
         }
