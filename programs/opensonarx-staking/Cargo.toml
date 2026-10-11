@@ -8,7 +8,9 @@ publish = false
 solana-program = "2"
 borsh = { version = "1", features = ["derive"] }
 thiserror = "2"
-spl-token = "6"
+# Without `no-entrypoint` the SPL Token crate exports its own `entrypoint`
+# symbol, which collides with this program's when the cdylib is linked.
+spl-token = { version = "6", features = ["no-entrypoint"] }
 
 [lib]
 crate-type = ["cdylib", "lib"]

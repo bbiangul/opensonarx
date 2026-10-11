@@ -17,7 +17,7 @@ fn ceil_div(n: u128, d: u128) -> Result<u64> {
     if d == 0 {
         return Err(invalid("no viable denominator"));
     }
-    let value = n / d + u128::from(n % d != 0);
+    let value = n / d + u128::from(!n.is_multiple_of(d));
     u64::try_from(value).map_err(|_| invalid("amount overflow"))
 }
 

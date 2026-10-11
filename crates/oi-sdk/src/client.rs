@@ -1541,6 +1541,7 @@ impl OpenSonarXClient {
         indexed
     }
 
+    #[allow(clippy::type_complexity)]
     fn partition_crawl_flights(
         &self,
         urls: Vec<String>,

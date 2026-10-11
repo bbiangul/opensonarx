@@ -774,7 +774,8 @@ pub fn assemble_answer(
     } else if contested {
         (
             "insufficient_evidence",
-            "The retained sources disagree; see the supporting and contradicting citations.".to_string(),
+            "The retained sources disagree; see the supporting and contradicting citations."
+                .to_string(),
             Some("The retained text contains a contradiction.".to_string()),
         )
     } else if corroborated > 0 && !checklist.critical_missing {
@@ -787,14 +788,14 @@ pub fn assemble_answer(
                 .collect::<Vec<_>>()
                 .join(" "),
             (corroborated < claims.len()).then(|| {
-                "Not every listed claim is corroborated; see the status of each one."
-                    .to_string()
+                "Not every listed claim is corroborated; see the status of each one.".to_string()
             }),
         )
     } else {
         (
             "insufficient_evidence",
-            "Evidence or required checks are insufficient; see the pending requirements.".to_string(),
+            "Evidence or required checks are insufficient; see the pending requirements."
+                .to_string(),
             None,
         )
     };

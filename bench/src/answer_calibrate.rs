@@ -442,6 +442,7 @@ fn evaluate(
 /// The table's bins are taken as they are; the baseline is the base rate of
 /// the outcomes the table was fitted on. The table is rewritten with the
 /// replication recorded and `accepted` set by the replication alone.
+#[allow(clippy::too_many_arguments)]
 pub fn replicate(
     table_path: &str,
     test: &[String],

@@ -41,6 +41,7 @@ struct ProbeReport {
     engines: Vec<EngineSummary>,
 }
 
+#[allow(clippy::too_many_arguments, clippy::redundant_iter_cloned)]
 pub fn run(
     engine_names: &str,
     queries: &[String],

@@ -300,6 +300,7 @@ struct OllamaJudgmentArtifact {
     limitations: Vec<String>,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn create_pool(
     manifest_path: &str,
     opensonarx_report_path: &str,

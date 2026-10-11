@@ -350,7 +350,7 @@ fn search_with_engines_timeout(
         {
             Ok(mut output) => {
                 sanitize_provider_batch(query, &mut output.2, &output.1);
-                let required_topic_hits = limit.min(3).max(1);
+                let required_topic_hits = limit.clamp(1, 3);
                 let healthy = output
                     .2
                     .iter()
@@ -509,7 +509,7 @@ fn search_with_engines_timeout(
 }
 
 fn provider_batch_is_deep_topical(query: &str, results: &[SearchResultItem], limit: usize) -> bool {
-    let required_topic_hits = limit.min(3).max(1);
+    let required_topic_hits = limit.clamp(1, 3);
     results
         .iter()
         .filter(|result| provider_surface_topic_relevant(query, result))

@@ -418,7 +418,7 @@ fn score(contract: &SharedContract, results: &[ResultSnapshot]) -> ContractMetri
         .collect::<HashSet<_>>()
         .len();
     let top3_diversity_ok = (contract.min_distinct_domains_top3 > 0)
-        .then(|| top3_distinct_domains >= contract.min_distinct_domains_top3);
+        .then_some(top3_distinct_domains >= contract.min_distinct_domains_top3);
     let top3_has_no_forbidden_url = (!contract.top3_forbidden_url.is_empty()).then(|| {
         top3.iter()
             .all(|result| !contains_any(&result.url, &contract.top3_forbidden_url))
@@ -544,8 +544,8 @@ fn print_table(report: &MarketComparisonReport) {
         report.opensonarx_losses
     );
     println!(
-        "{:<31} {:<15} {:>8} {:>8} {:>8}  {}",
-        "case", "intent", "Google", "OpenSX", "delta", "answer"
+        "{:<31} {:<15} {:>8} {:>8} {:>8}  answer",
+        "case", "intent", "Google", "OpenSX", "delta"
     );
     for comparison in &report.comparisons {
         println!(

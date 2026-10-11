@@ -219,6 +219,9 @@ pub trait SearchEngine: Send + Sync {
     /// from a legitimate empty result set. Existing engines default to a
     /// successful call; network adapters should override this so resilience
     /// layers never infer provider health from result cardinality.
+    // The error carries no detail on purpose: callers only need "the
+    // provider failed", and each adapter logs its own reason.
+    #[allow(clippy::result_unit_err)]
     fn search_checked(
         &self,
         query: &str,
@@ -246,6 +249,7 @@ pub trait SearchEngine: Send + Sync {
     }
 
     /// Parameterized counterpart of [`SearchEngine::search_checked`].
+    #[allow(clippy::result_unit_err)]
     fn search_with_params_checked(
         &self,
         query: &str,

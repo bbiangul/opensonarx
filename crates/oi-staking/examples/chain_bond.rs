@@ -15,13 +15,13 @@
 //! bond says someone put money behind a domain, not that they own it.
 
 use oi_staking::solana::SolanaStakeRegistry;
-use oi_types::traits::StakeRegistry;
 use oi_types::StakeInfo;
+use oi_types::traits::StakeRegistry;
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::commitment_config::CommitmentConfig;
 use solana_sdk::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
-use solana_sdk::signature::{read_keypair_file, Signer};
+use solana_sdk::signature::{Signer, read_keypair_file};
 use solana_sdk::transaction::Transaction;
 use solana_sdk::{system_program, sysvar};
 use std::collections::HashMap;
@@ -90,10 +90,8 @@ fn run() -> Result<(), String> {
                 .map_err(|error| format!("--lamports: {error}"))?;
             let payer = read_keypair_file(required(&flags, "keypair")?)
                 .map_err(|error| format!("--keypair: {error}"))?;
-            let rpc = RpcClient::new_with_commitment(
-                rpc_url.to_string(),
-                CommitmentConfig::confirmed(),
-            );
+            let rpc =
+                RpcClient::new_with_commitment(rpc_url.to_string(), CommitmentConfig::confirmed());
             let instruction = Instruction {
                 program_id,
                 accounts: vec![
