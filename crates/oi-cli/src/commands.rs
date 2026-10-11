@@ -451,12 +451,12 @@ fn search_with_answer(
 fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) {
     output::print_item(response, &config.format, |response| {
         println!(
-            "ANSWER [{} | {}]",
+            "EVIDENCE [{} | {}]",
             response.answer.status, response.answer.uncertainty_mode
         );
         println!("{}", response.answer.summary);
         if let Some(warning) = &response.answer.warning {
-            println!("Aviso: {warning}");
+            println!("Warning: {warning}");
         }
         for (index, claim) in response.answer.claims.iter().enumerate() {
             println!("Claim {} [{}]: {}", index + 1, claim.status, claim.text);
@@ -468,7 +468,7 @@ fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) 
                 if let Some(excerpt) = &citation.evidence_excerpt
                     && excerpt != &claim.text
                 {
-                    println!("      Evidência: {excerpt}");
+                    println!("      Quote: {excerpt}");
                 }
             }
         }
@@ -476,9 +476,25 @@ fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) 
         output::print_list(
             &response.results,
             &config.format,
-            &["RANK", "RETR", "REL", "DEC", "UNCERTAINTY", "URL", "SOURCE"],
+            &[
+                "RANK",
+                "RETR",
+                "REL",
+                "DEC",
+                "UNCERTAINTY",
+                "BOND",
+                "URL",
+                "SOURCE",
+            ],
             |result| {
                 let decision = result.decision.as_ref();
+                // The bond behind the source, as read from the stake
+                // registry; "-" when nobody has bonded anything to it.
+                let bond = if result.stake_truth > 0 {
+                    format!("{} ({})", result.stake_truth, result.trust_verdict)
+                } else {
+                    "-".to_string()
+                };
                 vec![
                     result.rank.to_string(),
                     decision
@@ -491,6 +507,7 @@ fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) 
                     decision
                         .map(|value| value.uncertainty_mode.clone())
                         .unwrap_or_else(|| "not_run".to_string()),
+                    bond,
                     result.url.clone(),
                     result.source.clone(),
                 ]

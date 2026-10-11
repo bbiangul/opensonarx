@@ -487,7 +487,7 @@ pub fn assemble_answer(
                 uncertainty_mode: "not_applicable".to_string(),
                 average_ignorance: None,
                 warning: Some(
-                    "Destino indicado pelo modelo a partir dos resultados; não é verificação de titularidade do site."
+                    "Destination chosen by the model from the results; this does not verify who owns the site."
                         .to_string(),
                 ),
                 calibration_id: None,
@@ -754,28 +754,28 @@ pub fn assemble_answer(
         if extraction.request_kind == RequestKind::Question {
             (
                 "insufficient_evidence",
-                "Nenhuma afirmação pôde ser localizada literalmente no texto retido.".to_string(),
+                "No claim could be located verbatim in the retained text.".to_string(),
                 None,
             )
         } else {
             (
                 "results_only",
-                "Resultados preservados sem sintetizar uma conclusão.".to_string(),
+                "Results kept as they are; no conclusion was assembled.".to_string(),
                 None,
             )
         }
     } else if on_request == 0 {
         (
             "insufficient_evidence",
-            "O texto retido não responde à pergunta como foi feita; as afirmações listadas são relacionadas, não a resposta."
+            "The retained text does not answer the request as asked; the listed claims are related, not the answer."
                 .to_string(),
             None,
         )
     } else if contested {
         (
             "insufficient_evidence",
-            "As fontes retidas divergem; veja as citações de apoio e de contradição.".to_string(),
-            Some("Há contradição no texto retido.".to_string()),
+            "The retained sources disagree; see the supporting and contradicting citations.".to_string(),
+            Some("The retained text contains a contradiction.".to_string()),
         )
     } else if corroborated > 0 && !checklist.critical_missing {
         (
@@ -787,14 +787,14 @@ pub fn assemble_answer(
                 .collect::<Vec<_>>()
                 .join(" "),
             (corroborated < claims.len()).then(|| {
-                "Nem todas as afirmações listadas são a resposta corroborada; veja o status de cada uma."
+                "Not every listed claim is corroborated; see the status of each one."
                     .to_string()
             }),
         )
     } else {
         (
             "insufficient_evidence",
-            "As evidências ou verificações obrigatórias são insuficientes; veja os requisitos pendentes.".to_string(),
+            "Evidence or required checks are insufficient; see the pending requirements.".to_string(),
             None,
         )
     };
@@ -866,8 +866,8 @@ pub fn apply_completeness(
         answer.status = "extractive".to_string();
     } else {
         answer.warning = Some(match complete {
-            Some(false) => "Resposta parcial: não cobre toda a pergunta; as citações apoiam somente as afirmações listadas.",
-            _ => "Completude não verificada: não trate as afirmações listadas como uma resposta completa.",
+            Some(false) => "Partial: this does not cover the whole request; the citations support only the listed claims.",
+            _ => "Coverage not verified: do not treat the listed claims as a complete answer.",
         }.to_string());
     }
 }
@@ -893,7 +893,7 @@ pub fn results_only(policy: &AnswerPolicy) -> (SearchAnswer, EvidenceChecklist) 
         SearchAnswer {
             status: "results_only".to_string(),
             intent: RequestKind::Unclassified.as_str().to_string(),
-            summary: "Resultados preservados sem sintetizar uma conclusão.".to_string(),
+            summary: "Results kept as they are; no conclusion was assembled.".to_string(),
             claims: Vec::new(),
             uncertainty_mode: "not_applicable".to_string(),
             average_ignorance: None,
@@ -1416,7 +1416,7 @@ mod tests {
             &AnswerPolicy::default(),
         );
         assert_eq!(answer.status, "insufficient_evidence");
-        assert!(answer.summary.contains("não responde à pergunta"));
+        assert!(answer.summary.contains("does not answer the request"));
         assert_eq!(answer.claims.len(), 1, "the related claim stays visible");
         assert_eq!(answer.claims[0].status, "off_request");
         assert_eq!(answer.claims[0].citations.len(), 2);
