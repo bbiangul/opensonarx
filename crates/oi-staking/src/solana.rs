@@ -19,7 +19,9 @@ struct StakeAccount {
     cooldown_until: i64,
 }
 
-/// Mirrors the on-chain StakeAccountV2 layout.
+/// Mirrors the on-chain StakeAccountV2 layout. The V2 reader below is not
+/// wired to a caller yet; only V1 bonds are read today.
+#[allow(dead_code)]
 #[derive(BorshDeserialize, Debug)]
 struct StakeAccountV2 {
     is_initialized: bool,
@@ -44,7 +46,13 @@ pub struct SolanaStakeRegistry {
 impl SolanaStakeRegistry {
     pub fn new(rpc_url: &str, program_id: Pubkey) -> Self {
         Self {
-            rpc: RpcClient::new(rpc_url.to_string()),
+            // `confirmed`, not the default `finalized`: a bond should be
+            // readable as soon as the cluster has confirmed it, not some
+            // thirty slots later.
+            rpc: RpcClient::new_with_commitment(
+                rpc_url.to_string(),
+                solana_sdk::commitment_config::CommitmentConfig::confirmed(),
+            ),
             program_id,
         }
     }
@@ -55,6 +63,7 @@ impl SolanaStakeRegistry {
         pda
     }
 
+    #[allow(dead_code)]
     fn derive_pda_v2(&self, domain: &str, staker: &Pubkey) -> Pubkey {
         let (pda, _) = Pubkey::find_program_address(
             &[STAKE_SEED, domain.as_bytes(), staker.as_ref()],
@@ -82,6 +91,7 @@ impl SolanaStakeRegistry {
         }
     }
 
+    #[allow(dead_code)]
     fn read_account_v2(&self, domain: &str, staker: &Pubkey) -> Result<Option<StakeAccountV2>> {
         let pda = self.derive_pda_v2(domain, staker);
         match self.rpc.get_account_data(&pda) {
@@ -118,6 +128,7 @@ impl SolanaStakeRegistry {
         }
     }
 
+    #[allow(dead_code)]
     fn account_v2_to_info(account: StakeAccountV2) -> StakeInfo {
         let cooldown = if account.cooldown_until > 0 {
             Some(account.cooldown_until)

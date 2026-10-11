@@ -308,7 +308,16 @@ pub fn search(
                 output::print_list(
                     &items,
                     &config.format,
-                    &["RANK", "RETR", "REL", "DEC", "UNCERTAINTY", "URL", "SOURCE"],
+                    &[
+                        "RANK",
+                        "RETR",
+                        "REL",
+                        "DEC",
+                        "UNCERTAINTY",
+                        "BOND",
+                        "URL",
+                        "SOURCE",
+                    ],
                     |r| {
                         let decision = r.decision.as_ref();
                         vec![
@@ -323,6 +332,7 @@ pub fn search(
                             decision
                                 .map(|value| value.uncertainty_mode.clone())
                                 .unwrap_or_else(|| "not_run".to_string()),
+                            bond_label(r),
                             r.url.clone(),
                             r.source.clone(),
                         ]
@@ -448,6 +458,16 @@ fn search_with_answer(
     }
 }
 
+/// The bond behind a result's source, as read from the stake registry, in
+/// the registry's base units (lamports for a bond read from Solana). "-" when
+/// nobody has bonded anything to it.
+fn bond_label(result: &oi_types::SearchResultItem) -> String {
+    if result.stake_truth == 0 {
+        return "-".to_string();
+    }
+    result.stake_truth.to_string()
+}
+
 fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) {
     output::print_item(response, &config.format, |response| {
         println!(
@@ -488,13 +508,7 @@ fn print_answered_search(config: &CliConfig, response: &oi_sdk::AnsweredSearch) 
             ],
             |result| {
                 let decision = result.decision.as_ref();
-                // The bond behind the source, as read from the stake
-                // registry; "-" when nobody has bonded anything to it.
-                let bond = if result.stake_truth > 0 {
-                    format!("{} ({})", result.stake_truth, result.trust_verdict)
-                } else {
-                    "-".to_string()
-                };
+                let bond = bond_label(result);
                 vec![
                     result.rank.to_string(),
                     decision

@@ -84,7 +84,12 @@ stake transaction to a search result carrying that stake:
 cargo test --manifest-path tests/integration/Cargo.toml --test solana_e2e
 ```
 
-**Deployment status:** see [docs/hackathon/DEVNET.md](docs/hackathon/DEVNET.md).
+**Deployment status.** The program builds to SBF and has been deployed to a
+local validator, where a real `Stake` transaction bonded SOL to a domain, the
+stake account was read back from the chain, and the search showed the bond.
+It is not on devnet yet: the faucet refused the deploy wallet on 11 October.
+Details and the one-command reproduction are in
+[docs/hackathon/DEVNET.md](docs/hackathon/DEVNET.md).
 
 **What the bond does and does not do.** A bond never raises a result's rank
 and never buys a probability. It is shown next to the source (the `BOND`

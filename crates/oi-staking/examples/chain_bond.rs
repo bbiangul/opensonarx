@@ -23,6 +23,8 @@ use solana_sdk::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::{Signer, read_keypair_file};
 use solana_sdk::transaction::Transaction;
+// solana-sdk 2.x re-exports these under deprecated paths.
+#[allow(deprecated)]
 use solana_sdk::{system_program, sysvar};
 use std::collections::HashMap;
 use std::str::FromStr;

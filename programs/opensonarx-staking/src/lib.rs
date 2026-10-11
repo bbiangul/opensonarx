@@ -23,7 +23,7 @@ use solana_program::{
 use instruction::StakingInstruction;
 use state::{StakeAccount, STAKE_SEED};
 
-solana_program::declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+solana_program::declare_id!("5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c");
 
 entrypoint!(process_instruction);
 
