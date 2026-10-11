@@ -784,6 +784,84 @@ afirmações guardadas, não vê a consulta, e o resultado fica guardado.
   consultas; um node faria isso para toda afirmação que entra, o que aqui
   seriam 12 mil chamadas.
 
+### Resultado
+
+O modelo julgou as 320 afirmações de referência que passam no corte de
+0,725 (das 480 consultas), 6.445 pares: 153 `same`, 44 `contradicts`, 6.248
+`different`. Nenhuma chamada falhou; cada uma levou 3,3 s na mediana. A
+leitura do selo a partir das relações guardadas leva 0,2 ms.
+
+**O selo julgado não se sustentou.** Respostas diretas, erradas / total:
+
+| | Com selo | Sem selo | Diferença | Cobertura |
+|---|---|---|---|---|
+| **Teste, selo julgado pelo modelo** | 3 / 31 (9,7%) | 28 / 146 (19,2%) | +9,5 pontos [−3,8, +20,9] | 18% |
+| Teste, selo por semelhança (o atual) | 5 / 61 (8,2%) | 26 / 116 (22,4%) | +14,2 pontos [+4,1, +24,3] | 34% |
+| Desenvolvimento, selo julgado | 2 / 33 (6,1%) | 21 / 134 (15,7%) | +9,6 pontos [−1,2, +19,3] | 20% |
+| Desenvolvimento, selo por semelhança | 6 / 61 (9,8%) | 17 / 106 (16,0%) | +6,2 pontos [−4,3, +16,2] | 37% |
+
+- No teste o intervalo do selo julgado inclui zero. Pelo critério do passo
+  1 ele não passa, e cobre metade das respostas que o selo atual cobre.
+- O selo atual repete no teste o número já publicado (5 de 61 contra 26 de
+  116). Trocar o corte de semelhança pelo julgamento do modelo não melhorou
+  o selo. O julgamento **não** foi ligado à ingestão do produto.
+- O selo atual, no desenvolvimento, também tem intervalo que inclui zero;
+  isso já estava no passo 1 (os limiares foram escolhidos ali).
+
+**Conferência do juiz, por leitura minha, sem ver o julgamento** (120 pares
+do teste):
+
+| Modelo \ leitor | same | contradicts | different |
+|---|---|---|---|
+| same (60) | 47 | 0 | 13 |
+| contradicts (0) | 0 | 0 | 0 |
+| different (60) | 1 | 0 | 59 |
+
+- Dos 60 pares que o modelo julgou iguais, concordei em 47 (78%). Dos 60
+  que ele julgou não iguais, achei 1 igual.
+- As 13 discordâncias vêm de 5 afirmações de referência. Nove são da mesma
+  ("a principal diferença entre mudança química e física é o que acontece
+  com a composição"), contra afirmações que definem só um dos dois lados;
+  eu marquei `different` em todas, e outro leitor poderia marcar `same`.
+  Três são casos de fronteira. Uma é erro claro do modelo: o título de um
+  vídeo do YouTube julgado igual a "a proibição de Baise-moi foi suspensa
+  em 2001".
+- Nenhum par `contradicts` caiu na amostra, então a leitura não diz nada
+  sobre essa categoria.
+
+**Descritivo, visto depois do resultado:**
+
+- As três respostas erradas com selo julgado no teste: numa, as fontes
+  concordam entre si sobre uma afirmação emoldurada ("segundo a Bíblia, o
+  primeiro homem foi Adão") e a resposta certa era outra; noutra, as fontes
+  concordam e estão certas, e a resposta escrita errou por outro motivo; a
+  terceira é o erro do modelo citado acima. Fontes concordando não é a
+  resposta estar certa.
+- Onde os dois selos coincidem, 0 de 25 respostas erradas no teste e 1 de
+  26 no desenvolvimento. Isso apareceu depois de olhar e não é um resultado:
+  precisaria de uma amostra nova, com a regra escrita antes.
+- Referência contradita por outra família: 12 respostas no teste, 1 errada;
+  13 no desenvolvimento, 2 erradas. Não distingue nada aqui.
+
+### O que fica no código
+
+A interface `ClaimRelationJudge`, a implementação com modelo e o
+armazenamento de relações no índice ficam, com testes, e nada no caminho do
+produto os chama. O selo servido continua sendo o `ingest-claims-v1`.
+
+### Limites do passo 7
+
+- Segundo uso do mesmo conjunto de teste. 31 respostas com selo é pouco: o
+  intervalo é largo demais para dizer que o selo julgado é pior que o
+  atual; o que dá para dizer é que ele não mostrou ser melhor.
+- Um modelo, um texto de pedido, escrito uma vez. Outro modelo ou outra
+  definição de "mesmo fato" pode dar outro resultado.
+- Só as referências das consultas foram julgadas, contra as 20 vizinhas
+  mais próximas de outras famílias. Uma afirmação igual que esteja mais
+  longe que isso no embedding não é vista.
+- A conferência do juiz foi feita por um leitor só (eu), e as amostras de
+  pares se concentram em poucas afirmações de referência.
+
 ### Limites do passo 2
 
 - Todos os nodes num processo só, numa máquina só, em localhost. Não há
@@ -796,6 +874,11 @@ afirmações guardadas, não vê a consulta, e o resultado fica guardado.
 - Passo 2: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-test.json`
   e `ingest-claims-nodes-{1,3}-rerank-test.json`
 - Passo 4: `outputs/validation-20261009/ingest-claims-routing-test.json`
+- Passo 7: `outputs/validation-20261009/ingest-claims-relations.jsonl` (o que
+  o modelo julgou), `ingest-claims-judged-480.json` (o selo por consulta),
+  `ingest-claims-relations-test-{sheet,key,reader-labels}.jsonl` (a leitura
+  cega); `scripts/claim_relation_sheet.py` e o modo `judged` de
+  `scripts/ingest_claims_analysis.py`
 - Passo 6: `outputs/validation-20261009/ingest-claims-routing-page-asis-test.json`
   (junção como estava) e `ingest-claims-routing-page-dedup-test.json`
   (corrigida)

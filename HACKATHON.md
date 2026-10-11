@@ -133,6 +133,13 @@ there are no external stakers.
   queries; dividing by URL hash needs all ten. Centroids learned from the
   stored pages do better (236 of 240, and 227 asking a single shard) but
   are only in the measurement: nodes would have to agree on one set.
+- The label counts sources with a similar claim, not sources judged to
+  agree. We tried replacing the similarity cut with a model's judgment made
+  at ingestion (same fact, contradicts, different). It did not help: on the
+  test answers the judged label was wrong 3 of 31 times against 28 of 146
+  without it, an interval that includes zero, at half the coverage of the
+  current label. It is in the code behind a trait and not in the served
+  path.
 - Nodes checking each other's ingestion work on chain is design, not code.
   What makes it tractable is that the check is mechanical: a quote is in the
   page, or it is not. We measured it with a second node fetching 300 pages

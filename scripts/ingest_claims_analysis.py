@@ -9,6 +9,7 @@ test: score a `claim-signal` output produced with the frozen thresholds
 Usage:
   ingest_claims_analysis.py dev  <signals.json> <labels.jsonl> [<labels.jsonl> ...]
   ingest_claims_analysis.py test <signals.json> <labels.jsonl> [<labels.jsonl> ...] [--pipeline <report.json> ...]
+  ingest_claims_analysis.py judged <claim-judged.json> <labels.jsonl> [<labels.jsonl> ...]
 
 A labels file is matched to a report by name: `answer-live-<x>-reader-labels.jsonl`
 labels the queries of `answer-live-haiku-5.5-<x>.json`.
@@ -138,6 +139,46 @@ def test(signals_path, args):
         print(f"agreement with the query-time label (ingest, query-time): both {table[(True, True)]}, ingest only {table[(True, False)]}, query-time only {table[(False, True)]}, neither {table[(False, False)]}")
 
 
+def interval(pairs):
+    random.seed(20261011)
+    diffs = []
+    for _ in range(10000):
+        sample = [random.choice(pairs) for _ in pairs]
+        s1, _, sr1, s0, _, sr0 = rates(sample)
+        if s1 and s0:
+            diffs.append(sr0 - sr1)
+    diffs.sort()
+    return diffs[int(0.025 * len(diffs))], diffs[int(0.975 * len(diffs)) - 1]
+
+
+def judged(signals_path, label_paths):
+    """Score a `claim-judged` output: the judged label and, on the same
+    answers, the embedding-similarity label it is compared with."""
+    signals = json.load(open(signals_path))
+    data = rows(signals, load_labels(label_paths))
+    print(f"answers: {len(data)}; right {sum(ok for _, ok in data)}; judge {signals['summary']['judge']}")
+    for name, field in (("judged same by the model", "judged_corroborated"), ("similar by embedding", "similar_corroborated")):
+        pairs = [(r[field], ok) for r, ok in data]
+        n1, e1, r1, n0, e0, r0 = rates(pairs)
+        low, high = interval(pairs)
+        print(f"{name}:")
+        print(f"  with label:    {e1}/{n1} wrong ({r1:.1%})")
+        print(f"  without label: {e0}/{n0} wrong ({r0:.1%})")
+        print(f"  difference {r0 - r1:+.1%}, bootstrap 95% [{low:+.1%}, {high:+.1%}]; coverage {n1}/{len(pairs)} ({n1 / len(pairs):.0%})")
+    table = {}
+    for r, ok in data:
+        key = (r["judged_corroborated"], r["similar_corroborated"])
+        n, wrong = table.get(key, (0, 0))
+        table[key] = (n + 1, wrong + (not ok))
+    for key, label in (((True, True), "both"), ((True, False), "judged only"), ((False, True), "similar only"), ((False, False), "neither")):
+        n, wrong = table.get(key, (0, 0))
+        print(f"  {label}: {wrong}/{n} wrong")
+    contested = [ok for r, ok in data if r["contested"]]
+    print(f"contested (another family contradicts the head): {sum(not ok for ok in contested)}/{len(contested)} wrong")
+    both = [ok for r, ok in data if r["contested"] and r["judged_corroborated"]]
+    print(f"  of which also judged-corroborated: {sum(not ok for ok in both)}/{len(both)} wrong")
+
+
 if __name__ == "__main__":
     mode, signals_path, rest = sys.argv[1], sys.argv[2], sys.argv[3:]
-    dev(signals_path, rest) if mode == "dev" else test(signals_path, rest)
+    {"dev": dev, "test": test, "judged": judged}[mode](signals_path, rest)
