@@ -15,6 +15,7 @@ mod answer_grade;
 mod answer_live;
 mod beir;
 mod bench_quality;
+mod claim_audit;
 mod claim_ingest;
 mod claim_nodes;
 mod claim_routing;
@@ -461,6 +462,24 @@ enum Command {
         /// their vectors) instead of its page search
         #[arg(long)]
         claims_protocol: bool,
+
+        #[arg(long)]
+        output: String,
+    },
+    /// How many of an honest node's stored claims a second node can confirm
+    /// by fetching each page itself and looking for the quote
+    ClaimAudit {
+        /// Output of claim-ingest
+        #[arg(long)]
+        claims: String,
+
+        /// How many URLs to audit, taken in order of the hash of the URL
+        #[arg(long, default_value = "300")]
+        urls: usize,
+
+        /// Pages fetched at the same time
+        #[arg(long, default_value = "8")]
+        concurrency: usize,
 
         #[arg(long)]
         output: String,
@@ -1825,6 +1844,17 @@ async fn main() {
             .await
             {
                 eprintln!("claim-nodes failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::ClaimAudit {
+            claims,
+            urls,
+            concurrency,
+            output,
+        } => {
+            if let Err(error) = claim_audit::run(&claims, urls, concurrency, &output) {
+                eprintln!("claim-audit failed: {error}");
                 std::process::exit(2);
             }
         }

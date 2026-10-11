@@ -522,6 +522,51 @@ não tem nada, o node devolveu zero famílias.
   `assunto/3` não se sincronizam por esse caminho.
 - Recompensa e punição na cadeia pelo trabalho de ingestão.
 
+## Passo 5: conferir uma afirmação buscando a página por conta própria
+
+### Pergunta
+
+Hoje a réplica confere a citação no texto da página que o próprio node de
+origem mandou. Um node desonesto pode mandar página e afirmações inventadas
+que combinam entre si. A defesa é o conferente buscar a página na web por
+conta própria. A pergunta é quanto isso custa a um node **honesto**: se a
+página mudou, saiu do ar ou é servida diferente a cada visitante, as
+afirmações honestas dele falham na conferência. Qualquer punição na cadeia
+por "citação não encontrada" depende desse número.
+
+### Protocolo (registrado antes de rodar)
+
+- **Dados.** As 12.396 afirmações de `ingest-claims-live-480.jsonl`,
+  extraídas em 10 e 11 de outubro por um caminho honesto; todas tiveram a
+  citação conferida no trecho na hora da extração.
+- **Amostra.** Os URLs distintos em ordem do SHA-256 do URL; os 300
+  primeiros. Entram todas as afirmações desses URLs. A ordem por hash não
+  depende de nada que eu tenha visto nos resultados.
+- **Conferente.** `oi_crawl::Distiller::crawl(url)`, o caminho que o produto
+  usa para buscar e limpar uma página, rodado agora (um a dois dias depois
+  da extração). Nenhum modelo. Uma tentativa por URL, 30 s de limite.
+- **Conferência.** `locate_quote` (a função que a réplica usa, mínimo de 20
+  caracteres) sobre o texto limpo da página inteira que o conferente
+  buscou. Como leitura secundária, a mesma conferência trecho a trecho, que
+  é como a réplica faz.
+- **Controle: afirmação que não é da página.** Para cada URL auditado, as
+  citações do próximo URL na mesma ordem que seja de outra família de fonte
+  são conferidas contra esta página. Elas deveriam falhar. Isso mede se a
+  conferência distingue alguma coisa.
+- **Medidas.** (a) fração dos URLs que o conferente conseguiu buscar;
+  (b) entre os buscados, fração das afirmações honestas cuja citação foi
+  encontrada, e fração dos URLs com todas encontradas; (c) fração das
+  citações de outra página que foram aceitas. Intervalos de 95% por
+  reamostragem de URLs.
+- **Leitura combinada antes de ver o resultado.** Punir por afirmação
+  isolada só se sustenta se (b) for pelo menos 99% e (c) no máximo 1%.
+  Abaixo disso a conferência serve como sinal estatístico (reputação,
+  amostragem repetida, vários conferentes), não como prova contra uma
+  afirmação. Nenhum limiar é ajustado depois.
+- **O que esta medição não é.** Não simula um node desonesto. Não diz se a
+  afirmação é verdadeira, só se a citação está na página. Um conferente só,
+  de um endereço só, num momento só.
+
 ### Limites do passo 2
 
 - Todos os nodes num processo só, numa máquina só, em localhost. Não há
