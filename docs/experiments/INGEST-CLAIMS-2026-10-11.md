@@ -318,11 +318,103 @@ precisão dele é um ajuste de índice que ficou por fazer.
 
 ### O que continua faltando
 
-- Persistência das afirmações no disco e replicação entre nodes.
+- Persistência das afirmações no disco e replicação entre nodes (feitas
+  no passo 4).
 - Ligar a extração ao crawler: hoje a ingestão é acionada pelo banco de
   testes.
 - Nodes em máquinas diferentes. Tudo aqui é um processo em localhost.
 - Conferência do trabalho de um node por outro, e o que vai na cadeia.
+
+## Passo 4: como dividir o trabalho entre nodes
+
+Não registrado antes; números contra os rótulos são descritivos.
+
+### Como o código divide hoje
+
+- **Por assunto.** Cada trecho é classificado num de dez compartimentos de
+  assunto (`TopicRouter`: o embedding do trecho contra o embedding da
+  descrição de cada assunto). Um node escolhe quais compartimentos serve e
+  os anuncia.
+- **Consulta.** O node de entrada busca nos seus compartimentos e repassa a
+  consulta a um node de cada um dos outros compartimentos que o roteador
+  aponta para aquela consulta (três por padrão).
+- **Réplica.** Um compartimento com menos de três nodes é copiado para
+  outros.
+- **Não há divisão por localização** em lugar nenhum do código. Existe uma
+  função de sub-compartimentos por hash dentro de cada assunto, mas nada a
+  usa.
+
+### Medição: assunto contra hash
+
+As 12.396 afirmações foram divididas em dez compartimentos de duas formas,
+e cada consulta de teste perguntou a só N deles. A referência é a varredura
+exaustiva de todas as afirmações.
+
+| Compartimentos consultados | Por assunto: 20 mais próximas achadas | Por assunto: mesmo selo | Por hash: 20 mais próximas achadas | Por hash: mesmo selo |
+|---|---|---|---|---|
+| 1 de 10 | 43% | 205 de 240 | 9% | 163 de 240 |
+| 2 de 10 | 63% | 223 de 240 | 17% | 167 de 240 |
+| 3 de 10 | 75% | 232 de 240 | 27% | 175 de 240 |
+| 5 de 10 | 86% | 237 de 240 | 47% | 193 de 240 |
+| 10 de 10 | 96% | 240 de 240 | 97% | 240 de 240 |
+
+O selo contra os rótulos do teste:
+
+| Divisão e consulta | Com selo, erradas | Sem selo, erradas | Diferença |
+|---|---|---|---|
+| Varredura exaustiva | 6 de 65 | 25 de 112 | +13,1 (+2,9 a +23,4) |
+| Assunto, 1 de 10 | 2 de 38 | 29 de 139 | +15,6 (+4,9 a +24,8) |
+| Assunto, 3 de 10 | 6 de 59 | 25 de 118 | +11,0 (+0,4 a +21,2) |
+| Assunto, 5 de 10 | 6 de 63 | 25 de 114 | +12,4 (+2,0 a +22,6) |
+| Hash, 3 de 10 | 2 de 11 | 29 de 166 | −0,7 (−26,4 a +20,2) |
+| Hash, 5 de 10 | 3 de 26 | 28 de 151 | +7,0 (−7,3 a +19,9) |
+
+- **Dividir por assunto permite perguntar a poucos nodes.** Com 3 de 10, o
+  selo sai igual ao exato em 232 de 240 consultas e continua separando certo
+  de errado. O que se perde é cobertura: menos respostas recebem o selo (59
+  contra 65).
+- **Dividir por hash obriga a perguntar a todos.** Nada na consulta indica
+  qual compartimento tem o que ela precisa; com 3 de 10 o sinal some.
+- **Os compartimentos por assunto ficam desbalanceados.** "news" recebeu
+  3.368 afirmações e "education" 394. O roteador usa só a descrição de cada
+  assunto como centro; já tinha concordado com o meu rótulo de assunto em
+  apenas 40% das consultas (READER-GRADED-SUBJECTS).
+
+### O que foi construído na rede
+
+- **Gravação em disco.** As afirmações de um node são salvas com o índice
+  (`claims.bin`) e reconstruídas na carga.
+- **Réplica.** Quando um node copia páginas de outro, as afirmações dessas
+  páginas vão junto.
+- **Conferência por quem recebe.** O node que recebe só guarda a afirmação se
+  encontrar a citação no texto da página que ele mesmo tem. A família de
+  fonte é derivada da URL por quem recebe; o que o remetente escreveu não é
+  usado. Teste com dois nodes reais: o primeiro guarda uma afirmação honesta
+  e uma inventada; o segundo replica e fica só com a honesta, e passa a
+  respondê-la.
+- Para isso, o conferidor de citação e a função de família de fonte desceram
+  para `oi-types`, onde todas as camadas usam a mesma versão.
+
+### Defeito encontrado na réplica de páginas
+
+O índice guarda o texto de cada trecho com o título na frente, e era esse
+texto que ia para a réplica. O hash de conteúdo, calculado sem o título,
+deixava de bater, e o node que recebia **rejeitava toda página que tivesse
+título**. Corrigido: a réplica recebe o trecho como foi ingerido.
+
+Fica aberto um segundo ponto, visto no mesmo teste: a marca de progresso da
+réplica avança mesmo quando os trechos são rejeitados, então o node não
+tenta de novo.
+
+### O que continua faltando na rede
+
+- A extração de afirmações ainda não está ligada ao crawler.
+- Afirmações extraídas depois de a página já ter sido replicada não chegam
+  às réplicas: hoje elas só viajam junto com a página.
+- Quem recebe confia no texto da página que o outro node mandou. Conferir a
+  página exige buscá-la de novo na web.
+- Nodes em máquinas diferentes. Tudo aqui roda em localhost.
+- Recompensa e punição na cadeia pelo trabalho de ingestão.
 
 ### Limites do passo 2
 
@@ -335,6 +427,7 @@ precisão dele é um ajuste de índice que ficou por fazer.
 
 - Passo 2: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-test.json`
   e `ingest-claims-nodes-{1,3}-rerank-test.json`
+- Passo 4: `outputs/validation-20261009/ingest-claims-routing-test.json`
 - Passo 3: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-protocol-test.json`;
   a varredura exaustiva está no campo `exact` de `ingest-claims-signal-test.json`
 - Afirmações: `outputs/validation-20261009/ingest-claims-live-480.jsonl`

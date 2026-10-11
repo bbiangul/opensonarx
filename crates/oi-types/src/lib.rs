@@ -8,8 +8,10 @@ pub mod evidence;
 pub mod facts;
 pub mod gateway;
 pub mod proto;
+pub mod quote;
 pub mod reputation;
 pub mod shard;
+pub mod source;
 pub mod traits;
 pub mod types;
 

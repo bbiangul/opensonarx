@@ -334,7 +334,9 @@ pub async fn run_event_loop(
             EventAction::IngestReplicatedChunks { peer, response } => {
                 let latest_seq = response.latest_seq;
                 if let Some(idx) = &index {
-                    let received = convert_proto_chunks_to_content_chunks(&response.chunks);
+                    let (claim_documents, page_documents): (Vec<_>, Vec<_>) =
+                        response.chunks.into_iter().partition(is_claim_document);
+                    let received = convert_proto_chunks_to_content_chunks(&page_documents);
                     let received_count = received.len();
                     let chunks = verify_replicated_chunks(received, idx.dim());
                     let rejected = received_count - chunks.len();
@@ -353,6 +355,28 @@ pub async fn run_event_loop(
                                 "Replicated {} chunks from {peer} (latest_seq={max_seq})",
                                 chunk_count
                             );
+                            // A claim is kept only if its quote is in the text
+                            // this node now holds for that page: the sender's
+                            // word is not taken for it.
+                            let offered = claim_documents.len();
+                            let accepted =
+                                verify_replicated_claims(claim_documents, idx.dim(), |url| {
+                                    idx.contents_for_url(url).unwrap_or_default()
+                                });
+                            if accepted.len() < offered {
+                                warn!(
+                                    "Rejected {}/{offered} replicated claims from {peer} \
+                                     (quote not found in the replicated page)",
+                                    offered - accepted.len()
+                                );
+                            }
+                            if !accepted.is_empty() {
+                                let count = accepted.len();
+                                match idx.ingest_claims(accepted) {
+                                    Ok(()) => info!("Replicated {count} claims from {peer}"),
+                                    Err(e) => warn!("Failed to store replicated claims: {e}"),
+                                }
+                            }
                             // Record replication received (tit-for-tat) + update watermark.
                             // Untagged batches (sender ingested outside the topic
                             // router) count toward our own primary shard.
@@ -758,6 +782,93 @@ fn verify_replicated_chunks(
             let mut hasher = Sha256::new();
             hasher.update(c.content.as_bytes());
             format!("{:x}", hasher.finalize()) == meta.content_hash
+        })
+        .collect()
+}
+
+/// Shortest quote that locates enough text to back a replicated claim; the
+/// same floor the SDK applies when it first stores one.
+const MIN_CLAIM_QUOTE_CHARS: usize = 20;
+
+fn is_claim_document(document: &DocumentChunk) -> bool {
+    document.metadata.get("content_kind").map(String::as_str) == Some(oi_types::claims::CLAIM_KIND)
+}
+
+/// A stored claim as a replication document. The claim is the content; its
+/// quote, source family and extractor ride in the metadata.
+fn claim_to_document(record: &oi_types::claims::ClaimRecord, vector: &[f32]) -> DocumentChunk {
+    use sha2::{Digest, Sha256};
+    let mut metadata = std::collections::HashMap::new();
+    metadata.insert(
+        "content_kind".to_string(),
+        oi_types::claims::CLAIM_KIND.to_string(),
+    );
+    metadata.insert("quote".to_string(), record.quote.clone());
+    metadata.insert("source_family".to_string(), record.source_family.clone());
+    metadata.insert("extractor".to_string(), record.extractor.clone());
+    let content_hash = format!(
+        "{:x}",
+        Sha256::digest(format!("{}\n{}", record.url, record.claim).as_bytes())
+    );
+    DocumentChunk {
+        chunk_id: format!("claim:{content_hash}"),
+        url: record.url.clone(),
+        content: record.claim.clone(),
+        embedding: vector
+            .iter()
+            .flat_map(|value| value.to_le_bytes())
+            .collect(),
+        metadata,
+        content_hash,
+        seq: 0,
+    }
+}
+
+/// Keep the replicated claims this node can check for itself: the vector has
+/// the index's dimension and the quote occurs verbatim in the retained text
+/// of the same URL, as returned by `contents_of`.
+fn verify_replicated_claims(
+    documents: Vec<DocumentChunk>,
+    expected_dim: usize,
+    contents_of: impl Fn(&str) -> Vec<String>,
+) -> Vec<(oi_types::claims::ClaimRecord, Vec<f32>)> {
+    documents
+        .into_iter()
+        .filter_map(|document| {
+            let vector: Vec<f32> = document
+                .embedding
+                .chunks_exact(4)
+                .map(|bytes| f32::from_le_bytes(bytes.try_into().unwrap()))
+                .collect();
+            if vector.len() != expected_dim || document.content.trim().is_empty() {
+                return None;
+            }
+            let quote = document.metadata.get("quote")?;
+            let located = contents_of(&document.url).iter().find_map(|content| {
+                oi_types::quote::locate_quote(
+                    &oi_types::quote::plain_text(content),
+                    quote,
+                    MIN_CLAIM_QUOTE_CHARS,
+                )
+            })?;
+            // Derived here from the URL; the family the sender wrote in the
+            // metadata is not used.
+            let source_family = oi_types::source::source_family(&document.url);
+            let extractor = document
+                .metadata
+                .get("extractor")
+                .cloned()
+                .unwrap_or_default();
+            Some((
+                oi_types::claims::ClaimRecord {
+                    claim: document.content,
+                    quote: located,
+                    url: document.url,
+                    source_family,
+                    extractor,
+                },
+                vector,
+            ))
         })
         .collect()
 }
@@ -1428,8 +1539,23 @@ async fn handle_behaviour_event(
                     match idx.chunks_since(shard_filter, from_seq, max) {
                         Ok(chunks) => {
                             let latest_seq = idx.current_seq();
-                            let proto_chunks = convert_content_chunks_to_proto(&chunks);
+                            let mut proto_chunks = convert_content_chunks_to_proto(&chunks);
                             let chunk_count = proto_chunks.len() as u64;
+                            // The claims extracted from these pages travel
+                            // with them, so a replica can serve them too.
+                            let urls: std::collections::HashSet<String> = chunks
+                                .iter()
+                                .filter_map(|chunk| chunk.meta.as_ref())
+                                .map(|meta| meta.url.clone())
+                                .collect();
+                            match idx.claims_for_urls(&urls) {
+                                Ok(claims) => proto_chunks.extend(
+                                    claims
+                                        .iter()
+                                        .map(|(record, vector)| claim_to_document(record, vector)),
+                                ),
+                                Err(e) => warn!("Failed to read claims for replication: {e}"),
+                            }
                             let resp = ReplicationResp {
                                 chunks: proto_chunks,
                                 latest_seq,
@@ -1546,6 +1672,79 @@ async fn handle_behaviour_event(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn claim_record(url: &str, claim: &str, quote: &str) -> oi_types::claims::ClaimRecord {
+        oi_types::claims::ClaimRecord {
+            claim: claim.to_string(),
+            quote: quote.to_string(),
+            url: url.to_string(),
+            source_family: "lies.example".to_string(),
+            extractor: "scripted".to_string(),
+        }
+    }
+
+    #[test]
+    fn a_replicated_claim_is_kept_only_if_its_quote_is_in_the_page_this_node_holds() {
+        let url = "https://www.example.org/deserts";
+        let page = "Antarctica is the **largest desert** on Earth. It covers 14 million square km.";
+        let honest = claim_to_document(
+            &claim_record(
+                url,
+                "Antarctica is the largest desert.",
+                "Antarctica is the largest desert on Earth.",
+            ),
+            &[0.1, 0.2, 0.3],
+        );
+        let fabricated = claim_to_document(
+            &claim_record(
+                url,
+                "The Sahara is the largest desert.",
+                "The Sahara is the largest desert on Earth.",
+            ),
+            &[0.1, 0.2, 0.3],
+        );
+        let wrong_dimension = claim_to_document(
+            &claim_record(
+                url,
+                "Antarctica covers 14 million square km.",
+                "It covers 14 million square km.",
+            ),
+            &[0.1, 0.2],
+        );
+        assert!(is_claim_document(&honest));
+
+        let kept =
+            verify_replicated_claims(vec![honest, fabricated, wrong_dimension], 3, |asked| {
+                if asked == url {
+                    vec![page.to_string()]
+                } else {
+                    Vec::new()
+                }
+            });
+        assert_eq!(kept.len(), 1);
+        assert_eq!(kept[0].0.claim, "Antarctica is the largest desert.");
+        // The quote is the span found in this node's text, and the family
+        // comes from the URL, not from what the sender wrote.
+        assert_eq!(
+            kept[0].0.quote,
+            "Antarctica is the largest desert on Earth."
+        );
+        assert_eq!(kept[0].0.source_family, "example.org");
+        assert_eq!(kept[0].1, vec![0.1, 0.2, 0.3]);
+    }
+
+    #[test]
+    fn a_claim_for_a_page_this_node_does_not_hold_is_dropped() {
+        let orphan = claim_to_document(
+            &claim_record(
+                "https://example.org/missing",
+                "A claim.",
+                "A claim that is long enough to count.",
+            ),
+            &[0.0, 0.0, 1.0],
+        );
+        assert!(verify_replicated_claims(vec![orphan], 3, |_| Vec::new()).is_empty());
+    }
     use sha2::{Digest, Sha256};
 
     fn valid_chunk(content: &str, url: &str, domain: &str) -> oi_types::ContentChunk {

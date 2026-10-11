@@ -6,11 +6,14 @@
 
 use crate::hnsw::HnswIndex;
 use oi_types::claims::{ClaimPolicy, ClaimRecord, Corroboration, MatchedClaim};
+use std::collections::HashSet;
 
 pub struct ClaimIndex {
     records: Vec<ClaimRecord>,
     vectors: Vec<Vec<f32>>,
     hnsw: HnswIndex,
+    /// (url, claim) pairs already stored; a claim received twice is kept once.
+    seen: HashSet<(String, String)>,
 }
 
 impl ClaimIndex {
@@ -19,6 +22,7 @@ impl ClaimIndex {
             records: Vec::new(),
             vectors: Vec::new(),
             hnsw: HnswIndex::new(dimension),
+            seen: HashSet::new(),
         }
     }
 
@@ -30,13 +34,38 @@ impl ClaimIndex {
         self.records.is_empty()
     }
 
-    /// Store a claim with the embedding of its text.
-    pub fn add(&mut self, record: ClaimRecord, vector: Vec<f32>) -> Result<(), String> {
+    /// Store a claim with the embedding of its text. Returns `false` when
+    /// the same claim from the same URL is already stored.
+    pub fn add(&mut self, record: ClaimRecord, vector: Vec<f32>) -> Result<bool, String> {
+        if !self.seen.insert((record.url.clone(), record.claim.clone())) {
+            return Ok(false);
+        }
         self.hnsw
             .insert(self.records.len().to_string(), vector.clone())?;
         self.records.push(record);
         self.vectors.push(vector);
-        Ok(())
+        Ok(true)
+    }
+
+    /// The stored claims of the given pages, with their vectors: what a
+    /// replica is sent along with those pages.
+    pub fn for_urls(&self, urls: &HashSet<String>) -> Vec<(ClaimRecord, Vec<f32>)> {
+        self.records
+            .iter()
+            .zip(&self.vectors)
+            .filter(|(record, _)| urls.contains(&record.url))
+            .map(|(record, vector)| (record.clone(), vector.clone()))
+            .collect()
+    }
+
+    /// Every stored claim with its vector, in insertion order: what is
+    /// written to disk and what a replica needs.
+    pub fn entries(&self) -> Vec<(ClaimRecord, Vec<f32>)> {
+        self.records
+            .iter()
+            .cloned()
+            .zip(self.vectors.iter().cloned())
+            .collect()
     }
 
     /// The stored claims nearest to a request, each with its vector, in
@@ -127,6 +156,31 @@ mod tests {
             .add(record("a3", "one.org"), vec![0.99, 0.1, 0.0])
             .unwrap();
         assert!(!single.corroboration(&[1.0, 0.0, 0.0], &policy).corroborated);
+    }
+
+    #[test]
+    fn a_repeated_claim_is_stored_once_and_claims_are_found_by_page() {
+        let mut index = ClaimIndex::new(3);
+        assert!(
+            index
+                .add(record("a", "one.org"), vec![1.0, 0.0, 0.0])
+                .unwrap()
+        );
+        assert!(
+            !index
+                .add(record("a", "one.org"), vec![1.0, 0.0, 0.0])
+                .unwrap()
+        );
+        assert!(
+            index
+                .add(record("a", "two.org"), vec![1.0, 0.0, 0.0])
+                .unwrap()
+        );
+        assert_eq!(index.len(), 2);
+        let urls: HashSet<String> = ["https://two.org/page".to_string()].into();
+        let found = index.for_urls(&urls);
+        assert_eq!(found.len(), 1);
+        assert_eq!(found[0].0.source_family, "two.org");
     }
 
     #[test]

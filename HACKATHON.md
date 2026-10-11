@@ -120,8 +120,14 @@ there are no external stakers.
   A node now answers a claims request with a plain vector lookup and the
   entry node merges by absolute similarity. Split across three real nodes on
   localhost the signal costs 4.7 ms at the median and still separates right
-  from wrong (6.7% against 23.1%). Claims are held in memory only, are not
-  replicated, and no two nodes have run on different machines.
+  from wrong (6.7% against 23.1%). Claims are saved with the index and
+  replicated with their pages, and a replica keeps a claim only if it finds
+  the quote in its own copy of the page. No two nodes have run on different
+  machines, and extraction is not yet part of the crawler.
+- Dividing the index by subject lets a query ask few nodes: with ten
+  subject shards, asking three gave the same label as an exhaustive scan on
+  232 of 240 queries. Dividing by URL hash needs all ten. The subject shards
+  are unbalanced (one holds 27% of the claims), which we have not fixed.
 - Nodes checking each other's ingestion work on chain is design, not code.
   What makes it tractable is that the check is mechanical: a quote is in the
   page with that hash, or it is not.

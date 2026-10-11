@@ -17,6 +17,7 @@ mod beir;
 mod bench_quality;
 mod claim_ingest;
 mod claim_nodes;
+mod claim_routing;
 mod dataset;
 mod dist_sim;
 mod election_polls_bench;
@@ -460,6 +461,24 @@ enum Command {
         /// their vectors) instead of its page search
         #[arg(long)]
         claims_protocol: bool,
+
+        #[arg(long)]
+        output: String,
+    },
+    /// What the claim lookup loses when the claims are divided into ten
+    /// shards, by subject or by URL hash, and a query asks only some of them
+    ClaimRouting {
+        /// Output of claim-ingest
+        #[arg(long)]
+        claims: String,
+
+        /// answer-live report whose queries are looked up; repeatable
+        #[arg(long)]
+        report: Vec<String>,
+
+        /// Numbers of shards asked per query, comma-separated
+        #[arg(long, value_delimiter = ',', default_value = "1,2,3,5,10")]
+        fanouts: Vec<usize>,
 
         #[arg(long)]
         output: String,
@@ -1806,6 +1825,17 @@ async fn main() {
             .await
             {
                 eprintln!("claim-nodes failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::ClaimRouting {
+            claims,
+            report,
+            fanouts,
+            output,
+        } => {
+            if let Err(error) = claim_routing::run(&claims, &report, &fanouts, &output) {
+                eprintln!("claim-routing failed: {error}");
                 std::process::exit(2);
             }
         }

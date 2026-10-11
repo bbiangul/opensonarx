@@ -177,8 +177,8 @@ pub struct HybridIndex {
     next_seq: AtomicU64,
     /// Maps chunk_id -> assigned seq for incremental replication.
     chunk_seqs: RwLock<HashMap<String, u64>>,
-    /// Claims extracted from the indexed pages at ingestion time. Held in
-    /// memory only: they are not written by `save` yet.
+    /// Claims extracted from the indexed pages at ingestion time. Saved as
+    /// `claims.bin`; the vector graph over them is rebuilt on load.
     claims: RwLock<crate::claims::ClaimIndex>,
 }
 
@@ -267,7 +267,19 @@ impl HybridIndex {
                     }
                 }
 
-                let content = bm25.get_doc_content(chunk_id).unwrap_or("").to_string();
+                // The keyword index stores "title content". A replica must
+                // receive the chunk as it was ingested, or its content hash
+                // no longer matches and the replica rejects it.
+                let stored = bm25.get_doc_content(chunk_id).unwrap_or("");
+                let content = if meta.title.is_empty() {
+                    stored
+                } else {
+                    stored
+                        .strip_prefix(meta.title.as_str())
+                        .and_then(|rest| rest.strip_prefix(' '))
+                        .unwrap_or(stored)
+                }
+                .to_string();
                 let embedding = hnsw.get_vector(chunk_id).cloned();
 
                 chunks.push(ContentChunk {
@@ -515,6 +527,7 @@ impl HybridIndex {
         let meta_bytes;
         let content_hashes_bytes;
         let simhashes_bytes;
+        let claims_bytes;
         {
             let hnsw = self
                 .hnsw
@@ -537,6 +550,14 @@ impl HybridIndex {
                 .read()
                 .map_err(|e| std::io::Error::other(format!("simhashes lock poisoned: {e}")))?;
 
+            claims_bytes = bincode::serialize(
+                &self
+                    .claims
+                    .read()
+                    .map_err(|e| std::io::Error::other(format!("claims lock poisoned: {e}")))?
+                    .entries(),
+            )
+            .map_err(std::io::Error::other)?;
             hnsw_bytes = hnsw.to_bytes();
             bm25_bytes = bm25.to_bytes();
             meta_bytes = bincode::serialize(&*meta).map_err(std::io::Error::other)?;
@@ -555,6 +576,7 @@ impl HybridIndex {
         storage.write_segment("config.bin.tmp", &config_bytes)?;
         storage.write_segment("content_hashes.bin.tmp", &content_hashes_bytes)?;
         storage.write_segment("simhashes.bin.tmp", &simhashes_bytes)?;
+        storage.write_segment("claims.bin.tmp", &claims_bytes)?;
 
         storage.rename_segment("hnsw.bin.tmp", "hnsw.bin")?;
         storage.rename_segment("bm25.bin.tmp", "bm25.bin")?;
@@ -562,6 +584,7 @@ impl HybridIndex {
         storage.rename_segment("config.bin.tmp", "config.bin")?;
         storage.rename_segment("content_hashes.bin.tmp", "content_hashes.bin")?;
         storage.rename_segment("simhashes.bin.tmp", "simhashes.bin")?;
+        storage.rename_segment("claims.bin.tmp", "claims.bin")?;
 
         self.dirty.store(false, Ordering::Release);
         self.unsaved_count.store(0, Ordering::Release);
@@ -633,6 +656,20 @@ impl HybridIndex {
 
         let dim = hnsw.dim();
 
+        // Claims are absent from an index saved before they existed.
+        let mut claims = crate::claims::ClaimIndex::new(dim);
+        if storage.segment_exists("claims.bin") {
+            let bytes = storage.read_segment("claims.bin")?;
+            let entries: Vec<(oi_types::claims::ClaimRecord, Vec<f32>)> =
+                bincode::deserialize(&bytes)
+                    .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+            for (record, vector) in entries {
+                claims
+                    .add(record, vector)
+                    .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+            }
+        }
+
         // Initialize chunk_seqs from metadata (assign seq=index for loaded chunks)
         let mut chunk_seqs = HashMap::new();
         for (i, chunk_id) in metadata.keys().enumerate() {
@@ -655,7 +692,7 @@ impl HybridIndex {
             unsaved_count: AtomicU64::new(0),
             next_seq: AtomicU64::new(next_seq),
             chunk_seqs: RwLock::new(chunk_seqs),
-            claims: RwLock::new(crate::claims::ClaimIndex::new(dim)),
+            claims: RwLock::new(claims),
         })
     }
 
@@ -666,10 +703,15 @@ impl HybridIndex {
         claims: Vec<(oi_types::claims::ClaimRecord, Vec<f32>)>,
     ) -> Result<()> {
         let mut index = write_lock(&self.claims)?;
+        let added = claims.len() as u64;
         for (record, vector) in claims {
             index
                 .add(record, vector)
                 .map_err(oi_types::Error::Internal)?;
+        }
+        if added > 0 {
+            self.dirty.store(true, Ordering::Release);
+            self.unsaved_count.fetch_add(added, Ordering::AcqRel);
         }
         Ok(())
     }
@@ -682,6 +724,25 @@ impl HybridIndex {
         top_k: usize,
     ) -> Result<Vec<(oi_types::claims::MatchedClaim, Vec<f32>)>> {
         Ok(read_lock(&self.claims)?.fetch(embedding, top_k))
+    }
+
+    /// The stored claims of the given pages, with their vectors.
+    pub fn claims_for_urls(
+        &self,
+        urls: &HashSet<String>,
+    ) -> Result<Vec<(oi_types::claims::ClaimRecord, Vec<f32>)>> {
+        Ok(read_lock(&self.claims)?.for_urls(urls))
+    }
+
+    /// The retained text of every chunk indexed for a URL.
+    pub fn contents_for_url(&self, url: &str) -> Result<Vec<String>> {
+        let metadata = read_lock(&self.metadata)?;
+        let bm25 = read_lock(&self.bm25)?;
+        Ok(metadata
+            .iter()
+            .filter(|(_, meta)| meta.url == url)
+            .filter_map(|(chunk_id, _)| bm25.get_doc_content(chunk_id).map(str::to_string))
+            .collect())
     }
 
     pub fn claim_count(&self) -> usize {
@@ -2538,6 +2599,67 @@ mod tests {
             .unwrap();
 
         assert!(results.is_empty());
+    }
+
+    #[test]
+    fn a_chunk_is_exported_for_replication_as_it_was_ingested() {
+        let index = HybridIndex::new(3);
+        index
+            .ingest(&[make_chunk_with_meta(
+                "c1",
+                "antarctica is the largest desert on earth",
+                vec![1.0, 0.0, 0.0],
+                "https://example.org/deserts",
+                "Deserts",
+            )])
+            .unwrap();
+        let exported = index.chunks_since(None, 0, 10).unwrap();
+        assert_eq!(exported.len(), 1);
+        assert_eq!(
+            exported[0].content, "antarctica is the largest desert on earth",
+            "the title the keyword index prepends is not part of the chunk"
+        );
+    }
+
+    #[test]
+    fn claims_survive_save_and_load_and_mark_the_index_dirty() {
+        let index = HybridIndex::new(3);
+        index
+            .ingest(&[make_chunk_with_meta(
+                "c1",
+                "antarctica is the largest desert on earth",
+                vec![1.0, 0.0, 0.0],
+                "https://example.org/deserts",
+                "Deserts",
+            )])
+            .unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        let storage = Storage::new(dir.path()).unwrap();
+        index.save(&storage).unwrap();
+        assert!(!index.is_dirty());
+
+        let claim = |text: &str, family: &str| oi_types::claims::ClaimRecord {
+            claim: text.to_string(),
+            quote: text.to_string(),
+            url: format!("https://{family}/page"),
+            source_family: family.to_string(),
+            extractor: "scripted".to_string(),
+        };
+        index
+            .ingest_claims(vec![
+                (claim("a", "one.org"), vec![1.0, 0.0, 0.0]),
+                (claim("b", "two.org"), vec![0.0, 1.0, 0.0]),
+            ])
+            .unwrap();
+        assert!(index.is_dirty(), "new claims need saving");
+        index.save(&storage).unwrap();
+
+        let loaded = HybridIndex::load(&storage).unwrap();
+        assert_eq!(loaded.claim_count(), 2);
+        let fetched = loaded.fetch_claims(&[0.0, 1.0, 0.0], 1).unwrap();
+        assert_eq!(fetched[0].0.claim, "b");
+        assert_eq!(fetched[0].0.source_family, "two.org");
+        assert_eq!(fetched[0].1, vec![0.0, 1.0, 0.0]);
     }
 
     #[test]
