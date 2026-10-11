@@ -10,8 +10,11 @@ to decide which ones to trust.
 ## The insight
 
 We spent the last week of the hackathon testing our own product against the
-obvious alternative, on the live web, with the protocol committed before
-each run and every response graded one by one.
+obvious alternative, on the live web: 480 queries, the protocol committed
+before each run, and every response read and graded one by one. The grader
+was an AI reviewer (Claude) working from a criterion fixed beforehand and
+blind to the variable under test; there is no human second reader yet, and
+we treat the numbers accordingly.
 
 - **Agents already read well.** Given the same pages, a single model call
   answered as accurately as our full claim-and-citation pipeline, in half the
@@ -26,7 +29,7 @@ each run and every response graded one by one.
   families supported were wrong 7.9% of the time; the rest were wrong 20.1%
   ([trust label](docs/experiments/TRUST-LABEL-2026-10-10.md)). The margin is
   narrow (bootstrap 95% lower bound of the difference: +1.0 point) and it
-  comes from one reader, so we call it a first result, not a law.
+  comes from one AI reader, so we call it a first result, not a law.
 
 So the missing piece in search for agents is not a better answer. It is a
 trust signal on each source, and someone who is financially accountable for
@@ -108,9 +111,9 @@ This repository predates the hackathon. To be explicit:
   replacement with model-backed evidence traits verified by deterministic
   quote location; hosted model backend; the evaluation tooling
   (`oi-bench answer-eval`, `answer-live`, blind grading sheets); three live
-  experiments registered before they ran, 640 responses graded one by one;
-  the trust-label result; the default-discovery fix; this document and the
-  devnet work.
+  experiments registered before they ran (480 queries, 455 graded
+  responses); the trust-label result; the default-discovery fix; the
+  on-chain bond client; this document and the devnet work.
 
 `git log` has the dates. Several October 9 commits bundle work that had been
 sitting uncommitted since August; their messages say "pending changes".
