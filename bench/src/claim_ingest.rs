@@ -46,7 +46,9 @@ fn passage_key(url: &str, text: &str) -> String {
 }
 
 /// Every distinct retained passage of the reports, keyed by URL and text.
-fn retained_passages(reports: &[String]) -> Result<BTreeMap<String, EvidencePassage>, String> {
+pub(crate) fn retained_passages(
+    reports: &[String],
+) -> Result<BTreeMap<String, EvidencePassage>, String> {
     let mut passages = BTreeMap::new();
     for path in reports {
         let report = read_report(path)?;

@@ -523,6 +523,51 @@ não tem nada, o node devolveu zero famílias.
   `assunto/3` não se sincronizam por esse caminho.
 - Recompensa e punição na cadeia pelo trabalho de ingestão.
 
+## Passo 6: a divisão como o produto faz (a afirmação fica com a página)
+
+### Por que medir de novo
+
+No passo 4 cada afirmação foi para o compartimento mais próximo do
+embedding **dela**. O produto não faz isso. No produto quem é classificado
+é o trecho da página; as afirmações ficam no node que tem a página, e é
+assim que elas são replicadas (a réplica precisa do texto da página para
+conferir a citação). Uma página com trechos em dois compartimentos leva
+todas as suas afirmações para os dois. Os números do passo 4 (232 de 240
+por assunto, 236 de 240 com centros aprendidos) são de uma divisão que o
+produto não usa.
+
+Lendo o código da junção apareceu também um defeito: se dois nodes
+devolvem a mesma afirmação, o node de entrada e a função de corroboração
+ficam com as duas cópias, e elas tiram lugar de outras afirmações nas 20
+mais próximas. Com a divisão do passo 4 isso nunca acontecia, porque cada
+afirmação estava num lugar só.
+
+### Protocolo (registrado antes de rodar)
+
+- **Dados e consultas.** As mesmas 12.396 afirmações e as mesmas 240
+  consultas de teste do passo 4. A referência é a mesma varredura exaustiva.
+  Os rótulos de certo e errado não entram.
+- **Divisão `page-topic`.** Cada trecho de página é classificado pelo
+  roteador do produto (descrições fixas) a partir do embedding do texto do
+  trecho. Todas as afirmações de um URL vão para todo compartimento que
+  recebeu algum trecho daquele URL.
+- **Divisão `page-learned`.** O mesmo, com dez centros aprendidos dos
+  embeddings dos trechos (o que um node tem em mãos), mesmo k-means do passo
+  4 (dez grupos, vinte rodadas, início fixo).
+- **Consulta.** Como no passo 4: os compartimentos são perguntados na ordem
+  em que o roteador os classifica para a consulta, 1, 2, 3, 5 ou 10 deles,
+  cada um devolve suas 20 afirmações mais próximas, e o resultado passa pela
+  função de corroboração do produto.
+- **Medidas.** As do passo 4: quantas das 20 afirmações da varredura
+  exaustiva foram recuperadas, e em quantas das 240 consultas o selo é o
+  mesmo. Mais: tamanho do maior compartimento e quantas cópias de cada
+  afirmação existem em média.
+- **Duas rodadas.** Uma com a junção como está (cópias repetidas contam),
+  outra depois de corrigir para ficar com uma cópia de cada afirmação
+  idêntica (mesmo URL e mesmo texto). As duas são relatadas.
+- **Leitura.** Comparo perguntando três compartimentos com o passo 4. Nada
+  é ajustado; não há limiar novo.
+
 ## Passo 5: conferir uma afirmação buscando a página por conta própria
 
 ### Pergunta

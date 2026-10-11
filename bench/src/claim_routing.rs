@@ -26,7 +26,7 @@ use oi_types::claims::cosine;
 use oi_types::{TopicRouter, BUILTIN_TOPICS};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 fn read_records(claims_path: &str) -> Result<Vec<ClaimRecord>, String> {
     let raw = std::fs::read_to_string(claims_path)
@@ -41,6 +41,27 @@ fn read_records(claims_path: &str) -> Result<Vec<ClaimRecord>, String> {
                 .unwrap_or_default()
                 .into_iter()
                 .filter_map(|record| serde_json::from_value(record).ok())
+        })
+        .collect())
+}
+
+/// Each ingested passage's key with the claims it produced.
+fn read_passage_records(claims_path: &str) -> Result<Vec<(String, Vec<ClaimRecord>)>, String> {
+    let raw = std::fs::read_to_string(claims_path)
+        .map_err(|error| format!("cannot read {claims_path}: {error}"))?;
+    Ok(raw
+        .lines()
+        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
+        .filter_map(|line| {
+            let key = line["key"].as_str()?.to_string();
+            let records = line["records"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default()
+                .into_iter()
+                .filter_map(|record| serde_json::from_value(record).ok())
+                .collect();
+            Some((key, records))
         })
         .collect())
 }
@@ -106,9 +127,54 @@ struct Division {
     sizes: BTreeMap<String, usize>,
 }
 
+/// The shards each URL has a passage in, when passages are classified by
+/// `router` the way a node classifies the chunks of a page.
+fn shards_of_urls(
+    passages: &[(String, Vec<f32>)],
+    router: &TopicRouter,
+) -> BTreeMap<String, BTreeSet<String>> {
+    let mut shards: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    for (url, vector) in passages {
+        shards
+            .entry(url.clone())
+            .or_default()
+            .insert(router.classify(vector).to_string());
+    }
+    shards
+}
+
+/// Claims follow their page: every claim of a URL is stored in every shard
+/// that holds one of that URL's passages.
+fn divide_by_page(
+    name: &'static str,
+    stored: &[(ClaimRecord, Vec<f32>)],
+    shards_of: &BTreeMap<String, BTreeSet<String>>,
+    dimension: usize,
+) -> Result<Division, String> {
+    let mut division = Division {
+        name,
+        shards: BTreeMap::new(),
+        sizes: BTreeMap::new(),
+    };
+    for (record, vector) in stored {
+        for shard in shards_of.get(&record.url).into_iter().flatten() {
+            let added = division
+                .shards
+                .entry(shard.clone())
+                .or_insert_with(|| ClaimIndex::new(dimension))
+                .add(record.clone(), vector.clone())?;
+            if added {
+                *division.sizes.entry(shard.clone()).or_default() += 1;
+            }
+        }
+    }
+    Ok(division)
+}
+
 pub fn run(
     claims_path: &str,
     reports: &[String],
+    passage_reports: &[String],
     fanouts: &[usize],
     output: &str,
 ) -> Result<(), String> {
@@ -203,6 +269,69 @@ pub fn run(
     }
     eprintln!("{} claims divided three ways", stored.len());
 
+    // The division a node actually makes: passages are classified, and the
+    // claims of a page live wherever the page has a passage.
+    let mut page_divisions: Vec<(Division, TopicRouter)> = Vec::new();
+    let mut passages_without_text = 0usize;
+    if !passage_reports.is_empty() {
+        let texts = crate::claim_ingest::retained_passages(passage_reports)?;
+        let mut keyed: Vec<(String, String)> = Vec::new();
+        for (key, records) in read_passage_records(claims_path)? {
+            let Some(url) = records.first().map(|record| record.url.clone()) else {
+                continue;
+            };
+            match texts.get(&key) {
+                Some(passage) => keyed.push((url, passage.text.clone())),
+                None => passages_without_text += 1,
+            }
+        }
+        let mut passages: Vec<(String, Vec<f32>)> = Vec::with_capacity(keyed.len());
+        for batch in keyed.chunks(32) {
+            let batch_texts: Vec<&str> = batch.iter().map(|(_, text)| text.as_str()).collect();
+            let vectors = embedder
+                .embed_text_batch(&batch_texts)
+                .map_err(|error| format!("embedding passages: {error}"))?;
+            passages.extend(batch.iter().map(|(url, _)| url.clone()).zip(vectors));
+        }
+        let passage_vectors: Vec<Vec<f32>> =
+            passages.iter().map(|(_, vector)| vector.clone()).collect();
+        let page_learned_router = TopicRouter::new(
+            learn_centroids(&passage_vectors, topic_shards.len(), 20)
+                .into_iter()
+                .enumerate()
+                .map(|(cluster, centroid)| (format!("page-cluster-{cluster}"), centroid))
+                .collect(),
+        )
+        .with_threshold(-1.0);
+        let page_topic_router = TopicRouter::new(
+            BUILTIN_TOPICS
+                .iter()
+                .zip(
+                    embedder
+                        .embed_text_batch(&descriptions)
+                        .map_err(|error| format!("embedding topics: {error}"))?,
+                )
+                .map(|(topic, embedding)| (topic.shard_id.to_string(), embedding))
+                .collect(),
+        );
+        for (name, page_router) in [
+            ("page-topic", page_topic_router),
+            ("page-learned", page_learned_router),
+        ] {
+            let division = divide_by_page(
+                name,
+                &stored,
+                &shards_of_urls(&passages, &page_router),
+                dimension,
+            )?;
+            page_divisions.push((division, page_router));
+        }
+        eprintln!(
+            "{} passages classified; {passages_without_text} without text",
+            passages.len()
+        );
+    }
+
     let mut queries: Vec<(String, Value, String)> = Vec::new();
     for path in reports {
         let raw = std::fs::read_to_string(path)
@@ -266,11 +395,28 @@ pub fn run(
             .into_iter()
             .map(|(shard, _)| shard.to_string())
             .collect();
-        for (division, order) in [
+        let page_orders: Vec<Vec<String>> = page_divisions
+            .iter()
+            .map(|(_, page_router)| {
+                page_router
+                    .rank_shards(&vector)
+                    .into_iter()
+                    .map(|(shard, _)| shard.to_string())
+                    .collect()
+            })
+            .collect();
+        let mut asked_divisions: Vec<(&Division, &Vec<String>)> = vec![
             (&by_topic, &topic_order),
             (&by_hash, &hash_shards),
             (&by_cluster, &cluster_order),
-        ] {
+        ];
+        asked_divisions.extend(
+            page_divisions
+                .iter()
+                .map(|(division, _)| division)
+                .zip(&page_orders),
+        );
+        for (division, order) in asked_divisions {
             for &fanout in fanouts {
                 let asked: Vec<&String> = order.iter().take(fanout).collect();
                 let fetched = asked
@@ -325,18 +471,37 @@ pub fn run(
             )
         })
         .collect();
+    let mut shard_sizes: BTreeMap<&str, &BTreeMap<String, usize>> = BTreeMap::new();
+    for division in [&by_topic, &by_hash, &by_cluster]
+        .into_iter()
+        .chain(page_divisions.iter().map(|(division, _)| division))
+    {
+        shard_sizes.insert(division.name, &division.sizes);
+    }
+    let copies_per_claim: BTreeMap<&str, f64> = shard_sizes
+        .iter()
+        .map(|(name, sizes)| {
+            (
+                *name,
+                sizes.values().sum::<usize>() as f64 / stored.len().max(1) as f64,
+            )
+        })
+        .collect();
     let report = json!({
         "schema_version": 1,
         "claims_path": claims_path,
         "policy": policy,
         "queries": queries.len(),
         "claims": stored.len(),
-        "shard_sizes": { "topic": by_topic.sizes, "hash": by_hash.sizes, "learned": by_cluster.sizes },
+        "shard_sizes": shard_sizes,
+        "copies_per_claim": copies_per_claim,
+        "passages_without_text": passages_without_text,
         "exhaustive_scan_corroborated": exact_rows.iter().filter(|row| row["corroborated"] == true).count(),
         "summary": summary,
         "limitations": [
             "No network: each shard is an in-process claim index. This measures what routing to a subset of shards loses, not latency.",
-            "Each claim is placed by its own embedding; a node places chunks, and the claims of a page would follow their chunk.",
+            "In topic, hash and learned each claim is placed by its own embedding. In page-topic and page-learned the passages are classified and a claim lives in every shard holding a passage of its URL, which is what a node does.",
+            "The passages are the evidence passages retained by the answer pipeline, not the node's own chunks of the page.",
             "For the hash division the shards asked are the first N in a fixed order, because nothing about a query points to a shard.",
             "The learned centroids are fitted on the same stored claims the queries are looked up in. No label is used, but a growing index would have to refit or keep centroids from an earlier snapshot.",
             "Every query is covered by the stored claims."

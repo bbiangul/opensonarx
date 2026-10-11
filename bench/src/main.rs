@@ -495,6 +495,12 @@ enum Command {
         #[arg(long)]
         report: Vec<String>,
 
+        /// answer-live reports holding the passages the claims were
+        /// extracted from; repeatable. With these, the claims are also
+        /// divided the way a node does: by where their page's passages fall
+        #[arg(long)]
+        passages_report: Vec<String>,
+
         /// Numbers of shards asked per query, comma-separated
         #[arg(long, value_delimiter = ',', default_value = "1,2,3,5,10")]
         fanouts: Vec<usize>,
@@ -1861,10 +1867,13 @@ async fn main() {
         Command::ClaimRouting {
             claims,
             report,
+            passages_report,
             fanouts,
             output,
         } => {
-            if let Err(error) = claim_routing::run(&claims, &report, &fanouts, &output) {
+            if let Err(error) =
+                claim_routing::run(&claims, &report, &passages_report, &fanouts, &output)
+            {
                 eprintln!("claim-routing failed: {error}");
                 std::process::exit(2);
             }
