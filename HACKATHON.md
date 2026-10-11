@@ -127,10 +127,12 @@ there are no external stakers.
   claims, the other, with no model, held the same 109 about a minute later
   and answered the same queries identically. No two nodes have run on
   different machines, and extraction is not yet part of the crawler.
-- Dividing the index by subject lets a query ask few nodes: with ten
-  subject shards, asking three gave the same label as an exhaustive scan on
-  232 of 240 queries. Dividing by URL hash needs all ten. The subject shards
-  are unbalanced (one holds 27% of the claims), which we have not fixed.
+- Dividing the index by subject lets a query ask few nodes. With ten
+  subject shards and claims kept with their page, as a node keeps them,
+  asking three gave the same label as an exhaustive scan on 231 of 240
+  queries; dividing by URL hash needs all ten. Centroids learned from the
+  stored pages do better (236 of 240, and 227 asking a single shard) but
+  are only in the measurement: nodes would have to agree on one set.
 - Nodes checking each other's ingestion work on chain is design, not code.
   What makes it tractable is that the check is mechanical: a quote is in the
   page, or it is not. We measured it with a second node fetching 300 pages

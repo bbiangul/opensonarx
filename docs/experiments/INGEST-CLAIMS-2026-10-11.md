@@ -512,7 +512,9 @@ não tem nada, o node devolveu zero famílias.
 ### O que continua faltando na rede
 
 - O roteador do produto ainda usa as descrições fixas; os centros
-  aprendidos só existem na medição.
+  aprendidos só existem na medição (passos 4 e 6). Para ir ao produto falta
+  decidir quem publica os centros: todos os nodes precisam usar os mesmos,
+  senão o mesmo nome de compartimento quer dizer coisas diferentes.
 - Quem recebe confia no texto da página que o outro node mandou. Conferir
   buscando a página de novo foi medido no passo 5 e não está ligado à
   réplica.
@@ -567,6 +569,54 @@ afirmação estava num lugar só.
   idêntica (mesmo URL e mesmo texto). As duas são relatadas.
 - **Leitura.** Comparo perguntando três compartimentos com o passo 4. Nada
   é ajustado; não há limiar novo.
+
+### Resultado
+
+12.396 afirmações de 1.198 URLs, 1.255 trechos classificados, 240
+consultas. Cada célula é "afirmações recuperadas / consultas com o mesmo
+selo da varredura exaustiva". Números da rodada com a junção corrigida.
+
+| Divisão | Maior compartimento | Cópias por afirmação | 1 compartimento | 3 | 5 | os 10 |
+|---|---|---|---|---|---|---|
+| Passo 4, descrições fixas (afirmação por si) | 27,2% | 1,00 | 0,43 / 205 | 0,75 / 232 | 0,86 / 237 | 0,96 / 240 |
+| **Produto, descrições fixas** (`page-topic`) | 18,3% | 1,04 | 0,48 / 199 | 0,79 / 231 | 0,88 / 237 | 0,97 / 240 |
+| Passo 4, centros aprendidos (afirmação por si) | 16,3% | 1,00 | 0,56 / 218 | 0,82 / 236 | 0,91 / 237 | 0,96 / 238 |
+| **Produto, centros aprendidos** (`page-learned`) | 15,7% | 1,02 | 0,65 / 227 | 0,85 / 236 | 0,93 / 239 | 0,97 / 240 |
+
+- **A divisão que o produto faz se sustenta.** Perguntando três
+  compartimentos, o selo é o mesmo em 231 de 240 consultas com as
+  descrições fixas e em 236 de 240 com centros aprendidos dos trechos.
+  São os números do passo 4 (232 e 236), agora na divisão de verdade.
+- **Os centros aprendidos ganham mais com um compartimento só**: 227 de 240
+  contra 199.
+- **O erro tem uma direção só.** Perguntando três, todas as discordâncias
+  foram selos que a varredura exaustiva dava e a consulta parcial perdeu (9
+  com descrições fixas, 4 com centros aprendidos). Nenhuma consulta ganhou
+  um selo que a varredura completa não dava.
+- **Cópias repetidas.** Com a junção como estava, perguntando os dez
+  compartimentos a recuperação ficava em 0,95 (fixas) e 0,96 (aprendidos);
+  corrigida, 0,97 nos dois. Nenhuma contagem de selo mudou. O efeito é
+  pequeno aqui porque há pouca repetição: 1,02 a 1,04 cópia por afirmação.
+- Os números já publicados do passo 4 se repetem iguais nas duas rodadas
+  (a correção mexe na terceira casa da recuperação, porque 14 das 12.396
+  afirmações guardadas eram repetidas).
+
+A correção está no produto: a função de corroboração e a junção do node de
+entrada ficam com uma cópia de cada afirmação idêntica (mesmo URL e mesmo
+texto).
+
+### Limites do passo 6
+
+- Os trechos são os que o pipeline de resposta reteve, um ou dois por URL,
+  não os trechos que um node corta da página inteira (até oito). Com mais
+  trechos por página haveria mais páginas em dois compartimentos e mais
+  cópias; não medi isso.
+- Os centros foram aprendidos do mesmo conteúdo em que as consultas são
+  procuradas. Nenhum rótulo entra, mas um índice que cresce precisaria
+  refazer os centros ou conviver com centros antigos.
+- Sem rede: cada compartimento é um índice no mesmo processo.
+- Uma primeira rodada saiu com o embedder falso (binário compilado sem o
+  modelo) e foi descartada antes de qualquer leitura.
 
 ## Passo 5: conferir uma afirmação buscando a página por conta própria
 
@@ -684,6 +734,9 @@ não investiguei por que diferem.
 - Passo 2: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-test.json`
   e `ingest-claims-nodes-{1,3}-rerank-test.json`
 - Passo 4: `outputs/validation-20261009/ingest-claims-routing-test.json`
+- Passo 6: `outputs/validation-20261009/ingest-claims-routing-page-asis-test.json`
+  (junção como estava) e `ingest-claims-routing-page-dedup-test.json`
+  (corrigida)
 - Passo 5: `outputs/validation-20261009/ingest-claims-audit-300.json` e
   `ingest-claims-audit-300-second.json` (segunda rodada)
 - Passo 3: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-protocol-test.json`;

@@ -1,6 +1,6 @@
 use libp2p::PeerId;
 use oi_types::proto::opensonarx::{QueryRequest, QueryResponse, SearchResult};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::{mpsc, oneshot};
@@ -197,6 +197,10 @@ pub fn build_merged_claims(
             .total_cmp(&similarity(a))
             .then_with(|| a.result_id.cmp(&b.result_id))
     });
+    // Two nodes can hold the same claim. One copy is kept (same URL and same
+    // claim-and-quote text), so a repeat does not push another claim out.
+    let mut seen: HashSet<(String, String)> = HashSet::new();
+    merged.retain(|result| seen.insert((result.url.clone(), result.content_md.clone())));
     merged.truncate(limit);
     for (i, result) in merged.iter_mut().enumerate() {
         result.rank = (i + 1) as u32;
@@ -278,15 +282,25 @@ mod tests {
         let mut near = make_result("https://b.org/x", 0.9, 1);
         near.result_id = "n2:0".to_string();
         near.scores.as_mut().unwrap().semantic = 0.9;
+        near.content_md = "claim from b".to_string();
         let mut first = make_result("https://a.org/x", 0.8, 1);
         first.result_id = "n1:0".to_string();
+        first.content_md = "first claim from a".to_string();
         first.scores.as_mut().unwrap().semantic = 0.8;
         let mut second = make_result("https://a.org/x", 0.7, 2);
         second.result_id = "n1:1".to_string();
+        second.content_md = "second claim from a".to_string();
         second.scores.as_mut().unwrap().semantic = 0.7;
-        let resp = build_merged_claims("req", vec![first, second], vec![near], 10);
+        // A third node holds the same page and returns the first claim again.
+        let mut repeat = first.clone();
+        repeat.result_id = "n3:0".to_string();
+        let resp = build_merged_claims("req", vec![first, second], vec![near, repeat], 3);
         let ids: Vec<&str> = resp.results.iter().map(|r| r.result_id.as_str()).collect();
-        assert_eq!(ids, ["n2:0", "n1:0", "n1:1"]);
+        assert_eq!(
+            ids,
+            ["n2:0", "n1:0", "n1:1"],
+            "the repeated claim is dropped instead of pushing out the third"
+        );
         assert_eq!(resp.results[0].rank, 1);
         assert_eq!(
             build_merged_claims("req", vec![], vec![], 10).results.len(),

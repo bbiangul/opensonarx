@@ -7,7 +7,7 @@
 
 use crate::proto::opensonarx::{Scores, SearchResult};
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashSet};
 
 /// Numbers that decide what is stored and what counts as corroboration.
 /// They are policy, versioned by `policy_id`, not knowledge about language.
@@ -114,11 +114,17 @@ pub fn supporting_families(matches: &[MatchedClaim], policy: &ClaimPolicy) -> us
 /// `top_k`, and fill in each one's similarity to the head from the vectors.
 /// The same function serves one index and the merged answers of many nodes,
 /// so both produce the same signal from the same claims.
+///
+/// Two nodes can hold the same claim (a page with chunks in two shards, or
+/// two replicas). One copy is kept, identified by URL and claim text, so a
+/// repeated claim does not take another claim's place among the `top_k`.
 pub fn corroboration(
     mut fetched: Vec<(MatchedClaim, Vec<f32>)>,
     policy: &ClaimPolicy,
 ) -> Corroboration {
     fetched.sort_by(|a, b| b.0.query_similarity.total_cmp(&a.0.query_similarity));
+    let mut seen: HashSet<(String, String)> = HashSet::new();
+    fetched.retain(|(claim, _)| seen.insert((claim.url.clone(), claim.claim.clone())));
     fetched.truncate(policy.top_k);
     let head = fetched.first().map(|(_, vector)| vector.clone());
     let matches: Vec<MatchedClaim> = fetched
@@ -241,6 +247,29 @@ mod tests {
         assert_eq!(signal.supporting_families, 2);
         assert!(signal.corroborated);
         assert!(!corroboration(Vec::new(), &policy).corroborated);
+    }
+
+    #[test]
+    fn a_claim_returned_by_two_nodes_is_counted_once() {
+        let policy = ClaimPolicy {
+            top_k: 2,
+            min_query_similarity: 0.5,
+            min_claim_similarity: 0.9,
+            ..ClaimPolicy::default()
+        };
+        // The same claim arrives from two nodes; with both copies kept, the
+        // second family's claim would fall outside top_k.
+        let signal = corroboration(
+            vec![
+                fetched("a", "one.org", 0.9, [1.0, 0.0, 0.0]),
+                fetched("a", "one.org", 0.9, [1.0, 0.0, 0.0]),
+                fetched("a2", "two.org", 0.8, [0.98, 0.2, 0.0]),
+            ],
+            &policy,
+        );
+        assert_eq!(signal.matches.len(), 2);
+        assert_eq!(signal.matches[1].claim, "a2");
+        assert_eq!(signal.supporting_families, 2);
     }
 
     #[test]
