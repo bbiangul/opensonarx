@@ -150,7 +150,12 @@ fn pooled_rate(pairs: &[(usize, usize)]) -> Value {
     })
 }
 
-pub fn run(claims_path: &str, urls: usize, concurrency: usize, output: &str) -> Result<(), String> {
+pub async fn run(
+    claims_path: &str,
+    urls: usize,
+    concurrency: usize,
+    output: &str,
+) -> Result<(), String> {
     let policy = ClaimPolicy::default();
     let mut by_url: BTreeMap<String, Vec<ClaimRecord>> = BTreeMap::new();
     for record in read_records(claims_path)? {
@@ -178,12 +183,8 @@ pub fn run(claims_path: &str, urls: usize, concurrency: usize, output: &str) -> 
         })
         .collect();
 
-    let runtime = tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()
-        .map_err(|error| format!("runtime: {error}"))?;
     let min_chars = policy.min_quote_chars;
-    let mut audited: Vec<Audited> = runtime.block_on(async {
+    let mut audited: Vec<Audited> = {
         let distiller = Arc::new(Distiller::new());
         let mut pending = jobs.into_iter();
         let mut active = tokio::task::JoinSet::new();
@@ -214,7 +215,7 @@ pub fn run(claims_path: &str, urls: usize, concurrency: usize, output: &str) -> 
             }
         }
         done
-    });
+    };
     audited.sort_by_key(|entry| url_order_key(&entry.url));
 
     let fetched: Vec<&Audited> = audited

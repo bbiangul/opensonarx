@@ -1853,7 +1853,7 @@ async fn main() {
             concurrency,
             output,
         } => {
-            if let Err(error) = claim_audit::run(&claims, urls, concurrency, &output) {
+            if let Err(error) = claim_audit::run(&claims, urls, concurrency, &output).await {
                 eprintln!("claim-audit failed: {error}");
                 std::process::exit(2);
             }

@@ -133,7 +133,12 @@ there are no external stakers.
   are unbalanced (one holds 27% of the claims), which we have not fixed.
 - Nodes checking each other's ingestion work on chain is design, not code.
   What makes it tractable is that the check is mechanical: a quote is in the
-  page with that hash, or it is not.
+  page, or it is not. We measured it with a second node fetching 300 pages
+  itself a day later: none of 3,056 quotes taken from a different page was
+  accepted, and 99.0% of the honest claims were found again (95% interval
+  98.3% to 99.6%). That is enough to reject fabricated quotes and not
+  enough to slash on a single failed claim: pages change, and 2% of them
+  could not be fetched at all.
 - The uncertainty engine (`crates/oi-index/src/uncertainty.rs`) only emits a
   probability when it has resolved outcomes for a source. It has none yet, so
   every result is labelled `evidential_only`.

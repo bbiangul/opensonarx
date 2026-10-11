@@ -513,8 +513,9 @@ não tem nada, o node devolveu zero famílias.
 
 - O roteador do produto ainda usa as descrições fixas; os centros
   aprendidos só existem na medição.
-- Quem recebe confia no texto da página que o outro node mandou. Conferir a
-  página exige buscá-la de novo na web.
+- Quem recebe confia no texto da página que o outro node mandou. Conferir
+  buscando a página de novo foi medido no passo 5 e não está ligado à
+  réplica.
 - Nodes em máquinas diferentes. Os dois processos acima estão na mesma
   máquina, sem latência nem perda de rede.
 - A sincronização entre nodes do mesmo compartimento compara o
@@ -567,6 +568,65 @@ por "citação não encontrada" depende desse número.
   afirmação é verdadeira, só se a citação está na página. Um conferente só,
   de um endereço só, num momento só.
 
+### Resultado
+
+300 URLs de 269 famílias de fonte, 3.106 afirmações. Conferente rodado em
+11 de outubro.
+
+| Medida | Resultado |
+|---|---|
+| (a) URLs que o conferente conseguiu buscar | 294 de 300 (98,0%); 5 responderam 403 e 1 estourou o tempo |
+| (b) afirmações honestas com citação encontrada na página | 3.004 de 3.033 = 99,0% [98,3%, 99,6%] |
+| (b) a mesma conferência trecho a trecho, como a réplica faz | 3.015 de 3.033 = 99,4% [98,9%, 99,8%] |
+| URLs com todas as afirmações encontradas | 282 de 294 (95,9%) |
+| URLs com nenhuma afirmação encontrada | 0 |
+| (c) citações de outra página aceitas | 0 de 3.056 |
+
+Leitura pela regra combinada:
+
+- **(c) passa com folga.** Nenhuma das 3.056 citações tiradas de outra
+  página foi aceita. A conferência rejeita o que não está na página.
+- **(b) não sustenta punição por afirmação isolada.** A estimativa cai em
+  cima da linha (99,0%) e o intervalo desce a 98,3%; não dá para afirmar
+  que é pelo menos 99%. Em números de operação: um node honesto com dez mil
+  afirmações teria por volta de cem reprovadas um dia depois, e 4 em cada
+  100 páginas dele teriam alguma afirmação reprovada.
+- Além disso, 2% das páginas o conferente não consegue buscar. Uma regra
+  de punição teria de tratar isso como "sem conclusão", e isso abre uma
+  brecha: citar páginas que bloqueiam quem confere.
+
+O que isso sustenta, como desenho e não como código: a conferência serve
+para rejeitar na entrada (como a réplica já faz) e como sinal acumulado por
+node. Um node cuja taxa de reprovação fica muito acima de 1% em muitas
+páginas e para mais de um conferente é diferente de um node com uma página
+que mudou. Nada disso está construído.
+
+### Observação depois do resultado (não registrada antes)
+
+Rodei o conferente uma segunda vez, minutos depois, para saber se as
+reprovações eram ruído de busca. Dos 294 URLs buscados nas duas vezes, 293
+deram a mesma contagem, e os 12 URLs com reprovação foram os mesmos. Então
+não é ruído: são páginas cujo texto já não é o que foi lido na extração.
+Pelos endereços, são páginas de previsão do tempo do dia, verbetes de
+dicionário com exemplos rotativos, tabela de salários, página de música e
+um contador de leis; essa caracterização é leitura minha dos endereços, não
+medida.
+
+A leitura por página inteira reprovou 11 afirmações a mais que a leitura
+trecho a trecho (três URLs passam inteiros por trecho e falham pela página).
+As duas usam a mesma função sobre textos que o mesmo `Distiller` produz;
+não investiguei por que diferem.
+
+### Limites do passo 5
+
+- Um conferente, um endereço de rede, um a dois dias depois da extração. A
+  taxa de reprovação honesta deve subir com o tempo; não medi quanto.
+- Não há node desonesto no experimento. O controle mede citação de outra
+  página, não uma página forjada, nem uma citação real usada para sustentar
+  uma afirmação que ela não sustenta.
+- As afirmações vieram de 480 consultas; páginas que aparecem em busca não
+  são uma amostra da web.
+
 ### Limites do passo 2
 
 - Todos os nodes num processo só, numa máquina só, em localhost. Não há
@@ -579,6 +639,8 @@ por "citação não encontrada" depende desse número.
 - Passo 2: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-test.json`
   e `ingest-claims-nodes-{1,3}-rerank-test.json`
 - Passo 4: `outputs/validation-20261009/ingest-claims-routing-test.json`
+- Passo 5: `outputs/validation-20261009/ingest-claims-audit-300.json` e
+  `ingest-claims-audit-300-second.json` (segunda rodada)
 - Passo 3: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-protocol-test.json`;
   a varredura exaustiva está no campo `exact` de `ingest-claims-signal-test.json`
 - Afirmações: `outputs/validation-20261009/ingest-claims-live-480.jsonl`
