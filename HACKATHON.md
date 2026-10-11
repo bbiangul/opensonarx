@@ -122,8 +122,11 @@ there are no external stakers.
   localhost the signal costs 4.7 ms at the median and still separates right
   from wrong (6.7% against 23.1%). Claims are saved with the index and
   replicated with their pages, and a replica keeps a claim only if it finds
-  the quote in its own copy of the page. No two nodes have run on different
-  machines, and extraction is not yet part of the crawler.
+  the quote in its own copy of the page. Two nodes run as separate processes
+  on one machine converge on their own: one learned pages and extracted 109
+  claims, the other, with no model, held the same 109 about a minute later
+  and answered the same queries identically. No two nodes have run on
+  different machines, and extraction is not yet part of the crawler.
 - Dividing the index by subject lets a query ask few nodes: with ten
   subject shards, asking three gave the same label as an exhaustive scan on
   232 of 240 queries. Dividing by URL hash needs all ten. The subject shards

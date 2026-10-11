@@ -100,6 +100,20 @@ impl RoutingTable {
         );
     }
 
+    /// Record a heartbeat: the peer is alive and holds `vectors_stored`.
+    /// A heartbeat does not carry the shard list, so the one learned from
+    /// the peer's shard announcement is kept — replacing it with an empty
+    /// list would make the peer invisible to routing until it re-announces.
+    pub fn record_heartbeat(&mut self, node_id: &str, vectors_stored: u64, peer_id: PeerId) {
+        if let Some(info) = self.peers.get_mut(node_id) {
+            info.last_heartbeat = Instant::now();
+            info.vectors_stored = vectors_stored;
+            info.peer_id = Some(peer_id);
+        } else {
+            self.update_peer_with_id(node_id, vec![], vectors_stored, Some(peer_id));
+        }
+    }
+
     /// Set the PeerId for an existing peer (e.g. when we learn the mapping from gossip).
     pub fn set_peer_id(&mut self, node_id: &str, peer_id: PeerId) {
         if let Some(info) = self.peers.get_mut(node_id) {
@@ -325,6 +339,28 @@ impl RoutingTable {
             }
         }
         result
+    }
+
+    /// Every peer with a known PeerId that serves `shard_id`, most recently
+    /// heard first. A table loaded from disk can still list a peer that is
+    /// gone, so a caller that needs one live peer walks this list instead of
+    /// trusting the first entry.
+    pub fn reachable_peers_for_shard(&self, shard_id: &str) -> Vec<(String, PeerId)> {
+        let mut peers: Vec<(&String, &PeerInfo, PeerId)> = self
+            .peers
+            .iter()
+            .filter(|(_, info)| info.shard_ids.iter().any(|s| s == shard_id))
+            .filter_map(|(id, info)| info.peer_id.map(|pid| (id, info, pid)))
+            .collect();
+        peers.sort_by(|a, b| {
+            b.1.last_heartbeat
+                .cmp(&a.1.last_heartbeat)
+                .then_with(|| a.0.cmp(b.0))
+        });
+        peers
+            .into_iter()
+            .map(|(id, _, pid)| (id.clone(), pid))
+            .collect()
     }
 
     // ── Replication watermarks ─────────────────────────────────────────
@@ -565,6 +601,42 @@ mod tests {
         // shard-2 should map to peer2
         assert_eq!(mapping["shard-2"].0, "peer2");
         assert_eq!(mapping["shard-2"].1, pid2);
+    }
+
+    #[test]
+    fn test_heartbeat_keeps_the_announced_shards() {
+        let mut rt = RoutingTable::new();
+        let pid = PeerId::random();
+        rt.update_peer_with_id("node-a", vec!["shard-1".into()], 5, Some(pid));
+
+        rt.record_heartbeat("node-a", 9, pid);
+
+        assert_eq!(rt.peers_for_shard("shard-1"), vec!["node-a".to_string()]);
+        assert_eq!(rt.reachable_peers_for_shard("shard-1").len(), 1);
+
+        // A heartbeat from a peer never announced is still recorded as alive.
+        rt.record_heartbeat("node-b", 1, PeerId::random());
+        assert_eq!(rt.peer_count(), 2);
+        assert!(rt.peers_for_shard("shard-1").len() == 1);
+    }
+
+    #[test]
+    fn test_reachable_peers_for_shard_lists_every_known_peer() {
+        let mut rt = RoutingTable::new();
+        let first = PeerId::random();
+        let second = PeerId::random();
+        rt.update_peer_with_id("node-a", vec!["shard-1".into()], 1, Some(first));
+        rt.update_peer_with_id("node-b", vec!["shard-1".into()], 1, Some(second));
+        rt.update_peer("node-c", vec!["shard-1".into()], 1);
+        rt.update_peer_with_id("node-d", vec!["shard-2".into()], 1, Some(PeerId::random()));
+
+        let peers = rt.reachable_peers_for_shard("shard-1");
+        let ids: Vec<PeerId> = peers.iter().map(|(_, pid)| *pid).collect();
+        assert_eq!(peers.len(), 2);
+        assert!(ids.contains(&first) && ids.contains(&second));
+        // The peer heard from last comes first.
+        assert_eq!(peers[0].0, "node-b");
+        assert!(rt.reachable_peers_for_shard("shard-9").is_empty());
     }
 
     #[test]

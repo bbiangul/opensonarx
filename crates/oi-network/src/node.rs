@@ -297,6 +297,7 @@ impl Node {
         let topic_router = self.topic_router;
         let min_replicas = self.config.min_replicas_per_shard;
         let repl_check_secs = self.config.replication_check_interval_secs;
+        let heartbeat_secs = self.config.heartbeat_interval_secs;
         let enable_tit_for_tat = self.config.enable_tit_for_tat;
         let min_contribution_ratio = self.config.min_contribution_ratio;
         let routing_table_path = self.config.routing_table_path.clone();
@@ -316,6 +317,7 @@ impl Node {
                 topic_router,
                 min_replicas,
                 repl_check_secs,
+                heartbeat_secs,
                 enable_tit_for_tat,
                 min_contribution_ratio,
                 routing_table_path,

@@ -80,6 +80,7 @@ pub async fn run_event_loop(
     topic_router: Option<Arc<TopicRouter>>,
     min_replicas_per_shard: usize,
     replication_check_interval_secs: u64,
+    heartbeat_interval_secs: u64,
     enable_tit_for_tat: bool,
     min_contribution_ratio: f64,
     routing_table_path: Option<String>,
@@ -108,7 +109,8 @@ pub async fn run_event_loop(
         }
     }
 
-    let mut heartbeat_interval = tokio::time::interval(Duration::from_secs(30));
+    let mut heartbeat_interval =
+        tokio::time::interval(Duration::from_secs(heartbeat_interval_secs.max(1)));
     let mut eviction_interval = tokio::time::interval(Duration::from_secs(300));
     let mut earnings_save_interval = tokio::time::interval(Duration::from_secs(60));
     let mut fanout_check_interval = tokio::time::interval(Duration::from_secs(1));
@@ -118,6 +120,8 @@ pub async fn run_event_loop(
 
     // In-flight fanout queries, keyed by request_id.
     let mut pending_fanouts: HashMap<String, PendingFanout> = HashMap::new();
+    // Which of this node's shards the next same-shard sync starts from.
+    let mut sync_cursor: usize = 0;
     // Maps outbound request IDs to fanout request_ids for response correlation.
     let mut outbound_to_fanout: HashMap<OutboundRequestId, String> = HashMap::new();
 
@@ -287,6 +291,39 @@ pub async fn run_event_loop(
                                 max_chunks: 1000,
                             };
                             break; // One replication per tick to avoid flooding
+                        }
+                    }
+
+                    // Same-shard peers also pull from each other, one shard
+                    // per tick, from their progress marks. Without this a
+                    // small index never syncs (the catch-up on heartbeat
+                    // only fires for a peer far ahead), and claims extracted
+                    // after their page was replicated never travel. A peer
+                    // with nothing new answers with an empty batch.
+                    //
+                    // The turn rotates over every (shard, peer) pair rather
+                    // than one fixed peer per shard: a routing table loaded
+                    // from disk can still name a peer that is gone, and a
+                    // fixed choice would keep dialing it.
+                    if matches!(action, EventAction::None) && !local_shards.is_empty() {
+                        let rt = routing_table.read().await;
+                        let pairs: Vec<(String, libp2p::PeerId)> = local_shards
+                            .iter()
+                            .flat_map(|shard| {
+                                rt.reachable_peers_for_shard(shard)
+                                    .into_iter()
+                                    .map(|(_, peer)| (shard.clone(), peer))
+                            })
+                            .collect();
+                        drop(rt);
+                        if !pairs.is_empty() {
+                            let (shard_id, peer) = pairs[sync_cursor % pairs.len()].clone();
+                            sync_cursor = sync_cursor.wrapping_add(1);
+                            action = EventAction::SendReplicationRequest {
+                                peer,
+                                shard_id,
+                                max_chunks: 1000,
+                            };
                         }
                     }
                 }
@@ -1327,9 +1364,9 @@ async fn handle_behaviour_event(
                             hb.node_id, hb.shard_count, hb.vectors_stored
                         );
                         let mut rt = routing_table.write().await;
-                        rt.update_peer(&hb.node_id, vec![], hb.vectors_stored);
-                        // Map the gossip source PeerId to this node_id
-                        rt.set_peer_id(&hb.node_id, propagation_source);
+                        // Keeps the shard list from the peer's announcement
+                        // and maps the gossip source PeerId to this node_id.
+                        rt.record_heartbeat(&hb.node_id, hb.vectors_stored, propagation_source);
                     }
                     Some(gossip_message::Payload::ShardAnnounce(sa)) => {
                         info!("Shard announce from {}: {:?}", sa.node_id, sa.shard_ids);

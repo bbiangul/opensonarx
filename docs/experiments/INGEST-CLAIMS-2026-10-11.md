@@ -340,9 +340,11 @@ Não registrado antes; números contra os rótulos são descritivos.
   aponta para aquela consulta (três por padrão).
 - **Réplica.** Um compartimento com menos de três nodes é copiado para
   outros.
-- **Não há divisão por localização** em lugar nenhum do código. Existe uma
-  função de sub-compartimentos por hash dentro de cada assunto, mas nada a
-  usa.
+- **Não há divisão por localização** em lugar nenhum do código.
+- **Sub-compartimentos.** O crawler, quando tem um roteador, grava cada
+  trecho em `assunto/N`, com N saindo do hash do conteúdo (dez por assunto).
+  O caminho de ingestão do cliente grava só o assunto. (Uma versão anterior
+  deste documento dizia que nada usava essa função; estava errado.)
 
 ### Medição: assunto contra hash
 
@@ -452,13 +454,72 @@ ficava para trás. Agora a marca só avança pelo que foi de fato recebido.
   afirmações precisa de modelo; o lugar natural é a ingestão, comparando a
   afirmação nova com as vizinhas, e isso não foi feito.
 
+### Dois nodes em processos separados
+
+Até aqui os nodes rodavam dentro de um processo só. Esta checagem usa o
+binário do produto (`oi network node`) duas vezes na mesma máquina, cada um
+com sua pasta de dados e sua porta. O node A tem o extrator ligado
+(`OI_EXTRACT_CLAIMS=1`); o node B não tem modelo nenhum. Não é uma medição
+com amostra: é uma verificação de que o caminho funciona de ponta a ponta.
+
+O que foi acrescentado para isso:
+
+- `POST /claims` na API do node: devolve as afirmações guardadas mais
+  próximas da consulta, as famílias de fonte e o tempo da leitura.
+- O node lê as páginas que aprende numa busca, depois de responder.
+- Nodes do mesmo compartimento pedem réplica um ao outro a cada rodada, a
+  partir de onde pararam. Antes só existia a cópia para compartimentos com
+  poucas réplicas e uma recuperação que disparava quando o outro node tinha
+  o dobro do conteúdo (e no mínimo 100 trechos), então dois nodes pequenos
+  do mesmo compartimento nunca trocavam nada.
+
+Resultado: os dois nodes ficaram 45 s parados, o node A recebeu uma busca
+("qual é o maior deserto do mundo"), aprendeu as páginas e extraiu 109
+afirmações em cerca de 20 s. O node B, sem modelo e sem ter buscado nada,
+tinha as mesmas 109 afirmações 71 s depois da busca (a rodada de réplica é
+de 60 s). Para três consultas os dois devolveram as mesmas afirmações na
+mesma ordem, em 0,2 a 8 ms. Como o node B só guarda uma afirmação cuja
+citação ele encontra no texto da página que recebeu, as 109 passaram por
+essa conferência.
+
+Três defeitos apareceram só com processos de verdade, e nenhum teste os
+pegava:
+
+1. **O sinal de vida apagava os assuntos do node.** A cada 30 s um node
+   avisa que está vivo. Quem recebia esse aviso regravava o registro do
+   outro com a lista de compartimentos vazia, e o anúncio de compartimentos
+   só é enviado quando um node se conecta ou muda de compartimentos. Depois
+   de meio minuto o node B não sabia mais de quem pedir réplica (observado);
+   pelo código, o repasse de consulta lê a mesma lista. Os testes
+   terminavam antes do primeiro aviso, porque o intervalo configurado
+   (`heartbeat_interval_secs`) não era usado pelo aviso, que estava fixo em
+   30 s. Agora o aviso respeita a configuração e mantém a lista; o teste de
+   dois nodes falha sem a correção e passa com ela.
+2. **Dois nodes na mesma máquina dividiam o arquivo da tabela de peers.**
+   Ele ficava em `~/.opensonarx`, fora da pasta de dados. Um node carregava
+   peers de outra execução e discava um node que não existia mais. Agora o
+   arquivo fica na pasta de dados do node.
+3. **A sincronização escolhia sempre o mesmo peer por compartimento.** Se
+   esse peer estivesse morto, ela nunca tentava outro. Agora ela alterna
+   entre todos os peers conhecidos daquele compartimento.
+
+O exemplo repetiu o limite já registrado: para "qual é o maior deserto do
+mundo" a afirmação guardada mais próxima foi "o deserto da Síria é o décimo
+maior do mundo", e as três famílias contadas são as que têm afirmações
+parecidas com essa. Para "quem pintou a Mona Lisa", sobre a qual o índice
+não tem nada, o node devolveu zero famílias.
+
 ### O que continua faltando na rede
 
 - O roteador do produto ainda usa as descrições fixas; os centros
   aprendidos só existem na medição.
 - Quem recebe confia no texto da página que o outro node mandou. Conferir a
   página exige buscá-la de novo na web.
-- Nodes em máquinas diferentes. Tudo aqui roda em localhost.
+- Nodes em máquinas diferentes. Os dois processos acima estão na mesma
+  máquina, sem latência nem perda de rede.
+- A sincronização entre nodes do mesmo compartimento compara o
+  identificador exato; um node que serve `assunto` e outro que serve
+  `assunto/3` não se sincronizam por esse caminho.
 - Recompensa e punição na cadeia pelo trabalho de ingestão.
 
 ### Limites do passo 2

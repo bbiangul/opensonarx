@@ -1359,12 +1359,10 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                 } else {
                     Vec::new()
                 };
-                let routing_table_path = dirs::home_dir().map(|h| {
-                    h.join(".opensonarx")
-                        .join("routing_table.json")
-                        .to_string_lossy()
-                        .to_string()
-                });
+                // Under the data dir, like the index: two nodes on one
+                // machine must not share (and overwrite) one peer table.
+                let routing_table_path = crate::config_file::ConfigFile::config_dir()
+                    .map(|dir| dir.join("routing_table.json").to_string_lossy().to_string());
 
                 let net_config = oi_network::config::NetworkConfig {
                     listen_port: port,

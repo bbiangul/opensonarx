@@ -289,3 +289,105 @@ async fn test_replica_keeps_only_claims_it_can_verify() {
     handle_a.shutdown();
     handle_b.shutdown();
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn test_same_shard_peers_sync_without_being_asked() {
+    use oi_index::HybridIndex;
+    use oi_types::claims::ClaimRecord;
+    use oi_types::traits::SearchIndex;
+    use oi_types::{ChunkMeta, ContentChunk};
+    use sha2::{Digest, Sha256};
+    use std::sync::Arc;
+
+    let shard = "topic-science".to_string();
+    let url = "https://example.org/deserts";
+    let content = "Antarctica is the largest desert on Earth. It covers 14 million square km.";
+
+    // A small index: far below the size at which the heartbeat catch-up fires.
+    let index_a = Arc::new(HybridIndex::new(4));
+    index_a
+        .ingest(&[ContentChunk {
+            chunk_id: "c1".to_string(),
+            content: content.to_string(),
+            embedding: Some(vec![1.0, 0.0, 0.0, 0.0]),
+            seq: 0,
+            meta: Some(ChunkMeta {
+                url: url.to_string(),
+                title: "Deserts".to_string(),
+                domain: "example.org".to_string(),
+                content_hash: format!("{:x}", Sha256::digest(content.as_bytes())),
+                shard_id: Some(shard.clone()),
+                ..Default::default()
+            }),
+        }])
+        .unwrap();
+    index_a
+        .ingest_claims(vec![(
+            ClaimRecord {
+                claim: "Antarctica is the largest desert on Earth.".to_string(),
+                quote: "Antarctica is the largest desert on Earth.".to_string(),
+                url: url.to_string(),
+                source_family: "example.org".to_string(),
+                extractor: "scripted".to_string(),
+            },
+            vec![1.0, 0.0, 0.0, 0.0],
+        )])
+        .unwrap();
+
+    let config = |port: u16, bootstrap: Vec<String>| NetworkConfig {
+        listen_port: port,
+        bootstrap_peers: bootstrap,
+        heartbeat_interval_secs: 1,
+        enable_mdns: false,
+        replication_check_interval_secs: 1,
+        routing_table_path: None,
+        ..Default::default()
+    };
+    let node_a = Node::new(config(19051, vec![])).with_index(index_a.clone(), vec![shard.clone()]);
+    let handle_a = node_a.start().await.expect("Node A start");
+    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+
+    let index_b = Arc::new(HybridIndex::new(4));
+    let node_b = Node::new(config(19052, vec!["/ip4/127.0.0.1/tcp/19051".to_string()]))
+        .with_index(index_b.clone(), vec![shard.clone()]);
+    let handle_b = node_b.start().await.expect("Node B start");
+
+    // Nobody calls request_replication: the periodic same-shard sync does it.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    while (index_b.doc_count() == 0 || index_b.claim_count() == 0)
+        && std::time::Instant::now() < deadline
+    {
+        tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+    }
+    assert_eq!(index_b.doc_count(), 1, "the page arrived on its own");
+    assert_eq!(index_b.claim_count(), 1, "and so did its claim");
+
+    // Several heartbeats later node A learns a second claim from the same
+    // page. Heartbeats carry no shard list; the sync must still find the
+    // peer, or anything learned after the first seconds never travels.
+    tokio::time::sleep(std::time::Duration::from_secs(4)).await;
+    index_a
+        .ingest_claims(vec![(
+            ClaimRecord {
+                claim: "Antarctica covers 14 million square km.".to_string(),
+                quote: "It covers 14 million square km.".to_string(),
+                url: url.to_string(),
+                source_family: "example.org".to_string(),
+                extractor: "scripted".to_string(),
+            },
+            vec![0.0, 1.0, 0.0, 0.0],
+        )])
+        .unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    while index_b.claim_count() < 2 && std::time::Instant::now() < deadline {
+        tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+    }
+    assert_eq!(
+        index_b.claim_count(),
+        2,
+        "a claim learned after several heartbeats still reaches the replica"
+    );
+
+    handle_a.shutdown();
+    handle_b.shutdown();
+}

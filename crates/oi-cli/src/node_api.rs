@@ -111,6 +111,12 @@ async fn search_handler(
             let learned = learner.process_crawl_queue();
             if learned > 0 {
                 tracing::info!("crawl-on-query: learned {learned} pages");
+                // With a passage extractor attached, the new pages are read
+                // for claims before the index is saved.
+                let stored = learner.process_claim_queue();
+                if stored > 0 {
+                    tracing::info!("crawl-on-query: stored {stored} verified claims");
+                }
                 if let Some(path) = index_path
                     && let Ok(storage) = oi_index::Storage::new(&path)
                     && let Err(e) = index.save(&storage)
@@ -360,6 +366,86 @@ fn proto_results_to_items(results: &[proto::SearchResult]) -> Vec<SearchResultIt
 /// `index` is the node's live shared index; `sdk_config` carries the
 /// configured external engines. The API serves the full blended search
 /// (local + external + P2P) with background crawl-on-query learning.
+#[derive(Deserialize)]
+struct ClaimsRequest {
+    query: String,
+}
+
+#[derive(Serialize)]
+struct ClaimsResponse {
+    /// Source families holding a claim close to the nearest stored claim.
+    supporting_families: usize,
+    /// Whether that count reaches the policy's threshold.
+    corroborated: bool,
+    /// The nearest stored claims from this node and its peers, closest first.
+    matches: Vec<oi_sdk::claims::MatchedClaim>,
+    /// Embedding the query plus asking the network, in milliseconds.
+    lookup_ms: f64,
+    /// Claims stored on this node alone.
+    local_claims: usize,
+}
+
+/// What the claims stored at ingestion say about a query, from this node and
+/// the peers that serve its other shards. One query embedding and one
+/// network round; no model is called.
+async fn claims_handler(
+    State(state): State<Arc<ApiState>>,
+    Json(req): Json<ClaimsRequest>,
+) -> Result<Json<ClaimsResponse>, (axum::http::StatusCode, String)> {
+    if req.query.trim().is_empty() {
+        return Err((
+            axum::http::StatusCode::BAD_REQUEST,
+            "query must not be empty".to_string(),
+        ));
+    }
+    let started = std::time::Instant::now();
+    let embedder = state.client.embedder_arc();
+    let query = req.query.clone();
+    let vector = tokio::task::spawn_blocking(move || embedder.embed_query(&query))
+        .await
+        .map_err(|e| {
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Embedding task failed: {e}"),
+            )
+        })?
+        .map_err(|e| {
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Embedding failed: {e}"),
+            )
+        })?;
+    let policy = state.client.claim_policy().clone();
+    let response = state
+        .handle
+        .query(proto::QueryRequest {
+            request_id: uuid::Uuid::new_v4().to_string(),
+            query_embedding: vector.iter().flat_map(|f| f.to_le_bytes()).collect(),
+            query_text: req.query.clone(),
+            limit: policy.top_k as u32,
+            claims: true,
+            ..Default::default()
+        })
+        .await
+        .map_err(|e| {
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Claim lookup failed: {e}"),
+            )
+        })?;
+    let signal = oi_sdk::claims::corroboration(
+        oi_sdk::claims::claims_from_results(&response.results),
+        &policy,
+    );
+    Ok(Json(ClaimsResponse {
+        supporting_families: signal.supporting_families,
+        corroborated: signal.corroborated,
+        matches: signal.matches,
+        lookup_ms: started.elapsed().as_secs_f64() * 1_000.0,
+        local_claims: state.client.claim_count(),
+    }))
+}
+
 pub async fn run_node_api(
     port: u16,
     handle: NodeHandle,
@@ -367,10 +453,17 @@ pub async fn run_node_api(
     index_path: Option<std::path::PathBuf>,
     sdk_config: oi_sdk::SdkConfig,
 ) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let client = Arc::new(oi_sdk::OpenSonarXClient::with_shared_index(
-        sdk_config,
-        index.clone(),
-    ));
+    // With OI_EXTRACT_CLAIMS=1 and an answer model configured, the node
+    // reads each page it learns for claims.
+    let extract_claims = std::env::var("OI_EXTRACT_CLAIMS")
+        .is_ok_and(|value| matches!(value.trim(), "1" | "true" | "yes"));
+    let passage_model = sdk_config.answer_model.clone().filter(|_| extract_claims);
+    let mut client = oi_sdk::OpenSonarXClient::with_shared_index(sdk_config, index.clone());
+    if let Some(model) = passage_model {
+        client = client.with_passage_claim_extractor(Arc::new(oi_sdk::ChatModel::new(model)));
+        println!("  Claims: pages are read for claims after they are indexed");
+    }
+    let client = Arc::new(client);
     let state = Arc::new(ApiState {
         handle,
         client,
@@ -383,6 +476,7 @@ pub async fn run_node_api(
         .route("/health", get(health_handler))
         .route("/search", post(search_handler))
         .route("/answer", post(answer_handler))
+        .route("/claims", post(claims_handler))
         .route("/v1/search", post(gateway_search_handler))
         .with_state(state);
 
