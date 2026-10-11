@@ -508,8 +508,15 @@ unsafe fn dot_product_avx2(a: &[f32], b: &[f32]) -> f32 {
     let b_ptr = b.as_ptr();
 
     for i in 0..chunks {
-        let va = _mm256_loadu_ps(a_ptr.add(i * 8));
-        let vb = _mm256_loadu_ps(b_ptr.add(i * 8));
+        // SAFETY: `i < chunks` and `chunks * 8 <= len`, so each 8-float read
+        // ends within the slice. As in the NEON path, both slices have the
+        // index's vector dimension.
+        let (va, vb) = unsafe {
+            (
+                _mm256_loadu_ps(a_ptr.add(i * 8)),
+                _mm256_loadu_ps(b_ptr.add(i * 8)),
+            )
+        };
         acc = _mm256_fmadd_ps(va, vb, acc);
     }
 
