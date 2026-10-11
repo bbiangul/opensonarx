@@ -183,6 +183,46 @@ pub fn build_merged_response(
 /// to the request, which is comparable across nodes. Page results are merged
 /// by `build_merged_response` instead, whose per-URL dedup and per-node
 /// scores do not suit claims.
+/// The remote shards and peers to ask for a query, best subject match first.
+///
+/// `ranked` is the router's ranking of topic shards for the query. Going down
+/// that ranking, every shard this node does not serve itself and some peer
+/// does is selected (a peer announcing `topic/3` serves part of `topic`),
+/// until `max_topics` ranked topics have been covered. A peer that serves
+/// several selected shards is listed once, at its best position.
+pub fn peers_in_ranked_order(
+    ranked: &[(&str, f32)],
+    shard_peers: &HashMap<String, (String, libp2p::PeerId)>,
+    local_shards: &[String],
+    max_topics: usize,
+) -> (Vec<String>, Vec<libp2p::PeerId>) {
+    let mut remote: Vec<&String> = shard_peers
+        .keys()
+        .filter(|shard| !local_shards.contains(shard))
+        .collect();
+    remote.sort();
+    let (mut shards, mut peers, mut topics) = (Vec::new(), Vec::new(), 0);
+    for (topic, _) in ranked {
+        if topics >= max_topics {
+            break;
+        }
+        let mut covered = false;
+        for shard in remote
+            .iter()
+            .filter(|shard| oi_types::shard::is_sub_shard_of(shard, topic))
+        {
+            covered = true;
+            shards.push((*shard).clone());
+            let peer = shard_peers[*shard].1;
+            if !peers.contains(&peer) {
+                peers.push(peer);
+            }
+        }
+        topics += usize::from(covered);
+    }
+    (shards, peers)
+}
+
 pub fn build_merged_claims(
     request_id: &str,
     local_results: Vec<SearchResult>,
@@ -273,6 +313,43 @@ mod tests {
             content_kind: String::new(),
             embedding: Vec::new(),
         }
+    }
+
+    #[test]
+    fn peers_are_chosen_down_the_ranking_not_in_table_order() {
+        let peer = |_: &str| libp2p::PeerId::random();
+        let (science, sports, history, health) = (peer("a"), peer("b"), peer("c"), peer("d"));
+        let mut shard_peers: HashMap<String, (String, libp2p::PeerId)> = HashMap::new();
+        shard_peers.insert("topic-science".into(), ("n1".into(), science));
+        shard_peers.insert("topic-sports".into(), ("n2".into(), sports));
+        shard_peers.insert("topic-history/3".into(), ("n3".into(), history));
+        shard_peers.insert("topic-history/7".into(), ("n3".into(), history));
+        shard_peers.insert("topic-health".into(), ("n4".into(), health));
+        shard_peers.insert("topic-local".into(), ("n5".into(), peer("e")));
+        let ranked = [
+            ("topic-local", 0.95),
+            ("topic-history", 0.9),
+            ("topic-nobody", 0.8),
+            ("topic-health", 0.7),
+            ("topic-science", 0.2),
+            ("topic-sports", 0.1),
+        ];
+        let local = vec!["topic-local".to_string()];
+
+        // The shard this node serves and the topic nobody serves are passed
+        // over; the two best remaining topics are taken, in ranking order,
+        // and the peer serving two sub-shards is listed once.
+        let (shards, peers) = peers_in_ranked_order(&ranked, &shard_peers, &local, 2);
+        assert_eq!(
+            shards,
+            ["topic-history/3", "topic-history/7", "topic-health"]
+        );
+        assert_eq!(peers, [history, health]);
+
+        let (_, one) = peers_in_ranked_order(&ranked, &shard_peers, &local, 1);
+        assert_eq!(one, [history]);
+        let (_, all) = peers_in_ranked_order(&ranked, &shard_peers, &local, 10);
+        assert_eq!(all, [history, health, science, sports]);
     }
 
     #[test]

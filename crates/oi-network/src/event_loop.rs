@@ -603,6 +603,9 @@ async fn handle_query_command(
         .map(|f| f.shards.clone())
         .unwrap_or_default();
 
+    // Filled only when the topic router ranks the shards: the peers to ask,
+    // best subject match first.
+    let mut ranked_peers: Vec<libp2p::PeerId> = Vec::new();
     let selected_remote_shards: Vec<&String> = if !explicit_shards.is_empty() {
         // Tier 1: Only fan out to explicitly requested shards
         shard_peers
@@ -620,14 +623,12 @@ async fn handle_query_command(
 
         if !embedding.is_empty() {
             let ranked = router.rank_shards(&embedding);
-            let ranked_ids: Vec<&str> = ranked.iter().map(|(id, _)| *id).collect();
+            let (shards, peers) =
+                fanout::peers_in_ranked_order(&ranked, &shard_peers, shard_ids, max_query_fanout);
+            ranked_peers = peers;
             shard_peers
                 .keys()
-                .filter(|sid| !shard_ids.contains(sid))
-                .filter(|sid| ranked_ids.contains(&sid.as_str()))
-                .collect::<Vec<_>>()
-                .into_iter()
-                .take(max_query_fanout)
+                .filter(|sid| shards.contains(sid))
                 .collect()
         } else {
             // No embedding — fall through to all remote shards
@@ -644,11 +645,16 @@ async fn handle_query_command(
             .collect()
     };
 
-    // Map selected shards → peers, deduplicating by PeerId
-    let mut target_peers: HashMap<String, libp2p::PeerId> = HashMap::new();
-    for shard_id in &selected_remote_shards {
-        if let Some((_peer_node_id, peer_id)) = shard_peers.get(*shard_id) {
-            target_peers.entry(peer_id.to_string()).or_insert(*peer_id);
+    // Map selected shards → peers, deduplicating by PeerId. With a ranking
+    // the order is the ranking's, so a cap below keeps the best matches.
+    let mut target_peers: Vec<libp2p::PeerId> = ranked_peers;
+    if target_peers.is_empty() {
+        for shard_id in &selected_remote_shards {
+            if let Some((_peer_node_id, peer_id)) = shard_peers.get(*shard_id)
+                && !target_peers.contains(peer_id)
+            {
+                target_peers.push(*peer_id);
+            }
         }
     }
 
@@ -692,7 +698,7 @@ async fn handle_query_command(
     remote_request.signed_ticket = vec![];
 
     // Send query to each remote peer, capped by adaptive fanout
-    for peer_id in target_peers.values().take(adaptive_fanout) {
+    for peer_id in target_peers.iter().take(adaptive_fanout) {
         let outbound_id = swarm
             .behaviour_mut()
             .request_response

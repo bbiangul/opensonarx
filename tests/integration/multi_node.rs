@@ -391,3 +391,132 @@ async fn test_same_shard_peers_sync_without_being_asked() {
     handle_a.shutdown();
     handle_b.shutdown();
 }
+
+/// An entry node with a topic router and a fan-out of one asks the node whose
+/// shard is the best subject match for the query, not whichever shard comes
+/// first in its peer table.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn test_fanout_of_one_goes_to_the_best_matching_shard() {
+    use oi_index::HybridIndex;
+    use oi_types::claims::ClaimRecord;
+    use oi_types::proto::opensonarx::QueryRequest;
+    use oi_types::traits::SearchIndex;
+    use oi_types::{ChunkMeta, ContentChunk, TopicRouter};
+    use sha2::{Digest, Sha256};
+    use std::sync::Arc;
+
+    let topics: [(&str, [f32; 4]); 3] = [
+        ("topic-a", [1.0, 0.0, 0.0, 0.0]),
+        ("topic-b", [0.0, 1.0, 0.0, 0.0]),
+        ("topic-c", [0.0, 0.0, 1.0, 0.0]),
+    ];
+    let config = |port: u16, bootstrap: Vec<String>| NetworkConfig {
+        listen_port: port,
+        bootstrap_peers: bootstrap,
+        heartbeat_interval_secs: 1,
+        enable_mdns: false,
+        max_query_fanout: 1,
+        routing_table_path: None,
+        ..Default::default()
+    };
+
+    // The entry node holds nothing and serves a shard of its own.
+    let router = Arc::new(TopicRouter::new(
+        topics
+            .iter()
+            .map(|(shard, centroid)| (shard.to_string(), centroid.to_vec()))
+            .chain([("topic-entry".to_string(), vec![0.0, 0.0, 0.0, 1.0])])
+            .collect(),
+    ));
+    let entry = Node::new(config(19061, vec![]))
+        .with_index(
+            Arc::new(HybridIndex::new(4)),
+            vec!["topic-entry".to_string()],
+        )
+        .with_topic_router(router);
+    let entry_table = entry.routing_table();
+    let entry_handle = entry.start().await.expect("entry start");
+    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+
+    // Three nodes, each holding one page and one claim of its own topic.
+    let mut handles = Vec::new();
+    for (position, (shard, vector)) in topics.iter().enumerate() {
+        let url = format!("https://{shard}.example/page");
+        let content = format!("A statement that belongs to {shard} and to no other.");
+        let index = Arc::new(HybridIndex::new(4));
+        index
+            .ingest(&[ContentChunk {
+                chunk_id: format!("chunk-{shard}"),
+                content: content.clone(),
+                embedding: Some(vector.to_vec()),
+                seq: 0,
+                meta: Some(ChunkMeta {
+                    url: url.clone(),
+                    title: shard.to_string(),
+                    domain: format!("{shard}.example"),
+                    content_hash: format!("{:x}", Sha256::digest(content.as_bytes())),
+                    shard_id: Some(shard.to_string()),
+                    ..Default::default()
+                }),
+            }])
+            .unwrap();
+        index
+            .ingest_claims(vec![(
+                ClaimRecord {
+                    claim: content.clone(),
+                    quote: content.clone(),
+                    url,
+                    source_family: format!("{shard}.example"),
+                    extractor: "scripted".to_string(),
+                },
+                vector.to_vec(),
+            )])
+            .unwrap();
+        let node = Node::new(config(
+            19062 + position as u16,
+            vec!["/ip4/127.0.0.1/tcp/19061".to_string()],
+        ))
+        .with_index(index, vec![shard.to_string()]);
+        handles.push(node.start().await.expect("content node start"));
+    }
+
+    // Wait until the entry node knows a peer for each of the three shards.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    while entry_table.read().await.one_peer_per_shard().len() < 3
+        && std::time::Instant::now() < deadline
+    {
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    }
+    assert_eq!(entry_table.read().await.one_peer_per_shard().len(), 3);
+
+    // Each query is closest to one topic. With a fan-out of one, only the
+    // right node's claim can come back.
+    for (round, (shard, vector)) in topics.iter().cycle().take(9).enumerate() {
+        let mut query = [0.1f32; 4];
+        for (value, component) in query.iter_mut().zip(vector) {
+            *value += component;
+        }
+        query[3] = 0.0;
+        let response = entry_handle
+            .query(QueryRequest {
+                request_id: format!("ranked-{round}"),
+                query_embedding: query.iter().flat_map(|value| value.to_le_bytes()).collect(),
+                limit: 5,
+                claims: true,
+                ..QueryRequest::default()
+            })
+            .await
+            .expect("query");
+        let urls: Vec<&str> = response.results.iter().map(|r| r.url.as_str()).collect();
+        assert_eq!(
+            urls,
+            [format!("https://{shard}.example/page")],
+            "round {round}: the claim of {shard} and nothing else"
+        );
+    }
+
+    entry_handle.shutdown();
+    for handle in handles {
+        handle.shutdown();
+    }
+}

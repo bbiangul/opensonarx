@@ -618,6 +618,28 @@ texto).
 - Uma primeira rodada saiu com o embedder falso (binário compilado sem o
   modelo) e foi descartada antes de qualquer leitura.
 
+### Defeito encontrado depois: o node não seguia a ordem do roteador
+
+Os passos 4 e 6 medem "perguntar os N compartimentos que o roteador
+classifica melhor para a consulta". Ao preparar o roteador aprendido para o
+produto, li o trecho do node que faz isso e ele não fazia: calculava a
+classificação, mas depois percorria a tabela de peers numa ordem qualquer e
+ficava com os N primeiros compartimentos que o roteador conhecesse (todos).
+Também não reconhecia um peer que anuncia `assunto/3` como servindo
+`assunto`. Na prática o node perguntava N compartimentos ao acaso. As
+medições dos passos 4 e 6 não passam por esse trecho (cada compartimento é
+um índice no mesmo processo, perguntado na ordem certa), então os números
+valem para o desenho, e o produto não o cumpria.
+
+Corrigido: o node desce a classificação, pula o que ele mesmo serve e o que
+ninguém serve, e pergunta os N melhores assuntos restantes, cada peer uma
+vez. Teste com quatro nodes de verdade e repasse de um: nove consultas,
+cada uma mais próxima de um assunto, têm de voltar só com a afirmação do
+node daquele assunto. Sem a correção o teste falha; com ela passa.
+
+Não medi o roteamento por nodes de verdade com as 240 consultas depois da
+correção; isso fica para quando houver compartimentos em nodes separados.
+
 ## Passo 5: conferir uma afirmação buscando a página por conta própria
 
 ### Pergunta
