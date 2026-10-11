@@ -115,8 +115,14 @@ there are no external stakers.
   index grows from the pages each query fetches.
 - Ingestion-time claims live in the SDK (`oi_sdk::claims`) and were measured
   by feeding stored pages through it. They are not yet wired into the crawl
-  pipeline or the P2P nodes, and the `--answer` report still uses the slower
-  query-time path.
+  pipeline, and the `--answer` report still uses the slower query-time path.
+- Serving that signal from several nodes is not solved. We split the claims
+  across three real nodes and queried one: the fan-out works and costs about
+  2 ms on localhost, but the result differed from the single-node one on 16
+  of 240 queries and the label lost its edge. The nodes' page search ranks
+  by a per-node score and returns one result per URL; claims need a plain
+  vector lookup with an absolute score, and the response has to carry the
+  vectors. That is protocol work we have not done.
 - Nodes checking each other's ingestion work on chain is design, not code.
   What makes it tractable is that the check is mechanical: a quote is in the
   page with that hash, or it is not.

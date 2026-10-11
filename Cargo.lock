@@ -5058,6 +5058,7 @@ dependencies = [
  "oi-embed",
  "oi-facts",
  "oi-index",
+ "oi-network",
  "oi-sdk",
  "oi-staking",
  "oi-types",

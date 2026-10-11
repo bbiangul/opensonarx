@@ -191,10 +191,82 @@ sinal medido de dois jeitos.
 - Os limiares valem para este embedder.
 - Contradição entre fontes não é vista por este selo.
 - Um leitor, que é um modelo; 177 respostas no teste.
-- Um node, um processo. Rede e nodes múltiplos não foram medidos.
+- Um node, um processo. O passo 2, abaixo, mede três nodes.
+
+## Passo 2: o mesmo sinal servido por nodes da rede
+
+Não registrado antes; é uma medição de engenharia, não um teste do selo.
+
+### O que foi feito
+
+As 12.396 afirmações foram repartidas por um hash da URL entre N nodes
+reais (`oi_network::Node`, TCP em localhost). Cada node guarda a sua parte
+num `HybridIndex` comum e a anuncia como um compartimento. A consulta vai só
+ao node 0, que busca na sua parte, repassa aos outros pela rede e junta as
+respostas, tudo pelo caminho de consulta que a rede já tinha. Quem consulta
+conta as famílias com o `supporting_families` do SDK.
+
+Rodado com 1 node e com 3, nas 240 consultas de teste.
+
+### O que funcionou
+
+- Três nodes sobem, se descobrem e o repasse funciona sem código novo na
+  rede.
+- O repasse custa pouco em localhost: a consulta ao node foi de 1,9 ms
+  (1 node) para 4,0 ms (3 nodes) na mediana.
+
+### O que não funcionou
+
+**Com três nodes o resultado não é igual ao de um.**
+
+| Configuração | Mesmo selo em 1 e 3 nodes | Mesma afirmação-cabeça |
+|---|---|---|
+| Caminho de busca do node como está | 224 de 240 | 140 de 240 |
+| Pedindo 60 e reordenando por similaridade absoluta em quem consulta | 233 de 240 | 202 de 240 |
+
+Dois motivos, ambos do caminho de busca de páginas que o node usa:
+
+- cada node ordena por uma pontuação relativa aos próprios resultados
+  (fusão por posição), e a junção ordena por essa pontuação, que não é
+  comparável entre nodes;
+- o node devolve o melhor resultado por URL, o que serve para páginas e não
+  para afirmações.
+
+**O selo servido por esse caminho ficou mais fraco.** Nas respostas do
+teste, com 1 node: 5 erradas em 45 com selo (11,1%) contra 26 em 132 sem
+(19,7%), intervalo de −3,1 a +19,6 pontos. Com 3 nodes: 4 em 42 contra 27 em
+135, intervalo de −1,0 a +21,2. Nos dois o intervalo inclui zero. O índice
+vetorial único do passo 1 deu 8,2% contra 22,4%.
+
+**Os vetores não viajam na resposta.** Quem consulta precisa gerar de novo o
+embedding das afirmações devolvidas para compará-las com a cabeça, e isso
+custa cerca de 65 ms, bem mais que a consulta em si. O total ficou em torno
+de 75 ms na mediana, não 4.
+
+### O que isto diz
+
+A divisão em nodes e o repasse funcionam. O que não serve para afirmações é
+reaproveitar a busca de páginas. Para o sinal do passo 1 valer na rede
+faltam duas coisas, as duas no protocolo:
+
+1. uma consulta de afirmações no node que seja busca vetorial pura, com a
+   similaridade absoluta como pontuação, e junção por ela;
+2. a resposta levar o vetor de cada afirmação, ou o node 0 calcular a
+   similaridade com a cabeça depois de juntar.
+
+Nenhuma das duas foi feita aqui.
+
+### Limites do passo 2
+
+- Todos os nodes num processo só, numa máquina só, em localhost. Não há
+  latência de rede de verdade.
+- A variante com reordenação foi configurada depois de ver a primeira; os
+  números dela contra os rótulos são descritivos.
 
 ### Arquivos
 
+- Passo 2: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-test.json`
+  e `ingest-claims-nodes-{1,3}-rerank-test.json`
 - Afirmações: `outputs/validation-20261009/ingest-claims-live-480.jsonl`
 - Sinal no desenvolvimento e no teste:
   `outputs/validation-20261009/ingest-claims-signal-{dev,test}.json`

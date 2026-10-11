@@ -16,6 +16,7 @@ mod answer_live;
 mod beir;
 mod bench_quality;
 mod claim_ingest;
+mod claim_nodes;
 mod dataset;
 mod dist_sim;
 mod election_polls_bench;
@@ -427,6 +428,33 @@ enum Command {
 
         #[arg(long)]
         min_claim_similarity: Option<f32>,
+
+        #[arg(long)]
+        output: String,
+    },
+    /// The corroboration signal served by real network nodes: claims split
+    /// across N nodes, the query sent to one of them
+    ClaimNodes {
+        /// Output of claim-ingest
+        #[arg(long)]
+        claims: String,
+
+        /// answer-live report whose queries are looked up; repeatable
+        #[arg(long)]
+        report: Vec<String>,
+
+        /// Number of nodes the claims are split across
+        #[arg(long, default_value_t = 3)]
+        nodes: usize,
+
+        /// First TCP port; node i listens on base + i
+        #[arg(long, default_value_t = 19400)]
+        base_port: u16,
+
+        /// Ask the node for this many results and re-rank them at the caller
+        /// by absolute similarity before keeping the policy's top_k
+        #[arg(long)]
+        fetch_limit: Option<usize>,
 
         #[arg(long)]
         output: String,
@@ -1747,6 +1775,30 @@ async fn main() {
             }
             if let Err(error) = claim_ingest::signal(&claims, &report, policy, &output) {
                 eprintln!("claim-signal failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::ClaimNodes {
+            claims,
+            report,
+            nodes,
+            base_port,
+            fetch_limit,
+            output,
+        } => {
+            let policy = oi_sdk::claims::ClaimPolicy::default();
+            if let Err(error) = claim_nodes::run(
+                &claims,
+                &report,
+                nodes,
+                policy,
+                base_port,
+                fetch_limit,
+                &output,
+            )
+            .await
+            {
+                eprintln!("claim-nodes failed: {error}");
                 std::process::exit(2);
             }
         }
