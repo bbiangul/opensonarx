@@ -32,6 +32,22 @@ pub struct ClaimPolicy {
     /// How many nearest stored claims are looked at to find them.
     #[serde(default = "default_judge_pool")]
     pub judge_pool: usize,
+    /// Which fetched claim the others are compared with.
+    #[serde(default)]
+    pub head: HeadRule,
+}
+
+/// Which of the claims fetched for a request is taken as the head, the claim
+/// the others are compared with.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HeadRule {
+    /// The claim nearest to the request.
+    #[default]
+    Nearest,
+    /// Among the claims about the request, the one the most independent
+    /// source families repeat; the nearest to the request on a tie.
+    MostRepeated,
 }
 
 fn default_judge_neighbors() -> usize {
@@ -58,6 +74,7 @@ impl Default for ClaimPolicy {
             min_source_families: 2,
             judge_neighbors: default_judge_neighbors(),
             judge_pool: default_judge_pool(),
+            head: HeadRule::Nearest,
         }
     }
 }
@@ -147,6 +164,13 @@ pub fn cosine(a: &[f32], b: &[f32]) -> f32 {
     }
 }
 
+/// Whether a fetched claim is counted with the head: about the request,
+/// and close enough to the head claim.
+pub fn counts_with_head(claim: &MatchedClaim, policy: &ClaimPolicy) -> bool {
+    claim.query_similarity >= policy.min_query_similarity
+        && claim.head_similarity >= policy.min_claim_similarity
+}
+
 /// Distinct source families among the matches that state the head claim.
 /// Zero when the head itself is not close enough to the request.
 pub fn supporting_families(matches: &[MatchedClaim], policy: &ClaimPolicy) -> usize {
@@ -158,13 +182,38 @@ pub fn supporting_families(matches: &[MatchedClaim], policy: &ClaimPolicy) -> us
     }
     matches
         .iter()
-        .filter(|claim| {
-            claim.query_similarity >= policy.min_query_similarity
-                && claim.head_similarity >= policy.min_claim_similarity
-        })
+        .filter(|claim| counts_with_head(claim, policy))
         .map(|claim| claim.source_family.as_str())
         .collect::<BTreeSet<_>>()
         .len()
+}
+
+/// Among the fetched claims that are about the request, the position of the
+/// one with the most source families holding a claim close to it. On a tie
+/// the earliest, which is the nearest to the request. `None` when no fetched
+/// claim is about the request.
+fn most_repeated(fetched: &[(MatchedClaim, Vec<f32>)], policy: &ClaimPolicy) -> Option<usize> {
+    let about: Vec<usize> = (0..fetched.len())
+        .filter(|&i| fetched[i].0.query_similarity >= policy.min_query_similarity)
+        .collect();
+    let families = |candidate: usize| {
+        about
+            .iter()
+            .filter(|&&other| {
+                cosine(&fetched[candidate].1, &fetched[other].1) >= policy.min_claim_similarity
+            })
+            .map(|&other| fetched[other].0.source_family.as_str())
+            .collect::<BTreeSet<_>>()
+            .len()
+    };
+    let mut best: Option<(usize, usize)> = None;
+    for &candidate in &about {
+        let count = families(candidate);
+        if best.is_none_or(|(_, held)| count > held) {
+            best = Some((candidate, count));
+        }
+    }
+    best.map(|(position, _)| position)
 }
 
 /// Order fetched claims by similarity to the request, keep the closest
@@ -183,6 +232,13 @@ pub fn corroboration(
     let mut seen: HashSet<(String, String)> = HashSet::new();
     fetched.retain(|(claim, _)| seen.insert((claim.url.clone(), claim.claim.clone())));
     fetched.truncate(policy.top_k);
+    if policy.head == HeadRule::MostRepeated
+        && let Some(position) = most_repeated(&fetched, policy)
+    {
+        // The head goes first; the rest keep their order.
+        let head = fetched.remove(position);
+        fetched.insert(0, head);
+    }
     let head = fetched.first().map(|(_, vector)| vector.clone());
     let matches: Vec<MatchedClaim> = fetched
         .into_iter()
@@ -304,6 +360,53 @@ mod tests {
         assert_eq!(signal.supporting_families, 2);
         assert!(signal.corroborated);
         assert!(!corroboration(Vec::new(), &policy).corroborated);
+    }
+
+    #[test]
+    fn the_most_repeated_claim_can_be_the_head_instead_of_the_nearest() {
+        let fetched = || {
+            vec![
+                // Nearest to the request, stated by one family.
+                fetched("lone", "one.org", 0.90, [0.0, 0.0, 1.0]),
+                // A little farther, stated by three families.
+                fetched("shared", "two.org", 0.85, [1.0, 0.0, 0.0]),
+                fetched("shared again", "three.org", 0.84, [0.99, 0.1, 0.0]),
+                fetched("shared once more", "four.org", 0.83, [0.98, 0.15, 0.0]),
+                // Close to the shared claim but not about the request.
+                fetched("off topic", "five.org", 0.30, [1.0, 0.0, 0.0]),
+            ]
+        };
+        let nearest = ClaimPolicy {
+            top_k: 5,
+            min_query_similarity: 0.5,
+            min_claim_similarity: 0.9,
+            ..ClaimPolicy::default()
+        };
+        let signal = corroboration(fetched(), &nearest);
+        assert_eq!(signal.matches[0].claim, "lone");
+        assert_eq!(signal.supporting_families, 1);
+
+        let repeated = ClaimPolicy {
+            head: HeadRule::MostRepeated,
+            ..nearest.clone()
+        };
+        let signal = corroboration(fetched(), &repeated);
+        assert_eq!(signal.matches[0].claim, "shared");
+        assert_eq!(signal.matches[1].claim, "lone", "the rest keep their order");
+        assert_eq!(
+            signal.supporting_families, 3,
+            "the off-topic claim is not counted"
+        );
+        assert!(signal.corroborated);
+
+        // Nothing about the request: the nearest stays the head, no label.
+        let strict = ClaimPolicy {
+            min_query_similarity: 0.95,
+            ..repeated
+        };
+        let signal = corroboration(fetched(), &strict);
+        assert_eq!(signal.matches[0].claim, "lone");
+        assert_eq!(signal.supporting_families, 0);
     }
 
     #[test]

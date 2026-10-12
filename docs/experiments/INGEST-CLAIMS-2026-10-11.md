@@ -710,6 +710,52 @@ O que deu errado no caminho e está registrado:
   precisaria de um novo arquivo, e trocar de arquivo muda o nome de todos os
   compartimentos de uma vez; não há migração gradual.
 
+## Passo 9: qual afirmação serve de referência
+
+### O que apareceu na demo
+
+Montando a demo de ponta a ponta (`scripts/demo.py`), a pergunta "qual é o
+maior deserto do mundo" foi feita três vezes, cada vez com páginas buscadas
+na hora. Em duas a afirmação de referência foi "a Antártida é o maior
+deserto". Na terceira foi "o deserto da Síria é o décimo maior do mundo", e
+a tela dizia "4 fontes independentes" listando quatro afirmações que não
+dizem a mesma coisa. A referência é a afirmação guardada mais próxima da
+pergunta pelo embedding, e para uma pergunta dessas todas as frases "X é o
+N-ésimo maior deserto" ficam quase à mesma distância.
+
+O selo `ingest-claims-v1` continua valendo como medido (separa certo de
+errado em média). O problema é escolher uma afirmação só e mostrá-la como se
+fosse o que as fontes dizem.
+
+### Regra candidata (`ingest-claims-v2`)
+
+Entre as afirmações buscadas que estão perto o bastante da pergunta
+(semelhança de pelo menos 0,725), a referência passa a ser **a que mais
+fontes independentes repetem**: para cada candidata, contam-se as famílias
+de fonte com afirmação a pelo menos 0,841 dela; fica a de maior contagem, e
+no empate a mais próxima da pergunta. O resto não muda: mesmas 20
+afirmações buscadas, mesmos dois limiares, selo com duas famílias ou mais.
+
+Nenhum número novo. Não há lista de palavras nem regra de linguagem: é
+contagem sobre os mesmos vetores.
+
+### Protocolo (registrado antes de rodar)
+
+- **Dados e rótulos.** Os mesmos dos passos 1 e 7: desenvolvimento (240
+  consultas de `live-1` e `misinfo-1`) e teste (240 de `trust-1`).
+- **Medida.** Taxa de erro das respostas diretas com selo contra sem selo,
+  no desenvolvimento e no teste, para v1 e v2 lado a lado, com intervalo por
+  reamostragem. O critério é o do passo 1.
+- **Decisão combinada antes.** A v2 só vira o padrão do produto se, no
+  teste, a diferença for positiva com o limite inferior do intervalo acima
+  de zero. Se não for, o produto fica na v1 e a tela deixa de apresentar
+  uma afirmação de referência como o que as fontes dizem.
+- **O que precisa ficar dito.** A regra foi pensada depois de ver a v1
+  falhar na tela da demo, não a partir dos rótulos. É a terceira vez que o
+  conjunto de teste é usado para avaliar um selo. Por construção a v2 dá
+  selo a toda consulta que a v1 dá e a mais algumas; o que se mede é se
+  essas a mais estragam o selo.
+
 ## Passo 5: conferir uma afirmação buscando a página por conta própria
 
 ### Pergunta

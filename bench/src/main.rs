@@ -21,6 +21,7 @@ mod claim_judged;
 mod claim_nodes;
 mod claim_routing;
 mod dataset;
+mod demo_forger;
 mod dist_sim;
 mod election_polls_bench;
 mod embed;
@@ -463,6 +464,11 @@ enum Command {
         #[arg(long)]
         min_claim_similarity: Option<f32>,
 
+        /// Take as head the claim most source families repeat, instead of
+        /// the claim nearest to the query
+        #[arg(long)]
+        head_most_repeated: bool,
+
         #[arg(long)]
         output: String,
     },
@@ -497,6 +503,35 @@ enum Command {
 
         #[arg(long)]
         output: String,
+    },
+    /// A dishonest node for demonstrations: joins a shard and offers a real
+    /// page with one honest claim and one forged claim whose quote the page
+    /// does not contain
+    DemoForger {
+        /// Page the dishonest node fetches and offers
+        #[arg(long)]
+        url: String,
+
+        /// Shard it claims to serve
+        #[arg(long)]
+        shard: String,
+
+        /// Multiaddr of a node to join through
+        #[arg(long)]
+        bootstrap: String,
+
+        #[arg(long, default_value_t = 4290)]
+        port: u16,
+
+        #[arg(long)]
+        forged_claim: String,
+
+        #[arg(long)]
+        forged_quote: String,
+
+        /// How long to stay on the network
+        #[arg(long, default_value_t = 40)]
+        seconds: u64,
     },
     /// How many of an honest node's stored claims a second node can confirm
     /// by fetching each page itself and looking for the quote
@@ -1866,9 +1901,14 @@ async fn main() {
             top_k,
             min_query_similarity,
             min_claim_similarity,
+            head_most_repeated,
             output,
         } => {
             let mut policy = oi_sdk::claims::ClaimPolicy::default();
+            if head_most_repeated {
+                policy.head = oi_types::claims::HeadRule::MostRepeated;
+                policy.policy_id = "ingest-claims-v2".to_string();
+            }
             if let Some(value) = top_k {
                 policy.top_k = value;
             }
@@ -1906,6 +1946,30 @@ async fn main() {
             .await
             {
                 eprintln!("claim-nodes failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::DemoForger {
+            url,
+            shard,
+            bootstrap,
+            port,
+            forged_claim,
+            forged_quote,
+            seconds,
+        } => {
+            if let Err(error) = demo_forger::run(
+                &url,
+                &shard,
+                &bootstrap,
+                port,
+                &forged_claim,
+                &forged_quote,
+                seconds,
+            )
+            .await
+            {
+                eprintln!("demo-forger failed: {error}");
                 std::process::exit(2);
             }
         }
