@@ -50,8 +50,8 @@ Solana program are for.
 ## See all of it run
 
 One command starts three nodes, a dishonest node and (unless pointed at
-devnet) a local Solana validator, walks through eight acts and ends each with checks computed from
-what the processes answered. Pages are fetched and read while it runs;
+devnet) a local Solana validator, walks through eight acts and ends each
+with checks computed from what the processes and the chain answered. Pages are fetched and read while it runs;
 nothing is replayed.
 
 ```bash
@@ -60,8 +60,8 @@ scripts/demo.py --keep            # --keep leaves the live pages up
 ```
 
 It needs Rust, Python 3, an [OpenRouter](https://openrouter.ai) key and, for
-the last act, the [Solana CLI](https://docs.anza.xyz/cli/install) (or pass
-`--skip-solana`). The first run compiles everything and downloads a small
+the acts on chain, the [Solana CLI](https://docs.anza.xyz/cli/install) (or
+pass `--skip-solana`, which leaves out the bonds and the slash). The first run compiles everything and downloads a small
 embedding model; after that a run takes about two minutes. On the local
 validator the script makes its own wallet and program address, so it uses
 nothing of yours.
@@ -72,23 +72,37 @@ nothing of yours.
 | 2 | The index is divided by subject, learned from its own pages | a versioned routing file; an edited file is refused |
 | 3 | Two nodes ingest only their own subjects and read each page once for claims | both hold claims, each of its own shard |
 | 4 | A question is answered from stored claims | same answer from both nodes, no claim held twice, claims fetched from the other node, milliseconds |
-| 5 | A replica with no model joins | it holds every claim, each quote found in its own copy of the page |
-| 6 | A dishonest node offers a forged claim | the replica refuses exactly that claim and keeps the honest one |
-| 7 | An outside process re-fetches the pages | every quote found again; no quote from another page accepted |
+| 5 | A replica with no model joins and requires a bond | nothing copied from a node until its operator locks a bond on chain; then every claim, each quote found in its own copy of the page |
+| 6 | A bonded operator's node offers a forged claim | the replica refuses exactly that claim, keeps the honest one, and records the evidence with the operator's wallet |
+| 7 | An outside process re-fetches the pages, and the bond is slashed | every honest quote found again; no quote from another page accepted; the forged quote absent from the live page; a slash signed by anyone but the authority rejected; the dishonest operator's bond at zero on chain and the honest one untouched; the replica no longer copies from that operator |
 | 8 | A publisher bonds SOL behind a domain | read back from the chain; the running node shows it; the returned claims and their order do not change |
 
-A full run with the bond on devnet, 18 of 18 checks:
+A full run on devnet, 25 of 25 checks:
 [docs/hackathon/DEMO-RUN.txt](docs/hackathon/DEMO-RUN.txt). Add
-`--rpc https://api.devnet.solana.com` to bond on devnet with your own funded
-wallet; without it the last act uses a local validator.
+`--rpc https://api.devnet.solana.com` to use devnet with your own funded
+wallet; without it the acts on chain use a local validator.
 While the nodes are up, each serves a live page at `/demo` showing what it
 holds, its peers, what it refused, the bonds it knows, and what each source
 states about a question.
 
+**The money loop, and where it stops.** A node's network identity is its
+operator's Solana wallet key, so a peer reads the wallet from the peer id
+it is already talking to. A node that requires bonds copies only from
+operators whose bond account is in good standing. When it refuses a claim
+it keeps the claim, the quote, the page and the operator's wallet. In the
+demo an auditor repeats the check from the web and the bond is slashed on
+chain, after which the replica stops copying from that operator. What is
+decided on chain is custody and the slash itself. What is not: the slash
+is sent by the protocol authority, and the program takes its word. One
+failed quote would not be enough in production, because pages change (about
+1 in 100 honest quotes fails a re-fetch a day later, by our measurement).
+The bond is in a test token.
+
 What the demo does not show, because it is not built: nodes on separate
-machines, rewards and penalties on chain for ingestion work, and a judgment
-of whether two sources state the same fact (the count is of sources with a
-claim close to the question; see "What is not built").
+machines, a slash that anyone can trigger and the chain itself checks,
+payment to nodes for ingestion work, and a judgment of whether two sources
+state the same fact (the count is of sources with a claim close to the
+question; see "What is not built").
 
 Building the demo found five defects in the network layer that only show
 with three or more real nodes, all fixed with tests: a node's identity taken
@@ -146,10 +160,11 @@ cargo test --manifest-path tests/integration/Cargo.toml --test solana_e2e
 ```
 
 **Deployment status.** The program is on Solana devnet at
-[`5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c`](https://explorer.solana.com/address/5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c?cluster=devnet).
-The demo has run end to end against it twice: a `Stake` transaction bonded
-0.25 SOL to a domain, the stake account was read back from the chain, and
-the running node showed the bond next to that source. Signatures and the
+[`5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c`](https://explorer.solana.com/address/5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c?cluster=devnet),
+with the protocol initialized. The demo has run end to end against it: two
+node operators locked bonds, one was slashed after its node was caught
+offering a forged claim, and a publisher's 0.25 SOL bond on a domain was
+read back from the chain and shown by the running node. Signatures and the
 one-command reproduction are in
 [docs/hackathon/DEVNET.md](docs/hackathon/DEVNET.md). It is devnet, with
 test SOL; nothing is on mainnet.
@@ -197,8 +212,12 @@ there are no external stakers.
   without it, an interval that includes zero, at half the coverage of the
   current label. It is in the code behind a trait and not in the served
   path.
-- Nodes checking each other's ingestion work on chain is design, not code.
-  What makes it tractable is that the check is mechanical: a quote is in the
+- Nodes are checked and can lose a bond, but not yet without trust in an
+  authority. A replica refuses a claim whose quote is not in the page, keeps
+  the evidence, and the operator's bond can be slashed on chain (see the
+  demo); the slash is sent by the protocol authority, which the program
+  does not second-guess, and nobody is paid for honest work yet.
+  What makes a trustless version tractable is that the check is mechanical: a quote is in the
   page, or it is not. We measured it with a second node fetching 300 pages
   itself a day later: none of 3,056 quotes taken from a different page was
   accepted, and 99.0% of the honest claims were found again (95% interval

@@ -522,7 +522,12 @@ não tem nada, o node devolveu zero famílias.
 - A sincronização entre nodes do mesmo compartimento compara o
   identificador exato; um node que serve `assunto` e outro que serve
   `assunto/3` não se sincronizam por esse caminho.
-- Recompensa e punição na cadeia pelo trabalho de ingestão.
+- Punição na cadeia existe em miniatura (12 de outubro): o node exige
+  depósito do operador de quem copia, guarda a evidência de cada recusa, e o
+  depósito de um operador pego oferecendo citação forjada é cortado na
+  devnet (`scripts/demo.py`, atos 5 a 7). O corte é enviado pela autoridade
+  do protocolo; o programa não confere a evidência. Recompensa pelo trabalho
+  honesto não existe.
 
 ## Passo 6: a divisão como o produto faz (a afirmação fica com a página)
 

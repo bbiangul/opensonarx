@@ -5,7 +5,7 @@ ACT 1  An agent searches and gets sources
 ─────────────────────────────────────────
   The command-line client searches the open web, fetches the pages it finds and keeps them.
 
-  “what is the largest desert in the world”  (2.4 s, pages fetched and indexed)
+  “what is the largest desert in the world”  (2.5 s, pages fetched and indexed)
      1  earthhow.com                 What is the Largest Desert in the World? - Earth How
      2  geology.com                  Largest Desert in the World - Desert Map - Geology.com
      3  geographypin.com             Largest Desert in the World? (Antarctica vs. Sahara)
@@ -13,13 +13,13 @@ ACT 1  An agent searches and gets sources
      5  desertsoftheworld.com        Top 10 Largest Deserts in the World (Ranked by Area)
      6  thecampusreview.com          Largest Deserts in the World (Ranked by Area)
 
-  “how does compound interest work”  (2.6 s, pages fetched and indexed)
+  “how does compound interest work”  (3.1 s, pages fetched and indexed)
      1  consumerfinance.gov          How does compound interest work? - Consumer Financial…
      2  acorns.com                   How Does Compound Interest Work? Examples & How to Us…
      3  ramseysolutions.com          How Does Compound Interest Work? - Ramsey
      4  stlouisfed.org               How Compound Interest Works & How to Estimate It
-     5  pnc.com                      What Is Compound Interest & How Is It Calculated? | P…
-     6  wikihow.com                  How to Calculate Compound Interest: Formula & Easy St…
+     5  wikihow.com                  How to Calculate Compound Interest: Formula & Easy St…
+     6  fidelity.com                 What is compound interest? | Fidelity
   ✔ PROVED     each question returns sources from at least three independent sites
                6 sites, 6 sites
 
@@ -42,10 +42,10 @@ ACT 3  Two nodes each ingest only their subjects, reading pages once for claims
   Node A serves shard 0, node B serves shard 1. Both are given the same pages.
   Each keeps the chunks of its shard, a model lists what each page states, and a claim
   is stored only if its quote is found character by character in the page.
-    node A:  17 chunks kept, 173 claims stored (23 s of fetching and model reading)
-    node B:  19 chunks kept, 196 claims stored (24 s of fetching and model reading)
+    node A:  17 chunks kept, 179 claims stored (27 s of fetching and model reading)
+    node B:  24 chunks kept, 237 claims stored (27 s of fetching and model reading)
   ✔ PROVED     both nodes extracted and stored claims from the pages of their own shard
-               A 173 claims, B 196 claims, 10 pages offered to each, 24 s
+               A 179 claims, B 237 claims, 10 pages offered to each, 27 s
 
 ACT 4  A question is answered from stored claims, in milliseconds, across nodes
 ───────────────────────────────────────────────────────────────────────────────
@@ -55,35 +55,35 @@ ACT 4  A question is answered from stored claims, in milliseconds, across nodes
   quote. Whoever asked, a person or an agent, reads them.
 
   “what is the largest desert in the world”  asked to node A
-    4 independent sources hold claims close to this question  ·  6.0 ms  ·  0 of 20 claims from other nodes
+    4 independent sources hold claims close to this question  ·  6.2 ms  ·  0 of 20 claims from other nodes
       worldatlas.com  held by this node
-        The Sahara Desert is the largest subtropical desert in the world, measuring 3.5 million s…
-        “The Sahara is the largest subtropical desert in the world, clocking in at 3.5 million…”
-      earthhow.com  held by this node
-        Antarctica is the largest desert in the world, covering about 14 million square kilometer…
-        “the largest desert in the world is actually the cold, icy expanse of Antarctica. Cove…”
+        The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 …
+        “The Syrian—also known as the Syrian or Jordanian Steppe—is the tenth largest desert i…”
       geographypin.com  held by this node
-        The largest desert is Antarctica at about 13.96 million km² (5.39 million sq mi).
-        “The largest desert is Antarctica at ~ 13.96 million km² (5.39 million sq mi) .”
+        The Antarctic Desert is the largest desert on Earth, covering about 13.96 million km² (5.…
+        “The largest desert on Earth is the Antarctic Desert , a polar desert covering about 1…”
       desertsoftheworld.com  held by this node
-        The Antarctic Desert is the largest desert on Earth by a wide margin.
-        “The Antarctic Desert is the largest desert on Earth by a wide margin.”
+        The Sahara is the largest hot desert in the world and the most famous desert by far.
+        “The Sahara is the largest hot desert in the world and the most famous desert by far.”
+      earthhow.com  held by this node
+        The Arctic Desert is the second largest desert, spanning approximately 13.2 million squar…
+        “The Arctic Desert is the second largest , spanning approximately 13.2 million square …”
     of the 20 nearest claims, 20 are held by A and 0 by B
 
   “how does compound interest work”  asked to node A
-    4 independent sources hold claims close to this question  ·  4.5 ms  ·  20 of 20 claims from other nodes
-      consumerfinance.gov  held by peer …Fn8w6S
+    4 independent sources hold claims close to this question  ·  4.4 ms  ·  20 of 20 claims from other nodes
+      consumerfinance.gov  held by peer …iXPxx2
         Compound interest is when you earn interest on the money you have saved and on the intere…
         “Compound interest is when you earn interest on the money you’ve saved and on the inte…”
-      acorns.com  held by peer …Fn8w6S
-        Compound interest is interest earned on investments and on any interest the money earns i…
-        “Compound interest is interest you earn on your investments and any interest your mone…”
-      ramseysolutions.com  held by peer …Fn8w6S
-        Compound interest is the interest earned from the original amount (principal) of an inves…
+      ramseysolutions.com  held by peer …iXPxx2
+        Compound interest is the interest earned on an investment's original amount (principal) p…
         “Compound interest is the interest you earn from the original amount (or principal) of…”
-      pnc.com  held by peer …Fn8w6S
-        Compound interest is built into many common financial products.
-        “Compound interest is built into many common financial products.”
+      acorns.com  held by peer …iXPxx2
+        Compound interest is interest earned on investments and on any interest that money earns …
+        “Compound interest is interest you earn on your investments and any interest your mone…”
+      wikihow.com  held by peer …iXPxx2
+        In the compound interest formula, "c" is the compounding frequency, representing how many…
+        “"c" is the compounding frequency and represents how many times the interest is compou…”
     of the 20 nearest claims, 0 are held by A and 20 by B
   ✔ PROVED     both nodes give the same claims in the same order for every question
                node A and node B compared claim by claim
@@ -92,25 +92,47 @@ ACT 4  A question is answered from stored claims, in milliseconds, across nodes
   ✔ PROVED     answers cross the network: a node returns claims that only its peer holds
                2 of 2 questions needed the other node
   ✔ PROVED     the lookup takes milliseconds
-               median 4.8 ms, slowest 6.0 ms over 4 first lookups, question embedding and network round included
+               median 4.5 ms, slowest 6.2 ms over 4 first lookups, question embedding and network round included
   ✔ PROVED     for at least one question, two or more independent sources hold a close claim
                4 sources; 4 sources
 
-ACT 5  A replica with no model receives claims and checks every quote
-─────────────────────────────────────────────────────────────────────
-  Node C joins as a second holder of shard 0. It has no model and no API key.
-  It pulls pages and claims from node A and keeps a claim only if it finds the quote
-  in the page text it now holds.
-    node A holds 17 chunks and 173 claims;  node C now holds 17 and 173, refused 0
+ACT 5  A replica copies from a node only after its operator posts a bond on Solana
+──────────────────────────────────────────────────────────────────────────────────
+  Node C joins as a second holder of shard 0, with no model and no API key, and it
+  requires a bond: it reads the operator's wallet from a peer's network identity and
+  copies only from operators whose bond account on chain is in good standing.
+  Cluster: https://api.devnet.solana.com  (your wallet and the program keypair in ~/.config/solana)
+    program 5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c
+    protocol initialized
+    token mint: P7Tx7UnWFYLJvkcpfszojnZQKmDf5MJcaKTa84KTA6o
+    the bond is in a test token minted on this cluster; it has no value
+    before any bond: node C holds 0 claims and passed over an unbonded peer 2 times
+  ✔ PROVED     without a bond on chain, the replica copies nothing from node A
+               C holds 0 chunks and 0 claims after 2 sync rounds
+  The operator of node A (8nKYxqSi…) locks 1,000,000 units:
+    operator bonded 1000000 units of the test token
+    operator: 8nKYxqSibwKu2Q1BdSNY4NhLrvdQgiDdhjAgGFxXXm4Q
+    bond account: 6d7uJByFNZdG2QUtnPhhUiv8S9d8Kxw7n7t6sbFx8GZe
+    signature: UJxjUEoSh4Rrkc3Ri8vKESxADqhxznGwBe7XwYqwTiyuBpTgmBJnVowbMEopMGsPfYXvwqbmMVkuUk3Rn2ae7x1
+    https://explorer.solana.com/tx/UJxjUEoSh4Rrkc3Ri8vKESxADqhxznGwBe7XwYqwTiyuBpTgmBJnVowbMEopMGsPfYXvwqbmMVkuUk3Rn2ae7x1?cluster=devnet
+  ✔ PROVED     node A's operator locked a bond in the program's account on chain
+               1,000,000 units standing in the bond account of 8nKYxqSibwKu2Q1BdSNY4NhLrvdQgiDdhjAgGFxXXm4Q
+    node A holds 17 chunks and 179 claims;  node C now holds 17 and 179, refused 0
   ✔ PROVED     a node with no model holds every claim after replication, each quote found in its own copy
-               model on C: none; C 173 of A's 173 claims, none refused
+               model on C: none; C 179 of A's 179 claims, none refused
   ✔ PROVED     the replica answers with the same closest claim as the node that read the pages
-               The Sahara Desert is the largest subtropical desert in the world, measuring 3.5 million square mile…
+               The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 million sq…
 
-ACT 6  A dishonest node offers a forged claim and the replica refuses it
-────────────────────────────────────────────────────────────────────────
+ACT 6  A bonded operator offers a forged claim; the replica refuses it and keeps the evidence
+─────────────────────────────────────────────────────────────────────────────────────────────
   A modified node joins shard 0. It offers a real page with two claims: one sentence
   that is in the page, and one statement it made up, with a quote the page does not contain.
+  To be copied from at all, its operator (5BGpSxto…) has to lock a bond too:
+    operator bonded 1000000 units of the test token
+    operator: 5BGpSxtoa8chqatFBmpTgQoNazkptKBm56dEXnvPT7y6
+    bond account: HqSPwWoRs1k2BKLHq7x9LeYCvX2b3rjUx7AADsrB52PX
+    signature: 3aTfVQwcxedRyXECDJxMppRm5u898U439fct3Z1bWxb5Jc14DNN9Gi5rpsW6dteESg44rCn1m35MjNH4ZC52p1iU
+    https://explorer.solana.com/tx/3aTfVQwcxedRyXECDJxMppRm5u898U439fct3Z1bWxb5Jc14DNN9Gi5rpsW6dteESg44rCn1m35MjNH4ZC52p1iU?cluster=devnet
     page          https://www.worldatlas.com/geography/the-10-largest-deserts-in-the-world.html
     honest claim  Deserts are usually considered to be hot, arid areas with vast stretches of sand an…
     forged claim  The Sahara is the largest desert in the world, twice the size of Antarctica.
@@ -120,11 +142,13 @@ ACT 6  A dishonest node offers a forged claim and the replica refuses it
                refused from peers went 0 → 1; the forged statement is not in node C
   ✔ PROVED     the same dishonest node's true claim was accepted
                the honest sentence is in node C, found by its own text
+  ✔ PROVED     the refusal is kept as evidence that names the operator's wallet
+               claim, quote and page kept; offered by 5BGpSxtoa8chqatFBmpTgQoNazkptKBm56dEXnvPT7y6
     What this check covers: a quote that is not in the page the replica received.
     A forged page is a different attack; the next act is the check against that.
 
-ACT 7  An outside auditor re-fetches the pages and looks for every quote
-────────────────────────────────────────────────────────────────────────
+ACT 7  An outside auditor repeats the check from the web, and the bond is slashed
+─────────────────────────────────────────────────────────────────────────────────
   A separate process takes the claims the nodes returned, fetches each page itself from
   the web, and looks for each quote. As a control it also looks for quotes taken from a
   different page, which must not be found.
@@ -136,40 +160,56 @@ ACT 7  An outside auditor re-fetches the pages and looks for every quote
   ✔ PROVED     the nodes' own quotes are found again by an independent fetch
                40 of 40 found; pages change, so this is not always all of them
 
+  Now the refused claim. The auditor fetches that page itself and looks for the quote:
+    page fetched: True   quote found: False
+  ✔ PROVED     fetched independently, the page does not contain the forged quote
+               https://www.worldatlas.com/geography/the-10-largest-deserts-in-the-world.html
+  ✔ PROVED     a slash signed by anyone but the protocol authority is rejected by the program
+               the dishonest operator tried to slash node A's bond; node A's bond is unchanged
+  The protocol authority slashes the bond of 5BGpSxto…, citing the evidence:
+    slashed 1000000 units from 5BGpSxtoa8chqatFBmpTgQoNazkptKBm56dEXnvPT7y6
+    bond account: HqSPwWoRs1k2BKLHq7x9LeYCvX2b3rjUx7AADsrB52PX
+    evidence: 962541525ce050499b31067f797c20b5a277d479be45cdf3f03dcce97f977f99
+    signature: e6S47ATTE18STGMAgjnpPWf9KXHwKZh4KdWF9s6jiS2ErsbwwRWgvvDcSz4ViSfbhE1zpH6aT77A9HDhfty73gZ
+    https://explorer.solana.com/tx/e6S47ATTE18STGMAgjnpPWf9KXHwKZh4KdWF9s6jiS2ErsbwwRWgvvDcSz4ViSfbhE1zpH6aT77A9HDhfty73gZ?cluster=devnet
+  ✔ PROVED     the dishonest operator's bond was slashed on chain; the honest operator's was not
+               dishonest operator 1,000,000 → 0 units; node A 1,000,000
+  ✔ PROVED     the replica no longer copies from the slashed operator
+               its node is still connected; C passed it over in 1 sync round(s) since the slash
+    What is and is not decided on chain: the program holds the bond and applies the slash,
+    but the slash is sent by the protocol authority and the program does not check the evidence.
+    In production one failed quote would not be enough: pages change, and about 1 in 100
+    honest quotes fails a re-fetch a day later. One is used here to show the mechanism.
+
 ACT 8  A publisher bonds SOL behind a domain on Solana; the node shows it
 ─────────────────────────────────────────────────────────────────────────
-  Cluster: https://api.devnet.solana.com  (your wallet and the program keypair in ~/.config/solana)
   The publisher of worldatlas.com bonds ◎0.25 behind its domain.
-    program: 5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c
-    bonded 250000000 lamports to worldatlas.com
     stake account: AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f
     https://explorer.solana.com/address/AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f?cluster=devnet
-    signature: 2adsmYi2jHGqA6LDsNgVWC6zX4Wm6j6tfVo2ahMwME7LzhiNLU2gTcTQS4gjnTJ3BmxWFbDD14fUotQG232z8ybf
-    https://explorer.solana.com/tx/2adsmYi2jHGqA6LDsNgVWC6zX4Wm6j6tfVo2ahMwME7LzhiNLU2gTcTQS4gjnTJ3BmxWFbDD14fUotQG232z8ybf?cluster=devnet
-    stake account: AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f
     lamports: 250000000
-  ✔ PROVED     the bond was written to the chain and read back from the stake account
+    worldatlas.com was already bonded on this cluster in an earlier run; the account is read back
+  ✔ PROVED     the bond is on the chain and was read back from the stake account
                250000000 lamports read from the account of worldatlas.com (https://api.devnet.solana.com)
   ✔ PROVED     the running node shows the bond next to that source, without a restart
-               8 claims from worldatlas.com now carry ◎0.25
+               9 claims from worldatlas.com now carry ◎0.25
   ✔ PROVED     the bond changes nothing about which claims come back or their order
                same claims, same order, same source count before and after
 
-    4 independent sources hold claims close to this question  ·  1.2 ms  ·  0 of 20 claims from other nodes
+    4 independent sources hold claims close to this question  ·  1.7 ms  ·  0 of 20 claims from other nodes
       worldatlas.com  ◎0.25 bonded on chain  held by this node
-        The Sahara Desert is the largest subtropical desert in the world, measuring 3.5 million s…
-        “The Sahara is the largest subtropical desert in the world, clocking in at 3.5 million…”
-      earthhow.com  held by this node
-        Antarctica is the largest desert in the world, covering about 14 million square kilometer…
-        “the largest desert in the world is actually the cold, icy expanse of Antarctica. Cove…”
+        The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 …
+        “The Syrian—also known as the Syrian or Jordanian Steppe—is the tenth largest desert i…”
       geographypin.com  held by this node
-        The largest desert is Antarctica at about 13.96 million km² (5.39 million sq mi).
-        “The largest desert is Antarctica at ~ 13.96 million km² (5.39 million sq mi) .”
+        The Antarctic Desert is the largest desert on Earth, covering about 13.96 million km² (5.…
+        “The largest desert on Earth is the Antarctic Desert , a polar desert covering about 1…”
       desertsoftheworld.com  held by this node
-        The Antarctic Desert is the largest desert on Earth by a wide margin.
-        “The Antarctic Desert is the largest desert on Earth by a wide margin.”
+        The Sahara is the largest hot desert in the world and the most famous desert by far.
+        “The Sahara is the largest hot desert in the world and the most famous desert by far.”
+      earthhow.com  held by this node
+        The Arctic Desert is the second largest desert, spanning approximately 13.2 million squar…
+        “The Arctic Desert is the second largest , spanning approximately 13.2 million square …”
 
-What this run proved  (99 s)
+What this run proved  (111 s)
   ✔ act 1  each question returns sources from at least three independent sites
   ✔ act 2  a two-shard routing was learned from the stored pages, both shards non-empty
   ✔ act 2  a node refuses a routing file that was edited after it was written
@@ -179,17 +219,25 @@ What this run proved  (99 s)
   ✔ act 4  answers cross the network: a node returns claims that only its peer holds
   ✔ act 4  the lookup takes milliseconds
   ✔ act 4  for at least one question, two or more independent sources hold a close claim
+  ✔ act 5  without a bond on chain, the replica copies nothing from node A
+  ✔ act 5  node A's operator locked a bond in the program's account on chain
   ✔ act 5  a node with no model holds every claim after replication, each quote found in its own copy
   ✔ act 5  the replica answers with the same closest claim as the node that read the pages
   ✔ act 6  the replica refused exactly the claim whose quote is not in the page
   ✔ act 6  the same dishonest node's true claim was accepted
+  ✔ act 6  the refusal is kept as evidence that names the operator's wallet
   ✔ act 7  no quote taken from a different page is accepted
   ✔ act 7  the nodes' own quotes are found again by an independent fetch
-  ✔ act 8  the bond was written to the chain and read back from the stake account
+  ✔ act 7  fetched independently, the page does not contain the forged quote
+  ✔ act 7  a slash signed by anyone but the protocol authority is rejected by the program
+  ✔ act 7  the dishonest operator's bond was slashed on chain; the honest operator's was not
+  ✔ act 7  the replica no longer copies from the slashed operator
+  ✔ act 8  the bond is on the chain and was read back from the stake account
   ✔ act 8  the running node shows the bond next to that source, without a restart
   ✔ act 8  the bond changes nothing about which claims come back or their order
 
-  18 of 18 checks passed
+  25 of 25 checks passed
 
-  Not shown here because it is not built: nodes on separate machines, rewards and
-  penalties on chain for ingestion work, a large index of our own.
+  Not shown here because it is not built: nodes on separate machines; a slash that
+  anyone can trigger and the chain itself checks (today the protocol authority sends it);
+  payment to nodes for ingestion work; a large index of our own.
