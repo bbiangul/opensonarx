@@ -5080,6 +5080,7 @@ name = "oi-cli"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "bs58",
  "clap",
  "dirs",
  "flate2",
@@ -5197,6 +5198,7 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "bincode",
+ "bs58",
  "dirs",
  "ed25519-dalek 2.2.0",
  "futures",

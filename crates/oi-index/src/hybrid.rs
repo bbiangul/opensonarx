@@ -183,6 +183,8 @@ pub struct HybridIndex {
     /// Claims a peer offered and this index refused because the quote was
     /// not in the page text it holds. Counted since the process started.
     claims_rejected: AtomicU64,
+    /// The most recent of those refusals, as evidence.
+    refused_claims: RwLock<Vec<oi_types::claims::RefusedClaim>>,
 }
 
 impl HybridIndex {
@@ -209,6 +211,7 @@ impl HybridIndex {
             chunk_seqs: RwLock::new(HashMap::new()),
             claims: RwLock::new(crate::claims::ClaimIndex::new(dim)),
             claims_rejected: AtomicU64::new(0),
+            refused_claims: RwLock::new(Vec::new()),
         }
     }
 
@@ -936,6 +939,7 @@ impl HybridIndex {
             chunk_seqs: RwLock::new(chunk_seqs),
             claims: RwLock::new(claims),
             claims_rejected: AtomicU64::new(0),
+            refused_claims: RwLock::new(Vec::new()),
         })
     }
 
@@ -1023,15 +1027,32 @@ impl HybridIndex {
         self.claims.read().map(|claims| claims.len()).unwrap_or(0)
     }
 
-    /// Record that claims offered by a peer were refused.
-    pub fn note_rejected_claims(&self, count: usize) {
-        self.claims_rejected
-            .fetch_add(count as u64, Ordering::AcqRel);
-    }
-
     /// Claims refused from peers since the process started.
     pub fn rejected_claim_count(&self) -> u64 {
         self.claims_rejected.load(Ordering::Acquire)
+    }
+
+    /// Record one refused claim with what is needed to repeat the check.
+    /// The same claim offered again by the same peer is counted once.
+    pub fn note_refused_claim(&self, refused: oi_types::claims::RefusedClaim) {
+        const KEPT: usize = 200;
+        if let Ok(mut kept) = self.refused_claims.write()
+            && !kept.contains(&refused)
+        {
+            if kept.len() >= KEPT {
+                kept.remove(0);
+            }
+            kept.push(refused);
+            self.claims_rejected.fetch_add(1, Ordering::AcqRel);
+        }
+    }
+
+    /// The refused claims still kept, oldest first.
+    pub fn refused_claims(&self) -> Vec<oi_types::claims::RefusedClaim> {
+        self.refused_claims
+            .read()
+            .map(|kept| kept.clone())
+            .unwrap_or_default()
     }
 
     /// Returns true if the index has been modified since the last save.

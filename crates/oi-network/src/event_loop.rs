@@ -84,8 +84,19 @@ pub async fn run_event_loop(
     enable_tit_for_tat: bool,
     min_contribution_ratio: f64,
     routing_table_path: Option<String>,
+    operator_bonds: Option<Arc<dyn crate::operator::OperatorBonds>>,
+    unbonded_skips: Arc<std::sync::atomic::AtomicU64>,
     mut shutdown_rx: tokio::sync::watch::Receiver<bool>,
 ) {
+    // With bonds required, a peer may be copied from only if its peer id
+    // carries a wallet whose bond is in good standing.
+    let may_copy_from = |peer: &libp2p::PeerId| -> bool {
+        match &operator_bonds {
+            None => true,
+            Some(bonds) => crate::operator::operator_wallet(peer)
+                .is_some_and(|wallet| bonds.in_good_standing(&wallet)),
+        }
+    };
     // Subscribe to the gossip topic
     let topic = get_gossip_topic();
     if let Err(e) = swarm.behaviour_mut().gossipsub.subscribe(&topic) {
@@ -319,7 +330,7 @@ pub async fn run_event_loop(
                     // fixed choice would keep dialing it.
                     if matches!(action, EventAction::None) && !local_shards.is_empty() {
                         let rt = routing_table.read().await;
-                        let pairs: Vec<(String, libp2p::PeerId)> = local_shards
+                        let known: Vec<(String, libp2p::PeerId)> = local_shards
                             .iter()
                             .flat_map(|shard| {
                                 rt.reachable_peers_for_shard(shard)
@@ -328,6 +339,17 @@ pub async fn run_event_loop(
                             })
                             .collect();
                         drop(rt);
+                        // A peer whose operator has no bond is not asked.
+                        let pairs: Vec<(String, libp2p::PeerId)> = known
+                            .iter()
+                            .filter(|(_, peer)| may_copy_from(peer))
+                            .cloned()
+                            .collect();
+                        let skipped = (known.len() - pairs.len()) as u64;
+                        if skipped > 0 {
+                            unbonded_skips
+                                .fetch_add(skipped, std::sync::atomic::Ordering::AcqRel);
+                        }
                         if !pairs.is_empty() {
                             let (shard_id, peer) = pairs[sync_cursor % pairs.len()].clone();
                             sync_cursor = sync_cursor.wrapping_add(1);
@@ -385,6 +407,15 @@ pub async fn run_event_loop(
                 }
             }
             EventAction::IngestReplicatedChunks { peer, response } => {
+                // Whatever path asked for it, content from an operator
+                // without a bond is not stored.
+                if !may_copy_from(&peer) {
+                    warn!(
+                        "Ignored replicated content from {peer}: its operator has no bond in good standing"
+                    );
+                    unbonded_skips.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+                    continue;
+                }
                 let latest_seq = response.latest_seq;
                 let latest_claim_seq = response.latest_claim_seq;
                 if let Some(idx) = &index {
@@ -418,17 +449,26 @@ pub async fn run_event_loop(
                             // this node now holds for that page: the sender's
                             // word is not taken for it.
                             let offered = claim_documents.len();
-                            let accepted =
+                            let (accepted, refused) =
                                 verify_replicated_claims(claim_documents, idx.dim(), |url| {
                                     idx.contents_for_url(url).unwrap_or_default()
                                 });
-                            if accepted.len() < offered {
-                                idx.note_rejected_claims(offered - accepted.len());
+                            if !refused.is_empty() {
                                 warn!(
                                     "Rejected {}/{offered} replicated claims from {peer} \
                                      (quote not found in a page this node holds)",
-                                    offered - accepted.len()
+                                    refused.len()
                                 );
+                            }
+                            // Kept as evidence: who offered what, so anyone
+                            // with the page can repeat the check.
+                            for (url, claim, quote) in refused {
+                                idx.note_refused_claim(oi_types::claims::RefusedClaim {
+                                    peer_id: peer.to_string(),
+                                    url,
+                                    claim,
+                                    quote,
+                                });
                             }
                             if !accepted.is_empty() {
                                 let count = accepted.len();
@@ -937,15 +977,26 @@ fn claim_to_document(
     }
 }
 
-/// Keep the replicated claims this node can check for itself: the vector has
-/// the index's dimension and the quote occurs verbatim in the retained text
-/// of the same URL, as returned by `contents_of`.
+/// A replicated claim this node could check and refused: its URL, text and
+/// the quote it came with.
+type RefusedQuote = (String, String, String);
+
+/// Sort the replicated claims into those this node can check for itself and
+/// those it checked and refused. A claim is kept when its vector has the
+/// index's dimension and its quote occurs verbatim in the retained text of
+/// the same URL, as returned by `contents_of`. It is refused, and returned as
+/// evidence, when it came with a quote that is not there. A malformed claim
+/// is in neither list.
 fn verify_replicated_claims(
     documents: Vec<DocumentChunk>,
     expected_dim: usize,
     contents_of: impl Fn(&str) -> Vec<String>,
-) -> Vec<(oi_types::claims::ClaimRecord, Vec<f32>)> {
-    documents
+) -> (
+    Vec<(oi_types::claims::ClaimRecord, Vec<f32>)>,
+    Vec<RefusedQuote>,
+) {
+    let mut refused = Vec::new();
+    let accepted = documents
         .into_iter()
         .filter_map(|document| {
             let vector: Vec<f32> = document
@@ -963,7 +1014,15 @@ fn verify_replicated_claims(
                     quote,
                     MIN_CLAIM_QUOTE_CHARS,
                 )
-            })?;
+            });
+            let Some(located) = located else {
+                refused.push((
+                    document.url.clone(),
+                    document.content.clone(),
+                    quote.clone(),
+                ));
+                return None;
+            };
             // Derived here from the URL; the family the sender wrote in the
             // metadata is not used.
             let source_family = oi_types::source::source_family(&document.url);
@@ -983,7 +1042,8 @@ fn verify_replicated_claims(
                 vector,
             ))
         })
-        .collect()
+        .collect();
+    (accepted, refused)
 }
 
 fn convert_proto_chunks_to_content_chunks(
@@ -1864,7 +1924,7 @@ mod tests {
         );
         assert!(is_claim_document(&honest));
 
-        let kept =
+        let (kept, refused) =
             verify_replicated_claims(vec![honest, fabricated, wrong_dimension], 3, |asked| {
                 if asked == url {
                     vec![page.to_string()]
@@ -1874,6 +1934,10 @@ mod tests {
             });
         assert_eq!(kept.len(), 1);
         assert_eq!(kept[0].0.claim, "Antarctica is the largest desert.");
+        // The fabricated claim comes back as evidence; the malformed one is
+        // dropped without being anyone's evidence.
+        assert_eq!(refused.len(), 1);
+        assert_eq!(refused[0].0, url);
         // The quote is the span found in this node's text, and the family
         // comes from the URL, not from what the sender wrote.
         assert_eq!(
@@ -1909,7 +1973,9 @@ mod tests {
             &[0.0, 0.0, 1.0],
             3,
         );
-        assert!(verify_replicated_claims(vec![orphan], 3, |_| Vec::new()).is_empty());
+        let (kept, refused) = verify_replicated_claims(vec![orphan], 3, |_| Vec::new());
+        assert!(kept.is_empty());
+        assert_eq!(refused.len(), 1, "refused, with the quote it came with");
     }
     use sha2::{Digest, Sha256};
 

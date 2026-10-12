@@ -11,9 +11,12 @@ while the script runs, so numbers differ from run to run.
   Act 2  the index is divided by subject, learned from its own content
   Act 3  two nodes each ingest only their subjects, reading pages for claims
   Act 4  a question is answered from stored claims, in milliseconds, across nodes
-  Act 5  a replica with no model receives claims and checks every quote
-  Act 6  a dishonest node offers a forged claim and the replica refuses it
-  Act 7  an outside auditor re-fetches the pages and looks for every quote
+  Act 5  a replica with no model copies from a node only after its operator
+         posts a bond on Solana, and checks every quote itself
+  Act 6  a bonded operator offers a forged claim; the replica refuses it and
+         keeps the evidence, naming the operator's wallet
+  Act 7  an outside auditor repeats the check from the web, the bond is
+         slashed on chain, and the replica stops copying from that operator
   Act 8  a publisher bonds SOL behind a domain on Solana; the node shows it
 
 Usage:
@@ -48,6 +51,10 @@ OI = ROOT / "target" / "release" / "oi"
 BENCH = ROOT / "target" / "release" / "oi-bench"
 MODEL = os.environ.get("OI_ANSWER_MODEL", "anthropic/claude-haiku-5.5")
 SOLANA_BIN = Path.home() / ".local/share/solana/install/active_release/bin"
+NODE_BOND = ROOT / "target" / "debug" / "examples" / "chain_node_bond"
+PROGRAM_SO = ROOT / "target" / "deploy" / "opensonarx_staking.so"
+# What a node operator locks to be copied from, in units of the test token.
+BOND_UNITS = 1_000_000
 
 # Two questions on unrelated subjects, so that a division of the index by
 # subject has something to divide. For each, a statement the page does not
@@ -73,6 +80,8 @@ BOLD, DIM, GREEN, RED, YELLOW, CYAN, RESET = (
 checks = []  # (act, statement, passed, evidence)
 processes = []  # (name, Popen)
 args = None
+chain = {}  # the Solana cluster in use: rpc, env, program id, authority keypair
+operators = {}  # node name -> (keypair file, wallet address)
 
 
 def say(text=""):
@@ -176,7 +185,7 @@ def node_env(data_dir, model):
     return env
 
 
-def start_node(name, p2p, http_port, routing, shard, model, bootstrap=None):
+def start_node(name, p2p, http_port, routing, shard, model, bootstrap=None, require_bond=False):
     data_dir = DEMO / name
     data_dir.mkdir(parents=True, exist_ok=True)
     command = [
@@ -187,9 +196,123 @@ def start_node(name, p2p, http_port, routing, shard, model, bootstrap=None):
     ]
     if bootstrap:
         command += ["--bootstrap", f"/ip4/127.0.0.1/tcp/{bootstrap}"]
+    # With bonds in play, the node's identity is its operator's wallet key.
+    if name in operators:
+        command += ["--operator-keypair", str(operators[name][0])]
+    if require_bond:
+        command += ["--require-bond"]
     process = start(name, command, node_env(data_dir, model), DEMO / f"{name}.log")
     wait_for(f"{name} to answer", lambda: http("GET", api(http_port) + "/health", timeout=3), 60)
     return process
+
+
+def status(port):
+    return http("GET", api(port) + "/status")
+
+
+# ── Solana ──────────────────────────────────────────────────────────────────
+
+
+def solana_env():
+    env = dict(os.environ)
+    if SOLANA_BIN.exists():
+        env["PATH"] = f"{SOLANA_BIN}:{env['PATH']}"
+    return env
+
+
+def solana(*command, check=True, timeout=600):
+    return subprocess.run(list(command), env=chain.get("env") or solana_env(), cwd=ROOT,
+                          capture_output=True, text=True, check=check, timeout=timeout)
+
+
+def new_keypair(path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    solana("solana-keygen", "new", "--no-bip39-passphrase", "--silent", "--force", "-o", str(path))
+    return solana("solana-keygen", "pubkey", str(path)).stdout.strip()
+
+
+def make_operators():
+    """A wallet for the operator of each node. Made here, used only here."""
+    for name in ("node-a", "node-b", "node-c", "forger"):
+        keypair = DEMO / "operators" / f"{name}.json"
+        operators[name] = (keypair, new_keypair(keypair))
+
+
+def chain_setup():
+    """Bring the cluster up (unless a public one was given), make sure the
+    program is there and the protocol is initialized."""
+    env = solana_env()
+    local = args.rpc is None
+    rpc = args.rpc or "http://127.0.0.1:8899"
+    chain.update(env=env, rpc=rpc, local=local,
+                 cluster=next((name for name in ("devnet", "testnet") if name in rpc), None))
+    if local:
+        say("  A local Solana validator runs the staking program; it is not a public cluster.")
+        say("  The wallets and the program address are made for this run and hold only test funds.")
+        start("validator", ["solana-test-validator", "--reset", "--quiet", "--ledger", str(DEMO / "ledger")],
+              env, DEMO / "validator.log")
+        wait_for("the validator", lambda: subprocess.run(
+            ["solana", "cluster-version", "--url", rpc], env=env, capture_output=True).returncode == 0, 60)
+        authority, program_keypair = DEMO / "wallet.json", DEMO / "program-keypair.json"
+        address = new_keypair(authority)
+        new_keypair(program_keypair)
+        solana("solana", "airdrop", "100", address, "--url", rpc, check=False)
+    else:
+        say(f"  Cluster: {rpc}  (your wallet and the program keypair in ~/.config/solana)")
+        authority = Path.home() / ".config/solana/id.json"
+        program_keypair = Path(os.environ.get(
+            "PROGRAM_KEYPAIR", Path.home() / ".config/solana/opensonarx_staking-keypair.json"))
+    env["WALLET"], env["PROGRAM_KEYPAIR"] = str(authority), str(program_keypair)
+    program = solana("solana-keygen", "pubkey", str(program_keypair)).stdout.strip()
+    chain.update(authority=authority, program=program)
+    if solana("solana", "program", "show", program, "--url", rpc, check=False).returncode != 0:
+        if not PROGRAM_SO.exists():
+            solana("cargo", "build-sbf", "--manifest-path", "programs/opensonarx-staking/Cargo.toml", timeout=1800)
+        solana("solana", "program", "deploy", str(PROGRAM_SO), "--program-id", str(program_keypair),
+               "--keypair", str(authority), "--url", rpc, timeout=900)
+    initialized = node_bond("init", "--keypair", str(authority))
+    say(f"    program {program}")
+    for line in initialized.stdout.splitlines():
+        if line.strip().startswith(("protocol", "token mint:")):
+            say(f"    {line.strip()}")
+    say(f"    {DIM}the bond is in a test token minted on this cluster; it has no value{RESET}")
+
+
+def node_bond(*arguments):
+    """Run the node-bond client against the cluster in use."""
+    return solana(str(NODE_BOND), arguments[0], "--rpc", chain["rpc"], "--program", chain["program"],
+                  *arguments[1:], check=False)
+
+
+def chain_lines(output, wanted):
+    """Print the chosen lines of a client's output and, on a public cluster,
+    where to look the transaction up."""
+    for line in output.splitlines():
+        line = line.strip()
+        if line.startswith(wanted):
+            say(f"    {clip(line, 110)}")
+        if chain.get("cluster") and line.startswith("signature:"):
+            say(f"    {DIM}https://explorer.solana.com/tx/{line.split()[-1]}?cluster={chain['cluster']}{RESET}")
+
+
+def read_bonds(names, mirror_to=None):
+    """Read operators' bond accounts from the chain: name -> units standing.
+    With `mirror_to`, also refresh that node's mirror of them."""
+    command = ["show", "--wallet", ",".join(operators[name][1] for name in names)]
+    if mirror_to:
+        command += ["--mirror", str(DEMO / mirror_to / "operator_bonds.json")]
+    output = node_bond(*command).stdout
+    standing = [int(line.split()[1]) for line in output.splitlines() if line.strip().startswith("standing:")]
+    return dict(zip(names, standing))
+
+
+def join_as_operator(name):
+    run = node_bond("join", "--authority", str(chain["authority"]), "--operator", str(operators[name][0]),
+                    "--amount", str(BOND_UNITS))
+    chain_lines(run.stdout, ("operator bonded", "operator:", "bond account:", "signature:"))
+    if run.returncode != 0:
+        say(f"    {RED}{clip(run.stderr.strip().splitlines()[-1] if run.stderr.strip() else 'join failed', 110)}{RESET}")
+    return run.returncode == 0
 
 
 def claims(port, question):
@@ -374,23 +497,47 @@ def act4_ask():
 
 
 def act5_replica(routing):
-    act(5, "A replica with no model receives claims and checks every quote")
-    say("  Node C joins as a second holder of shard 0. It has no model and no API key.")
-    say("  It pulls pages and claims from node A and keeps a claim only if it finds the quote")
-    say("  in the page text it now holds.")
-    start_node("node-c", 4303, 8303, routing, 0, model=False, bootstrap=4301)
-    a = http("GET", api(8301) + "/status")
+    bonds = not args.skip_solana
+    if bonds:
+        act(5, "A replica copies from a node only after its operator posts a bond on Solana")
+        say("  Node C joins as a second holder of shard 0, with no model and no API key, and it")
+        say("  requires a bond: it reads the operator's wallet from a peer's network identity and")
+        say("  copies only from operators whose bond account on chain is in good standing.")
+        chain_setup()
+    else:
+        act(5, "A replica with no model receives claims and checks every quote")
+        say("  Node C joins as a second holder of shard 0. It has no model and no API key.")
+    start_node("node-c", 4303, 8303, routing, 0, model=False, bootstrap=4301, require_bond=bonds)
+    a = status(8301)
+
+    if bonds:
+        try:
+            wait_for("node C to pass over node A", lambda: status(8303)["unbonded_peers_passed_over"] >= 2, 40)
+        except TimeoutError:
+            pass
+        c = status(8303)
+        say(f"    before any bond: node C holds {c['claims']} claims and passed over an unbonded peer "
+            f"{c['unbonded_peers_passed_over']} times")
+        proved(5, "without a bond on chain, the replica copies nothing from node A",
+               c["claims"] == 0 and c["pages"] == 0 and c["unbonded_peers_passed_over"] >= 2,
+               f"C holds {c['pages']} chunks and {c['claims']} claims after {c['unbonded_peers_passed_over']} sync rounds")
+        say(f"  The operator of node A ({operators['node-a'][1][:8]}…) locks {BOND_UNITS:,} units:")
+        joined = join_as_operator("node-a")
+        standing = read_bonds(["node-a"], mirror_to="node-c").get("node-a", 0)
+        proved(5, "node A's operator locked a bond in the program's account on chain",
+               joined and standing >= BOND_UNITS,
+               f"{standing:,} units standing in the bond account of {operators['node-a'][1]}")
 
     def settled():
-        first = http("GET", api(8303) + "/status")["claims"]
+        first = status(8303)["claims"]
         time.sleep(6)
-        return first > 0 and http("GET", api(8303) + "/status")["claims"] == first
+        return first > 0 and status(8303)["claims"] == first
 
     try:
         wait_for("node C to receive the claims", settled, 120, every=2)
     except TimeoutError:
         pass
-    c = http("GET", api(8303) + "/status")
+    c = status(8303)
     say(f"    node A holds {a['pages']} chunks and {a['claims']} claims;  node C now holds {c['pages']} and "
         f"{c['claims']}, refused {c['claims_rejected_from_peers']}")
     proved(5, "a node with no model holds every claim after replication, each quote found in its own copy",
@@ -407,42 +554,64 @@ def act5_replica(routing):
 
 
 def act6_forger(question):
-    act(6, "A dishonest node offers a forged claim and the replica refuses it")
+    bonds = not args.skip_solana
+    act(6, "A bonded operator offers a forged claim; the replica refuses it and keeps the evidence"
+        if bonds else "A dishonest node offers a forged claim and the replica refuses it")
     say("  A modified node joins shard 0. It offers a real page with two claims: one sentence")
     say("  that is in the page, and one statement it made up, with a quote the page does not contain.")
-    before = http("GET", api(8303) + "/status")
+    if bonds:
+        say(f"  To be copied from at all, its operator ({operators['forger'][1][:8]}…) has to lock a bond too:")
+        join_as_operator("forger")
+        read_bonds(["node-a", "forger"], mirror_to="node-c")
+    before = status(8303)
     shard = before["shards"][0]
     page = question["answer"]["matches"][0]["url"]
-    forger = subprocess.run(
-        [str(BENCH), "demo-forger", "--url", page, "--shard", shard,
-         "--bootstrap", "/ip4/127.0.0.1/tcp/4303", "--port", "4390",
-         "--forged-claim", question["forged_claim"], "--forged-quote", question["forged_quote"],
-         "--seconds", "35"],
-        capture_output=True, text=True, timeout=240,
-    )
-    lines = {l.split(":", 1)[0].strip(): l.split(":", 1)[1].strip() for l in forger.stdout.splitlines() if ":" in l}
+    command = [str(BENCH), "demo-forger", "--url", page, "--shard", shard,
+               "--bootstrap", "/ip4/127.0.0.1/tcp/4303", "--port", "4390",
+               "--forged-claim", question["forged_claim"], "--forged-quote", question["forged_quote"],
+               # With bonds it stays up, so the replica can be seen turning it away after the slash.
+               "--seconds", "240" if bonds else "35"]
+    if bonds:
+        command += ["--identity", str(operators["forger"][0])]
+    forger = start("forger", command, solana_env(), DEMO / "forger.log")
+    try:
+        wait_for("the replica to meet the forged claim",
+                 lambda: status(8303)["claims_rejected_from_peers"] > before["claims_rejected_from_peers"], 120)
+    except TimeoutError:
+        pass
+    time.sleep(6)  # one more round, to see that nothing is refused twice
+    printed = (DEMO / "forger.log").read_text()
+    lines = {l.split(":", 1)[0].strip(): l.split(":", 1)[1].strip() for l in printed.splitlines() if ":" in l}
     honest = lines.get("honest claim", "")
     say(f"    page          {page}")
     say(f"    honest claim  {clip(honest, 84)}")
     say(f"    {RED}forged claim  {clip(question['forged_claim'], 84)}{RESET}")
     say(f"    {RED}forged quote  “{clip(question['forged_quote'], 80)}”{RESET}")
-    after = http("GET", api(8303) + "/status")
+    after = status(8303)
     refused = after["claims_rejected_from_peers"] - before["claims_rejected_from_peers"]
     kept = after["claims"] - before["claims"]
     say(f"    node C: {kept:+d} claim stored, {refused:+d} refused")
     holds = lambda text: any(m["claim"] == text for m in claims(8303, text)["matches"])
     proved(6, "the replica refused exactly the claim whose quote is not in the page",
-           forger.returncode == 0 and refused == 1 and kept == 1 and not holds(question["forged_claim"]),
+           forger.poll() in (None, 0) and refused == 1 and kept == 1 and not holds(question["forged_claim"]),
            f"refused from peers went {before['claims_rejected_from_peers']} → {after['claims_rejected_from_peers']}; "
            "the forged statement is not in node C")
     proved(6, "the same dishonest node's true claim was accepted",
            bool(honest) and holds(honest), "the honest sentence is in node C, found by its own text")
+    evidence = next((r for r in after["refusals"] if r["claim"] == question["forged_claim"]), None)
+    if bonds:
+        proved(6, "the refusal is kept as evidence that names the operator's wallet",
+               bool(evidence) and evidence["operator_wallet"] == operators["forger"][1],
+               f"claim, quote and page kept; offered by {evidence['operator_wallet'] if evidence else 'nobody'}")
     say(f"    {DIM}What this check covers: a quote that is not in the page the replica received.")
     say(f"    A forged page is a different attack; the next act is the check against that.{RESET}")
+    return evidence
 
 
-def act7_audit():
-    act(7, "An outside auditor re-fetches the pages and looks for every quote")
+def act7_audit(evidence):
+    bonds = not args.skip_solana
+    act(7, "An outside auditor repeats the check from the web, and the bond is slashed"
+        if bonds else "An outside auditor re-fetches the pages and looks for every quote")
     say("  A separate process takes the claims the nodes returned, fetches each page itself from")
     say("  the web, and looks for each quote. As a control it also looks for quotes taken from a")
     say("  different page, which must not be found.")
@@ -471,49 +640,75 @@ def act7_audit():
     proved(7, "the nodes' own quotes are found again by an independent fetch",
            honest["denominator"] > 0 and honest["numerator"] >= 0.9 * honest["denominator"],
            f"{honest['numerator']} of {honest['denominator']} found; pages change, so this is not always all of them")
+    if not bonds or not evidence:
+        return
+
+    say("\n  Now the refused claim. The auditor fetches that page itself and looks for the quote:")
+    check = subprocess.run([str(BENCH), "check-quote", "--url", evidence["url"], "--quote", evidence["quote"]],
+                           capture_output=True, text=True, timeout=120)
+    verdict = json.loads(check.stdout.strip().splitlines()[-1]) if check.stdout.strip() else {}
+    say(f"    page fetched: {verdict.get('fetched')}   quote found: {verdict.get('found')}")
+    absent = verdict.get("fetched") is True and verdict.get("found") is False
+    proved(7, "fetched independently, the page does not contain the forged quote", absent,
+           f"{evidence['url']}")
+    digest = hashlib.sha256(json.dumps(
+        {k: evidence[k] for k in ("operator_wallet", "url", "claim", "quote")}, sort_keys=True).encode()).hexdigest()
+
+    # Who may slash: a transaction signed by someone else must fail.
+    standing = read_bonds(["node-a", "forger"])
+    attempt = node_bond("slash", "--keypair", str(operators["forger"][0]), "--wallet", operators["node-a"][1],
+                        "--evidence", digest)
+    untouched = read_bonds(["node-a"]).get("node-a")
+    proved(7, "a slash signed by anyone but the protocol authority is rejected by the program",
+           attempt.returncode != 0 and untouched == standing.get("node-a") == BOND_UNITS,
+           "the dishonest operator tried to slash node A's bond; node A's bond is unchanged")
+
+    say(f"  The protocol authority slashes the bond of {operators['forger'][1][:8]}…, citing the evidence:")
+    slashed = node_bond("slash", "--keypair", str(chain["authority"]), "--wallet", operators["forger"][1],
+                        "--evidence", digest) if absent else None
+    if slashed is not None:
+        chain_lines(slashed.stdout, ("slashed", "bond account:", "evidence:", "signature:"))
+    after = read_bonds(["node-a", "forger"], mirror_to="node-c")
+    proved(7, "the dishonest operator's bond was slashed on chain; the honest operator's was not",
+           slashed is not None and slashed.returncode == 0 and standing.get("forger") == BOND_UNITS
+           and after.get("forger") == 0 and after.get("node-a") == BOND_UNITS,
+           f"dishonest operator {standing.get('forger', 0):,} → {after.get('forger', 0):,} units; "
+           f"node A {after.get('node-a', 0):,}")
+    passed_over = status(8303)["unbonded_peers_passed_over"]
+    try:
+        wait_for("node C to turn the slashed operator away",
+                 lambda: status(8303)["unbonded_peers_passed_over"] > passed_over, 40)
+    except TimeoutError:
+        pass
+    c = status(8303)
+    peer = next((p for p in c["peers"] if p.get("operator_wallet") == operators["forger"][1]), {})
+    proved(7, "the replica no longer copies from the slashed operator",
+           peer.get("bonded") is False and c["unbonded_peers_passed_over"] > passed_over,
+           f"its node is still connected; C passed it over in {c['unbonded_peers_passed_over'] - passed_over} "
+           "sync round(s) since the slash")
+    say(f"    {DIM}What is and is not decided on chain: the program holds the bond and applies the slash,")
+    say("    but the slash is sent by the protocol authority and the program does not check the evidence.")
+    say("    In production one failed quote would not be enough: pages change, and about 1 in 100")
+    say(f"    honest quotes fails a re-fetch a day later. One is used here to show the mechanism.{RESET}")
 
 
 def act8_solana():
     act(8, "A publisher bonds SOL behind a domain on Solana; the node shows it")
-    env = dict(os.environ)
-    if SOLANA_BIN.exists():
-        env["PATH"] = f"{SOLANA_BIN}:{env['PATH']}"
-    local = args.rpc is None
-    rpc = args.rpc or "http://127.0.0.1:8899"
-    if local:
-        say("  A local Solana validator runs the staking program; it is not a public cluster.")
-        say("  The wallet and the program address are made for this run and hold only test SOL.")
-        start("validator", ["solana-test-validator", "--reset", "--quiet", "--ledger", str(DEMO / "ledger")],
-              env, DEMO / "validator.log")
-        wait_for("the validator", lambda: subprocess.run(
-            ["solana", "cluster-version", "--url", rpc], env=env, capture_output=True).returncode == 0, 60)
-        # Nothing of the operator's is used on the local validator: a wallet
-        # and a program keypair are generated inside the demo directory.
-        wallet, program_keypair = DEMO / "wallet.json", DEMO / "program-keypair.json"
-        for keypair in (wallet, program_keypair):
-            subprocess.run(["solana-keygen", "new", "--no-bip39-passphrase", "--silent", "--force", "-o", str(keypair)],
-                           env=env, capture_output=True, check=True)
-        address = subprocess.run(["solana-keygen", "pubkey", str(wallet)], env=env, capture_output=True,
-                                 text=True, check=True).stdout.strip()
-        subprocess.run(["solana", "airdrop", "100", address, "--url", rpc], env=env, capture_output=True, timeout=60)
-        env["WALLET"], env["PROGRAM_KEYPAIR"] = str(wallet), str(program_keypair)
-    else:
-        say(f"  Cluster: {rpc}  (your wallet and the program keypair in ~/.config/solana)")
-
+    env, rpc, local = chain["env"], chain["rpc"], chain["local"]
     question = max(QUESTIONS, key=lambda q: q["answer"]["supporting_families"])
     before = claims(8301, question["ask"])
     domain = before["matches"][0]["source_family"]
     lamports = int(args.bond_sol * 1_000_000_000)
     say(f"  The publisher of {BOLD}{domain}{RESET} bonds ◎{lamports / 1e9:g} behind its domain.")
-    env["OPENSONARX_DATA_DIR"] = str(DEMO / "node-a")
+    env = dict(env, OPENSONARX_DATA_DIR=str(DEMO / "node-a"))
     run = subprocess.run([str(ROOT / "scripts" / "chain_bond_demo.sh"), rpc, domain, str(lamports)],
                          env=env, cwd=ROOT, capture_output=True, text=True, timeout=900)
     output = run.stdout + run.stderr
     staked_now = False
-    cluster = next((name for name in ("devnet", "testnet") if name in rpc), None)
+    cluster = chain["cluster"]
     for line in output.splitlines():
         line = line.strip()
-        if line.lower().startswith(("program:", "signature:", "bonded", "stake account:", "lamports:")):
+        if line.lower().startswith(("signature:", "bonded", "stake account:", "lamports:")):
             say(f"    {clip(line, 110)}")
         staked_now = staked_now or line.startswith("bonded")
         # On a public cluster, where to look the transaction and account up.
@@ -540,7 +735,7 @@ def act8_solana():
     lamports = on_chain or lamports
 
     def shown():
-        bonds = {b["domain"]: b["lamports"] for b in http("GET", api(8301) + "/status")["bonds"]}
+        bonds = {b["domain"]: b["lamports"] for b in status(8301)["bonds"]}
         return bonds.get(domain) == lamports
 
     try:
@@ -566,10 +761,10 @@ def main():
     parser.add_argument("--keep", action="store_true", help="leave the nodes running at the end")
     parser.add_argument("--pause", action="store_true", help="wait for Enter between acts")
     parser.add_argument("--no-build", action="store_true", help="do not run cargo build first")
-    parser.add_argument("--skip-solana", action="store_true")
+    parser.add_argument("--skip-solana", action="store_true", help="no bonds, no slash, no chain")
     parser.add_argument("--skip-answer", action="store_true", help="skip the query-time timing contrast")
-    parser.add_argument("--rpc", help="Solana RPC to bond on instead of a local validator")
-    parser.add_argument("--bond-sol", type=float, default=0.25, help="SOL bonded in act 8 (default 0.25)")
+    parser.add_argument("--rpc", help="Solana RPC to use instead of a local validator")
+    parser.add_argument("--bond-sol", type=float, default=0.25, help="SOL bonded behind a domain in act 8 (default 0.25)")
     args = parser.parse_args()
 
     if not os.environ.get("OPENROUTER_API_KEY"):
@@ -578,13 +773,17 @@ def main():
     missing = [tool for tool in (["cargo"] + ([] if args.skip_solana else ["solana", "solana-keygen", "solana-test-validator"]))
                if not shutil.which(tool, path=path)]
     if missing:
-        sys.exit(f"Not found on PATH: {', '.join(missing)}. The demo needs Rust (cargo) and, for act 8, the "
-                 "Solana CLI (https://docs.anza.xyz/cli/install); or run with --skip-solana.")
+        sys.exit(f"Not found on PATH: {', '.join(missing)}. The demo needs Rust (cargo) and, for the acts on "
+                 "chain, the Solana CLI (https://docs.anza.xyz/cli/install); or run with --skip-solana.")
     if not args.no_build:
         say(f"{DIM}building the node and the tools (first time takes a few minutes){RESET}")
         subprocess.run(["cargo", "build", "--release", "-q", "-p", "oi-cli"], cwd=ROOT, check=True)
         subprocess.run(["cargo", "build", "--release", "-q", "-p", "oi-bench", "--features", "onnx"], cwd=ROOT, check=True)
+        if not args.skip_solana:
+            subprocess.run(["cargo", "build", "-q", "-p", "oi-staking", "--features", "solana", "--examples"],
+                           cwd=ROOT, check=True)
     subprocess.run(["pkill", "-f", f"{OI} --open network node"], capture_output=True)
+    subprocess.run(["pkill", "-f", f"{BENCH} demo-forger"], capture_output=True)
     subprocess.run(["pkill", "-f", f"solana-test-validator.*{DEMO}"], capture_output=True)
     shutil.rmtree(DEMO, ignore_errors=True)
     DEMO.mkdir(parents=True)
@@ -593,13 +792,15 @@ def main():
     say(f"{DIM}real processes, live pages, a hosted model at ingestion only ({MODEL}); logs in {DEMO.relative_to(ROOT)}{RESET}")
     started = time.time()
     try:
+        if not args.skip_solana:
+            make_operators()
         urls = act1_search()
         routing = act2_routing()
         act3_ingest(routing, urls)
         act4_ask()
         question = act5_replica(routing)
-        act6_forger(question)
-        act7_audit()
+        evidence = act6_forger(question)
+        act7_audit(evidence)
         if not args.skip_solana:
             act8_solana()
 
@@ -610,8 +811,9 @@ def main():
             say(f"  {mark} act {number}  {statement}")
         passed = sum(1 for check in checks if check[2])
         say(f"\n  {BOLD}{passed} of {len(checks)} checks passed{RESET}")
-        say(f"\n  {DIM}Not shown here because it is not built: nodes on separate machines, rewards and")
-        say(f"  penalties on chain for ingestion work, a large index of our own.{RESET}")
+        say(f"\n  {DIM}Not shown here because it is not built: nodes on separate machines; a slash that")
+        say("  anyone can trigger and the chain itself checks (today the protocol authority sends it);")
+        say(f"  payment to nodes for ingestion work; a large index of our own.{RESET}")
         (DEMO / "checks.json").write_text(json.dumps(
             [{"act": n, "statement": s, "passed": p, "evidence": e} for n, s, p, e in checks], indent=1))
 

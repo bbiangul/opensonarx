@@ -1378,8 +1378,21 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
             http_port,
             min_replicas,
             sync_secs,
+            operator_keypair,
+            require_bond,
             routing,
         } => {
+            let operator_secret = match operator_keypair
+                .as_deref()
+                .map(crate::operator_bonds::read_wallet_secret)
+            {
+                Some(Ok(secret)) => Some(secret),
+                Some(Err(error)) => {
+                    output::print_err(&format!("Operator keypair: {error}"), &config.format);
+                    return ExitCode::UserError;
+                }
+                None => None,
+            };
             // A routing file replaces the built-in topics. Loaded before
             // anything starts so a bad file stops the node instead of
             // letting it announce shards nobody else understands.
@@ -1472,9 +1485,40 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
 
                 let mut node =
                     oi_network::Node::new(net_config).with_index(index.clone(), shard_ids.clone());
+                if let Some(secret) = operator_secret {
+                    node = match node.with_identity(secret) {
+                        Ok(node) => node,
+                        Err(error) => {
+                            eprintln!("  Operator keypair: {error}");
+                            return;
+                        }
+                    };
+                }
+                let bond_mirror = crate::config_file::ConfigFile::config_dir()
+                    .filter(|_| require_bond)
+                    .map(|dir| {
+                        std::sync::Arc::new(crate::operator_bonds::BondMirror::new(
+                            dir.join("operator_bonds.json"),
+                        ))
+                    });
+                if let Some(mirror) = &bond_mirror {
+                    node = node.with_operator_bonds(mirror.clone());
+                }
+                let node_unbonded_skips = node.unbonded_skips();
                 let node_routing_table = node.routing_table();
                 println!("Starting OpenSonarX node...");
                 println!("  Peer ID:  {}", node.peer_id);
+                if operator_secret.is_some()
+                    && let Some(wallet) = oi_network::operator::operator_wallet(&node.peer_id)
+                {
+                    println!(
+                        "  Operator: {} (the node's identity is this wallet's key)",
+                        oi_network::operator::wallet_address(&wallet)
+                    );
+                }
+                if require_bond {
+                    println!("  Bonds:    required; copies only from operators in good standing");
+                }
                 println!("  Listen:   /ip4/0.0.0.0/tcp/{port}");
                 println!("  Network:  {}", config.network);
                 println!(
@@ -1605,6 +1649,8 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                 stake_registry: node_stake_registry.clone(),
                                 stakes_path: crate::config_file::ConfigFile::config_dir()
                                     .map(|d| d.join("stakes.json")),
+                                operator_bonds: bond_mirror.clone(),
+                                unbonded_skips: node_unbonded_skips.clone(),
                             };
                             tokio::spawn(async move {
                                 if let Err(e) = crate::node_api::run_node_api(

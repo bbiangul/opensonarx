@@ -31,3 +31,7 @@ tokio = { version = "1", features = ["rt"], optional = true }
 [[example]]
 name = "chain_bond"
 required-features = ["solana"]
+
+[[example]]
+name = "chain_node_bond"
+required-features = ["solana"]

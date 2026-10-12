@@ -4,6 +4,7 @@ use axum::{
     routing::{get, post},
 };
 use oi_network::NodeHandle;
+use oi_network::operator::OperatorBonds;
 use oi_types::proto::opensonarx as proto;
 use oi_types::traits::StakeRegistry;
 use oi_types::{QueryFilters, SearchResultItem};
@@ -24,6 +25,11 @@ pub struct NodeContext {
     pub stake_registry: Arc<oi_staking::InMemoryStakeRegistry>,
     /// The mirror file the registry is read from.
     pub stakes_path: Option<std::path::PathBuf>,
+    /// The mirror of operators' bonds, when this node requires one of the
+    /// peers it copies from.
+    pub operator_bonds: Option<Arc<crate::operator_bonds::BondMirror>>,
+    /// Times a peer was passed over or turned away for lack of a bond.
+    pub unbonded_skips: Arc<std::sync::atomic::AtomicU64>,
 }
 
 /// Shared state for the node HTTP API.
@@ -575,7 +581,32 @@ async fn status_handler(State(state): State<Arc<ApiState>>) -> Json<serde_json::
         .peer_summaries()
         .into_iter()
         .map(|(node_id, shards, vectors)| {
-            serde_json::json!({ "node_id": node_id, "shards": shards, "vectors": vectors })
+            let wallet = oi_network::operator::wallet_of_node(&node_id);
+            serde_json::json!({
+                "node_id": node_id,
+                "shards": shards,
+                "vectors": vectors,
+                "operator_wallet": wallet.as_ref().map(oi_network::operator::wallet_address),
+                // Only meaningful on a node that requires bonds.
+                "bonded": state.context.operator_bonds.as_ref().map(|bonds| {
+                    wallet.is_some_and(|wallet| bonds.in_good_standing(&wallet))
+                }),
+            })
+        })
+        .collect();
+    let refusals: Vec<serde_json::Value> = state
+        .index
+        .refused_claims()
+        .into_iter()
+        .map(|refused| {
+            let wallet = oi_network::operator::wallet_of_node(&refused.peer_id);
+            serde_json::json!({
+                "peer_id": refused.peer_id,
+                "operator_wallet": wallet.as_ref().map(oi_network::operator::wallet_address),
+                "url": refused.url,
+                "claim": refused.claim,
+                "quote": refused.quote,
+            })
         })
         .collect();
     let bonds: Vec<serde_json::Value> = state
@@ -588,6 +619,15 @@ async fn status_handler(State(state): State<Arc<ApiState>>) -> Json<serde_json::
         .collect();
     Json(serde_json::json!({
         "peer_id": state.handle.peer_id.to_string(),
+        "operator_wallet": oi_network::operator::operator_wallet(&state.handle.peer_id)
+            .as_ref()
+            .map(oi_network::operator::wallet_address),
+        "requires_bond": state.context.operator_bonds.is_some(),
+        "unbonded_peers_passed_over": state
+            .context
+            .unbonded_skips
+            .load(std::sync::atomic::Ordering::Acquire),
+        "refusals": refusals,
         "shards": state.context.shards,
         "routing_version": state.context.routing_version,
         "reads_pages_for_claims": state.reads_pages,

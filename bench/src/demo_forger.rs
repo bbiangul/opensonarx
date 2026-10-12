@@ -38,6 +38,36 @@ fn first_sentence(plain: &str, min_chars: usize) -> Option<String> {
         .map(str::to_string)
 }
 
+/// The 32-byte secret of a Solana keypair file (a JSON array of 64 bytes).
+fn wallet_secret(path: &str) -> Result<[u8; 32], String> {
+    let raw = std::fs::read_to_string(path).map_err(|error| format!("{path}: {error}"))?;
+    let bytes: Vec<u8> = serde_json::from_str(&raw).map_err(|error| format!("{path}: {error}"))?;
+    bytes
+        .get(..32)
+        .filter(|_| bytes.len() == 64)
+        .and_then(|secret| secret.try_into().ok())
+        .ok_or_else(|| format!("{path}: not a 64-byte keypair file"))
+}
+
+/// Fetch a page and say whether a quote is in it: the check an auditor makes
+/// before acting on a refusal. Prints one JSON line.
+pub async fn check_quote(url: &str, quote: &str) -> Result<(), String> {
+    let policy = oi_sdk::claims::ClaimPolicy::default();
+    let outcome = match Distiller::new().crawl(url).await {
+        Err(error) => {
+            serde_json::json!({ "fetched": false, "found": false, "error": error.to_string() })
+        }
+        Ok(page) => {
+            let found = std::iter::once(plain_text(&page.markdown))
+                .chain(page.chunks.iter().map(|chunk| plain_text(&chunk.content)))
+                .any(|text| locate_quote(&text, quote, policy.min_quote_chars).is_some());
+            serde_json::json!({ "fetched": true, "found": found, "page_chars": page.markdown.len() })
+        }
+    };
+    println!("{outcome}");
+    Ok(())
+}
+
 #[allow(clippy::too_many_arguments)]
 pub async fn run(
     url: &str,
@@ -47,6 +77,7 @@ pub async fn run(
     forged_claim: &str,
     forged_quote: &str,
     seconds: u64,
+    identity: Option<&str>,
 ) -> Result<(), String> {
     let policy = oi_sdk::claims::ClaimPolicy::default();
     let embedder = oi_sdk::OpenSonarXClient::default_embedder();
@@ -99,7 +130,7 @@ pub async fn run(
         ])
         .map_err(|error| format!("ingest claims: {error}"))?;
 
-    let node = Node::new(NetworkConfig {
+    let mut node = Node::new(NetworkConfig {
         listen_port: port,
         bootstrap_peers: vec![bootstrap.to_string()],
         enable_mdns: false,
@@ -108,6 +139,11 @@ pub async fn run(
         ..Default::default()
     })
     .with_index(index, vec![shard.to_string()]);
+    // With an operator's wallet as identity, peers that require a bond can
+    // look this node's bond up.
+    if let Some(path) = identity {
+        node = node.with_identity(wallet_secret(path)?)?;
+    }
     let peer_id = node.peer_id;
     let handle = node
         .start()
@@ -115,6 +151,12 @@ pub async fn run(
         .map_err(|error| format!("node start: {error}"))?;
 
     println!("dishonest node {peer_id} joined shard {shard}");
+    if let Some(wallet) = oi_network::operator::operator_wallet(&peer_id) {
+        println!(
+            "  operator:      {}",
+            oi_network::operator::wallet_address(&wallet)
+        );
+    }
     println!("  page:          {url}");
     println!("  honest claim:  {honest}");
     println!("  forged claim:  {forged_claim}");

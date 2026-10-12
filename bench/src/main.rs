@@ -532,6 +532,18 @@ enum Command {
         /// How long to stay on the network
         #[arg(long, default_value_t = 40)]
         seconds: u64,
+
+        /// Solana keypair file of the node's operator, used as its identity
+        #[arg(long)]
+        identity: Option<String>,
+    },
+    /// Fetch a page and say whether a quote is in it
+    CheckQuote {
+        #[arg(long)]
+        url: String,
+
+        #[arg(long)]
+        quote: String,
     },
     /// How many of an honest node's stored claims a second node can confirm
     /// by fetching each page itself and looking for the quote
@@ -1959,6 +1971,7 @@ async fn main() {
             forged_claim,
             forged_quote,
             seconds,
+            identity,
         } => {
             if let Err(error) = demo_forger::run(
                 &url,
@@ -1968,10 +1981,17 @@ async fn main() {
                 &forged_claim,
                 &forged_quote,
                 seconds,
+                identity.as_deref(),
             )
             .await
             {
                 eprintln!("demo-forger failed: {error}");
+                std::process::exit(2);
+            }
+        }
+        Command::CheckQuote { url, quote } => {
+            if let Err(error) = demo_forger::check_quote(&url, &quote).await {
+                eprintln!("check-quote failed: {error}");
                 std::process::exit(2);
             }
         }

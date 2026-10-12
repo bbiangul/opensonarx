@@ -587,3 +587,102 @@ async fn test_a_forwarded_announcement_is_attributed_to_its_author() {
         handle.shutdown();
     }
 }
+
+/// A node that requires bonds copies nothing from a peer whose operator has
+/// none, and starts copying once the bond is there. The operator's wallet is
+/// read from the peer id: the node was started with the wallet's key.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn test_a_replica_copies_only_from_bonded_operators() {
+    use oi_index::HybridIndex;
+    use oi_network::operator::{operator_wallet, OperatorBonds};
+    use oi_types::traits::SearchIndex;
+    use oi_types::{ChunkMeta, ContentChunk};
+    use sha2::{Digest, Sha256};
+    use std::collections::HashSet;
+    use std::sync::atomic::Ordering;
+    use std::sync::{Arc, Mutex};
+
+    /// Stands in for the mirror of on-chain bond accounts.
+    #[derive(Default)]
+    struct Bonded(Mutex<HashSet<[u8; 32]>>);
+    impl OperatorBonds for Bonded {
+        fn in_good_standing(&self, wallet: &[u8; 32]) -> bool {
+            self.0.lock().unwrap().contains(wallet)
+        }
+    }
+
+    let shard = "topic-bonded".to_string();
+    let content = "Only an operator with a bond is copied from by this replica.";
+    let source = Arc::new(HybridIndex::new(4));
+    source
+        .ingest(&[ContentChunk {
+            chunk_id: "bonded-1".to_string(),
+            content: content.to_string(),
+            embedding: Some(vec![1.0, 0.0, 0.0, 0.0]),
+            seq: 0,
+            meta: Some(ChunkMeta {
+                url: "https://example.org/bonded".to_string(),
+                title: "Bonded".to_string(),
+                domain: "example.org".to_string(),
+                content_hash: format!("{:x}", Sha256::digest(content.as_bytes())),
+                shard_id: Some(shard.clone()),
+                ..Default::default()
+            }),
+        }])
+        .unwrap();
+
+    let config = |port: u16, bootstrap: Vec<String>| NetworkConfig {
+        listen_port: port,
+        bootstrap_peers: bootstrap,
+        heartbeat_interval_secs: 1,
+        enable_mdns: false,
+        replication_check_interval_secs: 1,
+        routing_table_path: None,
+        ..Default::default()
+    };
+    let operator = Node::new(config(19081, vec![]))
+        .with_identity([42u8; 32])
+        .expect("identity")
+        .with_index(source, vec![shard.clone()]);
+    let wallet = operator_wallet(&operator.peer_id).expect("the peer id carries the wallet");
+    let operator_handle = operator.start().await.expect("operator start");
+    tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+
+    let bonds = Arc::new(Bonded::default());
+    let replica_index = Arc::new(HybridIndex::new(4));
+    let replica = Node::new(config(19082, vec!["/ip4/127.0.0.1/tcp/19081".to_string()]))
+        .with_index(replica_index.clone(), vec![shard.clone()])
+        .with_operator_bonds(bonds.clone());
+    let skips = replica.unbonded_skips();
+    let replica_handle = replica.start().await.expect("replica start");
+
+    // Several sync rounds pass and nothing is copied: the operator has no bond.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+    while skips.load(Ordering::Acquire) < 3 && std::time::Instant::now() < deadline {
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    }
+    assert!(
+        skips.load(Ordering::Acquire) >= 3,
+        "the unbonded peer was passed over"
+    );
+    assert_eq!(
+        replica_index.doc_count(),
+        0,
+        "nothing copied without a bond"
+    );
+
+    // The bond appears: the next round copies.
+    bonds.0.lock().unwrap().insert(wallet);
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+    while replica_index.doc_count() == 0 && std::time::Instant::now() < deadline {
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    }
+    assert_eq!(
+        replica_index.doc_count(),
+        1,
+        "copied once the operator is bonded"
+    );
+
+    operator_handle.shutdown();
+    replica_handle.shutdown();
+}

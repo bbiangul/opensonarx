@@ -1,6 +1,7 @@
 mod commands;
 mod config_file;
 mod node_api;
+mod operator_bonds;
 mod output;
 mod seed;
 
@@ -421,6 +422,16 @@ pub enum NetworkCommands {
         /// peers of its shards
         #[arg(long, default_value = "60")]
         sync_secs: u64,
+        /// Solana keypair file of this node's operator. The node's network
+        /// identity becomes that wallet's key, so peers can read the wallet
+        /// from the node's peer id and look its bond up
+        #[arg(long)]
+        operator_keypair: Option<String>,
+        /// Copy pages and claims only from peers whose operator has a bond in
+        /// good standing, according to operator_bonds.json in the data dir
+        /// (written by the chain_node_bond tool)
+        #[arg(long)]
+        require_bond: bool,
         /// Routing file written by `oi network learn-routing`. The node
         /// routes with its centroids instead of the built-in topics; with
         /// --shards, give the cluster numbers this node serves (e.g. 0,1,2)

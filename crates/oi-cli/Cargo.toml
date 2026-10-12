@@ -25,6 +25,7 @@ oi-crawl = { workspace = true }
 oi-staking = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+bs58 = "0.5"
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }

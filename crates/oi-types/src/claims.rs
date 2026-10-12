@@ -146,6 +146,18 @@ pub struct JudgedSupport {
     pub judged: usize,
 }
 
+/// A claim a peer offered and this node did not store, because the quote
+/// is not in the page text the node holds. Kept as evidence: anyone with
+/// the page can repeat the check.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RefusedClaim {
+    /// Peer id of the node that offered it.
+    pub peer_id: String,
+    pub url: String,
+    pub claim: String,
+    pub quote: String,
+}
+
 /// What the judged relations say about a request: the stored claim nearest
 /// to it and who agrees with or contradicts that claim.
 #[derive(Debug, Clone, Serialize)]

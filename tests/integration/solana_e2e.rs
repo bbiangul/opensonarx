@@ -8872,3 +8872,68 @@ async fn test_governance_stake_age_requirement() {
         );
     }
 }
+
+/// The off-chain node-bond client (`crates/oi-staking/examples/chain_node_bond.rs`)
+/// encodes these four instructions by hand, like `chain_bond.rs` does for
+/// `Stake`. Their position in the enum is the first byte on the wire; if the
+/// enum is reordered this test says so before a transaction fails on chain.
+#[test]
+fn node_bond_client_wire_format_matches_the_program() {
+    use opensonarx_staking::instruction::StakingInstruction;
+    let bytes = |instruction: StakingInstruction| borsh::to_vec(&instruction).unwrap();
+
+    let init = bytes(StakingInstruction::InitializeProtocol {
+        min_stake: 1,
+        cooldown_secs: 2,
+        dispute_bond: 3,
+        slash_pct: 4,
+        reward_rate: 5,
+        jury_min_stake: 6,
+    });
+    let mut expected = vec![3u8];
+    expected.extend(1u64.to_le_bytes());
+    expected.extend(2i64.to_le_bytes());
+    expected.extend(3u64.to_le_bytes());
+    expected.push(4);
+    expected.extend(5u64.to_le_bytes());
+    expected.extend(6u64.to_le_bytes());
+    assert_eq!(init, expected);
+
+    let mut expected = vec![4u8];
+    expected.extend(9u64.to_le_bytes());
+    assert_eq!(bytes(StakingInstruction::MintTruth { amount: 9 }), expected);
+
+    let mut expected = vec![24u8];
+    expected.extend(9u64.to_le_bytes());
+    assert_eq!(
+        bytes(StakingInstruction::StakeSentinel { amount: 9 }),
+        expected
+    );
+
+    let mut expected = vec![29u8];
+    expected.extend([7u8; 32]);
+    expected.extend(9u64.to_le_bytes());
+    assert_eq!(
+        bytes(StakingInstruction::SlashSentinel {
+            sentinel: [7u8; 32],
+            amount: 9
+        }),
+        expected
+    );
+    // The client reads a bond account's staked and slashed amounts at fixed
+    // offsets.
+    let account = borsh::to_vec(&opensonarx_staking::state::SentinelAccount {
+        is_initialized: true,
+        sentinel: Pubkey::new_unique(),
+        amount: 5_000,
+        staked_at: 1,
+        cooldown_until: 0,
+        reward_debt: 0,
+        slashed_amount: 1_200,
+        bump: 255,
+    })
+    .unwrap();
+    assert_eq!(account[0], 1);
+    assert_eq!(&account[33..41], &5_000u64.to_le_bytes());
+    assert_eq!(&account[73..81], &1_200u64.to_le_bytes());
+}

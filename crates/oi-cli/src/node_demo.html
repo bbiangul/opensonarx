@@ -66,6 +66,7 @@ button{background:var(--text);color:var(--bg);border:0;border-radius:10px;paddin
 </form>
 <div id="verdict"><div class="big" id="big"></div><div class="facts" id="facts"></div></div>
 <div id="claims"></div>
+<div id="refused"></div>
 <p id="empty">The lookup reads claims that were extracted and checked when their pages were indexed. No model runs when you ask.</p>
 </main>
 <script>
@@ -88,9 +89,17 @@ async function refresh(){
       '<span class="pill'+(s.reads_pages_for_claims?' ok':'')+'">model on this node <b>'+(s.reads_pages_for_claims?'yes, at ingestion':'none')+'</b></span>',
       '<span class="pill'+(s.claims_rejected_from_peers>0?' bad':'')+'">claims refused from peers <b>'+s.claims_rejected_from_peers+'</b></span>',
     ];
+    if(s.operator_wallet) pills.splice(0,0,'<span class="pill">operator <b>'+short(s.operator_wallet)+'</b></span>');
+    if(s.requires_bond) pills.push('<span class="pill'+(s.unbonded_peers_passed_over>0?' bad':'')+'">unbonded peers passed over <b>'+s.unbonded_peers_passed_over+'</b></span>');
     for(const b of s.bonds) pills.push('<span class="pill bond">bonded on chain <b>'+esc(b.domain)+' ◎'+sol(b.lamports)+'</b></span>');
     $('pills').innerHTML=pills.join('');
-    $('peers').innerHTML=s.peers.map(p=>'<span class="pill peer">peer <b>'+short(p.node_id)+'</b> · '+esc(p.shards.map(shardName).join(', ')||'no shard announced')+'</span>').join('');
+    $('peers').innerHTML=s.peers.map(p=>'<span class="pill peer">peer <b>'+short(p.node_id)+'</b> · '+esc(p.shards.map(shardName).join(', ')||'no shard announced')+
+      (p.bonded===true?' · <b style="color:var(--ok)">bonded</b>':(p.bonded===false?' · <b style="color:var(--bad)">no bond</b>':''))+'</span>').join('');
+    $('refused').innerHTML=s.refusals.length?('<h2>Refused from peers, kept as evidence</h2>'+s.refusals.slice(-3).map(r=>
+      '<div class="claim" style="border-left-color:var(--bad)"><div class="text">'+esc(r.claim)+'</div><blockquote>“'+esc(r.quote)+'”</blockquote>'+
+      '<div class="meta"><span class="tag" style="color:var(--bad);border-color:var(--bad)">quote not in the page</span>'+
+      '<span>offered by operator <b>'+short(r.operator_wallet||r.peer_id)+'</b></span>'+
+      '<a href="'+esc(r.url)+'" rel="noopener" target="_blank">'+esc(r.url)+'</a></div></div>').join('')):'';
   }catch(e){}
 }
 

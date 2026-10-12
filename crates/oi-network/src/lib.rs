@@ -4,6 +4,7 @@ pub mod event_loop;
 pub mod fanout;
 pub mod gossip;
 pub mod node;
+pub mod operator;
 pub mod protocol;
 pub mod routing;
 

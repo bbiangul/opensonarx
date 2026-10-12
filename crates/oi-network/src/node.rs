@@ -24,6 +24,8 @@ pub struct Node {
     earnings: Arc<EarningsTracker>,
     shard_ids: Vec<String>,
     topic_router: Option<Arc<TopicRouter>>,
+    operator_bonds: Option<Arc<dyn crate::operator::OperatorBonds>>,
+    unbonded_skips: Arc<std::sync::atomic::AtomicU64>,
 }
 
 impl Node {
@@ -60,7 +62,33 @@ impl Node {
             earnings: Arc::new(EarningsTracker::new()),
             shard_ids: Vec::new(),
             topic_router: None,
+            operator_bonds: None,
+            unbonded_skips: Arc::new(std::sync::atomic::AtomicU64::new(0)),
         }
+    }
+
+    /// Use the given ed25519 secret as this node's identity instead of a
+    /// random one. With an operator's wallet key, the node's peer id carries
+    /// the wallet's public key (see `operator`).
+    pub fn with_identity(mut self, secret: [u8; 32]) -> Result<Self, String> {
+        let keypair = Keypair::ed25519_from_bytes(secret)
+            .map_err(|error| format!("not an ed25519 secret key: {error}"))?;
+        self.peer_id = PeerId::from(keypair.public());
+        self.keypair = keypair;
+        Ok(self)
+    }
+
+    /// Copy pages and claims only from peers whose operator has a bond in
+    /// good standing according to `bonds`.
+    pub fn with_operator_bonds(mut self, bonds: Arc<dyn crate::operator::OperatorBonds>) -> Self {
+        self.operator_bonds = Some(bonds);
+        self
+    }
+
+    /// How many times this node passed over or turned away a peer because
+    /// its operator had no bond in good standing.
+    pub fn unbonded_skips(&self) -> Arc<std::sync::atomic::AtomicU64> {
+        self.unbonded_skips.clone()
     }
 
     /// Attach a search index and shard assignments to this node.
@@ -298,6 +326,8 @@ impl Node {
         let min_replicas = self.config.min_replicas_per_shard;
         let repl_check_secs = self.config.replication_check_interval_secs;
         let heartbeat_secs = self.config.heartbeat_interval_secs;
+        let operator_bonds = self.operator_bonds;
+        let unbonded_skips = self.unbonded_skips;
         let enable_tit_for_tat = self.config.enable_tit_for_tat;
         let min_contribution_ratio = self.config.min_contribution_ratio;
         let routing_table_path = self.config.routing_table_path.clone();
@@ -321,6 +351,8 @@ impl Node {
                 enable_tit_for_tat,
                 min_contribution_ratio,
                 routing_table_path,
+                operator_bonds,
+                unbonded_skips,
                 shutdown_rx,
             )
             .await;
