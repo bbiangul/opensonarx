@@ -56,8 +56,15 @@ nothing is replayed.
 
 ```bash
 export OPENROUTER_API_KEY=...     # the model is used at ingestion only
-scripts/demo.py --keep            # about two minutes; --keep leaves the live pages up
+scripts/demo.py --keep            # --keep leaves the live pages up
 ```
+
+It needs Rust, Python 3, an [OpenRouter](https://openrouter.ai) key and, for
+the last act, the [Solana CLI](https://docs.anza.xyz/cli/install) (or pass
+`--skip-solana`). The first run compiles everything and downloads a small
+embedding model; after that a run takes about two minutes. On the local
+validator the script makes its own wallet and program address, so it uses
+nothing of yours.
 
 | Act | What happens | What is checked |
 |---|---|---|
