@@ -47,6 +47,45 @@ trust signal on each source, computed before the question is asked, and
 someone who is accountable for it. That is what the index, its nodes and the
 Solana program are for.
 
+## See all of it run
+
+One command starts three nodes, a dishonest node and a local Solana
+validator, walks through eight acts and ends each with checks computed from
+what the processes answered. Pages are fetched and read while it runs;
+nothing is replayed.
+
+```bash
+export OPENROUTER_API_KEY=...     # the model is used at ingestion only
+scripts/demo.py --keep            # about two minutes; --keep leaves the live pages up
+```
+
+| Act | What happens | What is checked |
+|---|---|---|
+| 1 | An agent searches the open web | sources from three or more independent sites |
+| 2 | The index is divided by subject, learned from its own pages | a versioned routing file; an edited file is refused |
+| 3 | Two nodes ingest only their own subjects and read each page once for claims | both hold claims, each of its own shard |
+| 4 | A question is answered from stored claims | same answer from both nodes, no claim held twice, claims fetched from the other node, milliseconds |
+| 5 | A replica with no model joins | it holds every claim, each quote found in its own copy of the page |
+| 6 | A dishonest node offers a forged claim | the replica refuses exactly that claim and keeps the honest one |
+| 7 | An outside process re-fetches the pages | every quote found again; no quote from another page accepted |
+| 8 | A publisher bonds SOL behind a domain | read back from the chain; the running node shows it; the returned claims and their order do not change |
+
+A full run, 18 of 18 checks: [docs/hackathon/DEMO-RUN-2026-10-11.txt](docs/hackathon/DEMO-RUN-2026-10-11.txt).
+While the nodes are up, each serves a live page at `/demo` showing what it
+holds, its peers, what it refused, the bonds it knows, and what each source
+states about a question.
+
+What the demo does not show, because it is not built: nodes on separate
+machines, rewards and penalties on chain for ingestion work, and a judgment
+of whether two sources state the same fact (the count is of sources with a
+claim close to the question; see "What is not built").
+
+Building the demo found five defects in the network layer that only show
+with three or more real nodes, all fixed with tests: a node's identity taken
+from whoever forwarded its gossip, shard lists that never reached late
+joiners, a replica dropping honest content through a crawl-time filter,
+routing that ignored its own ranking, and heartbeats erasing shard lists.
+
 ## What runs today
 
 ```bash

@@ -417,6 +417,10 @@ pub enum NetworkCommands {
         /// it does not serve while fewer nodes than this announce it
         #[arg(long, default_value = "3")]
         min_replicas: usize,
+        /// Seconds between rounds in which the node pulls what it lacks from
+        /// peers of its shards
+        #[arg(long, default_value = "60")]
+        sync_secs: u64,
         /// Routing file written by `oi network learn-routing`. The node
         /// routes with its centroids instead of the built-in topics; with
         /// --shards, give the cluster numbers this node serves (e.g. 0,1,2)

@@ -5,9 +5,26 @@ use axum::{
 };
 use oi_network::NodeHandle;
 use oi_types::proto::opensonarx as proto;
+use oi_types::traits::StakeRegistry;
 use oi_types::{QueryFilters, SearchResultItem};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+
+/// What the node command knows about this node and hands to its HTTP API.
+pub struct NodeContext {
+    /// Shards this node announces.
+    pub shards: Vec<String>,
+    /// Version of the learned routing file, when one is in use.
+    pub routing_version: Option<String>,
+    /// The router and the shards whose chunks this node keeps, when pages
+    /// the node learns are classified by a learned routing.
+    pub routing: Option<(Arc<oi_types::TopicRouter>, Vec<String>)>,
+    pub routing_table: Arc<tokio::sync::RwLock<oi_network::routing::RoutingTable>>,
+    /// The stake registry attached to the node's index.
+    pub stake_registry: Arc<oi_staking::InMemoryStakeRegistry>,
+    /// The mirror file the registry is read from.
+    pub stakes_path: Option<std::path::PathBuf>,
+}
 
 /// Shared state for the node HTTP API.
 struct ApiState {
@@ -18,6 +35,34 @@ struct ApiState {
     /// The shared index + its on-disk location, for persisting learned pages.
     index: Arc<oi_index::HybridIndex>,
     index_path: Option<std::path::PathBuf>,
+    context: NodeContext,
+    /// Whether this node reads the pages it learns for claims (it has a model).
+    reads_pages: bool,
+    /// Modification time of the stake mirror when it was last loaded.
+    stakes_loaded: std::sync::Mutex<Option<std::time::SystemTime>>,
+}
+
+impl ApiState {
+    /// Load the stake mirror again when the file changed, so a bond recorded
+    /// while the node runs shows without a restart.
+    fn refresh_stakes(&self) {
+        let Some(path) = &self.context.stakes_path else {
+            return;
+        };
+        let Ok(modified) = std::fs::metadata(path).and_then(|meta| meta.modified()) else {
+            return;
+        };
+        let Ok(mut loaded) = self.stakes_loaded.lock() else {
+            return;
+        };
+        if *loaded == Some(modified) {
+            return;
+        }
+        let path = path.to_string_lossy();
+        oi_sdk::OpenSonarXClient::load_stakes_from(&path, &self.context.stake_registry);
+        oi_sdk::OpenSonarXClient::load_stakes_from(&path, self.client.stake_registry());
+        *loaded = Some(modified);
+    }
 }
 
 #[derive(Deserialize)]
@@ -387,6 +432,22 @@ struct ClaimsResponse {
     from_peers: usize,
     /// How many other nodes contributed a returned claim.
     peers_answering: usize,
+    /// One entry per match, in the same order: where it is held and what is
+    /// bonded behind its source.
+    details: Vec<ClaimDetail>,
+}
+
+#[derive(Serialize)]
+struct ClaimDetail {
+    /// Id of the node that holds the claim.
+    held_by: String,
+    held_here: bool,
+    /// Whether the claim is close enough to the question to be about it.
+    about_question: bool,
+    /// Whether the claim is counted with the head claim under the policy.
+    counts_with_head: bool,
+    /// Lamports bonded on chain behind the claim's source family, if any.
+    bond_lamports: u64,
 }
 
 /// What the claims stored at ingestion say about a query, from this node and
@@ -437,7 +498,21 @@ async fn claims_handler(
                 format!("Claim lookup failed: {e}"),
             )
         })?;
+    state.refresh_stakes();
     // A claim's result id starts with the id of the node that holds it.
+    let holders: std::collections::HashMap<(String, String), String> = response
+        .results
+        .iter()
+        .rev()
+        .filter_map(|result| {
+            let holder = result.result_id.split(':').next()?.to_string();
+            let claim = oi_sdk::claims::claims_from_results(std::slice::from_ref(result))
+                .into_iter()
+                .next()?
+                .0;
+            Some(((claim.url, claim.claim), holder))
+        })
+        .collect();
     let own = format!("{}:", state.handle.peer_id);
     let remote_holders: std::collections::BTreeSet<&str> = response
         .results
@@ -456,6 +531,29 @@ async fn claims_handler(
         &policy,
     );
     Ok(Json(ClaimsResponse {
+        details: signal
+            .matches
+            .iter()
+            .map(|claim| {
+                let held_by = holders
+                    .get(&(claim.url.clone(), claim.claim.clone()))
+                    .cloned()
+                    .unwrap_or_default();
+                ClaimDetail {
+                    held_here: held_by == state.handle.peer_id.to_string(),
+                    held_by,
+                    about_question: claim.query_similarity >= policy.min_query_similarity,
+                    counts_with_head: oi_types::claims::counts_with_head(claim, &policy),
+                    bond_lamports: state
+                        .context
+                        .stake_registry
+                        .get_stake(&claim.source_family)
+                        .ok()
+                        .flatten()
+                        .map_or(0, |stake| stake.amount_lamports),
+                }
+            })
+            .collect(),
         supporting_families: signal.supporting_families,
         corroborated: signal.corroborated,
         matches: signal.matches,
@@ -466,13 +564,106 @@ async fn claims_handler(
     }))
 }
 
+/// What this node is and holds, for an operator or a status page.
+async fn status_handler(State(state): State<Arc<ApiState>>) -> Json<serde_json::Value> {
+    state.refresh_stakes();
+    let peers: Vec<serde_json::Value> = state
+        .context
+        .routing_table
+        .read()
+        .await
+        .peer_summaries()
+        .into_iter()
+        .map(|(node_id, shards, vectors)| {
+            serde_json::json!({ "node_id": node_id, "shards": shards, "vectors": vectors })
+        })
+        .collect();
+    let bonds: Vec<serde_json::Value> = state
+        .context
+        .stake_registry
+        .list_active_stakes()
+        .unwrap_or_default()
+        .into_iter()
+        .map(|stake| serde_json::json!({ "domain": stake.domain, "lamports": stake.amount_lamports }))
+        .collect();
+    Json(serde_json::json!({
+        "peer_id": state.handle.peer_id.to_string(),
+        "shards": state.context.shards,
+        "routing_version": state.context.routing_version,
+        "reads_pages_for_claims": state.reads_pages,
+        "pages": state.index.doc_count(),
+        "claims": state.client.claim_count(),
+        "claims_rejected_from_peers": state.index.rejected_claim_count(),
+        "peers": peers,
+        "bonds": bonds,
+    }))
+}
+
+#[derive(Deserialize)]
+struct LearnRequest {
+    urls: Vec<String>,
+}
+
+/// Index the given pages now and read them for claims. An operator's
+/// instruction to the node, so it answers only when the node was started
+/// with `OI_NODE_LEARN=1`.
+async fn learn_handler(
+    State(state): State<Arc<ApiState>>,
+    Json(req): Json<LearnRequest>,
+) -> Result<Json<serde_json::Value>, (axum::http::StatusCode, String)> {
+    let allowed = std::env::var("OI_NODE_LEARN")
+        .is_ok_and(|value| matches!(value.trim(), "1" | "true" | "yes"));
+    if !allowed {
+        return Err((
+            axum::http::StatusCode::FORBIDDEN,
+            "start the node with OI_NODE_LEARN=1 to accept pages to index".to_string(),
+        ));
+    }
+    let client = state.client.clone();
+    let index = state.index.clone();
+    let index_path = state.index_path.clone();
+    let started = std::time::Instant::now();
+    let (pages, claims) = tokio::task::spawn_blocking(move || {
+        let pages = client.learn_urls(req.urls);
+        let claims = client.process_claim_queue();
+        if let Some(path) = index_path
+            && let Ok(storage) = oi_index::Storage::new(&path)
+            && let Err(error) = index.save(&storage)
+        {
+            tracing::warn!("learn: failed to persist the index: {error}");
+        }
+        (pages, claims)
+    })
+    .await
+    .map_err(|error| {
+        (
+            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Learn task failed: {error}"),
+        )
+    })?;
+    Ok(Json(serde_json::json!({
+        "pages_indexed": pages,
+        "claims_stored": claims,
+        "claims": state.client.claim_count(),
+        "seconds": started.elapsed().as_secs_f64(),
+    })))
+}
+
+/// A page that shows this node at work: what it holds, who its peers are,
+/// and what the stored claims say about a question.
+async fn demo_handler() -> axum::response::Html<&'static str> {
+    axum::response::Html(DEMO_HTML)
+}
+
+const DEMO_HTML: &str = include_str!("node_demo.html");
+
 pub async fn run_node_api(
     port: u16,
     handle: NodeHandle,
     index: Arc<oi_index::HybridIndex>,
     index_path: Option<std::path::PathBuf>,
     sdk_config: oi_sdk::SdkConfig,
-    routing: Option<(Arc<oi_types::TopicRouter>, Vec<String>)>,
+    context: NodeContext,
 ) -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // With OI_EXTRACT_CLAIMS=1 and an answer model configured, the node
     // reads each page it learns for claims.
@@ -480,9 +671,10 @@ pub async fn run_node_api(
         .is_ok_and(|value| matches!(value.trim(), "1" | "true" | "yes"));
     let passage_model = sdk_config.answer_model.clone().filter(|_| extract_claims);
     let mut client = oi_sdk::OpenSonarXClient::with_shared_index(sdk_config, index.clone());
-    if let Some((router, shards)) = routing {
+    if let Some((router, shards)) = context.routing.clone() {
         client = client.with_topic_router(router).with_shard_filter(shards);
     }
+    let reads_pages = passage_model.is_some();
     if let Some(model) = passage_model {
         client = client.with_passage_claim_extractor(Arc::new(oi_sdk::ChatModel::new(model)));
         println!("  Claims: pages are read for claims after they are indexed");
@@ -493,6 +685,9 @@ pub async fn run_node_api(
         client,
         index,
         index_path,
+        context,
+        reads_pages,
+        stakes_loaded: std::sync::Mutex::new(None),
     });
 
     let app = Router::new()
@@ -501,6 +696,9 @@ pub async fn run_node_api(
         .route("/search", post(search_handler))
         .route("/answer", post(answer_handler))
         .route("/claims", post(claims_handler))
+        .route("/status", get(status_handler))
+        .route("/learn", post(learn_handler))
+        .route("/demo", get(demo_handler))
         .route("/v1/search", post(gateway_search_handler))
         .with_state(state);
 

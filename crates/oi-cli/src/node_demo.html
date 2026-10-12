@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenSonarX node</title>
+<style>
+:root{
+  --bg:#0d1117;--panel:#161b22;--line:#2a313c;--text:#e6edf3;--dim:#8b949e;
+  --ok:#3fb950;--ok-bg:#12261a;--warn:#d29922;--warn-bg:#2b230f;--bad:#f85149;--bad-bg:#2d1416;
+  --link:#79c0ff;--bond:#e3b341;--peer:#bc8cff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,system-ui,"Segoe UI",sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;margin-bottom:10px}
+.brand{font-size:1.35rem;font-weight:700;letter-spacing:.01em}
+.brand span{font-weight:400;color:var(--dim);font-size:.95rem;margin-left:6px}
+code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:.84rem;color:var(--dim);font-variant-numeric:tabular-nums}
+.pill b{color:var(--text);font-weight:600}
+.pill.bad{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}.pill.bad b{color:var(--bad)}
+.pill.bond{border-color:var(--bond);color:var(--bond)}.pill.bond b{color:var(--bond)}
+.pill.peer{border-color:#3d2f5e;color:var(--peer)}.pill.peer b{color:var(--peer)}
+.pill.ok b{color:var(--ok)}
+h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);margin:18px 0 6px;font-weight:600}
+form{display:flex;gap:8px;margin:18px 0 14px}
+input{flex:1;min-width:0;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-size:1.08rem}
+input:focus{outline:2px solid var(--link);outline-offset:1px}
+button{background:var(--text);color:var(--bg);border:0;border-radius:10px;padding:0 20px;font-size:1rem;font-weight:600;cursor:pointer}
+#verdict{border-radius:12px;padding:16px 18px;border:1px solid var(--line);background:var(--panel);display:none}
+#verdict.ok{border-color:var(--ok);background:var(--ok-bg)}
+#verdict.one{border-color:var(--warn);background:var(--warn-bg)}
+#verdict .big{font-size:1.5rem;font-weight:700;letter-spacing:.01em}
+#verdict.ok .big{color:var(--ok)}#verdict.one .big{color:var(--warn)}#verdict.none .big{color:var(--dim)}
+#verdict .facts{margin-top:6px;color:var(--dim);font-size:.95rem;font-variant-numeric:tabular-nums}
+#verdict .facts b{color:var(--text)}
+.claim{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;background:var(--panel)}
+.claim.counts{border-left-color:var(--ok)}
+.claim.rest{opacity:.62}
+.claim .text{font-size:1.05rem;margin-top:8px}
+.claim blockquote{margin:8px 0 8px;padding:6px 12px;border-left:3px solid var(--line);color:#c9d1d9;font-size:.93rem;font-style:italic}
+.claim .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:.84rem;color:var(--dim)}
+.claim a{color:var(--link);text-decoration:none;overflow-wrap:anywhere}
+.claim a:hover{text-decoration:underline}
+.tag{border-radius:6px;padding:1px 8px;font-size:.78rem;border:1px solid var(--line)}
+.tag.here{color:var(--dim)}
+.tag.peer{color:var(--peer);border-color:#3d2f5e}
+.tag.bond{color:var(--bond);border-color:var(--bond)}
+.fam{color:var(--text);font-weight:600}
+#empty{color:var(--dim);margin-top:26px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="brand">OpenSonarX <span>node <code id="nid">…</code></span></div>
+</header>
+<div class="pills" id="pills"></div>
+<div class="pills" id="peers"></div>
+
+<form id="f">
+  <input id="q" autocomplete="off" placeholder="Ask what the stored sources say" autofocus>
+  <button>Look up</button>
+</form>
+<div id="verdict"><div class="big" id="big"></div><div class="facts" id="facts"></div></div>
+<div id="claims"></div>
+<p id="empty">The lookup reads claims that were extracted and checked when their pages were indexed. No model runs when you ask.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const short=id=>id?('…'+id.slice(-6)):'';
+const shardName=s=>{const m=/^learned-[0-9a-f]+-(\d+)$/.exec(s);return m?('shard '+m[1]):s;};
+const sol=l=>(l/1e9).toLocaleString('en-US',{maximumFractionDigits:3});
+let me='',last='';
+
+async function refresh(){
+  try{
+    const s=await (await fetch('/status')).json();
+    me=s.peer_id; $('nid').textContent=short(s.peer_id);
+    const pills=[
+      '<span class="pill">serves <b>'+esc(s.shards.map(shardName).join(', '))+'</b></span>',
+      s.routing_version?'<span class="pill">routing <b>'+esc(s.routing_version)+'</b></span>':'',
+      '<span class="pill">pages <b>'+s.pages+'</b></span>',
+      '<span class="pill">claims <b>'+s.claims+'</b></span>',
+      '<span class="pill'+(s.reads_pages_for_claims?' ok':'')+'">model on this node <b>'+(s.reads_pages_for_claims?'yes, at ingestion':'none')+'</b></span>',
+      '<span class="pill'+(s.claims_rejected_from_peers>0?' bad':'')+'">claims refused from peers <b>'+s.claims_rejected_from_peers+'</b></span>',
+    ];
+    for(const b of s.bonds) pills.push('<span class="pill bond">bonded on chain <b>'+esc(b.domain)+' ◎'+sol(b.lamports)+'</b></span>');
+    $('pills').innerHTML=pills.join('');
+    $('peers').innerHTML=s.peers.map(p=>'<span class="pill peer">peer <b>'+short(p.node_id)+'</b> · '+esc(p.shards.map(shardName).join(', ')||'no shard announced')+'</span>').join('');
+  }catch(e){}
+}
+
+async function lookup(quiet){
+  const q=last; if(!q) return;
+  let d;
+  try{
+    d=await (await fetch('/claims',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({query:q})})).json();
+  }catch(e){ if(!quiet){$('big').textContent='lookup failed';$('verdict').style.display='block';} return; }
+  if(q!==last) return;
+  $('empty').style.display='none';
+  const v=$('verdict'); v.style.display='block';
+  const n=d.matches.length, fam=d.supporting_families;
+  v.className=d.corroborated?'ok':(fam===1?'one':'none');
+  $('big').textContent=d.corroborated?(fam+' independent sources hold claims close to this question'):(fam===1?'One source holds a claim close to this question':'Nothing stored is close to this question');
+  $('facts').innerHTML='looked up in <b>'+d.lookup_ms.toFixed(1)+' ms</b> · no model called · <b>'+d.from_peers+'</b> of '+n+' nearest claims came from <b>'+d.peers_answering+'</b> other node'+(d.peers_answering===1?'':'s');
+  // One card per source, in the order its nearest claim comes back. The
+  // index does not pick an answer: each source is shown in its own words.
+  const sources=new Map(),far=[];
+  d.matches.forEach((m,i)=>{
+    const x=d.details[i];
+    if(!x.about_question){far.push(m);return;}
+    if(!sources.has(m.source_family)) sources.set(m.source_family,{claims:[],counted:false,bond:0,here:false,peers:new Set()});
+    const s=sources.get(m.source_family);
+    s.claims.push(m); s.counted=s.counted||x.counts_with_head; s.bond=Math.max(s.bond,x.bond_lamports);
+    if(x.held_here) s.here=true; else s.peers.add(x.held_by);
+  });
+  const said=m=>'<div class="text">'+esc(m.claim)+'</div><blockquote>“'+esc(m.quote)+'”</blockquote>';
+  let html='';
+  if(sources.size){
+    html+='<h2>What each source states, closest to the question</h2>';
+    for(const [name,s] of sources){
+      html+='<div class="claim'+(s.counted?' counts':'')+'"><div class="meta"><span class="fam">'+esc(name)+'</span>'+
+        (s.bond>0?'<span class="tag bond">◎'+sol(s.bond)+' bonded on chain</span>':'')+
+        (s.here?'<span class="tag here">held by this node</span>':'')+
+        [...s.peers].map(p=>'<span class="tag peer">from peer '+short(p)+'</span>').join('')+
+        '<a href="'+esc(s.claims[0].url)+'" rel="noopener" target="_blank">'+esc(s.claims[0].url)+'</a></div>'+
+        s.claims.slice(0,2).map(said).join('')+'</div>';
+    }
+  }else if(far.length){
+    html+='<h2>Nearest stored claims, too far from the question to count</h2>'+
+      far.slice(0,3).map(m=>'<div class="claim rest">'+said(m)+'<div class="meta"><span class="fam">'+esc(m.source_family)+'</span></div></div>').join('');
+  }
+  $('claims').innerHTML=html;
+}
+
+$('f').addEventListener('submit',e=>{e.preventDefault();last=$('q').value.trim();lookup(false);});
+const asked=new URLSearchParams(location.search).get('q');
+if(asked){$('q').value=asked;last=asked;}
+refresh().then(()=>lookup(false));
+setInterval(refresh,2000);
+setInterval(()=>lookup(true),3000);
+</script>
+</body>
+</html>

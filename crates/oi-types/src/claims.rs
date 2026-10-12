@@ -58,6 +58,25 @@ fn default_judge_pool() -> usize {
     60
 }
 
+impl ClaimPolicy {
+    /// The first measured policy, which is also the default: the head is
+    /// the claim nearest to the request.
+    pub fn v1() -> Self {
+        Self::default()
+    }
+
+    /// The policy of step 9 of the experiment document: the head is the
+    /// claim the most independent sources repeat. Its label held on the test
+    /// set but it is not the default (see that step).
+    pub fn most_repeated_head() -> Self {
+        Self {
+            policy_id: "ingest-claims-v2".to_string(),
+            head: HeadRule::MostRepeated,
+            ..Self::default()
+        }
+    }
+}
+
 impl Default for ClaimPolicy {
     /// The two similarity thresholds were chosen on development queries and
     /// then held fixed for a separate test (docs/experiments/
@@ -380,7 +399,7 @@ mod tests {
             top_k: 5,
             min_query_similarity: 0.5,
             min_claim_similarity: 0.9,
-            ..ClaimPolicy::default()
+            ..ClaimPolicy::v1()
         };
         let signal = corroboration(fetched(), &nearest);
         assert_eq!(signal.matches[0].claim, "lone");

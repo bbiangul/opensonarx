@@ -1,0 +1,197 @@
+OpenSonarX, end to end at small scale
+real processes, live pages, a hosted model at ingestion only (anthropic/claude-haiku-5.5); logs in target/demo
+
+ACT 1  An agent searches and gets sources
+─────────────────────────────────────────
+  The command-line client searches the open web, fetches the pages it finds and keeps them.
+
+  “what is the largest desert in the world”  (2.3 s, pages fetched and indexed)
+     1  earthhow.com                 What is the Largest Desert in the World? - Earth How
+     2  geographypin.com             Largest Desert in the World? (Antarctica vs. Sahara)
+     3  geology.com                  Largest Desert in the World - Desert Map - Geology.com
+     4  worldatlas.com               The 10 Largest Deserts In The World - WorldAtlas
+     5  desertsoftheworld.com        Top 10 Largest Deserts in the World (Ranked by Area)
+     6  thecampusreview.com          Largest Deserts in the World (Ranked by Area)
+
+  “how does compound interest work”  (2.6 s, pages fetched and indexed)
+     1  consumerfinance.gov          How does compound interest work? - Consumer Financial…
+     2  acorns.com                   How Does Compound Interest Work? Examples & How to Us…
+     3  ramseysolutions.com          How Does Compound Interest Work? - Ramsey
+     4  calculatecompoundinterest.org How Compound Interest Works: A Clear, Step-by-Step Ex…
+     5  stlouisfed.org               How Compound Interest Works & How to Estimate It
+     6  wikihow.com                  How to Calculate Compound Interest: Formula & Easy St…
+  ✔ PROVED     each question returns sources from at least three independent sites
+               6 sites, 6 sites
+
+ACT 2  The index is divided by subject, learned from its own content
+────────────────────────────────────────────────────────────────────
+  No fixed list of topics: the node clusters the pages it holds and writes a routing file.
+  The file's version is a hash of its content and becomes part of every shard name.
+    Routing learned from 24 stored chunks
+    Version:  e0b70a6c49a3
+    Embedder: arctic-embed-s
+    learned-e0b70a6c49a3-0: 9 chunks
+    learned-e0b70a6c49a3-1: 15 chunks
+  ✔ PROVED     a two-shard routing was learned from the stored pages, both shards non-empty
+               version e0b70a6c49a3, chunks per shard [9, 15]
+  ✔ PROVED     a node refuses a routing file that was edited after it was written
+               error: Routing file: routing-tampered.json: version e0b70a6c49a3 does not match its centroids (657ba3758705)
+
+ACT 3  Two nodes each ingest only their subjects, reading pages once for claims
+───────────────────────────────────────────────────────────────────────────────
+  Node A serves shard 0, node B serves shard 1. Both are given the same pages.
+  Each keeps the chunks of its shard, a model lists what each page states, and a claim
+  is stored only if its quote is found character by character in the page.
+    node A:  17 chunks kept, 181 claims stored (26 s of fetching and model reading)
+    node B:  24 chunks kept, 251 claims stored (26 s of fetching and model reading)
+  ✔ PROVED     both nodes extracted and stored claims from the pages of their own shard
+               A 181 claims, B 251 claims, 10 pages offered to each, 26 s
+
+ACT 4  A question is answered from stored claims, in milliseconds, across nodes
+───────────────────────────────────────────────────────────────────────────────
+  No model runs now. The node embeds the question, looks up the nearest stored claims,
+  asks the peers whose shards match the subject, and counts independent sources.
+  The index does not write an answer: it returns each source in its own words, with the
+  quote. Whoever asked, a person or an agent, reads them.
+
+  “what is the largest desert in the world”  asked to node A
+    4 independent sources hold claims close to this question  ·  4.1 ms  ·  0 of 20 claims from other nodes
+      worldatlas.com  held by this node
+        The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 …
+        “The Syrian—also known as the Syrian or Jordanian Steppe—is the tenth largest desert i…”
+      geographypin.com  held by this node
+        The Antarctic Desert is the largest desert on Earth, a polar desert covering about 13.96 …
+        “The largest desert on Earth is the Antarctic Desert , a polar desert covering about 1…”
+      desertsoftheworld.com  held by this node
+        The Arabian Desert is the largest desert in Asia.
+        “Largest Desert in Asia: Arabian Desert”
+      earthhow.com  held by this node
+        The Arctic Desert is the second largest desert, spanning approximately 13.2 million squar…
+        “The Arctic Desert is the second largest , spanning approximately 13.2 million square …”
+    of the 20 nearest claims, 20 are held by A and 0 by B
+
+  “how does compound interest work”  asked to node A
+    4 independent sources hold claims close to this question  ·  4.1 ms  ·  20 of 20 claims from other nodes
+      consumerfinance.gov  held by peer …ZyeuZU
+        Compound interest is when you earn interest on the money you have saved and on the intere…
+        “Compound interest is when you earn interest on the money you’ve saved and on the inte…”
+      acorns.com  held by peer …ZyeuZU
+        Compound interest is interest earned on investments and on any interest the money earns i…
+        “Compound interest is interest you earn on your investments and any interest your mone…”
+      ramseysolutions.com  held by peer …ZyeuZU
+        Compound interest is interest earned on the original amount (principal) of an investment …
+        “Compound interest is the interest you earn from the original amount (or principal) of…”
+      calculatecompoundinterest.org  held by peer …ZyeuZU
+        With compound interest, interest is earned on the growing total, so the balance grows in …
+        “With compound interest, you earn interest on the growing total — your balance grows i…”
+    of the 20 nearest claims, 0 are held by A and 20 by B
+  ✔ PROVED     both nodes give the same claims in the same order for every question
+               node A and node B compared claim by claim
+  ✔ PROVED     no returned claim is held twice: each node holds its own part of the index
+               A 20 + B 0 = 20; A 0 + B 20 = 20
+  ✔ PROVED     answers cross the network: a node returns claims that only its peer holds
+               2 of 2 questions needed the other node
+  ✔ PROVED     the lookup takes milliseconds
+               median 4.0 ms, slowest 4.1 ms over 4 first lookups, question embedding and network round included
+  ✔ PROVED     for at least one question, two or more independent sources hold a close claim
+               4 sources; 4 sources
+
+  For contrast, the same evidence computed at query time, with a model reading the pages:
+    query-time path: 16.3 s   stored-claims path: 4.1 ms
+
+ACT 5  A replica with no model receives claims and checks every quote
+─────────────────────────────────────────────────────────────────────
+  Node C joins as a second holder of shard 0. It has no model and no API key.
+  It pulls pages and claims from node A and keeps a claim only if it finds the quote
+  in the page text it now holds.
+    node A holds 29 chunks and 181 claims;  node C now holds 29 and 181, refused 0
+  ✔ PROVED     a node with no model holds every claim after replication, each quote found in its own copy
+               model on C: none; C 181 of A's 181 claims, none refused
+  ✔ PROVED     the replica answers with the same closest claim as the node that read the pages
+               The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 million sq…
+
+ACT 6  A dishonest node offers a forged claim and the replica refuses it
+────────────────────────────────────────────────────────────────────────
+  A modified node joins shard 0. It offers a real page with two claims: one sentence
+  that is in the page, and one statement it made up, with a quote the page does not contain.
+    page          https://www.worldatlas.com/geography/the-10-largest-deserts-in-the-world.html
+    honest claim  Deserts are usually considered to be hot, arid areas with vast stretches of sand an…
+    forged claim  The Sahara is the largest desert in the world, twice the size of Antarctica.
+    forged quote  “The Sahara is the largest desert on Earth, about twice the size of Antarctica.”
+    node C: +1 claim stored, +1 refused
+  ✔ PROVED     the replica refused exactly the claim whose quote is not in the page
+               refused from peers went 0 → 1; the forged statement is not in node C
+  ✔ PROVED     the same dishonest node's true claim was accepted
+               the honest sentence is in node C, found by its own text
+    What this check covers: a quote that is not in the page the replica received.
+    A forged page is a different attack; the next act is the check against that.
+
+ACT 7  An outside auditor re-fetches the pages and looks for every quote
+────────────────────────────────────────────────────────────────────────
+  A separate process takes the claims the nodes returned, fetches each page itself from
+  the web, and looks for each quote. As a control it also looks for quotes taken from a
+  different page, which must not be found.
+    pages re-fetched   8 of 8
+    honest quotes found again        40 of 40
+    quotes from another page found   0 of 40
+  ✔ PROVED     no quote taken from a different page is accepted
+               0 of 40 accepted
+  ✔ PROVED     the nodes' own quotes are found again by an independent fetch
+               40 of 40 found; pages change, so this is not always all of them
+
+ACT 8  A publisher bonds SOL behind a domain on Solana; the node shows it
+─────────────────────────────────────────────────────────────────────────
+  A local Solana validator runs the staking program; it is not a public cluster.
+  The publisher of worldatlas.com bonds ◎0.25 behind its domain.
+    program: 5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c
+    Signature: 4nHnKvEGYouHbLAEbePt9PBkkxUsSewTEfvhkfaFdeF941mscPUDvXBVxJpCsyGSKYBDN12Re4m7c6gmSm8Dt8VV
+    bonded 250000000 lamports to worldatlas.com
+    stake account: AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f
+    signature: 5fAy4TthdUmYJwdqG8qHLDzmq147MJEJLdixVN3HUA15MbZA5KgVu5tSPPc8ZYqv4mrsDXTfomJnbLPZD3UMbd16
+    stake account: AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f
+    lamports: 250000000
+  ✔ PROVED     the bond was written to the chain and read back from the stake account
+               250000000 lamports read from the account of worldatlas.com (local validator)
+  ✔ PROVED     the running node shows the bond next to that source, without a restart
+               8 claims from worldatlas.com now carry ◎0.25
+  ✔ PROVED     the bond changes nothing about which claims come back or their order
+               same claims, same order, same source count before and after
+
+    4 independent sources hold claims close to this question  ·  1.3 ms  ·  0 of 20 claims from other nodes
+      worldatlas.com  ◎0.25 bonded on chain  held by this node
+        The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 …
+        “The Syrian—also known as the Syrian or Jordanian Steppe—is the tenth largest desert i…”
+      geographypin.com  held by this node
+        The Antarctic Desert is the largest desert on Earth, a polar desert covering about 13.96 …
+        “The largest desert on Earth is the Antarctic Desert , a polar desert covering about 1…”
+      desertsoftheworld.com  held by this node
+        The Arabian Desert is the largest desert in Asia.
+        “Largest Desert in Asia: Arabian Desert”
+      earthhow.com  held by this node
+        The Arctic Desert is the second largest desert, spanning approximately 13.2 million squar…
+        “The Arctic Desert is the second largest , spanning approximately 13.2 million square …”
+
+What this run proved  (120 s)
+  ✔ act 1  each question returns sources from at least three independent sites
+  ✔ act 2  a two-shard routing was learned from the stored pages, both shards non-empty
+  ✔ act 2  a node refuses a routing file that was edited after it was written
+  ✔ act 3  both nodes extracted and stored claims from the pages of their own shard
+  ✔ act 4  both nodes give the same claims in the same order for every question
+  ✔ act 4  no returned claim is held twice: each node holds its own part of the index
+  ✔ act 4  answers cross the network: a node returns claims that only its peer holds
+  ✔ act 4  the lookup takes milliseconds
+  ✔ act 4  for at least one question, two or more independent sources hold a close claim
+  ✔ act 5  a node with no model holds every claim after replication, each quote found in its own copy
+  ✔ act 5  the replica answers with the same closest claim as the node that read the pages
+  ✔ act 6  the replica refused exactly the claim whose quote is not in the page
+  ✔ act 6  the same dishonest node's true claim was accepted
+  ✔ act 7  no quote taken from a different page is accepted
+  ✔ act 7  the nodes' own quotes are found again by an independent fetch
+  ✔ act 8  the bond was written to the chain and read back from the stake account
+  ✔ act 8  the running node shows the bond next to that source, without a restart
+  ✔ act 8  the bond changes nothing about which claims come back or their order
+
+  18 of 18 checks passed
+
+  Not shown here because it is not built: nodes on separate machines, rewards and
+  penalties on chain for ingestion work, a large index of our own.

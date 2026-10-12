@@ -84,7 +84,7 @@ pub fn run(
     if records.is_empty() {
         return Err(format!("{claims_path} has no claim records"));
     }
-    let policy = ClaimPolicy::default();
+    let policy = ClaimPolicy::v1();
     let judge = ChatModel::new(match provider {
         "ollama" => AnswerModelConfig::new(model),
         "openrouter" => AnswerModelConfig::openrouter(model),

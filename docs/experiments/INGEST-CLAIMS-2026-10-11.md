@@ -756,6 +756,55 @@ contagem sobre os mesmos vetores.
   selo a toda consulta que a v1 dá e a mais algumas; o que se mede é se
   essas a mais estragam o selo.
 
+### Resultado
+
+Respostas diretas, erradas / total:
+
+| | Com selo | Sem selo | Diferença | Cobertura |
+|---|---|---|---|---|
+| **Teste, v2 (a mais repetida)** | 7 / 66 (10,6%) | 24 / 111 (21,6%) | +11,0 pontos [+0,7, +21,8] | 37% |
+| Teste, v1 (a mais próxima) | 5 / 61 (8,2%) | 26 / 116 (22,4%) | +14,2 pontos [+4,1, +24,3] | 34% |
+| Desenvolvimento, v2 | 6 / 66 (9,1%) | 17 / 101 (16,8%) | +7,7 pontos [−2,5, +17,6] | 40% |
+| Desenvolvimento, v1 | 6 / 61 (9,8%) | 17 / 106 (16,0%) | +6,2 pontos [−4,3, +16,2] | 37% |
+
+- A v2 passa no critério registrado: no teste o limite inferior fica acima
+  de zero. Ela dá selo às 61 respostas da v1 e a mais 5; dessas 5, duas
+  estavam erradas no teste e nenhuma no desenvolvimento.
+- **Mesmo assim a v2 não virou o padrão.** O critério era condição
+  necessária, e o motivo de existir da regra era consertar a tela. Não
+  consertou: com a v2 ligada, duas rodadas da demo deram como referência,
+  para "qual é o maior deserto", uma vez "a Antártida é o maior" (com "o
+  Ártico é o segundo maior" contado como apoio) e outra "o Saara é o maior
+  deserto quente" (cinco famílias). Pelo embedding, "Antártida é o maior",
+  "Saara é o maior deserto quente" e "Ártico é o segundo maior" ficam todas
+  acima de 0,841 umas das outras. Trocar por um selo um pouco mais fraco sem
+  ganhar o que se queria não se justifica.
+- A regra fica no código atrás de `ClaimPolicy::most_repeated_head()`.
+
+### O que mudou por causa disso
+
+Nenhuma regra de escolha de referência resolve o que é um limite da
+semelhança por embedding: ela não separa "o mesmo fato" de "fatos vizinhos
+sobre o mesmo assunto". Então a tela e a demo deixaram de apresentar uma
+afirmação como "o que as fontes dizem":
+
+- A página do node e o roteiro mostram **cada fonte com as próprias
+  palavras**, a afirmação dela mais próxima da pergunta e a citação. Quem
+  lê, pessoa ou agente, decide.
+- O número mostrado é o que foi medido: quantas fontes independentes têm
+  afirmação próxima da pergunta (o selo v1).
+- Dizer que duas fontes afirmam o mesmo fato exige o julgamento de um
+  modelo. O juiz do passo 7 faz isso par a par (concordei com 47 de 60), mas
+  como selo não se sustentou e não está no caminho servido.
+
+### Limites do passo 9
+
+- Terceiro uso do mesmo conjunto de teste, e a regra foi pensada depois de
+  ver a tela falhar. Os intervalos da v1 e da v2 se sobrepõem quase
+  inteiros: não dá para dizer que uma é melhor que a outra como selo.
+- "Não consertou a tela" vem de duas rodadas da demo com uma pergunta, não
+  de uma medição.
+
 ## Passo 5: conferir uma afirmação buscando a página por conta própria
 
 ### Pergunta
@@ -1012,6 +1061,9 @@ produto os chama. O selo servido continua sendo o `ingest-claims-v1`.
 - Passo 2: `outputs/validation-20261009/ingest-claims-nodes-{1,3}-test.json`
   e `ingest-claims-nodes-{1,3}-rerank-test.json`
 - Passo 4: `outputs/validation-20261009/ingest-claims-routing-test.json`
+- Passo 9: `outputs/validation-20261009/ingest-claims-signal-v2-480.json`;
+  a demo é `scripts/demo.py`, uma rodada completa em
+  `docs/hackathon/DEMO-RUN-2026-10-11.txt`
 - Passo 8: `outputs/validation-20261009/learned-routing-two-nodes.json`
 - Passo 7: `outputs/validation-20261009/ingest-claims-relations.jsonl` (o que
   o modelo julgou), `ingest-claims-judged-480.json` (o selo por consulta),

@@ -1904,11 +1904,13 @@ async fn main() {
             head_most_repeated,
             output,
         } => {
-            let mut policy = oi_sdk::claims::ClaimPolicy::default();
-            if head_most_repeated {
-                policy.head = oi_types::claims::HeadRule::MostRepeated;
-                policy.policy_id = "ingest-claims-v2".to_string();
-            }
+            // The published measurements of the first policy stay
+            // reproducible: the nearest-claim head unless asked otherwise.
+            let mut policy = if head_most_repeated {
+                oi_sdk::claims::ClaimPolicy::most_repeated_head()
+            } else {
+                oi_sdk::claims::ClaimPolicy::v1()
+            };
             if let Some(value) = top_k {
                 policy.top_k = value;
             }
@@ -1932,7 +1934,7 @@ async fn main() {
             claims_protocol,
             output,
         } => {
-            let policy = oi_sdk::claims::ClaimPolicy::default();
+            let policy = oi_sdk::claims::ClaimPolicy::v1();
             if let Err(error) = claim_nodes::run(
                 &claims,
                 &report,

@@ -1318,6 +1318,14 @@ impl OpenSonarXClient {
         self.process_crawl_urls(urls)
     }
 
+    /// Fetch, distill and index the given pages now, the way pages found by
+    /// a search are indexed. For an operator who tells a node what to hold.
+    /// Returns the number of pages indexed; they are queued for claim
+    /// reading like any other new page.
+    pub fn learn_urls(&self, urls: Vec<String>) -> usize {
+        self.process_crawl_urls(urls)
+    }
+
     /// Pages waiting to be read for claims.
     pub fn pending_claim_count(&self) -> usize {
         self.claim_queue

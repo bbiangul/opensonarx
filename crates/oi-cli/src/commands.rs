@@ -1377,6 +1377,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
             concurrency,
             http_port,
             min_replicas,
+            sync_secs,
             routing,
         } => {
             // A routing file replaces the built-in topics. Loaded before
@@ -1423,6 +1424,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                     bootstrap_peers,
                     routing_table_path,
                     min_replicas_per_shard: min_replicas,
+                    replication_check_interval_secs: sync_secs.max(1),
                     ..Default::default()
                 };
 
@@ -1460,9 +1462,8 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                         &node_stake_registry,
                     );
                 }
-                let index = index.with_stake_registry(
-                    node_stake_registry as std::sync::Arc<dyn oi_types::traits::StakeRegistry>,
-                );
+                let index = index.with_stake_registry(node_stake_registry.clone()
+                    as std::sync::Arc<dyn oi_types::traits::StakeRegistry>);
                 let index = std::sync::Arc::new(index);
 
                 // Shard mode: explicit --shards override, or auto-discover via topic router
@@ -1471,6 +1472,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
 
                 let mut node =
                     oi_network::Node::new(net_config).with_index(index.clone(), shard_ids.clone());
+                let node_routing_table = node.routing_table();
                 println!("Starting OpenSonarX node...");
                 println!("  Peer ID:  {}", node.peer_id);
                 println!("  Listen:   /ip4/0.0.0.0/tcp/{port}");
@@ -1590,10 +1592,20 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                             // With a learned routing, the pages this node
                             // learns are classified by it, and the node
                             // keeps the chunks of the shards it serves.
-                            let api_routing = learned
-                                .as_ref()
-                                .and(topic_router.clone())
-                                .map(|router| (router, shard_ids.clone()));
+                            let api_context = crate::node_api::NodeContext {
+                                shards: shard_ids.clone(),
+                                routing_version: learned
+                                    .as_ref()
+                                    .map(|routing| routing.version.clone()),
+                                routing: learned
+                                    .as_ref()
+                                    .and(topic_router.clone())
+                                    .map(|router| (router, shard_ids.clone())),
+                                routing_table: node_routing_table.clone(),
+                                stake_registry: node_stake_registry.clone(),
+                                stakes_path: crate::config_file::ConfigFile::config_dir()
+                                    .map(|d| d.join("stakes.json")),
+                            };
                             tokio::spawn(async move {
                                 if let Err(e) = crate::node_api::run_node_api(
                                     hp,
@@ -1601,7 +1613,7 @@ pub fn network(config: &CliConfig, action: NetworkCommands, verbose: bool) -> Ex
                                     api_index,
                                     api_index_path,
                                     api_sdk_config,
-                                    api_routing,
+                                    api_context,
                                 )
                                 .await
                                 {
