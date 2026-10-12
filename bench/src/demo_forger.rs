@@ -22,13 +22,19 @@ use oi_types::traits::{CrawlPipeline, SearchIndex};
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
 
-/// The first stretch of the text that reads as a sentence: from the start of
-/// a sentence to its full stop, long enough to be a quote.
+/// The first stretch of the text that reads as a sentence: it starts with a
+/// capital letter, ends at a full stop, is long enough to be a quote and
+/// carries no heading or table marks left over from the page layout.
 fn first_sentence(plain: &str, min_chars: usize) -> Option<String> {
     plain
         .split_inclusive(". ")
         .map(str::trim)
-        .find(|sentence| sentence.chars().count() >= min_chars.max(40) && sentence.ends_with('.'))
+        .find(|sentence| {
+            sentence.chars().count() >= min_chars.max(40)
+                && sentence.ends_with('.')
+                && sentence.starts_with(char::is_uppercase)
+                && !sentence.contains(['#', '|', '\n'])
+        })
         .map(str::to_string)
 }
 
@@ -131,5 +137,13 @@ mod tests {
             Some("Antarctica is the largest desert on Earth by a wide margin.")
         );
         assert!(first_sentence("Too short. No.", 20).is_none());
+        assert_eq!(
+            first_sentence(
+                "reviewed: 2023 # How it works. Interest is added to the balance every month. End.",
+                20
+            )
+            .as_deref(),
+            Some("Interest is added to the balance every month.")
+        );
     }
 }

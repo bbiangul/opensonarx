@@ -478,20 +478,27 @@ def act8_solana():
     env = dict(os.environ)
     if SOLANA_BIN.exists():
         env["PATH"] = f"{SOLANA_BIN}:{env['PATH']}"
-    if not shutil.which("solana", path=env["PATH"]):
-        proved(8, "a bond is recorded on chain and read back", False, "Solana CLI not found on this machine")
-        return
     local = args.rpc is None
     rpc = args.rpc or "http://127.0.0.1:8899"
     if local:
         say("  A local Solana validator runs the staking program; it is not a public cluster.")
+        say("  The wallet and the program address are made for this run and hold only test SOL.")
         start("validator", ["solana-test-validator", "--reset", "--quiet", "--ledger", str(DEMO / "ledger")],
               env, DEMO / "validator.log")
         wait_for("the validator", lambda: subprocess.run(
             ["solana", "cluster-version", "--url", rpc], env=env, capture_output=True).returncode == 0, 60)
-        subprocess.run(["solana", "airdrop", "10", "--url", rpc], env=env, capture_output=True, timeout=60)
+        # Nothing of the operator's is used on the local validator: a wallet
+        # and a program keypair are generated inside the demo directory.
+        wallet, program_keypair = DEMO / "wallet.json", DEMO / "program-keypair.json"
+        for keypair in (wallet, program_keypair):
+            subprocess.run(["solana-keygen", "new", "--no-bip39-passphrase", "--silent", "--force", "-o", str(keypair)],
+                           env=env, capture_output=True, check=True)
+        address = subprocess.run(["solana-keygen", "pubkey", str(wallet)], env=env, capture_output=True,
+                                 text=True, check=True).stdout.strip()
+        subprocess.run(["solana", "airdrop", "100", address, "--url", rpc], env=env, capture_output=True, timeout=60)
+        env["WALLET"], env["PROGRAM_KEYPAIR"] = str(wallet), str(program_keypair)
     else:
-        say(f"  Cluster: {rpc}")
+        say(f"  Cluster: {rpc}  (your wallet and the program keypair in ~/.config/solana)")
 
     question = max(QUESTIONS, key=lambda q: q["answer"]["supporting_families"])
     before = claims(8301, question["ask"])
@@ -509,6 +516,11 @@ def act8_solana():
     on_chain = 0
     if mirror.exists():
         on_chain = next((s["amount_lamports"] for s in json.loads(mirror.read_text()) if s["domain"] == domain), 0)
+    if run.returncode != 0:
+        (DEMO / "solana-act.log").write_text(output)
+        say(f"    {RED}the Solana step failed; its output is in {(DEMO / 'solana-act.log').relative_to(ROOT)}{RESET}")
+        for line in output.strip().splitlines()[-4:]:
+            say(f"    {DIM}{clip(line, 110)}{RESET}")
     proved(8, "the bond was written to the chain and read back from the stake account",
            run.returncode == 0 and on_chain == lamports,
            f"{on_chain} lamports read from the account of {domain}" + (" (local validator)" if local else f" ({rpc})"))
@@ -547,6 +559,12 @@ def main():
 
     if not os.environ.get("OPENROUTER_API_KEY"):
         sys.exit("OPENROUTER_API_KEY is not set. The model is used at ingestion, to read pages for claims.")
+    path = os.environ["PATH"] + (f":{SOLANA_BIN}" if SOLANA_BIN.exists() else "")
+    missing = [tool for tool in (["cargo"] + ([] if args.skip_solana else ["solana", "solana-keygen", "solana-test-validator"]))
+               if not shutil.which(tool, path=path)]
+    if missing:
+        sys.exit(f"Not found on PATH: {', '.join(missing)}. The demo needs Rust (cargo) and, for act 8, the "
+                 "Solana CLI (https://docs.anza.xyz/cli/install); or run with --skip-solana.")
     if not args.no_build:
         say(f"{DIM}building the node and the tools (first time takes a few minutes){RESET}")
         subprocess.run(["cargo", "build", "--release", "-q", "-p", "oi-cli"], cwd=ROOT, check=True)
