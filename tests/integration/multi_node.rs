@@ -520,3 +520,70 @@ async fn test_fanout_of_one_goes_to_the_best_matching_shard() {
         handle.shutdown();
     }
 }
+
+/// Gossip is forwarded from peer to peer. A node's entry in another node's
+/// table has to carry the peer id of the node that wrote the announcement,
+/// not of whichever peer passed it along.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn test_a_forwarded_announcement_is_attributed_to_its_author() {
+    use oi_index::HybridIndex;
+    use std::sync::Arc;
+
+    // A chain: each node knows only the one before it, so announcements from
+    // the far end arrive through the nodes in between.
+    let names = ["chain-a", "chain-b", "chain-c", "chain-d"];
+    let mut tables = Vec::new();
+    let mut handles = Vec::new();
+    for (position, name) in names.iter().enumerate() {
+        let port = 19071 + position as u16;
+        let bootstrap = if position == 0 {
+            vec![]
+        } else {
+            vec![format!("/ip4/127.0.0.1/tcp/{}", port - 1)]
+        };
+        let node = Node::new(NetworkConfig {
+            listen_port: port,
+            bootstrap_peers: bootstrap,
+            heartbeat_interval_secs: 1,
+            enable_mdns: false,
+            routing_table_path: None,
+            ..Default::default()
+        })
+        .with_index(Arc::new(HybridIndex::new(4)), vec![name.to_string()]);
+        tables.push(node.routing_table());
+        handles.push(node.start().await.expect("node start"));
+        tokio::time::sleep(std::time::Duration::from_millis(700)).await;
+    }
+
+    // Wait until both ends know all three other shards.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(40);
+    loop {
+        let known_first = tables[0].read().await.one_peer_per_shard().len();
+        let known_last = tables[3].read().await.one_peer_per_shard().len();
+        if (known_first == 3 && known_last == 3) || std::time::Instant::now() > deadline {
+            break;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    }
+    // Let several rounds of forwarded heartbeats land as well.
+    tokio::time::sleep(std::time::Duration::from_secs(4)).await;
+
+    for (position, table) in tables.iter().enumerate() {
+        let known = table.read().await.one_peer_per_shard();
+        assert_eq!(
+            known.len(),
+            3,
+            "node {position} knows the other three shards"
+        );
+        for (shard, (node_id, peer_id)) in known {
+            assert_eq!(
+                node_id,
+                peer_id.to_string(),
+                "on node {position}, the entry for {shard} points at its own node"
+            );
+        }
+    }
+    for handle in handles {
+        handle.shutdown();
+    }
+}

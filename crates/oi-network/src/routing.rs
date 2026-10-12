@@ -152,6 +152,18 @@ impl RoutingTable {
         stale
     }
 
+    /// Every known peer with the shards it announced and the number of
+    /// vectors it last reported, ordered by node id.
+    pub fn peer_summaries(&self) -> Vec<(String, Vec<String>, u64)> {
+        let mut peers: Vec<(String, Vec<String>, u64)> = self
+            .peers
+            .iter()
+            .map(|(id, info)| (id.clone(), info.shard_ids.clone(), info.vectors_stored))
+            .collect();
+        peers.sort();
+        peers
+    }
+
     pub fn peer_count(&self) -> usize {
         self.peers.len()
     }

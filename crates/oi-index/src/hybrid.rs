@@ -180,6 +180,9 @@ pub struct HybridIndex {
     /// Claims extracted from the indexed pages at ingestion time. Saved as
     /// `claims.bin`; the vector graph over them is rebuilt on load.
     claims: RwLock<crate::claims::ClaimIndex>,
+    /// Claims a peer offered and this index refused because the quote was
+    /// not in the page text it holds. Counted since the process started.
+    claims_rejected: AtomicU64,
 }
 
 impl HybridIndex {
@@ -205,6 +208,7 @@ impl HybridIndex {
             next_seq: AtomicU64::new(1),
             chunk_seqs: RwLock::new(HashMap::new()),
             claims: RwLock::new(crate::claims::ClaimIndex::new(dim)),
+            claims_rejected: AtomicU64::new(0),
         }
     }
 
@@ -295,6 +299,208 @@ impl HybridIndex {
         // Sort by seq ascending for consistent ordering
         chunks.sort_by_key(|c| c.seq);
         Ok(chunks)
+    }
+
+    /// Store chunks received from a peer exactly as the peer holds them.
+    ///
+    /// Two rules of crawl-time ingestion do not apply to a copy. The
+    /// near-duplicate filter is a guess about spam that depends on the order
+    /// chunks arrive in, so a replica applying it again drops chunks its
+    /// source kept, and with them the claims that quote those chunks. And a
+    /// chunk with an unseen hash is not a re-crawl of its page: it must be
+    /// added, never replace the chunks already held for that URL. Exact
+    /// duplicates are still skipped and the per-page cap still holds.
+    pub fn ingest_replicated(&self, chunks: &[ContentChunk]) -> Result<()> {
+        self.ingest_chunks(chunks, true)
+    }
+
+    fn ingest_chunks(&self, chunks: &[ContentChunk], replicated: bool) -> Result<()> {
+        let mut hnsw = write_lock(&self.hnsw)?;
+        let mut bm25 = write_lock(&self.bm25)?;
+        let mut meta_store = write_lock(&self.metadata)?;
+        let mut content_hashes = write_lock(&self.content_hashes)?;
+        let mut simhashes = write_lock(&self.simhashes)?;
+
+        // URL-level replacement: a re-crawled page whose content changed must
+        // REPLACE its old chunks, not stack next to them. Without this, any
+        // drift (page edited, extractor updated) duplicates the page on every
+        // re-ingest — observed doubling the corpus (545 → 1012 docs) on one
+        // re-seed. A URL is "changed" when at least one incoming chunk's
+        // content hash is unseen; its stale chunks (and their dedup hashes)
+        // are removed before normal ingestion. Unchanged URLs fall through to
+        // exact-hash dedup as before.
+        let mut replaced_urls: HashSet<String> = HashSet::new();
+        if !self.config.skip_dedup && !replicated {
+            let mut changed_urls: HashSet<&str> = HashSet::new();
+            for chunk in chunks {
+                if let Some(meta) = &chunk.meta
+                    && !meta.url.is_empty()
+                    && !meta.content_hash.is_empty()
+                    && !content_hashes.contains(&meta.content_hash)
+                {
+                    changed_urls.insert(meta.url.as_str());
+                }
+            }
+            if !changed_urls.is_empty() {
+                let stale: Vec<String> = meta_store
+                    .iter()
+                    .filter(|(_, m)| changed_urls.contains(m.url.as_str()))
+                    .map(|(id, _)| id.clone())
+                    .collect();
+                for chunk_id in &stale {
+                    if let Some(meta) = meta_store.get(chunk_id) {
+                        if !meta.content_hash.is_empty() {
+                            content_hashes.remove(&meta.content_hash);
+                        }
+                        // Replaced URLs count as same-page below: their OLD
+                        // SimHash fingerprints are still in the LSH index, and
+                        // the replacement chunks must not be rejected as
+                        // near-duplicates of their own predecessors.
+                        replaced_urls.insert(meta.url.clone());
+                    }
+                    hnsw.mark_deleted(chunk_id);
+                    bm25.mark_deleted(chunk_id);
+                    meta_store.remove(chunk_id);
+                }
+                if !stale.is_empty() {
+                    tracing::debug!(
+                        replaced = stale.len(),
+                        urls = changed_urls.len(),
+                        "ingest: replacing stale chunks for re-crawled URLs"
+                    );
+                }
+            }
+        }
+
+        // Collect URLs already in the index so we can skip SimHash for same-page chunks.
+        // SimHash dedup targets cross-source spam — overlapping chunks from the same
+        // page are expected to be similar due to the sliding window.
+        let existing_urls: HashSet<String> = if self.config.skip_dedup {
+            HashSet::new()
+        } else {
+            meta_store.values().map(|m| m.url.clone()).collect()
+        };
+        let mut batch_urls: HashSet<String> = replaced_urls;
+        let mut url_ingest_counts: HashMap<String, usize> = HashMap::new();
+        let mut inserted: u64 = 0;
+        let mut metadata_refreshed: u64 = 0;
+
+        for chunk in chunks {
+            // Per-URL chunk cap: prevent large pages from dominating the index
+            if self.config.max_chunks_per_url > 0 {
+                let url = chunk.meta.as_ref().map(|m| m.url.as_str()).unwrap_or("");
+                if !url.is_empty() {
+                    let count = url_ingest_counts.entry(url.to_string()).or_insert(0);
+                    if *count >= self.config.max_chunks_per_url {
+                        continue;
+                    }
+                    *count += 1;
+                }
+            }
+            if !self.config.skip_dedup {
+                // Exact-duplicate rejection by content_hash (always applies)
+                if let Some(meta) = &chunk.meta
+                    && !meta.content_hash.is_empty()
+                    && !content_hashes.insert(meta.content_hash.clone())
+                {
+                    // An unchanged recrawl is still a successful live
+                    // observation. Preserve deduplication of the immutable
+                    // content/vector while advancing freshness metadata for
+                    // the same URL+hash. A cross-source copy with the same
+                    // hash must not refresh the original publisher.
+                    for existing in meta_store.values_mut().filter(|existing| {
+                        existing.url == meta.url && existing.content_hash == meta.content_hash
+                    }) {
+                        if meta.crawled_at > existing.crawled_at {
+                            existing.crawled_at = meta.crawled_at;
+                            if meta.published_at.is_some() {
+                                existing.published_at = meta.published_at;
+                            }
+                            metadata_refreshed += 1;
+                        }
+                    }
+                    tracing::debug!(
+                        chunk_id = %chunk.chunk_id,
+                        content_hash = %meta.content_hash,
+                        "skipping exact duplicate after refreshing same-page metadata"
+                    );
+                    continue;
+                }
+
+                // Near-duplicate rejection via SimHash (band-based LSH — O(1) avg lookup)
+                // Skip for same-URL chunks: overlapping windows from the same page are
+                // inherently similar. SimHash dedup targets cross-source Sybil spam.
+                //
+                // Each URL faces at most ONE cross-source check (its first
+                // chunk); siblings are exempt regardless of that check's
+                // outcome. The exemption must not depend on acceptance: when
+                // the first chunk was falsely flagged against another page's
+                // template text, gating on acceptance made every subsequent
+                // chunk re-face the check and mass-reject the page (observed:
+                // 19 of 29 chunks dropped across six unrelated pages).
+                let chunk_url = chunk.meta.as_ref().map(|m| m.url.as_str()).unwrap_or("");
+                let is_same_page = !chunk_url.is_empty()
+                    && (batch_urls.contains(chunk_url) || existing_urls.contains(chunk_url));
+                if !chunk_url.is_empty() {
+                    batch_urls.insert(chunk_url.to_string());
+                }
+
+                let sh = simhash::simhash(&chunk.content);
+                if !replicated
+                    && !is_same_page
+                    && simhashes.is_near_duplicate(sh, self.config.simhash_threshold)
+                {
+                    tracing::debug!(
+                        chunk_id = %chunk.chunk_id,
+                        "skipping near-duplicate (SimHash)"
+                    );
+                    continue;
+                }
+                simhashes.insert(sh);
+            }
+
+            if let Some(embedding) = &chunk.embedding {
+                hnsw.insert(chunk.chunk_id.clone(), embedding.clone())
+                    .map_err(|e| {
+                        oi_types::Error::Internal(format!(
+                            "HNSW insert failed for chunk {}: {e}",
+                            chunk.chunk_id
+                        ))
+                    })?;
+            }
+            // Include title in BM25 text so keyword matches on page titles
+            // boost relevant chunks (e.g., searching "tuple" matches a page titled
+            // "Tuple Types" even if the body text doesn't repeat it).
+            let bm25_text = if let Some(meta) = &chunk.meta
+                && !meta.title.is_empty()
+            {
+                format!("{} {}", meta.title, chunk.content)
+            } else {
+                chunk.content.clone()
+            };
+            bm25.insert(chunk.chunk_id.clone(), bm25_text);
+
+            // Store metadata if provided
+            if let Some(meta) = &chunk.meta {
+                meta_store.insert(chunk.chunk_id.clone(), meta.clone());
+            }
+
+            // Assign monotonic seq for incremental replication
+            let seq = self.next_seq.fetch_add(1, Ordering::Release);
+            if let Ok(mut seqs) = self.chunk_seqs.write() {
+                seqs.insert(chunk.chunk_id.clone(), seq);
+            }
+
+            inserted += 1;
+        }
+
+        if inserted > 0 || metadata_refreshed > 0 {
+            self.dirty.store(true, Ordering::Release);
+            self.unsaved_count
+                .fetch_add(inserted + metadata_refreshed, Ordering::Release);
+        }
+
+        Ok(())
     }
 
     /// The stored embedding of every chunk, in chunk-id order: what a
@@ -729,6 +935,7 @@ impl HybridIndex {
             next_seq: AtomicU64::new(next_seq),
             chunk_seqs: RwLock::new(chunk_seqs),
             claims: RwLock::new(claims),
+            claims_rejected: AtomicU64::new(0),
         })
     }
 
@@ -814,6 +1021,17 @@ impl HybridIndex {
 
     pub fn claim_count(&self) -> usize {
         self.claims.read().map(|claims| claims.len()).unwrap_or(0)
+    }
+
+    /// Record that claims offered by a peer were refused.
+    pub fn note_rejected_claims(&self, count: usize) {
+        self.claims_rejected
+            .fetch_add(count as u64, Ordering::AcqRel);
+    }
+
+    /// Claims refused from peers since the process started.
+    pub fn rejected_claim_count(&self) -> u64 {
+        self.claims_rejected.load(Ordering::Acquire)
     }
 
     /// Returns true if the index has been modified since the last save.
@@ -1580,189 +1798,7 @@ impl SearchIndex for HybridIndex {
     }
 
     fn ingest(&self, chunks: &[ContentChunk]) -> Result<()> {
-        let mut hnsw = write_lock(&self.hnsw)?;
-        let mut bm25 = write_lock(&self.bm25)?;
-        let mut meta_store = write_lock(&self.metadata)?;
-        let mut content_hashes = write_lock(&self.content_hashes)?;
-        let mut simhashes = write_lock(&self.simhashes)?;
-
-        // URL-level replacement: a re-crawled page whose content changed must
-        // REPLACE its old chunks, not stack next to them. Without this, any
-        // drift (page edited, extractor updated) duplicates the page on every
-        // re-ingest — observed doubling the corpus (545 → 1012 docs) on one
-        // re-seed. A URL is "changed" when at least one incoming chunk's
-        // content hash is unseen; its stale chunks (and their dedup hashes)
-        // are removed before normal ingestion. Unchanged URLs fall through to
-        // exact-hash dedup as before.
-        let mut replaced_urls: HashSet<String> = HashSet::new();
-        if !self.config.skip_dedup {
-            let mut changed_urls: HashSet<&str> = HashSet::new();
-            for chunk in chunks {
-                if let Some(meta) = &chunk.meta
-                    && !meta.url.is_empty()
-                    && !meta.content_hash.is_empty()
-                    && !content_hashes.contains(&meta.content_hash)
-                {
-                    changed_urls.insert(meta.url.as_str());
-                }
-            }
-            if !changed_urls.is_empty() {
-                let stale: Vec<String> = meta_store
-                    .iter()
-                    .filter(|(_, m)| changed_urls.contains(m.url.as_str()))
-                    .map(|(id, _)| id.clone())
-                    .collect();
-                for chunk_id in &stale {
-                    if let Some(meta) = meta_store.get(chunk_id) {
-                        if !meta.content_hash.is_empty() {
-                            content_hashes.remove(&meta.content_hash);
-                        }
-                        // Replaced URLs count as same-page below: their OLD
-                        // SimHash fingerprints are still in the LSH index, and
-                        // the replacement chunks must not be rejected as
-                        // near-duplicates of their own predecessors.
-                        replaced_urls.insert(meta.url.clone());
-                    }
-                    hnsw.mark_deleted(chunk_id);
-                    bm25.mark_deleted(chunk_id);
-                    meta_store.remove(chunk_id);
-                }
-                if !stale.is_empty() {
-                    tracing::debug!(
-                        replaced = stale.len(),
-                        urls = changed_urls.len(),
-                        "ingest: replacing stale chunks for re-crawled URLs"
-                    );
-                }
-            }
-        }
-
-        // Collect URLs already in the index so we can skip SimHash for same-page chunks.
-        // SimHash dedup targets cross-source spam — overlapping chunks from the same
-        // page are expected to be similar due to the sliding window.
-        let existing_urls: HashSet<String> = if self.config.skip_dedup {
-            HashSet::new()
-        } else {
-            meta_store.values().map(|m| m.url.clone()).collect()
-        };
-        let mut batch_urls: HashSet<String> = replaced_urls;
-        let mut url_ingest_counts: HashMap<String, usize> = HashMap::new();
-        let mut inserted: u64 = 0;
-        let mut metadata_refreshed: u64 = 0;
-
-        for chunk in chunks {
-            // Per-URL chunk cap: prevent large pages from dominating the index
-            if self.config.max_chunks_per_url > 0 {
-                let url = chunk.meta.as_ref().map(|m| m.url.as_str()).unwrap_or("");
-                if !url.is_empty() {
-                    let count = url_ingest_counts.entry(url.to_string()).or_insert(0);
-                    if *count >= self.config.max_chunks_per_url {
-                        continue;
-                    }
-                    *count += 1;
-                }
-            }
-            if !self.config.skip_dedup {
-                // Exact-duplicate rejection by content_hash (always applies)
-                if let Some(meta) = &chunk.meta
-                    && !meta.content_hash.is_empty()
-                    && !content_hashes.insert(meta.content_hash.clone())
-                {
-                    // An unchanged recrawl is still a successful live
-                    // observation. Preserve deduplication of the immutable
-                    // content/vector while advancing freshness metadata for
-                    // the same URL+hash. A cross-source copy with the same
-                    // hash must not refresh the original publisher.
-                    for existing in meta_store.values_mut().filter(|existing| {
-                        existing.url == meta.url && existing.content_hash == meta.content_hash
-                    }) {
-                        if meta.crawled_at > existing.crawled_at {
-                            existing.crawled_at = meta.crawled_at;
-                            if meta.published_at.is_some() {
-                                existing.published_at = meta.published_at;
-                            }
-                            metadata_refreshed += 1;
-                        }
-                    }
-                    tracing::debug!(
-                        chunk_id = %chunk.chunk_id,
-                        content_hash = %meta.content_hash,
-                        "skipping exact duplicate after refreshing same-page metadata"
-                    );
-                    continue;
-                }
-
-                // Near-duplicate rejection via SimHash (band-based LSH — O(1) avg lookup)
-                // Skip for same-URL chunks: overlapping windows from the same page are
-                // inherently similar. SimHash dedup targets cross-source Sybil spam.
-                //
-                // Each URL faces at most ONE cross-source check (its first
-                // chunk); siblings are exempt regardless of that check's
-                // outcome. The exemption must not depend on acceptance: when
-                // the first chunk was falsely flagged against another page's
-                // template text, gating on acceptance made every subsequent
-                // chunk re-face the check and mass-reject the page (observed:
-                // 19 of 29 chunks dropped across six unrelated pages).
-                let chunk_url = chunk.meta.as_ref().map(|m| m.url.as_str()).unwrap_or("");
-                let is_same_page = !chunk_url.is_empty()
-                    && (batch_urls.contains(chunk_url) || existing_urls.contains(chunk_url));
-                if !chunk_url.is_empty() {
-                    batch_urls.insert(chunk_url.to_string());
-                }
-
-                let sh = simhash::simhash(&chunk.content);
-                if !is_same_page && simhashes.is_near_duplicate(sh, self.config.simhash_threshold) {
-                    tracing::debug!(
-                        chunk_id = %chunk.chunk_id,
-                        "skipping near-duplicate (SimHash)"
-                    );
-                    continue;
-                }
-                simhashes.insert(sh);
-            }
-
-            if let Some(embedding) = &chunk.embedding {
-                hnsw.insert(chunk.chunk_id.clone(), embedding.clone())
-                    .map_err(|e| {
-                        oi_types::Error::Internal(format!(
-                            "HNSW insert failed for chunk {}: {e}",
-                            chunk.chunk_id
-                        ))
-                    })?;
-            }
-            // Include title in BM25 text so keyword matches on page titles
-            // boost relevant chunks (e.g., searching "tuple" matches a page titled
-            // "Tuple Types" even if the body text doesn't repeat it).
-            let bm25_text = if let Some(meta) = &chunk.meta
-                && !meta.title.is_empty()
-            {
-                format!("{} {}", meta.title, chunk.content)
-            } else {
-                chunk.content.clone()
-            };
-            bm25.insert(chunk.chunk_id.clone(), bm25_text);
-
-            // Store metadata if provided
-            if let Some(meta) = &chunk.meta {
-                meta_store.insert(chunk.chunk_id.clone(), meta.clone());
-            }
-
-            // Assign monotonic seq for incremental replication
-            let seq = self.next_seq.fetch_add(1, Ordering::Release);
-            if let Ok(mut seqs) = self.chunk_seqs.write() {
-                seqs.insert(chunk.chunk_id.clone(), seq);
-            }
-
-            inserted += 1;
-        }
-
-        if inserted > 0 || metadata_refreshed > 0 {
-            self.dirty.store(true, Ordering::Release);
-            self.unsaved_count
-                .fetch_add(inserted + metadata_refreshed, Ordering::Release);
-        }
-
-        Ok(())
+        self.ingest_chunks(chunks, false)
     }
 }
 
@@ -3629,6 +3665,63 @@ mod tests {
 
         let tech = idx.chunks_since(Some("topic-tech"), 0, 100).unwrap();
         assert_eq!(tech.len(), 2);
+    }
+
+    #[test]
+    fn a_replica_keeps_what_its_source_kept() {
+        let chunk = |id: &str, url: &str, content: &str| ContentChunk {
+            chunk_id: id.to_string(),
+            content: content.to_string(),
+            embedding: Some(vec![1.0, 0.0, 0.0, 0.0]),
+            seq: 0,
+            meta: Some(ChunkMeta {
+                url: url.to_string(),
+                title: "Deserts".to_string(),
+                domain: "example.org".to_string(),
+                content_hash: format!("hash-of-{id}"),
+                ..Default::default()
+            }),
+        };
+        let text = "Antarctica is the largest desert on Earth by area, a polar desert that \
+                    receives very little precipitation each year across its interior.";
+        // The same text published at two addresses: to a crawler, the second
+        // is a near-duplicate and is dropped.
+        let pair = [
+            chunk("first", "https://one.example/deserts", text),
+            chunk("second", "https://two.example/deserts", text),
+        ];
+        let crawled = HybridIndex::new(4);
+        crawled.ingest(&pair).unwrap();
+        assert_eq!(crawled.doc_count(), 1);
+        // A replica receiving both from a peer keeps both.
+        let replica = HybridIndex::new(4);
+        replica.ingest_replicated(&pair).unwrap();
+        assert_eq!(replica.doc_count(), 2);
+
+        // A further chunk of a page the replica already holds is added. The
+        // crawl path would take it for a re-crawl and drop the page's
+        // earlier chunk.
+        let later = chunk(
+            "third",
+            "https://one.example/deserts",
+            "The Sahara is the largest hot desert and covers much of North Africa.",
+        );
+        replica
+            .ingest_replicated(std::slice::from_ref(&later))
+            .unwrap();
+        assert_eq!(replica.doc_count(), 3);
+        assert_eq!(
+            replica
+                .contents_for_url("https://one.example/deserts")
+                .unwrap()
+                .len(),
+            2
+        );
+        // An exact repeat is still skipped.
+        replica
+            .ingest_replicated(std::slice::from_ref(&later))
+            .unwrap();
+        assert_eq!(replica.doc_count(), 3);
     }
 
     #[test]

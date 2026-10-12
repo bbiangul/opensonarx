@@ -243,6 +243,18 @@ pub async fn run_event_loop(
                     Ok(_) => debug!("Heartbeat published"),
                     Err(e) => debug!("Heartbeat publish failed (expected if no peers): {e}"),
                 }
+                // The shard list travels with every heartbeat round. Sent only
+                // on connection, it never reached a node that joined later
+                // through another peer, which then knew this node was alive
+                // but not what it serves.
+                let shard_snapshot = shard_ids.read().await.clone();
+                if !shard_snapshot.is_empty() {
+                    let data =
+                        gossip::encode_shard_announce(&node_id, &shard_snapshot, vectors_stored, 0);
+                    if let Err(e) = swarm.behaviour_mut().gossipsub.publish(get_gossip_topic(), data) {
+                        debug!("Shard announcement publish failed (expected if no peers): {e}");
+                    }
+                }
             }
 
             _ = eviction_interval.tick() => {
@@ -395,7 +407,7 @@ pub async fn run_event_loop(
                         );
                     }
                     let chunk_count = chunks.len() as u64;
-                    match idx.ingest(&chunks) {
+                    match idx.ingest_replicated(&chunks) {
                         Ok(()) => {
                             info!(
                                 "Replicated {} chunks from {peer} (through seq {})",
@@ -411,6 +423,7 @@ pub async fn run_event_loop(
                                     idx.contents_for_url(url).unwrap_or_default()
                                 });
                             if accepted.len() < offered {
+                                idx.note_rejected_claims(offered - accepted.len());
                                 warn!(
                                     "Rejected {}/{offered} replicated claims from {peer} \
                                      (quote not found in a page this node holds)",
@@ -869,6 +882,13 @@ const MIN_CLAIM_QUOTE_CHARS: usize = 20;
 
 /// Key of a peer's claim progress mark for a shard, kept beside the page
 /// mark for the same shard.
+/// A node announces only itself: its node id is its peer id, so a message
+/// about a node id must be signed by that peer. Anything else is a peer
+/// speaking in another node's name.
+fn speaks_for(author: &libp2p::PeerId, node_id: &str) -> bool {
+    author.to_string() == node_id
+}
+
 fn claims_mark(shard_id: &str) -> String {
     format!("{shard_id}#claims")
 }
@@ -1362,6 +1382,11 @@ async fn handle_behaviour_event(
             ..
         }) => {
             debug!("Gossip message from {propagation_source}");
+            // Gossip is forwarded: the peer that handed us a message is often
+            // not the node that wrote it. Messages are signed, so the author
+            // is known, and it is the author a node's entry and any pull of
+            // its content must point at.
+            let author = message.source.unwrap_or(propagation_source);
             if let Some(gossip_msg) = gossip::decode_gossip(&message.data) {
                 match gossip_msg.payload {
                     Some(gossip_message::Payload::Heartbeat(hb)) => {
@@ -1369,19 +1394,29 @@ async fn handle_behaviour_event(
                             "Heartbeat from {}: shards={}, vectors={}",
                             hb.node_id, hb.shard_count, hb.vectors_stored
                         );
+                        if !speaks_for(&author, &hb.node_id) {
+                            warn!("Ignored heartbeat for {} signed by {author}", hb.node_id);
+                            return EventAction::None;
+                        }
                         let mut rt = routing_table.write().await;
-                        // Keeps the shard list from the peer's announcement
-                        // and maps the gossip source PeerId to this node_id.
-                        rt.record_heartbeat(&hb.node_id, hb.vectors_stored, propagation_source);
+                        // Keeps the shard list from the peer's announcement.
+                        rt.record_heartbeat(&hb.node_id, hb.vectors_stored, author);
                     }
                     Some(gossip_message::Payload::ShardAnnounce(sa)) => {
+                        if !speaks_for(&author, &sa.node_id) {
+                            warn!(
+                                "Ignored shard announce for {} signed by {author}",
+                                sa.node_id
+                            );
+                            return EventAction::None;
+                        }
                         info!("Shard announce from {}: {:?}", sa.node_id, sa.shard_ids);
                         let mut rt = routing_table.write().await;
                         rt.update_peer_with_id(
                             &sa.node_id,
                             sa.shard_ids.clone(),
                             sa.vector_count,
-                            Some(propagation_source),
+                            Some(author),
                         );
                         drop(rt);
 
@@ -1403,7 +1438,7 @@ async fn handle_behaviour_event(
                                     sa.node_id, sa.vector_count, our_docs
                                 );
                                 return EventAction::SendReplicationRequest {
-                                    peer: propagation_source,
+                                    peer: author,
                                     shard_id: shard_id.clone(),
                                     max_chunks: 1000,
                                 };
@@ -1438,10 +1473,10 @@ async fn handle_behaviour_event(
                         {
                             info!(
                                 "Triggering replication pull from {} for shard {}",
-                                propagation_source, ca.shard_id
+                                author, ca.shard_id
                             );
                             return EventAction::SendReplicationRequest {
-                                peer: propagation_source,
+                                peer: author,
                                 shard_id: ca.shard_id,
                                 max_chunks: ca.chunk_count.max(100),
                             };
@@ -1858,6 +1893,9 @@ mod tests {
         assert_eq!(highest_seq(std::iter::empty()), None);
         assert_eq!(highest_seq([0u64, 0].into_iter()), None);
         assert_eq!(claims_mark("topic-science"), "topic-science#claims");
+        let (author, other) = (libp2p::PeerId::random(), libp2p::PeerId::random());
+        assert!(speaks_for(&author, &author.to_string()));
+        assert!(!speaks_for(&other, &author.to_string()));
     }
 
     #[test]
