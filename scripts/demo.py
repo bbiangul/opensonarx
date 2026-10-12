@@ -270,11 +270,20 @@ def chain_setup():
             solana("cargo", "build-sbf", "--manifest-path", "programs/opensonarx-staking/Cargo.toml", timeout=1800)
         solana("solana", "program", "deploy", str(PROGRAM_SO), "--program-id", str(program_keypair),
                "--keypair", str(authority), "--url", rpc, timeout=900)
-    initialized = node_bond("init", "--keypair", str(authority))
+    # A program deployed a moment ago is not callable until the next slot,
+    # so the first attempt can fail on a fresh validator.
+    for attempt in range(6):
+        initialized = node_bond("init", "--keypair", str(authority))
+        if initialized.returncode == 0:
+            break
+        time.sleep(3)
     say(f"    program {program}")
     for line in initialized.stdout.splitlines():
         if line.strip().startswith(("protocol", "token mint:")):
             say(f"    {line.strip()}")
+    if initialized.returncode != 0:
+        error = initialized.stderr.strip().splitlines()
+        raise RuntimeError(f"the protocol could not be initialized on {rpc}: {error[-1] if error else 'no output'}")
     say(f"    {DIM}the bond is in a test token minted on this cluster; it has no value{RESET}")
 
 
@@ -523,7 +532,10 @@ def act5_replica(routing):
                f"C holds {c['pages']} chunks and {c['claims']} claims after {c['unbonded_peers_passed_over']} sync rounds")
         say(f"  The operator of node A ({operators['node-a'][1][:8]}…) locks {BOND_UNITS:,} units:")
         joined = join_as_operator("node-a")
-        standing = read_bonds(["node-a"], mirror_to="node-c").get("node-a", 0)
+        say(f"  {DIM}(the operator of node B does the same; node C never copies from B, which holds another shard){RESET}")
+        node_bond("join", "--authority", str(chain["authority"]), "--operator", str(operators["node-b"][0]),
+                  "--amount", str(BOND_UNITS))
+        standing = read_bonds(["node-a", "node-b"], mirror_to="node-c").get("node-a", 0)
         proved(5, "node A's operator locked a bond in the program's account on chain",
                joined and standing >= BOND_UNITS,
                f"{standing:,} units standing in the bond account of {operators['node-a'][1]}")
@@ -562,7 +574,7 @@ def act6_forger(question):
     if bonds:
         say(f"  To be copied from at all, its operator ({operators['forger'][1][:8]}…) has to lock a bond too:")
         join_as_operator("forger")
-        read_bonds(["node-a", "forger"], mirror_to="node-c")
+        read_bonds(["node-a", "node-b", "forger"], mirror_to="node-c")
     before = status(8303)
     shard = before["shards"][0]
     page = question["answer"]["matches"][0]["url"]
@@ -668,7 +680,7 @@ def act7_audit(evidence):
                         "--evidence", digest) if absent else None
     if slashed is not None:
         chain_lines(slashed.stdout, ("slashed", "bond account:", "evidence:", "signature:"))
-    after = read_bonds(["node-a", "forger"], mirror_to="node-c")
+    after = read_bonds(["node-a", "node-b", "forger"], mirror_to="node-c")
     proved(7, "the dishonest operator's bond was slashed on chain; the honest operator's was not",
            slashed is not None and slashed.returncode == 0 and standing.get("forger") == BOND_UNITS
            and after.get("forger") == 0 and after.get("node-a") == BOND_UNITS,
@@ -826,6 +838,10 @@ def main():
             signal.pause()
     except KeyboardInterrupt:
         pass
+    except (RuntimeError, TimeoutError, subprocess.SubprocessError, urllib.error.URLError) as error:
+        # A step the acts depend on did not happen; the run is not a result.
+        say(f"\n{RED}The demo stopped: {error}{RESET}")
+        checks.append((0, "the demo ran to the end", False, str(error)))
     finally:
         stop_all()
     sys.exit(0 if checks and all(check[2] for check in checks) else 1)
