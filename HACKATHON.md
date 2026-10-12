@@ -49,8 +49,8 @@ Solana program are for.
 
 ## See all of it run
 
-One command starts three nodes, a dishonest node and a local Solana
-validator, walks through eight acts and ends each with checks computed from
+One command starts three nodes, a dishonest node and (unless pointed at
+devnet) a local Solana validator, walks through eight acts and ends each with checks computed from
 what the processes answered. Pages are fetched and read while it runs;
 nothing is replayed.
 
@@ -77,7 +77,10 @@ nothing of yours.
 | 7 | An outside process re-fetches the pages | every quote found again; no quote from another page accepted |
 | 8 | A publisher bonds SOL behind a domain | read back from the chain; the running node shows it; the returned claims and their order do not change |
 
-A full run, 18 of 18 checks: [docs/hackathon/DEMO-RUN-2026-10-11.txt](docs/hackathon/DEMO-RUN-2026-10-11.txt).
+A full run with the bond on devnet, 18 of 18 checks:
+[docs/hackathon/DEMO-RUN.txt](docs/hackathon/DEMO-RUN.txt). Add
+`--rpc https://api.devnet.solana.com` to bond on devnet with your own funded
+wallet; without it the last act uses a local validator.
 While the nodes are up, each serves a live page at `/demo` showing what it
 holds, its peers, what it refused, the bonds it knows, and what each source
 states about a question.
@@ -142,12 +145,14 @@ stake transaction to a search result carrying that stake:
 cargo test --manifest-path tests/integration/Cargo.toml --test solana_e2e
 ```
 
-**Deployment status.** The program builds to SBF and has been deployed to a
-local validator, where a real `Stake` transaction bonded SOL to a domain, the
-stake account was read back from the chain, and the search showed the bond.
-It is not on devnet yet: the faucet refused the deploy wallet on 11 October.
-Details and the one-command reproduction are in
-[docs/hackathon/DEVNET.md](docs/hackathon/DEVNET.md).
+**Deployment status.** The program is on Solana devnet at
+[`5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c`](https://explorer.solana.com/address/5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c?cluster=devnet).
+The demo has run end to end against it twice: a `Stake` transaction bonded
+0.25 SOL to a domain, the stake account was read back from the chain, and
+the running node showed the bond next to that source. Signatures and the
+one-command reproduction are in
+[docs/hackathon/DEVNET.md](docs/hackathon/DEVNET.md). It is devnet, with
+test SOL; nothing is on mainnet.
 
 **What the bond does and does not do.** A bond never raises a result's rank
 and never buys a probability. It is shown next to the source (the `BOND`

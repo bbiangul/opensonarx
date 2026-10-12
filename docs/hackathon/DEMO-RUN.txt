@@ -5,10 +5,10 @@ ACT 1  An agent searches and gets sources
 ─────────────────────────────────────────
   The command-line client searches the open web, fetches the pages it finds and keeps them.
 
-  “what is the largest desert in the world”  (2.3 s, pages fetched and indexed)
+  “what is the largest desert in the world”  (2.4 s, pages fetched and indexed)
      1  earthhow.com                 What is the Largest Desert in the World? - Earth How
-     2  geographypin.com             Largest Desert in the World? (Antarctica vs. Sahara)
-     3  geology.com                  Largest Desert in the World - Desert Map - Geology.com
+     2  geology.com                  Largest Desert in the World - Desert Map - Geology.com
+     3  geographypin.com             Largest Desert in the World? (Antarctica vs. Sahara)
      4  worldatlas.com               The 10 Largest Deserts In The World - WorldAtlas
      5  desertsoftheworld.com        Top 10 Largest Deserts in the World (Ranked by Area)
      6  thecampusreview.com          Largest Deserts in the World (Ranked by Area)
@@ -17,8 +17,8 @@ ACT 1  An agent searches and gets sources
      1  consumerfinance.gov          How does compound interest work? - Consumer Financial…
      2  acorns.com                   How Does Compound Interest Work? Examples & How to Us…
      3  ramseysolutions.com          How Does Compound Interest Work? - Ramsey
-     4  calculatecompoundinterest.org How Compound Interest Works: A Clear, Step-by-Step Ex…
-     5  stlouisfed.org               How Compound Interest Works & How to Estimate It
+     4  stlouisfed.org               How Compound Interest Works & How to Estimate It
+     5  pnc.com                      What Is Compound Interest & How Is It Calculated? | P…
      6  wikihow.com                  How to Calculate Compound Interest: Formula & Easy St…
   ✔ PROVED     each question returns sources from at least three independent sites
                6 sites, 6 sites
@@ -42,10 +42,10 @@ ACT 3  Two nodes each ingest only their subjects, reading pages once for claims
   Node A serves shard 0, node B serves shard 1. Both are given the same pages.
   Each keeps the chunks of its shard, a model lists what each page states, and a claim
   is stored only if its quote is found character by character in the page.
-    node A:  17 chunks kept, 181 claims stored (26 s of fetching and model reading)
-    node B:  24 chunks kept, 251 claims stored (26 s of fetching and model reading)
+    node A:  17 chunks kept, 173 claims stored (23 s of fetching and model reading)
+    node B:  19 chunks kept, 196 claims stored (24 s of fetching and model reading)
   ✔ PROVED     both nodes extracted and stored claims from the pages of their own shard
-               A 181 claims, B 251 claims, 10 pages offered to each, 26 s
+               A 173 claims, B 196 claims, 10 pages offered to each, 24 s
 
 ACT 4  A question is answered from stored claims, in milliseconds, across nodes
 ───────────────────────────────────────────────────────────────────────────────
@@ -55,35 +55,35 @@ ACT 4  A question is answered from stored claims, in milliseconds, across nodes
   quote. Whoever asked, a person or an agent, reads them.
 
   “what is the largest desert in the world”  asked to node A
-    4 independent sources hold claims close to this question  ·  4.1 ms  ·  0 of 20 claims from other nodes
+    4 independent sources hold claims close to this question  ·  6.0 ms  ·  0 of 20 claims from other nodes
       worldatlas.com  held by this node
-        The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 …
-        “The Syrian—also known as the Syrian or Jordanian Steppe—is the tenth largest desert i…”
-      geographypin.com  held by this node
-        The Antarctic Desert is the largest desert on Earth, a polar desert covering about 13.96 …
-        “The largest desert on Earth is the Antarctic Desert , a polar desert covering about 1…”
-      desertsoftheworld.com  held by this node
-        The Arabian Desert is the largest desert in Asia.
-        “Largest Desert in Asia: Arabian Desert”
+        The Sahara Desert is the largest subtropical desert in the world, measuring 3.5 million s…
+        “The Sahara is the largest subtropical desert in the world, clocking in at 3.5 million…”
       earthhow.com  held by this node
-        The Arctic Desert is the second largest desert, spanning approximately 13.2 million squar…
-        “The Arctic Desert is the second largest , spanning approximately 13.2 million square …”
+        Antarctica is the largest desert in the world, covering about 14 million square kilometer…
+        “the largest desert in the world is actually the cold, icy expanse of Antarctica. Cove…”
+      geographypin.com  held by this node
+        The largest desert is Antarctica at about 13.96 million km² (5.39 million sq mi).
+        “The largest desert is Antarctica at ~ 13.96 million km² (5.39 million sq mi) .”
+      desertsoftheworld.com  held by this node
+        The Antarctic Desert is the largest desert on Earth by a wide margin.
+        “The Antarctic Desert is the largest desert on Earth by a wide margin.”
     of the 20 nearest claims, 20 are held by A and 0 by B
 
   “how does compound interest work”  asked to node A
-    4 independent sources hold claims close to this question  ·  4.1 ms  ·  20 of 20 claims from other nodes
-      consumerfinance.gov  held by peer …ZyeuZU
+    4 independent sources hold claims close to this question  ·  4.5 ms  ·  20 of 20 claims from other nodes
+      consumerfinance.gov  held by peer …Fn8w6S
         Compound interest is when you earn interest on the money you have saved and on the intere…
         “Compound interest is when you earn interest on the money you’ve saved and on the inte…”
-      acorns.com  held by peer …ZyeuZU
+      acorns.com  held by peer …Fn8w6S
         Compound interest is interest earned on investments and on any interest the money earns i…
         “Compound interest is interest you earn on your investments and any interest your mone…”
-      ramseysolutions.com  held by peer …ZyeuZU
-        Compound interest is interest earned on the original amount (principal) of an investment …
+      ramseysolutions.com  held by peer …Fn8w6S
+        Compound interest is the interest earned from the original amount (principal) of an inves…
         “Compound interest is the interest you earn from the original amount (or principal) of…”
-      calculatecompoundinterest.org  held by peer …ZyeuZU
-        With compound interest, interest is earned on the growing total, so the balance grows in …
-        “With compound interest, you earn interest on the growing total — your balance grows i…”
+      pnc.com  held by peer …Fn8w6S
+        Compound interest is built into many common financial products.
+        “Compound interest is built into many common financial products.”
     of the 20 nearest claims, 0 are held by A and 20 by B
   ✔ PROVED     both nodes give the same claims in the same order for every question
                node A and node B compared claim by claim
@@ -92,23 +92,20 @@ ACT 4  A question is answered from stored claims, in milliseconds, across nodes
   ✔ PROVED     answers cross the network: a node returns claims that only its peer holds
                2 of 2 questions needed the other node
   ✔ PROVED     the lookup takes milliseconds
-               median 4.0 ms, slowest 4.1 ms over 4 first lookups, question embedding and network round included
+               median 4.8 ms, slowest 6.0 ms over 4 first lookups, question embedding and network round included
   ✔ PROVED     for at least one question, two or more independent sources hold a close claim
                4 sources; 4 sources
-
-  For contrast, the same evidence computed at query time, with a model reading the pages:
-    query-time path: 16.3 s   stored-claims path: 4.1 ms
 
 ACT 5  A replica with no model receives claims and checks every quote
 ─────────────────────────────────────────────────────────────────────
   Node C joins as a second holder of shard 0. It has no model and no API key.
   It pulls pages and claims from node A and keeps a claim only if it finds the quote
   in the page text it now holds.
-    node A holds 29 chunks and 181 claims;  node C now holds 29 and 181, refused 0
+    node A holds 17 chunks and 173 claims;  node C now holds 17 and 173, refused 0
   ✔ PROVED     a node with no model holds every claim after replication, each quote found in its own copy
-               model on C: none; C 181 of A's 181 claims, none refused
+               model on C: none; C 173 of A's 173 claims, none refused
   ✔ PROVED     the replica answers with the same closest claim as the node that read the pages
-               The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 million sq…
+               The Sahara Desert is the largest subtropical desert in the world, measuring 3.5 million square mile…
 
 ACT 6  A dishonest node offers a forged claim and the replica refuses it
 ────────────────────────────────────────────────────────────────────────
@@ -141,37 +138,38 @@ ACT 7  An outside auditor re-fetches the pages and looks for every quote
 
 ACT 8  A publisher bonds SOL behind a domain on Solana; the node shows it
 ─────────────────────────────────────────────────────────────────────────
-  A local Solana validator runs the staking program; it is not a public cluster.
+  Cluster: https://api.devnet.solana.com  (your wallet and the program keypair in ~/.config/solana)
   The publisher of worldatlas.com bonds ◎0.25 behind its domain.
     program: 5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c
-    Signature: 4nHnKvEGYouHbLAEbePt9PBkkxUsSewTEfvhkfaFdeF941mscPUDvXBVxJpCsyGSKYBDN12Re4m7c6gmSm8Dt8VV
     bonded 250000000 lamports to worldatlas.com
     stake account: AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f
-    signature: 5fAy4TthdUmYJwdqG8qHLDzmq147MJEJLdixVN3HUA15MbZA5KgVu5tSPPc8ZYqv4mrsDXTfomJnbLPZD3UMbd16
+    https://explorer.solana.com/address/AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f?cluster=devnet
+    signature: 2adsmYi2jHGqA6LDsNgVWC6zX4Wm6j6tfVo2ahMwME7LzhiNLU2gTcTQS4gjnTJ3BmxWFbDD14fUotQG232z8ybf
+    https://explorer.solana.com/tx/2adsmYi2jHGqA6LDsNgVWC6zX4Wm6j6tfVo2ahMwME7LzhiNLU2gTcTQS4gjnTJ3BmxWFbDD14fUotQG232z8ybf?cluster=devnet
     stake account: AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f
     lamports: 250000000
   ✔ PROVED     the bond was written to the chain and read back from the stake account
-               250000000 lamports read from the account of worldatlas.com (local validator)
+               250000000 lamports read from the account of worldatlas.com (https://api.devnet.solana.com)
   ✔ PROVED     the running node shows the bond next to that source, without a restart
                8 claims from worldatlas.com now carry ◎0.25
   ✔ PROVED     the bond changes nothing about which claims come back or their order
                same claims, same order, same source count before and after
 
-    4 independent sources hold claims close to this question  ·  1.3 ms  ·  0 of 20 claims from other nodes
+    4 independent sources hold claims close to this question  ·  1.2 ms  ·  0 of 20 claims from other nodes
       worldatlas.com  ◎0.25 bonded on chain  held by this node
-        The Syrian Desert is the tenth largest desert in the world, measuring approximately 0.19 …
-        “The Syrian—also known as the Syrian or Jordanian Steppe—is the tenth largest desert i…”
-      geographypin.com  held by this node
-        The Antarctic Desert is the largest desert on Earth, a polar desert covering about 13.96 …
-        “The largest desert on Earth is the Antarctic Desert , a polar desert covering about 1…”
-      desertsoftheworld.com  held by this node
-        The Arabian Desert is the largest desert in Asia.
-        “Largest Desert in Asia: Arabian Desert”
+        The Sahara Desert is the largest subtropical desert in the world, measuring 3.5 million s…
+        “The Sahara is the largest subtropical desert in the world, clocking in at 3.5 million…”
       earthhow.com  held by this node
-        The Arctic Desert is the second largest desert, spanning approximately 13.2 million squar…
-        “The Arctic Desert is the second largest , spanning approximately 13.2 million square …”
+        Antarctica is the largest desert in the world, covering about 14 million square kilometer…
+        “the largest desert in the world is actually the cold, icy expanse of Antarctica. Cove…”
+      geographypin.com  held by this node
+        The largest desert is Antarctica at about 13.96 million km² (5.39 million sq mi).
+        “The largest desert is Antarctica at ~ 13.96 million km² (5.39 million sq mi) .”
+      desertsoftheworld.com  held by this node
+        The Antarctic Desert is the largest desert on Earth by a wide margin.
+        “The Antarctic Desert is the largest desert on Earth by a wide margin.”
 
-What this run proved  (120 s)
+What this run proved  (99 s)
   ✔ act 1  each question returns sources from at least three independent sites
   ✔ act 2  a two-shard routing was learned from the stored pages, both shards non-empty
   ✔ act 2  a node refuses a routing file that was edited after it was written

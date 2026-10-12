@@ -1063,7 +1063,7 @@ produto os chama. O selo servido continua sendo o `ingest-claims-v1`.
 - Passo 4: `outputs/validation-20261009/ingest-claims-routing-test.json`
 - Passo 9: `outputs/validation-20261009/ingest-claims-signal-v2-480.json`;
   a demo é `scripts/demo.py`, uma rodada completa em
-  `docs/hackathon/DEMO-RUN-2026-10-11.txt`
+  `docs/hackathon/DEMO-RUN.txt`
 - Passo 8: `outputs/validation-20261009/learned-routing-two-nodes.json`
 - Passo 7: `outputs/validation-20261009/ingest-claims-relations.jsonl` (o que
   o modelo julgou), `ingest-claims-judged-480.json` (o selo por consulta),

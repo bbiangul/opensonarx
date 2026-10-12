@@ -503,15 +503,27 @@ def act8_solana():
     question = max(QUESTIONS, key=lambda q: q["answer"]["supporting_families"])
     before = claims(8301, question["ask"])
     domain = before["matches"][0]["source_family"]
-    lamports = 250_000_000
+    lamports = int(args.bond_sol * 1_000_000_000)
     say(f"  The publisher of {BOLD}{domain}{RESET} bonds ◎{lamports / 1e9:g} behind its domain.")
     env["OPENSONARX_DATA_DIR"] = str(DEMO / "node-a")
     run = subprocess.run([str(ROOT / "scripts" / "chain_bond_demo.sh"), rpc, domain, str(lamports)],
                          env=env, cwd=ROOT, capture_output=True, text=True, timeout=900)
     output = run.stdout + run.stderr
+    staked_now = False
+    cluster = next((name for name in ("devnet", "testnet") if name in rpc), None)
     for line in output.splitlines():
-        if line.strip().lower().startswith(("program:", "signature:", "bonded", "stake account:", "lamports:")):
-            say(f"    {clip(line.strip(), 110)}")
+        line = line.strip()
+        if line.lower().startswith(("program:", "signature:", "bonded", "stake account:", "lamports:")):
+            say(f"    {clip(line, 110)}")
+        staked_now = staked_now or line.startswith("bonded")
+        # On a public cluster, where to look the transaction and account up.
+        if cluster and line.startswith("signature:"):
+            say(f"    {DIM}https://explorer.solana.com/tx/{line.split()[-1]}?cluster={cluster}{RESET}")
+        if cluster and line.startswith("stake account:") and not getattr(act8_solana, "linked", False):
+            act8_solana.linked = True
+            say(f"    {DIM}https://explorer.solana.com/address/{line.split()[-1]}?cluster={cluster}{RESET}")
+    if run.returncode == 0 and not staked_now:
+        say(f"    {DIM}{domain} was already bonded on this cluster in an earlier run; the account is read back{RESET}")
     mirror = DEMO / "node-a" / "stakes.json"
     on_chain = 0
     if mirror.exists():
@@ -521,9 +533,11 @@ def act8_solana():
         say(f"    {RED}the Solana step failed; its output is in {(DEMO / 'solana-act.log').relative_to(ROOT)}{RESET}")
         for line in output.strip().splitlines()[-4:]:
             say(f"    {DIM}{clip(line, 110)}{RESET}")
-    proved(8, "the bond was written to the chain and read back from the stake account",
-           run.returncode == 0 and on_chain == lamports,
+    proved(8, "the bond was written to the chain and read back from the stake account"
+           if staked_now else "the bond is on the chain and was read back from the stake account",
+           run.returncode == 0 and on_chain > 0 and (on_chain == lamports or not staked_now),
            f"{on_chain} lamports read from the account of {domain}" + (" (local validator)" if local else f" ({rpc})"))
+    lamports = on_chain or lamports
 
     def shown():
         bonds = {b["domain"]: b["lamports"] for b in http("GET", api(8301) + "/status")["bonds"]}
@@ -555,6 +569,7 @@ def main():
     parser.add_argument("--skip-solana", action="store_true")
     parser.add_argument("--skip-answer", action="store_true", help="skip the query-time timing contrast")
     parser.add_argument("--rpc", help="Solana RPC to bond on instead of a local validator")
+    parser.add_argument("--bond-sol", type=float, default=0.25, help="SOL bonded in act 8 (default 0.25)")
     args = parser.parse_args()
 
     if not os.environ.get("OPENROUTER_API_KEY"):

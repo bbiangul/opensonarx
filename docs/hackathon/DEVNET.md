@@ -2,45 +2,61 @@
 
 Program ID: `5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c`
 
-## What has run (11 October 2026)
+## On devnet (12 October 2026)
 
-- The program compiles to SBF (`cargo build-sbf`, 339 KB).
-- Deployed to a local `solana-test-validator` and exercised with real
-  transactions through the validator's RPC:
-  - `solana program deploy` of the SBF binary;
-  - a `Stake` transaction bonding 0.25 SOL to a domain, sent by
-    `crates/oi-staking/examples/chain_bond.rs`;
-  - the stake account read back from its PDA (`["stake", domain]`);
-  - the bond mirrored into the local registry and shown in the `BOND` column
-    of `oi search` next to every result from that domain.
+The program is deployed on Solana devnet and has taken stake transactions
+there. Everything below is devnet, with test SOL. Nothing is on mainnet.
+
+| What | Where |
+|---|---|
+| Program | [`5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c`](https://explorer.solana.com/address/5psb7XSg7ZkzPXuD9GirjYRyz3Nh5CbXEQLg84vpuE9c?cluster=devnet) |
+| Deploy transaction | [`5s3sV5mZ…SatqZSDf`](https://explorer.solana.com/tx/5s3sV5mZxETr6YJ5hEzwKV2mXFyJVy1y9yqq1nhT6uzQQWBcG5yyaFmvkJ4jKQpgNoXDmFS5o9eYgSsqSatqZSDf?cluster=devnet), slot 510299573 |
+| Upgrade authority and staker | `CmHFGwAKPquiQCwVRowQJ71ScGcxXihaXxTBbiYmK81h` (a wallet used only for this) |
+| Bond of 0.25 SOL on `consumerfinance.gov` | stake account [`CGPyudzz…aNLzCCw`](https://explorer.solana.com/address/CGPyudzzksPULCGi5HHuSayZhKbGhkkVLFAJ8aNLzCCw?cluster=devnet), transaction [`5i2UsLBz…RuQrMtF`](https://explorer.solana.com/tx/5i2UsLBzVgBPGxKSw2U2Rn2qSKhMpGd8cLRFJvj86fStbNVYHYgp3EFFL2CYT2cLQiwCAJxXzXY8k4oFqRuQrMtF?cluster=devnet) |
+| Bond of 0.25 SOL on `worldatlas.com` | stake account [`AtJp8i1R…hMKKtvx1f`](https://explorer.solana.com/address/AtJp8i1Rh6Na6STy57JFf6z3esCoLMrJ6j4hMKKtvx1f?cluster=devnet), transaction [`2adsmYi2…32z8ybf`](https://explorer.solana.com/tx/2adsmYi2jHGqA6LDsNgVWC6zX4Wm6j6tfVo2ahMwME7LzhiNLU2gTcTQS4gjnTJ3BmxWFbDD14fUotQG232z8ybf?cluster=devnet) |
+
+The two bonds were made by the end-to-end demo (`scripts/demo.py --rpc
+https://api.devnet.solana.com`), which then read each stake account back
+from the chain, mirrored it into the node's registry and checked that the
+running node showed it without changing the claims it returns or their
+order. Both runs passed all 18 checks; one is kept in
+[DEMO-RUN.txt](DEMO-RUN.txt). The first transaction was also confirmed
+separately (`solana confirm`: finalized; the stake account is owned by the
+program and holds the 0.25 SOL plus rent).
+
+The domains are the ones the demo's search happened to return. We do not own
+them and the bonds say nothing about their publishers: they show the
+mechanism. See "What the bond is" below.
+
+## Also run
+
+- The same flow on a local `solana-test-validator`, which is what the demo
+  uses when no `--rpc` is given. There it generates a throwaway wallet and
+  program address, so it needs no keys of the operator.
 - 84 tests against the program inside the Solana runtime
   (`cargo test --manifest-path tests/integration/Cargo.toml --test solana_e2e`).
 
-## What has not run
+## Not done
 
-**The program is not on devnet yet.** The devnet and testnet faucets refused
-every airdrop request from the deploy wallet on 11 October (rate limit), and
-deployment needs about 2.4 SOL. Nothing in the code is waiting on this: the
-same script deploys to devnet once the wallet is funded.
-
-This file is updated with the devnet transaction signatures when that
-happens.
+- Mainnet.
+- Only the V1 `Stake` instruction has been sent on devnet. Unstake,
+  disputes, jury votes, slashing and rewards are exercised by the tests in
+  the Solana runtime, not on a public cluster.
+- Nodes being paid or penalised on chain for ingestion work is design.
 
 ## Reproduce
 
-Local validator:
+The whole demo, bonding on devnet with a funded wallet at
+`~/.config/solana/id.json`:
 
 ```bash
-solana-test-validator --reset --quiet &
-solana airdrop 10 --url http://127.0.0.1:8899
-scripts/chain_bond_demo.sh http://127.0.0.1:8899 rome2rio.com 250000000
-oi --open search "new york to washington dc rome2rio"
+scripts/demo.py --rpc https://api.devnet.solana.com
 ```
 
-Devnet, with a funded wallet at `~/.config/solana/id.json`:
+Only the bond:
 
 ```bash
-scripts/chain_bond_demo.sh https://api.devnet.solana.com rome2rio.com 250000000
+scripts/chain_bond_demo.sh https://api.devnet.solana.com example.org 250000000
 ```
 
 The script deploys the program if the cluster does not have it, sends the
